@@ -1,0 +1,15 @@
+00 - Download VCFs and conduct md5sum check
+01 - Filter VCFs
+02 - Create SNP dataset
+03 - Subset SNP dataset to create and submit RMCL data
+04 - Use coiaf tools to calculate COI
+05 - Compare against RMCL
+06 - Use the RMCL simulator (basically the same as Bob's) to simulate data to test coiaf
+07 - Report
+
+---
+
+R functions:
+
+Simulator.
+Estimator.

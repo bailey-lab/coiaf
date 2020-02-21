@@ -1,0 +1,169 @@
+---
+title: "Creating Pf6k filtered SNPs"
+author: "OJ Watson"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  prettydoc::html_pretty:
+    theme: cayman
+    highlight: vignette
+    toc: true
+    fig_caption: yes
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r imports, echo=F, warning=F, message=F, results='hide'}
+library(tidyverse)
+library(RColorBrewer)
+library(devtools)
+
+```
+
+## Download the files
+
+```{r imports, echo=F, warning=F, message=F, results='hide'}
+ftp_dir <- "ftp://ngs.sanger.ac.uk/production/malaria/pfcommunityproject/Pf6/Pf_6_vcf"
+
+## Grab the filenames from the ftp address
+filenames <- RCurl::getURL(ftp_dir, ftp.use.epsv = FALSE, dirlistonly = TRUE) %>%
+  strsplit("\n") %>%
+  unlist()
+
+## create urls and download to shared directory
+urls <- file.path(ftp_dir, filenames)
+
+## group_share
+share_dir <- "/gpfs_home/owatson1/data/shared/vcfs/pf3k_release6"
+dir.create(share_dir, recursive = TRUE)
+current_dir <- setwd(share_dir)
+system(paste0("wget -r -nH --cut-dirs=7 ", ftp_dir))
+setwd(current_dir)
+```
+## Filter the vcfs
+
+Filter the Pf6k samples with the following filters used in Zhu et al. [The origins and relatedness structure of mixed infections vary with local prevalence of P. falciparum malaria
+][https://elifesciences.org/articles/40845]. 
+
+```{r}
+
+bcf_filter <- function(x, 
+                       dir = "/gpfs_home/owatson1/data/shared/vcfs/pf3k_release6"
+){
+  
+  if (x < 10) {
+    x <- paste0("0", x)
+  }
+  
+  l <- list.files(dir, full.names = TRUE)
+  s <- grep(paste0("Pf3D7_",x,"_.*vcf.gz$"), l, value = TRUE)
+  t <- gsub("pf3k_release6", "pf3k_release6_filter_zhu_elife", s)
+  dir.create(dirname(t), recursive = TRUE, showWarnings = FALSE)
+  
+  # filter to sites that include the expression FILTER="PASS", and to sites that are biallelic (at least
+  # 2 alleles (-m 2) and a maximum of 2 (-M 2)) and are SNPs
+  cmd <- paste0("module load bcftools/1.9; bcftools view -i 'FILTER=\"PASS\"' -m 2 -M 2 -v snps -O z \"",s, "\" > \"", t, "\"")
+  system(command = cmd)
+  
+}
+
+pars <- data.frame("x" = 1:14)
+sopt <- list(time = '1:00:00', share = TRUE)
+
+sjob <- rslurm::slurm_apply(bcf_filter, pars, jobname = 'test_filter',
+                            nodes = 14, cpus_per_node = 1, slurm_options = sopt,
+                            submit = TRUE)
+res <- rslurm::get_slurm_out(sjob)
+rslurm::print_job_status(sjob)
+
+```
+
+## Select intermediate frequency and high quality SNPs
+
+```{r}
+devtools::install_github("IDEELResearch/vcfRmanip")
+
+
+vcf_filter_allele_frequency <- function(vcfRobj = NULL, 
+                                        vcf = NULL, 
+                                        vcfout = NULL, 
+                                        minor = 0.1, 
+                                        major = 0.9) {
+  
+  if(is.null(vcfRobj)) {
+    vcfRobj <- vcfR::read.vcfR(file = vcf, verbose = TRUE)
+    
+    if(is.null(vcfout)) {
+      vcfout <- gsub(".vcf.gz", "_allele_filter.vcf.gz", vcf, fixed = TRUE)
+    }
+  } else {
+    if(is.null(vcfout)) {
+      vcfout <- tempfile(fileext = ".vcf.gz")
+    }
+  }
+  
+  # split our vcf into ranges
+  r <- list()
+  diff <- 100
+  nloci <- nrow(vcfRobj@gt)
+  
+  for(i in 1:(nrow(vcfRobj@gt)/diff)){
+    r[[i]] <- (1 + ((i-1) * diff)) : (diff*i)
+  }
+  if(r[[i]][diff] != nloci) {
+    r[[i+1]] <- (r[[i]][diff]+1) : nloci
+  }
+  
+  
+  # store results here
+  maf_sites <- list()
+  
+  # extract coverage and counts matrices
+  
+  for(i in seq_len(length(r))) {
+    
+    coverage <- t(vcfR::extract.gt(vcfRobj, element = "DP", as.numeric = T, mask = r[[i]]))
+    counts <- t(vcfR::extract.gt(vcfRobj, element = "AD"))
+    counts <- vcfR::masplit(counts, record = 1, sort = FALSE, decreasing = FALSE)
+    wsaf <- counts/coverage
+    
+    # calculate PLAFs
+    raw_plaf <- vapply(seq_len(ncol(wsaf)),
+                       function(x){
+                         sum(counts[,x], na.rm=TRUE) / sum(coverage[,x],na.rm=TRUE)
+                       }, FUN.VALUE = numeric(1))
+    
+    # which sites do we want
+    maf_sites_i <- which(raw_plaf >= minor & raw_plaf <= major)
+    maf_sites[[i]] <- r[[i]][maf_sites_i]
+  }
+  
+  # subset to these sites
+  maf_sites <- unlist(maf_sites)
+  vcfRobj@gt <- vcfRobj@gt[maf_sites,]
+  fix <- as.matrix(vcfR::getFIX(vcfRobj, getINFO = T)[maf_sites,])
+  gt <- as.matrix(vcfRobj@gt)
+  meta <- append(vcfRobj@meta, paste("##Filtering to loci with 0.1 <= PLAF <= 0.9"))
+  
+  # Setting class based off of vcfR documentation https://github.com/knausb/vcfR/blob/master/R/AllClass.R
+  newvcfR <- new("vcfR", meta = meta, fix = fix, gt = gt)
+  vcfR::write.vcf(newvcfR, file = vcfout, APPEND = FALSE)
+  invisible(vcfout)
+}
+
+l <- list.files("/gpfs_home/owatson1/data/shared/vcfs/pf3k_release6_filter_zhu_elife/", full.names = TRUE)
+pars <- data.frame("vcf" = l, stringsAsFactors = FALSE)
+sopt <- list(time = '4:00:00', mem = "16Gb", memshare = TRUE)
+
+sjob <- rslurm::slurm_apply(vcf_filter_allele_frequency, 
+                            pars, 
+                            jobname = 'allele_filter',
+                            nodes = 14, 
+                            cpus_per_node = 1, 
+                            slurm_options = sopt,
+                            submit = TRUE)
+rslurm::print_job_status(sjob)
+res <- rslurm::get_slurm_out(sjob)
+
+```
+
+
