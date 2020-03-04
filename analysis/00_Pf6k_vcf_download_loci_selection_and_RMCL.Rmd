@@ -22,6 +22,18 @@ library(vcfR)
 devtools::install_github("OJWatson/McCOILR")
 ```
 
+This script will:
+
+1. Download the Pf6k VCFs
+2. Filter to quality, biallelic SNPs
+3. Subset to samples that pass Pf6k inclusion
+4. Identify suitable subregions to group samples into 
+5. Identify loci that have MAF > 0.05 globally and regionally
+6. Filter to sets of loci that are not in linkage disequilbirium
+7. Resultant loci are converted into homo/het calls
+8. Homo/het calls for each region are sent to RMCL for COI
+9. Summary estimates of COI are estimated for each sample
+
 ## Locations to download and filter
 
 ```{r}
@@ -82,6 +94,7 @@ bcf_filter <- function(x,
 # submit to slurm
 pars <- data.frame("x" = 1:14, "dir" = share_dir)
 sopt <- list(time = '1:00:00', share = TRUE)
+setwd(file.path(here::here(), "analysis/data/slurm_outs/"))
 
 sjob <- rslurm::slurm_apply(bcf_filter, pars, jobname = 'test_filter',
                             nodes = 14, cpus_per_node = 1, slurm_options = sopt,
@@ -752,6 +765,7 @@ sjob <- rslurm::slurm_apply(
   slurm_options = sopt,
   submit = TRUE
   )
-
+rslurm::print_job_status(sjob)
+res <- rslurm::get_slurm_out(sjob)
 
 ```
