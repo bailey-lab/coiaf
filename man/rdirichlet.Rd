@@ -4,10 +4,10 @@
 \alias{rdirichlet}
 \title{Draw from Dirichlet distribution}
 \usage{
-rdirichlet(shape = rep(1, 3))
+rdirichlet(shaper = rep(1, 3))
 }
 \arguments{
-\item{shape}{vector of shape parameters.}
+\item{shaper}{vector of shape parameters.}
 }
 \description{
 Draw from Dirichlet distribution given a vector of shape
