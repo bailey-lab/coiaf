@@ -1,0 +1,31 @@
+Package: coiaf
+Type: Package
+Title: Complexity of Infection estimation with Allele Frequencies
+Version: 0.1.0
+Authors@R: 
+    c(person(given = "OJ",
+             family = "Watson",
+             role = c("aut", "cre"),
+             email = "oj.watson@hotmail.co.uk",
+             comment = c(ORCID = "0000-0003-2374-0741")),
+      person(given = "Aris",
+             family = "Paschalidis",
+             role = "aut"))
+Maintainer: OJ Watson <oj.watson@hotmail.co.uk>
+BugReports: https://github.com/ojwatson/coiaf/issues
+Description: Provides a direct method for estimating complexity of infection
+  using within-sample allele frequencies from whole genome sequence data. 
+LazyData: TRUE
+Depends: R (>= 3.3.0)
+Imports: 
+    magrittr
+Suggests:
+    testthat,
+    knitr,
+    rmarkdown,
+    ggplot2
+License: MIT + file LICENSE
+RoxygenNote: 7.0.0
+VignetteBuilder: knitr
+Language: en-GB
+Encoding: UTF-8
