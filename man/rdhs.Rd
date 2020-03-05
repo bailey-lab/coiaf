@@ -4,7 +4,6 @@
 \name{rdhs}
 \alias{coiaf}
 \alias{coiaf-package}
-\alias{rdhs-package}
 \title{\pkg{coiaf} COI estimation from allel frequency}
 \description{
 Provides a direct method for estimating complexity of infection
@@ -18,7 +17,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: OJ Watson \email{oj.watson@hotmail.co.uk} (0000-0003-2374-0741)
+\strong{Maintainer}: OJ Watson \email{oj.watson@hotmail.co.uk} (\href{https://orcid.org/0000-0003-2374-0741}{ORCID})
 
 Authors:
 \itemize{

@@ -4,8 +4,14 @@
 \alias{sim_biallelic}
 \title{Simulate biallelic data}
 \usage{
-sim_biallelic(COI = 3, PLAF = runif(10, 0, 0.5), coverage = 100,
-  alpha = 1, overdispersion = 0, epsilon = 0)
+sim_biallelic(
+  COI = 3,
+  PLAF = runif(10, 0, 0.5),
+  coverage = 100,
+  alpha = 1,
+  overdispersion = 0,
+  epsilon = 0
+)
 }
 \arguments{
 \item{COI}{complexity of infection.}
