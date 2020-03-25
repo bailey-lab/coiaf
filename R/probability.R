@@ -9,7 +9,7 @@
 #' @export
 
 rdirichlet <- function(shaper = rep(1,3)) {
-  x <- rgamma(length(shape), shape = shape, rate = max(shape))
+  x <- rgamma(length(shaper), shape = shaper, rate = max(shaper))
   return(x/sum(x))
 }
 
