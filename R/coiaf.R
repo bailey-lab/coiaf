@@ -1,4 +1,4 @@
-#' \pkg{coiaf} COI estimation from allel frequency
+#' \pkg{coiaf} COI Estimation from Allele Frequency
 #'
 #'
 #'
