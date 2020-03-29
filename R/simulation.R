@@ -42,7 +42,7 @@
 #' @export
 
 sim_biallelic <- function(COI = 3,
-                          PLAF = runif(10,0,0.5),
+                          PLAF = runif(10, 0, 0.5),
                           coverage = 100,
                           alpha = 1,
                           overdispersion = 0,
@@ -52,10 +52,15 @@ sim_biallelic <- function(COI = 3,
   assert_single_pos_int(COI)
   assert_vector(PLAF)
   assert_bounded(PLAF)
+
+  # if a single value was inputed, then repeat coverage so that coverage is
+  # applied over all loci.
   L <- length(PLAF)
   if (length(coverage) == 1) {
     coverage <- rep(coverage, L)
   }
+
+  # contine to check inputs
   assert_vector(coverage)
   assert_pos_int(coverage)
   assert_same_length(PLAF, coverage)
