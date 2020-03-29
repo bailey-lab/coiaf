@@ -25,7 +25,7 @@ Suggests:
     rmarkdown,
     ggplot2
 License: MIT + file LICENSE
-RoxygenNote: 7.0.0
+RoxygenNote: 7.1.0
 VignetteBuilder: knitr
 Language: en-GB
 Encoding: UTF-8
