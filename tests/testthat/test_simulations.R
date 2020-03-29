@@ -13,6 +13,6 @@ test_that("sim_biallelic works", {
 
   sim1 <- sim_biallelic(COI = k, PLAF = p, overdispersion = 0.01)
   expect_identical(names(sim1), c("COI", "strain_proportions", "phased", "data"))
-  expect_equal(round(sim1$strain_proportions,2), c(0.62, 0.38))
+  expect_equal(round(sim1$strain_proportions, 2), c(0.62, 0.38))
 
 })
