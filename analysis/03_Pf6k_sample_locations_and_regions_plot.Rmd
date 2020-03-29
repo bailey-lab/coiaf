@@ -1,0 +1,61 @@
+---
+title: "Pf6k Sample Locations"
+author: "OJ Watson"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  prettydoc::html_pretty:
+    theme: cayman
+    highlight: vignette
+    toc: true
+    fig_caption: yes
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r imports, echo=F, warning=F, message=F, results='hide'}
+library(tidyverse)
+library(coiaf)
+devtools::install_github("OJWatson/roxer")
+```
+
+```{r}
+## download the Pf6k Meta
+tf <- tempfile()
+download.file("ftp://ngs.sanger.ac.uk/production/malaria/pfcommunityproject/Pf6/Pf_6_samples.txt",tf)
+meta <- data.table::fread(tf)
+
+roxer::map_plot(unique(meta[,c("Lat", "Long")]),"Lat","Long")
+```
+
+Then we will need to cluster our samples into suitably close regions, for which 
+we assume the same PLAF exists but without reducing our n. 
+
+We can use a silhoutte plot to visualise the optimum number of regions to guide 
+our decisions
+
+```{r}
+# do k means clustering
+library(cluster)
+locations <- unique(meta[, c("Lat", "Long")])
+
+sis <- 2:(nrow(locations)-1)
+for(k in sis) {
+
+  si <- silhouette(cluster::pam(x = locations, k))
+  sis[k-1] <- mean(si[,3])
+}
+
+plot(sis)
+abline(v = which(diff(sign(diff(sis)))==-2)+1)
+text(which(diff(sign(diff(sis)))==-2)+2, 0.1, which(diff(sign(diff(sis)))==-2)+2)
+```
+
+For the RMCL analysis, 24 locations were chosen:
+
+```{r}
+ks <- cluster::pam(meta[,c("Lat","Long")], k = 24)
+meta$color <- as.factor(ks$clustering)
+
+fig2 <- roxer::map_plot(unique(meta[,c("Lat", "Long",)]),"Lat","Long")
+fig2
+```
