@@ -4,12 +4,12 @@
 #' @description Draw from Dirichlet distribution given a vector of shape
 #'   parameters.
 #'
-#' @param shaper vector of shape parameters.
+#' @param shape vector of shape parameters.
 #'
 #' @export
 
-rdirichlet <- function(shaper = rep(1,3)) {
-  x <- rgamma(length(shaper), shape = shaper, rate = max(shaper))
+rdirichlet <- function(shape = rep(1,3)) {
+  x <- rgamma(length(shape), shape = shape, rate = max(shape))
   return(x/sum(x))
 }
 

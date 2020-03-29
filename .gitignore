@@ -4,4 +4,7 @@
 .RData
 .Ruserdata
 inst/doc
-analysis
+
+## analysis gitignores
+analysis/data/slurm_outs
+analysis/data/derived/McCOIL_work
