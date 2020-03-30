@@ -21,7 +21,6 @@ In this analysis the two COI estimation methods are demonstrated. In these we wi
 simualate 1000 loci for an individual:
 
 ```{r}
-
 # set seed
 set.seed(1)
 
@@ -39,7 +38,6 @@ This works by using the mean number of variant sites, binned
 in groups of increasing population allele frequency to infer COI.
 
 ```{r}
-
 # loop over range of COIs
 par(mfrow = c(3,2))
 for (k in 2:7) {
@@ -53,23 +51,25 @@ for (k in 2:7) {
        xlab = "PLAF", ylab = "WSAF", main = paste("COI =", k))
 
   # overlay analytical expectations for COI=2:7
-  p_vec <- seq(0,0.5,l=101)
+  p_vec <- seq(0, 0.5, l=101)
   for (k in 2:7) {
-    x <- 1 - p_vec^k - (1-p_vec)^k # this result is derived in the manuscript
+    x <- 1 - p_vec^k - (1 - p_vec)^k # this result is derived in the manuscript
     lines(p_vec, x, col = 2, lwd = 2)
   }
-  text(x = rep(0.505,6), y = 1 - 0.5^(1:6), labels = 2:7, col = 2, cex = 0.6)
+  text(x = rep(0.505, 6), y = 1 - 0.5^(1:6), labels = 2:7, col = 2, cex = 0.6)
 
   # compute windowed averages over WSAF and overlay in blue
 
   # group by PLAF range
   cut <- seq(0,0.5,0.01)
   df2 <- data.frame(PLAF=sim1$data$PLAF,
-                    Variant=ifelse(sim1$data$WSAF<0.01 | sim1$data$WSAF>0.99,0,1), # here we are saying that 1% could well be error
-                    True_Variant=as.integer(!apply(sim1$phased,2,function(x) {all(x) || all(!x)}))) # here we're using the knowledge of which are variants
-  df2$PLAF_cut <- cut(df2$PLAF,cut,include.lowest = TRUE)
-  df_grouped <- group_by(df2,PLAF_cut) %>% summarise(m=mean(Variant), m2=mean(True_Variant))
-  df_grouped$mid <- seq(0.01,0.5,0.01)
+                    # here we are saying that 1% could well be error
+                    Variant=ifelse(sim1$data$WSAF < 0.01 | sim1$data$WSAF > 0.99, 0, 1),
+                    # here we're using the knowledge of which are variants
+                    True_Variant=as.integer(!apply(sim1$phased, 2, function(x) {all(x) || all(!x)}))) 
+  df2$PLAF_cut <- cut(df2$PLAF, cut, include.lowest = TRUE)
+  df_grouped <- group_by(df2,PLAF_cut) %>% summarise(m = mean(Variant), m2 = mean(True_Variant))
+  df_grouped$mid <- seq(0.005, 0.495, 0.01)
   lines(df_grouped$mid, df_grouped$m2, col = 4, lwd = 2, type = "o", pch = 20)
 }
 
@@ -81,12 +81,11 @@ between each COI at PLAF = 0.5 become geometrically smaller. Larger gaps can be 
 at different COI, with smaller PLAF:
 
 ```{r}
-
 ## Best place to calculate COI:
 par(mfrow = c(3,3))
-p_vec <- seq(0,0.5,l=101)
+p_vec <- seq(0, 0.5, l=101)
 for (k in 1:10) {
-  y[[k]] <- 1 - p_vec^k - (1-p_vec)^k
+  y[[k]] <- 1 - p_vec^k - (1 - p_vec)^k
 
   if(k>1) {
    new_y <- y[[k]]-y[[k-1]]
@@ -95,13 +94,9 @@ for (k in 1:10) {
         xlab = "Population MAF",
         main = paste("COI = ", k))
    abline(v=p_vec[which.max(new_y)])
-   text(x=p_vec[which.max(new_y)]-0.02, y = 0.0, labels = p_vec[which.max(new_y)])
-
-
+   text(x=p_vec[which.max(new_y)] - 0.02, y = 0.0, labels = p_vec[which.max(new_y)])
   }
 }
-
-
 ```
 
 ## Method 2
@@ -110,7 +105,6 @@ In method 2, we plot WSAF against PLAF for only the sites that are heterogeneous
 i.e. not all REF or ALT calls. 
 
 ```{r}
-
 # loop over range of COIs
 par(mfrow = c(3,2))
 for (k in 2:7) {
@@ -124,21 +118,20 @@ for (k in 2:7) {
        xlab = "PLAF", ylab = "WSAF", main = paste("COI =", k))
 
   # overlay analytical expectations for COI=2:7
-  p_vec <- seq(0,0.5,l=101)
+  p_vec <- seq(0, 0.5, l=101)
   for (k in 2:7) {
-    x <- (p_vec - p_vec^k)/(1 - p_vec^k - (1-p_vec)^k)
+    x <- (p_vec - p_vec^k)/(1 - p_vec^k - (1 - p_vec)^k)
     lines(p_vec, x, col = 2, lwd = 2)
   }
-  text(x = rep(-0.005,6), y = 1/2:7, labels = 2:7, col = 2, cex = 0.6)
+  text(x = rep(-0.005, 6), y = 1/2:7, labels = 2:7, col = 2, cex = 0.6)
 
   # compute sliding-window averages over WSAF and overlay in blue
-  cut_breaks <- seq(0,0.5,0.025)
+  cut_breaks <- seq(0, 0.5, 0.025)
   cut_mids <- cut_breaks[-1]-diff(cut_breaks)/2
   c <- cut(sim1$data$PLAF, breaks = cut_breaks)
   x2 <- mapply(mean, split(sim1$data$WSAF, f = c))
   lines(cut_mids, x2, col = 4, lwd = 2, type = "o", pch = 20)
 }
-
 ```
 
 In this case, COI is found as 1/WSAF when PLAF = 0 (i.e. the y-axis intercept).
