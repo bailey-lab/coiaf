@@ -8,7 +8,7 @@ output:
     highlight: vignette
     toc: true
     fig_caption: yes
-editor_options: 
+editor_options:
   chunk_output_type: console
 ---
 
@@ -47,19 +47,18 @@ for (k in 2:7) {
 
   # plot raw WSAF as grey dots
   plot(sim1$data$PLAF, sim1$data$WSAF, 
-       pch = 20, cex = 0.5, col = "#00000020", ylim = c(0,1),
+       pch = 20, cex = 0.5, col = "gray", ylim = c(0,1),
        xlab = "PLAF", ylab = "WSAF", main = paste("COI =", k))
 
   # overlay analytical expectations for COI=2:7
   p_vec <- seq(0, 0.5, l=101)
   for (k in 2:7) {
-    x <- 1 - p_vec^k - (1 - p_vec)^k # this result is derived in the manuscript
-    lines(p_vec, x, col = 2, lwd = 2)
+    x <- theoretical_coi(k, p_vec) #the math behind this function is derived in the manuscript
+    lines(p_vec, x, col = "red", lwd = 2)
   }
-  text(x = rep(0.505, 6), y = 1 - 0.5^(1:6), labels = 2:7, col = 2, cex = 0.6)
+  text(x = rep(0.505, 6), y = 1 - 0.5^(1:6), labels = 2:7, col = "red", cex = 0.6)
 
   # compute windowed averages over WSAF and overlay in blue
-
   # group by PLAF range
   cut <- seq(0,0.5,0.01)
   df2 <- data.frame(PLAF=sim1$data$PLAF,
@@ -70,9 +69,8 @@ for (k in 2:7) {
   df2$PLAF_cut <- cut(df2$PLAF, cut, include.lowest = TRUE)
   df_grouped <- group_by(df2,PLAF_cut) %>% summarise(m = mean(Variant), m2 = mean(True_Variant))
   df_grouped$mid <- seq(0.005, 0.495, 0.01)
-  lines(df_grouped$mid, df_grouped$m2, col = 4, lwd = 2, type = "o", pch = 20)
+  lines(df_grouped$mid, df_grouped$m2, col = "blue", lwd = 2, type = "o", pch = 20)
 }
-
 ```
 
 In this the intercept at `PLAF = 0.5` gives us an easy way to estimate COI, with 
@@ -84,8 +82,9 @@ at different COI, with smaller PLAF:
 ## Best place to calculate COI:
 par(mfrow = c(3,3))
 p_vec <- seq(0, 0.5, l=101)
+y <- list()
 for (k in 1:10) {
-  y[[k]] <- 1 - p_vec^k - (1 - p_vec)^k
+  y[[k]] <- theoretical_coi(k, p_vec)
 
   if(k>1) {
    new_y <- y[[k]]-y[[k-1]]
@@ -93,7 +92,7 @@ for (k in 1:10) {
         ylab = "Difference between Proportion Variant for k and k-1",
         xlab = "Population MAF",
         main = paste("COI = ", k))
-   abline(v=p_vec[which.max(new_y)])
+   abline(v=p_vec[which.max(new_y)], lty = 2)
    text(x=p_vec[which.max(new_y)] - 0.02, y = 0.0, labels = p_vec[which.max(new_y)])
   }
 }
@@ -114,7 +113,7 @@ for (k in 2:7) {
   sim1$data <- subset(sim1$data, WSAF > 0 & WSAF < 1)
 
   # plot raw WSAF as grey dots
-  plot(sim1$data$PLAF, sim1$data$WSAF, pch = 20, cex = 0.5, col = "#00000020", ylim = c(0,1),
+  plot(sim1$data$PLAF, sim1$data$WSAF, pch = 20, cex = 0.5, col = "gray", ylim = c(0,1),
        xlab = "PLAF", ylab = "WSAF", main = paste("COI =", k))
 
   # overlay analytical expectations for COI=2:7
@@ -123,14 +122,14 @@ for (k in 2:7) {
     x <- (p_vec - p_vec^k)/(1 - p_vec^k - (1 - p_vec)^k)
     lines(p_vec, x, col = 2, lwd = 2)
   }
-  text(x = rep(-0.005, 6), y = 1/2:7, labels = 2:7, col = 2, cex = 0.6)
+  text(x = rep(-0.005, 6), y = 1/2:7, labels = 2:7, col = "red", cex = 0.6)
 
   # compute sliding-window averages over WSAF and overlay in blue
   cut_breaks <- seq(0, 0.5, 0.025)
   cut_mids <- cut_breaks[-1]-diff(cut_breaks)/2
   c <- cut(sim1$data$PLAF, breaks = cut_breaks)
   x2 <- mapply(mean, split(sim1$data$WSAF, f = c))
-  lines(cut_mids, x2, col = 4, lwd = 2, type = "o", pch = 20)
+  lines(cut_mids, x2, col = "blue", lwd = 2, type = "o", pch = 20)
 }
 ```
 
