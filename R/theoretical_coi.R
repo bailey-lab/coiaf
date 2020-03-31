@@ -8,6 +8,8 @@
 #' @param coi The COI
 #' @param interval The interval over which the curve will be calculated
 #' @return The theoretical COI curve for the specified interval.
+#'
+#' @export
 
 theoretical_coi <- function(coi, interval){
   curve <- 1 - interval^coi - (1 - interval)^coi
