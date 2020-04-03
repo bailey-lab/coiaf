@@ -18,7 +18,8 @@ Description: Provides a direct method for estimating complexity of infection
 LazyData: TRUE
 Depends: R (>= 3.3.0)
 Imports: 
-    magrittr
+    magrittr,
+    dplyr
 Suggests:
     testthat,
     knitr,
