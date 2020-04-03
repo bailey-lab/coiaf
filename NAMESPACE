@@ -2,6 +2,7 @@
 
 export("%>%")
 export(Pf_chrom_lengths)
+export(compute_coi)
 export(rbetabinom)
 export(rdirichlet)
 export(sim_biallelic)
