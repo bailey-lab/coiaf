@@ -40,9 +40,10 @@ in groups of increasing population allele frequency to infer COI.
 ```{r}
 # loop over range of COIs 
 par(mfrow = c(3,2))
-for (k in 2:7) {
+for (k in 2:7){
 
   # simulate data and subset to heterozygous sites only
+  set.seed(1)
   sim1 <- sim_biallelic(COI = k, PLAF = p)
 
   # plot raw WSAF as grey dots
@@ -59,17 +60,10 @@ for (k in 2:7) {
   text(x = rep(0.505, 6), y = 1 - 0.5^(1:6), labels = 2:7, col = "red", cex = 0.6)
 
   # compute windowed averages over WSAF and overlay in blue
-  # group by PLAF range
   cut <- seq(0,0.5,0.01)
-  df2 <- data.frame(PLAF=sim1$data$PLAF,
-                    # here we are saying that 1% could well be error
-                    Variant=ifelse(sim1$data$WSAF < 0.01 | sim1$data$WSAF > 0.99, 0, 1),
-                    # here we're using the knowledge of which are variants
-                    True_Variant=as.integer(!apply(sim1$phased, 2, function(x) {all(x) || all(!x)}))) 
-  df2$PLAF_cut <- cut(df2$PLAF, cut, include.lowest = TRUE)
-  df_grouped <- dplyr::group_by(df2,PLAF_cut) %>% dplyr::summarise(m = mean(Variant), m2 = mean(True_Variant))
-  df_grouped$mid <- seq(0.005, 0.495, 0.01)
-  lines(df_grouped$mid, df_grouped$m2, col = "blue", lwd = 2, type = "o", pch = 20)
+  df_grouped <- simulated_coi(sim1, 0.01, cut, theory_cois)
+
+  lines(df_grouped$midpoints, df_grouped$m_true_variant, col = "blue", lwd = 2, type = "o", pch = 20)
 }
 ```
 
