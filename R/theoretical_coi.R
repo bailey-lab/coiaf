@@ -12,6 +12,10 @@
 #' @export
 
 theoretical_coi <- function(coi, interval){
+  # Check inputs
+  assert_single_pos_int(coi)
+
+  # Determine the curve
   curve <- 1 - interval^coi - (1 - interval)^coi
   return(curve)
 }
