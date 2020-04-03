@@ -2,20 +2,20 @@
 % Please edit documentation in R/theoretical_coi.R
 \name{theoretical_coi}
 \alias{theoretical_coi}
-\title{Generate Theoretical COI Curve}
+\title{Generate Theoretical COI Curves}
 \usage{
-theoretical_coi(coi, interval)
+theoretical_coi(cois, interval)
 }
 \arguments{
-\item{coi}{The COI}
+\item{cois}{The COIs for which the curve will be calculated}
 
 \item{interval}{The interval over which the curve will be calculated}
 }
 \value{
-The theoretical COI curve for the specified interval.
+The theoretical COI curves for the specified COIs and interval
 }
 \description{
-Generate theoretical COI curve. At each locus defined as:
+Generate theoretical COI curves. At each locus defined as:
 \eqn{1-p^coi-q^coi}. This expression is derived in the corresponding
 manuscript.
 }
