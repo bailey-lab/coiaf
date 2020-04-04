@@ -18,13 +18,14 @@ Description: Provides a direct method for estimating complexity of infection
 LazyData: TRUE
 Depends: R (>= 3.3.0)
 Imports: 
+    dplyr,
     magrittr,
-    dplyr
+    stringr
 Suggests:
-    testthat,
+    ggplot2,
     knitr,
     rmarkdown,
-    ggplot2
+    testthat
 License: MIT + file LICENSE
 RoxygenNote: 7.1.0
 VignetteBuilder: knitr

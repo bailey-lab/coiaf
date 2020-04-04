@@ -4,26 +4,21 @@
 \alias{compute_coi}
 \title{Compute COI}
 \usage{
-compute_coi(sim, seq_error, cuts, theoretical_cois)
+compute_coi(theory_cois, sim_coi, method = "end", cuts)
 }
 \arguments{
-\item{sim}{Output of \code{\link{sim_biallelic}}.}
+\item{theory_cois}{The theoretical COI curves to be examined}
 
-\item{seq_error}{The level of sequencing error that is assumed.}
+\item{sim_coi}{The simulated coi curve}
 
-\item{cuts}{How often the data is summarized.}
+\item{method}{The method to be employed.}
 
-\item{theoretical_cois}{The theoretical COI curves to be examined.}
+\item{cuts}{How often the data is summarized}
 }
 \value{
-Dataframe with averaged variant for several PLAF cuts.
+COI for the simulation
 }
 \description{
-Compute the COI of the sample. In order to do this, we utilize
- the output of \code{\link{sim_biallelic}}, which created simulated data.
- We keep the PLAF, and compute whether a SNP is a variant or not, based
- on the simulated WSAF at that SNP -- acounting for potential sequencing
- error. To check whether our simulated WSAF correctly indicated a variant
- site or not, we determine whether a site should be varaint or not using
- the phased haplotype of the parasites.
+Generate the COI of the sample by comparing the simualated
+coi curve to the theoretical coi curve.
 }
