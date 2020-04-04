@@ -4,9 +4,9 @@
 #' @description Generate the simulated COI curve. In order to do this, we utilize
 #'  the output of \code{\link{sim_biallelic}}, which created simulated data.
 #'  We keep the PLAF, and compute whether a SNP is a variant or not, based
-#'  on the simulated WSAF at that SNP -- acounting for potential sequencing
+#'  on the simulated WSAF at that SNP -- accounting for potential sequencing
 #'  error. To check whether our simulated WSAF correctly indicated a variant
-#'  site or not, we determine whether a site should be varaint or not using
+#'  site or not, we determine whether a site should be variant or not using
 #'  the phased haplotype of the parasites.
 #'
 #' @param sim Output of \code{\link{sim_biallelic}}
@@ -48,7 +48,7 @@ simulated_coi <- function(sim, seq_error, cuts, theoretical_cois){
 #------------------------------------------------
 #' @title Compute COI
 #'
-#' @description Generate the COI of the sample by comparing the simualated
+#' @description Generate the COI of the sample by comparing the simulated
 #' COI curve to the theoretical COI curve. To determine the actual COI value,
 #' three different methods are utilized:
 #' \describe{
@@ -62,8 +62,8 @@ simulated_coi <- function(sim, seq_error, cuts, theoretical_cois){
 #'   COI curve is the closet to the simulated data at the ideal PLAF.}
 #'   \item{\code{end}}{Determines the distance between the theoretical and
 #'   simulated curve at for all PLAFs. Computes the distance between the
-#'   theoretical curves and the smulated curve. The COI is whichever theoretical
-#'   curv has the smallest distance from the simulated curve.}
+#'   theoretical curves and the simulated curve. The COI is whichever theoretical
+#'   curve has the smallest distance from the simulated curve.}
 #'   }
 #'
 #' @param theory_cois The theoretical COI curves to be examined

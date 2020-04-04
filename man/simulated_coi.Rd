@@ -22,8 +22,8 @@ Simulated COI curve
 Generate the simulated COI curve. In order to do this, we utilize
  the output of \code{\link{sim_biallelic}}, which created simulated data.
  We keep the PLAF, and compute whether a SNP is a variant or not, based
- on the simulated WSAF at that SNP -- acounting for potential sequencing
+ on the simulated WSAF at that SNP -- accounting for potential sequencing
  error. To check whether our simulated WSAF correctly indicated a variant
- site or not, we determine whether a site should be varaint or not using
+ site or not, we determine whether a site should be variant or not using
  the phased haplotype of the parasites.
 }

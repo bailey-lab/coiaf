@@ -29,14 +29,14 @@ to the binomial distribution. Counts are Beta-binomially distributed, with
 the beta distribution having shape parameters \code{p/overdispersion} and
 \code{(1-p)/overdispersion}.}
 
-\item{epsilon}{the probability of a single read being mis-called as the other
+\item{epsilon}{the probability of a single read being miscalled as the other
 allele. Applies in both directions.}
 }
 \description{
 Simulate biallelic data from a simple statistical model. Inputs
   include the complexity of infection (COI), population-level allele
-  frequencies (PLAF) and some parameters dicating skew and error
-  distributions. Outputs include the phased haplotypes and the un-phased read
+  frequencies (PLAF) and some parameters dictating skew and error
+  distributions. Outputs include the phased haplotypes and the unphased read
   count and coverage data.
 }
 \details{
