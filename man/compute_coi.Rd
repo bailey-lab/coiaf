@@ -9,7 +9,7 @@ compute_coi(theory_cois, sim_coi, method = "end", cuts)
 \arguments{
 \item{theory_cois}{The theoretical COI curves to be examined}
 
-\item{sim_coi}{The simulated coi curve}
+\item{sim_coi}{The simulated COI curve}
 
 \item{method}{The method to be employed.}
 
@@ -20,5 +20,20 @@ COI for the simulation
 }
 \description{
 Generate the COI of the sample by comparing the simualated
-coi curve to the theoretical coi curve.
+COI curve to the theoretical COI curve. To determine the actual COI value,
+three different methods are utilized:
+\describe{
+  \item{\code{end}}{Determines the distance between the theoretical and
+  simulated curve at a PLAF of 0.5. The COI is whichever theoretical COI curve
+  is the closest to the simulated data..}
+  \item{\code{ideal}}{Determines the distance between the theoretical and
+  simulated curve at the ideal PLAF. The ideal PLAF is calculated by looking at
+  the change between the COI of \eqn{i} and the COI of \eqn{i-1} and finding
+  the PLAF for which this distance is maximal. The COI is whichever theoretical
+  COI curve is the closet to the simulated data at the ideal PLAF.}
+  \item{\code{end}}{Determines the distance between the theoretical and
+  simulated curve at for all PLAFs. Computes the distance between the
+  theoretical curves and the smulated curve. The COI is whichever theoretical
+  curv has the smallest distance from the simulated curve.}
+  }
 }

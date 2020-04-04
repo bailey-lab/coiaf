@@ -43,7 +43,7 @@ par(mfrow = c(3,2))
 for (k in 2:7){
 
   # simulate data and subset to heterozygous sites only
-  set.seed(1)
+  # set.seed(1)
   sim1 <- sim_biallelic(COI = k, PLAF = p)
 
   # plot raw WSAF as grey dots
@@ -53,7 +53,7 @@ for (k in 2:7){
 
   # overlay analytical expectations for COI=2:7
   p_vec <- seq(0, 0.5, l=101)
-  theory_cois <- theoretical_coi(seq(2, 7), p_vec)
+  theory_cois <- theoretical_coi(seq(1, 7), p_vec)
   for (i in 2:7) {
     lines(p_vec, theory_cois[[paste("coi_", i, sep = "")]], col = "red", lwd = 2)
   }
@@ -64,6 +64,9 @@ for (k in 2:7){
   df_grouped <- simulated_coi(sim1, 0.01, cut, theory_cois)
 
   lines(df_grouped$midpoints, df_grouped$m_true_variant, col = "blue", lwd = 2, type = "o", pch = 20)
+  
+  calc_coi = compute_coi(theory_cois, df_grouped, "overall", cut)
+  print(paste("Actual COI is ", k, ", Calculated ", calc_coi, sep = ""))
 }
 ```
 
@@ -90,6 +93,15 @@ for (k in 1:10) {
    text(x=p_vec[which.max(new_y)] - 0.02, y = 0.0, labels = p_vec[which.max(new_y)])
   }
 }
+
+# one_ten <- theoretical_coi(seq(1, 10), p_vec)
+# pt = list()
+# for (i in 2:10){
+#   diff = one_ten[i] - one_ten[i - 1]
+#   pt[i-1] <- one_ten[which.max(diff[[1]]), i]
+# }
+# names(pt) <- colnames(one_ten)[2:10]
+# pt
 ```
 
 ## Method 2

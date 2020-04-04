@@ -49,10 +49,25 @@ simulated_coi <- function(sim, seq_error, cuts, theoretical_cois){
 #' @title Compute COI
 #'
 #' @description Generate the COI of the sample by comparing the simualated
-#' coi curve to the theoretical coi curve.
+#' COI curve to the theoretical COI curve. To determine the actual COI value,
+#' three different methods are utilized:
+#' \describe{
+#'   \item{\code{end}}{Determines the distance between the theoretical and
+#'   simulated curve at a PLAF of 0.5. The COI is whichever theoretical COI curve
+#'   is the closest to the simulated data..}
+#'   \item{\code{ideal}}{Determines the distance between the theoretical and
+#'   simulated curve at the ideal PLAF. The ideal PLAF is calculated by looking at
+#'   the change between the COI of \eqn{i} and the COI of \eqn{i-1} and finding
+#'   the PLAF for which this distance is maximal. The COI is whichever theoretical
+#'   COI curve is the closet to the simulated data at the ideal PLAF.}
+#'   \item{\code{end}}{Determines the distance between the theoretical and
+#'   simulated curve at for all PLAFs. Computes the distance between the
+#'   theoretical curves and the smulated curve. The COI is whichever theoretical
+#'   curv has the smallest distance from the simulated curve.}
+#'   }
 #'
 #' @param theory_cois The theoretical COI curves to be examined
-#' @param sim_coi The simulated coi curve
+#' @param sim_coi The simulated COI curve
 #' @param method The method to be employed.
 #' @param cuts How often the data is summarized
 #' @return COI for the simulation
@@ -60,50 +75,58 @@ simulated_coi <- function(sim, seq_error, cuts, theoretical_cois){
 #' @export
 
 compute_coi <- function(theory_cois, sim_coi, method = "end", cuts){
-  # In order to calculate the best points to find COI, need
-  # to have COI of one as well. Do COI[i] - COI[i-1].
-  # So for method "end",  need to remove the first column
-
   # Minus 1 because theory_cois now includes the PLAF at the end
   bound_coi = ncol(theory_cois) - 1
+
   if (method == "end"){
-    # Method 1: Compare last value
+    ## Method 1: Compare last value
+    # Remove first column because it contains COI of 1
+    # (needed to compute ideal PLAF)
     last_theory <- theory_cois[, 2:bound_coi]
+
+    # Get last row of theoretical COI curves and simulated date (PLAF of 0.5)
     last_theory <- last_theory[nrow(last_theory),]
     last_sim <- sim_coi$m_variant[nrow(sim_coi)]
 
+    # Find coi by looking at minimum distance
     coi <- stringr::str_sub(names(which.min(abs(last_theory - last_sim))), -1)
   } else if (method == "ideal"){
-    # Method 2: Compute ideal PLAF
+    ## Method 2: Compute ideal PLAF
+    # For each COI, find best PLAF and get theoretical and simulated values at that PLAF
     dist <- list()
     for (i in 2:bound_coi){
-      # COI[i] - COI[i-1]
+      # Want maximum point of the following
       diff = theory_cois[i] - theory_cois[i - 1]
 
-      # Determine best PLAF value
+      # Get max value and determine the PLAF
       ideal_PLAF <- theory_cois$PLAF[which.max(diff[[1]])]
 
+      # Get max value and determine the theory WSAF
       theory_WSAF <- theory_cois[which.max(diff[[1]]), i]
+
+      # Using max PLAF, determine which cut it would be part of
+      # and then figure out m_variant value at this cut
       m_var <- sim_coi$m_variant[cut(ideal_PLAF, cuts)]
 
+      # Find distance between theoretical and simulated curves
       dist[i-1] <- abs(theory_WSAF - m_var)
     }
     names(dist) <- colnames(theory_cois)[2:bound_coi]
 
-      # df_grouped$PLAF_cut[cut(0.5, cut)]
-
-      # # Determine what the WSAF value is at the best PLAF is
-      # ideal[i-1] <- theory_cois[which.max(diff[[1]]), i]
-      #
-      # # For each ideal COI curve, find out which point from simulated
-      # # curve is closet to that curve
-      # dist_to_ideal[i-1] <- min(abs(df_grouped$m_variant - ideal[[i-1]]))
-    # }
-    # Now have the WSAFs in ideal place for each COI curve
-    # names(ideal) <- colnames(theory_cois)[2:bound_coi]
-    # names(dist_to_ideal) <- names(ideal)
-
+    # Find coi by looking at minimum distance
     coi <- stringr::str_sub(names(which.min(dist)), -1)
+  } else if (method == "overall"){
+    # Find overlapping PLAFs for theory and simulated data
+    match_theory_cois <- dplyr::filter(theory_cois, PLAF %in% sim_coi$midpoints)
+
+    # Remove COI of 1 and PLAF
+    match_theory_cois <- match_theory_cois[, 2:bound_coi]
+
+    # Find absolute value of difference
+    gap <- abs(colSums(match_theory_cois - sim_coi$m_variant))
+
+    # Find coi by looking at minimum distance
+    coi <- stringr::str_sub(names(which.min(gap)), -1)
   }
 
   ret_str <- paste("COI is", coi, sep = " ")
