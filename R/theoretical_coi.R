@@ -21,6 +21,7 @@ theoretical_coi <- function(cois, interval){
     }
   }
 
+  curves$PLAF <- interval
   return(curves)
 }
 
