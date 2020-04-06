@@ -6,5 +6,6 @@
 #' @name rdhs
 #'
 #' @importFrom stats rbeta rbinom rgamma runif
+#' @importFrom rlang .data
 #'
 "_PACKAGE"
