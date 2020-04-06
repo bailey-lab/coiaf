@@ -35,8 +35,8 @@ simulated_coi <- function(sim, seq_error, cuts, theoretical_cois){
   )
 
   # Average over intervals of PLAF
-  df_sim_grouped <- dplyr::group_by(df_sim, PLAF_cut) %>%
-    dplyr::summarise(m_variant = mean(variant), m_true_variant = mean(true_variant))
+  df_sim_grouped <- dplyr::group_by(df_sim, .data$PLAF_cut) %>%
+    dplyr::summarise(m_variant = mean(.data$variant), m_true_variant = mean(.data$true_variant))
   df_sim_grouped <- as.data.frame(df_sim_grouped)
 
   # Include midpoints
@@ -117,13 +117,13 @@ compute_coi <- function(theory_cois, sim_coi, method = "end", cuts){
     coi <- stringr::str_sub(names(which.min(dist)), -1)
   } else if (method == "overall"){
     # Find overlapping PLAFs for theory and simulated data
-    match_theory_cois <- dplyr::filter(theory_cois, PLAF %in% sim_coi$midpoints)
+    match_theory_cois <- dplyr::filter(theory_cois, .data$PLAF %in% sim_coi$midpoints)
 
     # Remove COI of 1 and PLAF
     match_theory_cois <- match_theory_cois[, 2:bound_coi]
 
     # Find absolute value of difference
-    gap <- abs(colSums(match_theory_cois - sim_coi$m_variant))
+    gap <- colSums(abs(match_theory_cois - sim_coi$m_variant))
 
     # Find coi by looking at minimum distance
     coi <- stringr::str_sub(names(which.min(gap)), -1)
