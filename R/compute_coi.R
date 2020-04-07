@@ -66,15 +66,24 @@ simulated_coi <- function(sim, seq_error, cuts, theoretical_cois){
 #'   curve has the smallest distance from the simulated curve.}
 #'   }
 #'
-#' @param theory_cois The theoretical COI curves to be examined
+#' @param theory_cois_interval The range of COIs for which theoretical curves
+#' will be calculated
 #' @param sim_coi The simulated COI curve
-#' @param method The method to be employed.
 #' @param cuts How often the data is summarized
+#' @param method The method to be employed. One of \code{"end", "ideal", "overall"}
 #' @return COI for the simulation
 #'
 #' @export
 
-compute_coi <- function(theory_cois, sim_coi, method = "end", cuts){
+compute_coi <- function(theory_cois_interval, sim_coi, cuts, method = c("end", "ideal", "overall")){
+  # Calculate theoretical COI curves for the inteval specified. Since we want
+  # the theoretical curves and the simulated curves to have the PLAF values, we
+  # compute the theoretical coi curves at sim_coi$midpoints
+  theory_cois <- theoretical_coi(theory_cois_interval, sim_coi$midpoints)
+
+  # To check that PLAFs are the same
+  assert_eq(theory_cois$PLAF, sim_coi$midpoints)
+
   # Minus 1 because theory_cois now includes the PLAF at the end
   bound_coi = ncol(theory_cois) - 1
 
@@ -111,16 +120,14 @@ compute_coi <- function(theory_cois, sim_coi, method = "end", cuts){
       # Find distance between theoretical and simulated curves
       dist[i-1] <- abs(theory_WSAF - m_var)
     }
+    # Name the distance vector so can extract COI information
     names(dist) <- colnames(theory_cois)[2:bound_coi]
 
     # Find coi by looking at minimum distance
     coi <- stringr::str_sub(names(which.min(dist)), -1)
   } else if (method == "overall"){
-    # Find overlapping PLAFs for theory and simulated data
-    match_theory_cois <- dplyr::filter(theory_cois, .data$PLAF %in% sim_coi$midpoints)
-
     # Remove COI of 1 and PLAF
-    match_theory_cois <- match_theory_cois[, 2:bound_coi]
+    match_theory_cois <- theory_cois[, 2:bound_coi]
 
     # Find absolute value of difference
     gap <- colSums(abs(match_theory_cois - sim_coi$m_variant))

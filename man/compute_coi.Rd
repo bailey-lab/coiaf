@@ -4,16 +4,22 @@
 \alias{compute_coi}
 \title{Compute COI}
 \usage{
-compute_coi(theory_cois, sim_coi, method = "end", cuts)
+compute_coi(
+  theory_cois_interval,
+  sim_coi,
+  cuts,
+  method = c("end", "ideal", "overall")
+)
 }
 \arguments{
-\item{theory_cois}{The theoretical COI curves to be examined}
+\item{theory_cois_interval}{The range of COIs for which theoretical curves
+will be calculated}
 
 \item{sim_coi}{The simulated COI curve}
 
-\item{method}{The method to be employed.}
-
 \item{cuts}{How often the data is summarized}
+
+\item{method}{The method to be employed. One of \code{"end", "ideal", "overall"}}
 }
 \value{
 COI for the simulation
