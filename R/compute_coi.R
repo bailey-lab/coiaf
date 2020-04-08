@@ -71,11 +71,15 @@ simulated_coi <- function(sim, seq_error, cuts, theoretical_cois){
 #' @param sim_coi The simulated COI curve
 #' @param cuts How often the data is summarized
 #' @param method The method to be employed. One of \code{"end", "ideal", "overall"}
+#' @param dist_method The distance method used to determine the distance between the
+#' theoretical and simulated curves for the "overall" method.
 #' @return COI for the simulation
 #'
 #' @export
 
-compute_coi <- function(theory_cois_interval, sim_coi, cuts, method = c("end", "ideal", "overall")){
+compute_coi <- function(theory_cois_interval, sim_coi, cuts,
+                        method = c("end", "ideal", "overall"),
+                        dist_method = c("abs_sum", "sum_abs", "squared", "KL")){
   # Calculate theoretical COI curves for the inteval specified. Since we want
   # the theoretical curves and the simulated curves to have the PLAF values, we
   # compute the theoretical coi curves at sim_coi$midpoints
@@ -129,8 +133,25 @@ compute_coi <- function(theory_cois_interval, sim_coi, cuts, method = c("end", "
     # Remove COI of 1 and PLAF
     match_theory_cois <- theory_cois[, 2:bound_coi]
 
-    # Find absolute value of difference
-    gap <- colSums(abs(match_theory_cois - sim_coi$m_variant))
+    if (dist_method == "abs_sum"){
+      # Find sum of differences
+      gap <- abs(colSums(match_theory_cois - sim_coi$m_variant))
+    } else if (dist_method == "sum_abs"){
+      # Find absolute value of differences
+      gap <- colSums(abs(match_theory_cois - sim_coi$m_variant))
+    } else if (dist_method == "squared"){
+      gap <- colSums((match_theory_cois - sim_coi$m_variant)^2)
+    } else if (dist_method == "KL"){
+      gap <-  list()
+      Q <- sim_coi$m_variant
+      Q <- Q/sum(Q)
+      for (i in 1:ncol(match_theory_cois)){
+        P <- match_theory_cois[,i]
+        P <- P/sum(P)
+        gap[i] <- philentropy::KL(rbind(P, Q), unit = "log2")
+      }
+      names(gap) <- colnames(theory_cois)[2:bound_coi]
+    }
 
     # Find coi by looking at minimum distance
     coi <- stringr::str_sub(names(which.min(gap)), -1)

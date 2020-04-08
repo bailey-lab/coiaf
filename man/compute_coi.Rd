@@ -8,7 +8,8 @@ compute_coi(
   theory_cois_interval,
   sim_coi,
   cuts,
-  method = c("end", "ideal", "overall")
+  method = c("end", "ideal", "overall"),
+  dist_method = c("abs_sum", "sum_abs", "squared", "KL")
 )
 }
 \arguments{
@@ -20,6 +21,9 @@ will be calculated}
 \item{cuts}{How often the data is summarized}
 
 \item{method}{The method to be employed. One of \code{"end", "ideal", "overall"}}
+
+\item{dist_method}{The distance method used to determine the distance between the
+theoretical and simulated curves for the "overall" method.}
 }
 \value{
 COI for the simulation
