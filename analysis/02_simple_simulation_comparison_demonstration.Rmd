@@ -17,8 +17,8 @@ library(tidyverse)
 library(coiaf)
 ```
 
-In this analysis the two COI estimation methods are demonstrated. In these we will
-simualate 1000 loci for an individual:
+In this analysis the two COI estimation methods are demonstrated. In these we 
+will simualate 1000 loci for an individual:
 
 ```{r}
 # set seed
@@ -55,15 +55,18 @@ for (k in 2:7){
   p_vec <- seq(0, 0.5, l=101)
   theory_cois <- theoretical_coi(seq(1, 7), p_vec)
   for (i in 2:7) {
-    lines(p_vec, theory_cois[[paste("coi_", i, sep = "")]], col = "red", lwd = 2)
+    lines(p_vec, theory_cois[[paste("coi_", i, sep = "")]], 
+          col = "red", lwd = 2)
   }
-  text(x = rep(0.505, 6), y = 1 - 0.5^(1:6), labels = 2:7, col = "red", cex = 0.6)
+  text(x = rep(0.505, 6), y = 1 - 0.5^(1:6), labels = 2:7, 
+       col = "red", cex = 0.6)
 
   # compute windowed averages over WSAF and overlay in blue
   cut <- seq(0,0.5,0.01)
   df_grouped <- simulated_coi(sim1, 0.01, cut)
 
-  lines(df_grouped$midpoints, df_grouped$m_true_variant, col = "blue", lwd = 2, type = "o", pch = 20)
+  lines(df_grouped$midpoints, df_grouped$m_true_variant, 
+        col = "blue", lwd = 2, type = "o", pch = 20)
   
   calc_coi = compute_coi(seq(1, 7), df_grouped, cut, "overall", "squared", TRUE)
   print(paste("Actual COI is ", k, ", Calculated COI is ", calc_coi, sep = ""))
@@ -71,9 +74,9 @@ for (k in 2:7){
 ```
 
 In this the intercept at `PLAF = 0.5` gives us an easy way to estimate COI, with 
-`COI = 1 + log_0.5(1-WSAF)`, or `WSAF = 1 - 0.5^(COI-1)`. However, the differences
-between each COI at PLAF = 0.5 become geometrically smaller. Larger gaps can be found
-at different COI, with smaller PLAF:
+`COI = 1 + log_0.5(1-WSAF)`, or `WSAF = 1 - 0.5^(COI-1)`. However, the 
+differences between each COI at PLAF = 0.5 become geometrically smaller. Larger 
+gaps can be found at different COI, with smaller PLAF:
 
 ```{r}
 ## Best place to calculate COI:
@@ -90,24 +93,16 @@ for (k in 1:10) {
         xlab = "Population MAF",
         main = paste("COI = ", k))
    abline(v=p_vec[which.max(new_y)], lty = 2)
-   text(x=p_vec[which.max(new_y)] - 0.02, y = 0.0, labels = p_vec[which.max(new_y)])
+   text(x=p_vec[which.max(new_y)] - 0.02, y = 0.0, 
+        labels = p_vec[which.max(new_y)])
   }
 }
-
-# one_ten <- theoretical_coi(seq(1, 10), p_vec)
-# pt = list()
-# for (i in 2:10){
-#   diff = one_ten[i] - one_ten[i - 1]
-#   pt[i-1] <- one_ten[which.max(diff[[1]]), i]
-# }
-# names(pt) <- colnames(one_ten)[2:10]
-# pt
 ```
 
 ## Method 2
 
-In method 2, we plot WSAF against PLAF for only the sites that are heterogeneous, 
-i.e. not all REF or ALT calls. 
+In method 2, we plot WSAF against PLAF for only the sites that are 
+heterogeneous, i.e. not all REF or ALT calls. 
 
 ```{r}
 # loop over range of COIs
@@ -119,8 +114,8 @@ for (k in 2:7) {
   sim1$data <- subset(sim1$data, WSAF > 0 & WSAF < 1)
 
   # plot raw WSAF as grey dots
-  plot(sim1$data$PLAF, sim1$data$WSAF, pch = 20, cex = 0.5, col = "gray", ylim = c(0,1),
-       xlab = "PLAF", ylab = "WSAF", main = paste("COI =", k))
+  plot(sim1$data$PLAF, sim1$data$WSAF, pch = 20, cex = 0.5, col = "gray", 
+       ylim = c(0,1), xlab = "PLAF", ylab = "WSAF", main = paste("COI =", k))
 
   # overlay analytical expectations for COI=2:7
   p_vec <- seq(0, 0.5, l=101)

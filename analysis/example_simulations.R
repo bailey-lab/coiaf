@@ -10,12 +10,12 @@ out <- lapply(seq_len(nrow(param_grid)), function(x) {
   p_vec <- seq(0, 0.5, l=101)
   theory_cois <- theoretical_coi(seq(1, 7), p_vec)
   cut <- seq(0,0.5,0.01)
-  df_grouped <- simulated_coi(sim1, seq_error = 0.01, cut, theory_cois)
+  df_grouped <- simulated_coi(sim1, seq_error = 0.01, cut)
 
   calc_coi <- compute_coi(seq(1, 7), df_grouped, cut, "overall", "squared")
 
   return(calc_coi)
-  }, FUN.VALUE = character(1))
+  }, FUN.VALUE = numeric(1))
 
   return(out)
 

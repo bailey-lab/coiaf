@@ -76,7 +76,7 @@ sim_biallelic <- function(COI = 3,
   m <- mapply(function(x) rbinom(COI, 1, x), x = PLAF)
   p_levels <- colSums(sweep(m, 1, w, "*"))
 
-  # rounding errors from multiplying w by m can cause numbers just greater than 1
+  # rounding errors from multiplying w by m can cause numbers greater than 1
   p_levels[p_levels>1] <- 1L
 
   # add in genotyping error
@@ -86,7 +86,10 @@ sim_biallelic <- function(COI = 3,
   if (overdispersion == 0) {
     counts <- rbinom(L, size = coverage, prob = p_error)
   } else {
-    counts <- rbetabinom(L, k = coverage, alpha = p_error/overdispersion, beta = (1-p_error)/overdispersion)
+    counts <- rbetabinom(L,
+                         k = coverage,
+                         alpha = p_error/overdispersion,
+                         beta = (1-p_error)/overdispersion)
   }
 
   # return list

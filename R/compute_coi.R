@@ -1,9 +1,9 @@
 #------------------------------------------------
 #' @title Generate Simulated COI Curve
 #'
-#' @description Generate the simulated COI curve. In order to do this, we utilize
-#'  the output of \code{\link{sim_biallelic}}, which created simulated data.
-#'  We keep the PLAF, and compute whether a SNP is a variant or not, based
+#' @description Generate the simulated COI curve. In order to do this, we
+#'  utilize the output of \code{\link{sim_biallelic}}, which created simulated
+#'  data. We keep the PLAF, and compute whether a SNP is a variant or not, based
 #'  on the simulated WSAF at that SNP -- accounting for potential sequencing
 #'  error. To check whether our simulated WSAF correctly indicated a variant
 #'  site or not, we determine whether a site should be variant or not using
@@ -29,10 +29,12 @@ simulated_coi <- function(sim, seq_error, cuts){
     PLAF_cut = cut(sim$data$PLAF, cuts, include.lowest = TRUE),
 
     # Determine if a site is a variant, accounting for sequencing error.
-    variant = ifelse(sim$data$WSAF < seq_error | sim$data$WSAF > (1 - seq_error), 0, 1),
+    variant =
+      ifelse(sim$data$WSAF < seq_error | sim$data$WSAF > (1 - seq_error), 0, 1),
 
     # True variant
-    true_variant = as.integer(!apply(sim$phased, 2, function(x) {all(x) || all(!x)}))
+    true_variant =
+      as.integer(!apply(sim$phased, 2, function(x) {all(x) || all(!x)}))
   )
 
   # Average over intervals of PLAF
@@ -56,17 +58,18 @@ simulated_coi <- function(sim, seq_error, cuts){
 #' three different methods are utilized:
 #' \describe{
 #'   \item{\code{end}}{Determines the distance between the theoretical and
-#'   simulated curve at a PLAF of 0.5. The COI is whichever theoretical COI curve
-#'   is the closest to the simulated data..}
+#'   simulated curve at a PLAF of 0.5. The COI is whichever theoretical COI
+#'   curve is the closest to the simulated data..}
 #'   \item{\code{ideal}}{Determines the distance between the theoretical and
-#'   simulated curve at the ideal PLAF. The ideal PLAF is calculated by looking at
-#'   the change between the COI of \eqn{i} and the COI of \eqn{i-1} and finding
-#'   the PLAF for which this distance is maximal. The COI is whichever theoretical
-#'   COI curve is the closet to the simulated data at the ideal PLAF.}
+#'   simulated curve at the ideal PLAF. The ideal PLAF is calculated by looking
+#'   at the change between the COI of \eqn{i} and the COI of \eqn{i-1} and
+#'   finding the PLAF for which this distance is maximal. The COI is whichever
+#'   theoretical COI curve is the closet to the simulated data at the ideal
+#'   PLAF.}
 #'   \item{\code{overall}}{Determines the distance between the theoretical and
 #'   simulated curve at for all PLAFs. Computes the distance between the
-#'   theoretical curves and the simulated curve. The COI is whichever theoretical
-#'   curve has the smallest distance from the simulated curve.}
+#'   theoretical curves and the simulated curve. The COI is whichever
+#'   theoretical curve has the smallest distance from the simulated curve.}
 #'   }
 #'
 #' @param theory_cois_interval The range of COIs for which theoretical curves

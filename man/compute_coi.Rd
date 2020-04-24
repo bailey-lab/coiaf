@@ -39,16 +39,17 @@ COI curve to the theoretical COI curve. To determine the actual COI value,
 three different methods are utilized:
 \describe{
   \item{\code{end}}{Determines the distance between the theoretical and
-  simulated curve at a PLAF of 0.5. The COI is whichever theoretical COI curve
-  is the closest to the simulated data..}
+  simulated curve at a PLAF of 0.5. The COI is whichever theoretical COI
+  curve is the closest to the simulated data..}
   \item{\code{ideal}}{Determines the distance between the theoretical and
-  simulated curve at the ideal PLAF. The ideal PLAF is calculated by looking at
-  the change between the COI of \eqn{i} and the COI of \eqn{i-1} and finding
-  the PLAF for which this distance is maximal. The COI is whichever theoretical
-  COI curve is the closet to the simulated data at the ideal PLAF.}
+  simulated curve at the ideal PLAF. The ideal PLAF is calculated by looking
+  at the change between the COI of \eqn{i} and the COI of \eqn{i-1} and
+  finding the PLAF for which this distance is maximal. The COI is whichever
+  theoretical COI curve is the closet to the simulated data at the ideal
+  PLAF.}
   \item{\code{overall}}{Determines the distance between the theoretical and
   simulated curve at for all PLAFs. Computes the distance between the
-  theoretical curves and the simulated curve. The COI is whichever theoretical
-  curve has the smallest distance from the simulated curve.}
+  theoretical curves and the simulated curve. The COI is whichever
+  theoretical curve has the smallest distance from the simulated curve.}
   }
 }
