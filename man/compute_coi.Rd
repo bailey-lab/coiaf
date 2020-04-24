@@ -9,7 +9,8 @@ compute_coi(
   sim_coi,
   cuts,
   method = c("end", "ideal", "overall"),
-  dist_method = c("abs_sum", "sum_abs", "squared", "KL")
+  dist_method = c("abs_sum", "sum_abs", "squared", "KL"),
+  weighted = FALSE
 )
 }
 \arguments{
@@ -20,10 +21,14 @@ will be calculated}
 
 \item{cuts}{How often the data is summarized}
 
-\item{method}{The method to be employed. One of \code{"end", "ideal", "overall"}}
+\item{method}{The method to be employed. One of
+\code{"end", "ideal", "overall"}}
 
-\item{dist_method}{The distance method used to determine the distance between the
-theoretical and simulated curves for the "overall" method.}
+\item{dist_method}{The distance method used to determine the distance between
+the theoretical and simulated curves for the "overall" method. One of
+\code{"abs_sum", "sum_abs", "squared", "KL"}}
+
+\item{weighted}{An indicator indicated whether compute weighted distance}
 }
 \value{
 COI for the simulation
@@ -41,7 +46,7 @@ three different methods are utilized:
   the change between the COI of \eqn{i} and the COI of \eqn{i-1} and finding
   the PLAF for which this distance is maximal. The COI is whichever theoretical
   COI curve is the closet to the simulated data at the ideal PLAF.}
-  \item{\code{end}}{Determines the distance between the theoretical and
+  \item{\code{overall}}{Determines the distance between the theoretical and
   simulated curve at for all PLAFs. Computes the distance between the
   theoretical curves and the simulated curve. The COI is whichever theoretical
   curve has the smallest distance from the simulated curve.}

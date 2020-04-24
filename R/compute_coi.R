@@ -62,7 +62,7 @@ simulated_coi <- function(sim, seq_error, cuts){
 #'   the change between the COI of \eqn{i} and the COI of \eqn{i-1} and finding
 #'   the PLAF for which this distance is maximal. The COI is whichever theoretical
 #'   COI curve is the closet to the simulated data at the ideal PLAF.}
-#'   \item{\code{end}}{Determines the distance between the theoretical and
+#'   \item{\code{overall}}{Determines the distance between the theoretical and
 #'   simulated curve at for all PLAFs. Computes the distance between the
 #'   theoretical curves and the simulated curve. The COI is whichever theoretical
 #'   curve has the smallest distance from the simulated curve.}
@@ -72,16 +72,20 @@ simulated_coi <- function(sim, seq_error, cuts){
 #' will be calculated
 #' @param sim_coi The simulated COI curve
 #' @param cuts How often the data is summarized
-#' @param method The method to be employed. One of \code{"end", "ideal", "overall"}
-#' @param dist_method The distance method used to determine the distance between the
-#' theoretical and simulated curves for the "overall" method.
+#' @param method The method to be employed. One of
+#' \code{"end", "ideal", "overall"}
+#' @param dist_method The distance method used to determine the distance between
+#' the theoretical and simulated curves for the "overall" method. One of
+#' \code{"abs_sum", "sum_abs", "squared", "KL"}
+#' @param weighted An indicator indicated whether compute weighted distance
 #' @return COI for the simulation
 #'
 #' @export
 
 compute_coi <- function(theory_cois_interval, sim_coi, cuts,
                         method = c("end", "ideal", "overall"),
-                        dist_method = c("abs_sum", "sum_abs", "squared", "KL")){
+                        dist_method = c("abs_sum", "sum_abs", "squared", "KL"),
+                        weighted = FALSE){
   ##Check inputs
   assert_pos_int(theory_cois_interval, zero_allowed = FALSE)
   assert_bounded(cuts, left = 0, right = 0.5)
@@ -191,14 +195,16 @@ compute_coi <- function(theory_cois_interval, sim_coi, cuts,
 #' @param theory_cois The theoretical COI curves
 #' @param sim_coi The simulated COI curve
 #' @param cuts How often the data is summarized
-#' @param weighted An indicator indicated whether compute weighted distance
 #' @param dist_method The distance method used to determine the distance between
-#' the theoretical and simulated curves for the "overall" method.
+#' the theoretical and simulated curves for the "overall" method. One of
+#' \code{"abs_sum", "sum_abs", "squared", "KL"}
+#' @param weighted An indicator indicated whether compute weighted distance
 #' @return COI for the simulation
 
-distance_curves <- function(theory_cois, sim_coi, cuts, weighted = FALSE,
-                        dist_method = c("abs_sum", "sum_abs", "squared", "KL")){
-  # Find bound of COIs. We substract 1 because theory_cois includes the PLAF at
+distance_curves <- function(theory_cois, sim_coi, cuts,
+                        dist_method = c("abs_sum", "sum_abs", "squared", "KL"),
+                        weighted = FALSE){
+  # Find bound of COIs. Substract 1 because theory_cois includes the PLAF at
   # the end
   bound_coi = ncol(theory_cois) - 1
 
@@ -236,7 +242,6 @@ distance_curves <- function(theory_cois, sim_coi, cuts, weighted = FALSE,
     }
     names(gap) <- colnames(theory_cois)[2:bound_coi]
   }
-  print(gap)
 
   # Find coi by looking at minimum distance
   coi <- stringr::str_sub(names(which.min(gap)), -1)

@@ -8,8 +8,8 @@ distance_curves(
   theory_cois,
   sim_coi,
   cuts,
-  weighted = FALSE,
-  dist_method = c("abs_sum", "sum_abs", "squared", "KL")
+  dist_method = c("abs_sum", "sum_abs", "squared", "KL"),
+  weighted = FALSE
 )
 }
 \arguments{
@@ -19,10 +19,11 @@ distance_curves(
 
 \item{cuts}{How often the data is summarized}
 
-\item{weighted}{An indicator indicated whether compute weighted distance}
-
 \item{dist_method}{The distance method used to determine the distance between
-the theoretical and simulated curves for the "overall" method.}
+the theoretical and simulated curves for the "overall" method. One of
+\code{"abs_sum", "sum_abs", "squared", "KL"}}
+
+\item{weighted}{An indicator indicated whether compute weighted distance}
 }
 \value{
 COI for the simulation
