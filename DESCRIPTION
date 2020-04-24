@@ -22,7 +22,8 @@ Imports:
     magrittr,
     philentropy,
     rlang,
-    stringr
+    stringr,
+    utils
 Suggests:
     ggplot2,
     knitr,

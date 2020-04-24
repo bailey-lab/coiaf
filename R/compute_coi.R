@@ -230,7 +230,7 @@ distance_curves <- function(theory_cois, sim_coi, cuts,
     for (i in 1:ncol(match_theory_cois)){
       P <- match_theory_cois[,i]
       P <- P/sum(P)
-      gap[i] <- philentropy::KL(rbind(P, Q), unit = "log2")
+      gap[i] <- utils::capture.output(philentropy::KL(rbind(P, Q), unit = "log2"))
     }
     names(gap) <- colnames(theory_cois)[2:bound_coi]
   }
