@@ -41,8 +41,6 @@ theoretical_coi <- function(cois, interval){
 #' @param coi The COI
 #' @param interval The interval over which the curve will be calculated
 #' @return The theoretical COI curve for the specified interval
-#'
-#' @export
 
 single_theoretical_coi <- function(coi, interval){
   # Check inputs
