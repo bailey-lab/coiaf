@@ -198,7 +198,7 @@ distance_curves <- function(theory_cois, sim_coi, cuts,
   # difference if wanted
   gap <- match_theory_cois - sim_coi$m_variant
   if (weighted){
-    gap <- gap * sim_coi$bucket_size
+    gap <- (gap * sim_coi$bucket_size) / sum(sim_coi$bucket_size)
   }
 
   if (dist_method == "abs_sum"){
