@@ -61,11 +61,11 @@ for (k in 2:7){
 
   # compute windowed averages over WSAF and overlay in blue
   cut <- seq(0,0.5,0.01)
-  df_grouped <- simulated_coi(sim1, 0.01, cut, theory_cois)
+  df_grouped <- simulated_coi(sim1, 0.01, cut)
 
   lines(df_grouped$midpoints, df_grouped$m_true_variant, col = "blue", lwd = 2, type = "o", pch = 20)
   
-  calc_coi = compute_coi(seq(1, 7), df_grouped, cut, "overall", "squared")
+  calc_coi = compute_coi(seq(1, 7), df_grouped, cut, "overall", "squared", TRUE)
   print(paste("Actual COI is ", k, ", Calculated COI is ", calc_coi, sep = ""))
 }
 ```
