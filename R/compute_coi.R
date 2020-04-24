@@ -154,6 +154,8 @@ compute_coi <- function(theory_cois_interval, sim_coi, cuts,
                                 dist_method = dist_method)
   }
 
+  # Convert COI to a numeric
+  coi <- as.numeric(coi)
   return(coi)
 }
 
