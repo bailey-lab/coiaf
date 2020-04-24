@@ -4,7 +4,7 @@
 \alias{simulated_coi}
 \title{Generate Simulated COI Curve}
 \usage{
-simulated_coi(sim, seq_error, cuts, theoretical_cois)
+simulated_coi(sim, seq_error, cuts)
 }
 \arguments{
 \item{sim}{Output of \code{\link{sim_biallelic}}}
@@ -12,8 +12,6 @@ simulated_coi(sim, seq_error, cuts, theoretical_cois)
 \item{seq_error}{The level of sequencing error that is assumed}
 
 \item{cuts}{How often the data is summarized}
-
-\item{theoretical_cois}{The theoretical COI curves to be examined}
 }
 \value{
 Simulated COI curve

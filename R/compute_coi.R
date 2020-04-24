@@ -12,12 +12,11 @@
 #' @param sim Output of \code{\link{sim_biallelic}}
 #' @param seq_error The level of sequencing error that is assumed
 #' @param cuts How often the data is summarized
-#' @param theoretical_cois The theoretical COI curves to be examined
 #' @return Simulated COI curve
 #'
 #' @export
 
-simulated_coi <- function(sim, seq_error, cuts, theoretical_cois){
+simulated_coi <- function(sim, seq_error, cuts){
   # Check inputs
   assert_single_bounded(seq_error)
   assert_bounded(cuts, left = 0, right = 0.5)
