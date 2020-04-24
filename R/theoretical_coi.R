@@ -12,6 +12,12 @@
 #' @export
 
 theoretical_coi <- function(cois, interval){
+  # Check inputs
+  assert_pos_int(cois, zero_allowed = FALSE)
+  assert_bounded(interval, left = 0, right = 0.5)
+  assert_increasing(interval)
+
+  # Compute curve for the COIs
   for (i in cois){
     if (i == cois[1]){
       curves <- data.frame(first = single_theoretical_coi(i, interval))
@@ -41,6 +47,8 @@ theoretical_coi <- function(cois, interval){
 single_theoretical_coi <- function(coi, interval){
   # Check inputs
   assert_single_pos_int(coi)
+  assert_bounded(interval, left = 0, right = 0.5)
+  assert_increasing(interval)
 
   # Determine the curve
   curve <- 1 - interval^coi - (1 - interval)^coi
