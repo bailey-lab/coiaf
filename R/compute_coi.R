@@ -82,6 +82,7 @@ simulated_coi <- function(sim, seq_error, cuts){
 #' the theoretical and simulated curves for the "overall" method. One of
 #' \code{"abs_sum", "sum_abs", "squared", "KL"}
 #' @param weighted An indicator indicating whether to compute weighted distance
+#'
 #' @return COI for the simulation
 #'
 #' @export
@@ -180,7 +181,10 @@ compute_coi <- function(theory_cois_interval, sim_coi, cuts,
 #' the theoretical and simulated curves for the "overall" method. One of
 #' \code{"abs_sum", "sum_abs", "squared", "KL"}
 #' @param weighted An indicator indicating whether to compute weighted distance
+#'
 #' @return COI for the simulation
+#'
+#' @keywords internal
 
 distance_curves <- function(theory_cois, sim_coi, cuts,
                         dist_method = c("abs_sum", "sum_abs", "squared", "KL"),

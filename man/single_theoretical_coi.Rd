@@ -19,3 +19,4 @@ Generate theoretical COI curve. At each locus defined as:
 \eqn{1-p^coi-q^coi}. This expression is derived in the corresponding
 manuscript.
 }
+\keyword{internal}

@@ -7,6 +7,7 @@
 #'
 #' @param cois The COIs for which the curve will be calculated
 #' @param interval The interval over which the curve will be calculated
+#'
 #' @return The theoretical COI curves for the specified COIs and interval
 #'
 #' @export
@@ -40,7 +41,10 @@ theoretical_coi <- function(cois, interval){
 #'
 #' @param coi The COI
 #' @param interval The interval over which the curve will be calculated
+#'
 #' @return The theoretical COI curve for the specified interval
+#'
+#' @keywords internal
 
 single_theoretical_coi <- function(coi, interval){
   # Check inputs

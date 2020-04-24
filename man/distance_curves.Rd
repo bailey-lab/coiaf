@@ -37,3 +37,4 @@ Compute the distance between two curves using several methods.
   \item{\code{KL}}{Kullback-Leibler divergence}
   }
 }
+\keyword{internal}
