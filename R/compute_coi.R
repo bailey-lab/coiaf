@@ -176,3 +176,68 @@ compute_coi <- function(theory_cois_interval, sim_coi, cuts,
 
   return(coi)
 }
+
+#------------------------------------------------
+#' @title Compute distance between two curves
+#'
+#' @description Compute the distance between two curves using several methods.
+#' \describe{
+#'   \item{\code{abs_sum}}{Absolute value of sum of difference}
+#'   \item{\code{sum_abs}}{Sum of absolute difference}
+#'   \item{\code{squared}}{Sum of squared difference}
+#'   \item{\code{KL}}{Kullback-Leibler divergence}
+#'   }
+#'
+#' @param theory_cois The theoretical COI curves
+#' @param sim_coi The simulated COI curve
+#' @param cuts How often the data is summarized
+#' @param weighted An indicator indicated whether compute weighted distance
+#' @param dist_method The distance method used to determine the distance between
+#' the theoretical and simulated curves for the "overall" method.
+#' @return COI for the simulation
+
+distance_curves <- function(theory_cois, sim_coi, cuts, weighted = FALSE,
+                        dist_method = c("abs_sum", "sum_abs", "squared", "KL")){
+  # Find bound of COIs. We substract 1 because theory_cois includes the PLAF at
+  # the end
+  bound_coi = ncol(theory_cois) - 1
+
+  # Remove COI of 1 and PLAF
+  match_theory_cois <- theory_cois[, 2:bound_coi]
+
+  # First find difference between theoretical and simulate curve. Weigh
+  # difference if wanted
+  gap <- match_theory_cois - sim_coi$m_variant
+  if (weighted){
+    gap <- gap * sim_coi$bucket_size
+  }
+
+  if (dist_method == "abs_sum"){
+    # Find sum of differences
+    gap <- abs(colSums(gap))
+
+  } else if (dist_method == "sum_abs"){
+    # Find absolute value of differences
+    gap <- colSums(abs(gap))
+
+  } else if (dist_method == "squared"){
+    # Squared distance
+    gap <- colSums(gap ^ 2)
+
+  } else if (dist_method == "KL"){
+    # KL divergence
+    gap <-  list()
+    Q <- sim_coi$m_variant
+    Q <- Q/sum(Q)
+    for (i in 1:ncol(match_theory_cois)){
+      P <- match_theory_cois[,i]
+      P <- P/sum(P)
+      gap[i] <- philentropy::KL(rbind(P, Q), unit = "log2")
+    }
+    names(gap) <- colnames(theory_cois)[2:bound_coi]
+  }
+  print(gap)
+
+  # Find coi by looking at minimum distance
+  coi <- stringr::str_sub(names(which.min(gap)), -1)
+  return(coi)
