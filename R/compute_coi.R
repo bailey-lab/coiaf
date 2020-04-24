@@ -147,36 +147,10 @@ compute_coi <- function(theory_cois_interval, sim_coi, cuts,
     # Find coi by looking at minimum distance
     coi <- stringr::str_sub(names(which.min(dist)), -1)
   } else if (method == "overall"){
-    # Remove COI of 1 and PLAF
-    match_theory_cois <- theory_cois[, 2:bound_coi]
-
-    if (dist_method == "abs_sum"){
-      # Find sum of differences
-      gap <- abs(colSums(match_theory_cois - sim_coi$m_variant))
-
-    } else if (dist_method == "sum_abs"){
-      # Find absolute value of differences
-      gap <- colSums(abs(match_theory_cois - sim_coi$m_variant))
-
-    } else if (dist_method == "squared"){
-      # Squared distance
-      gap <- colSums((match_theory_cois - sim_coi$m_variant)^2)
-    } else if (dist_method == "KL"){
-      # KL divergence
-      gap <-  list()
-      Q <- sim_coi$m_variant
-      Q <- Q/sum(Q)
-      for (i in 1:ncol(match_theory_cois)){
-        P <- match_theory_cois[,i]
-        P <- P/sum(P)
-        gap[i] <- philentropy::KL(rbind(P, Q), unit = "log2")
-      }
-
-      names(gap) <- colnames(theory_cois)[2:bound_coi]
-    }
-
-    # Find coi by looking at minimum distance
-    coi <- stringr::str_sub(names(which.min(gap)), -1)
+    ## Method 3: Find distance between curves
+    # Utilize helper function to compute overall distance betweent two curves
+    coi <- distance_curves(theory_cois, sim_coi, cuts, weighted = weighted,
+                                dist_method = dist_method)
   }
 
   return(coi)
@@ -247,3 +221,4 @@ distance_curves <- function(theory_cois, sim_coi, cuts,
   # Find coi by looking at minimum distance
   coi <- stringr::str_sub(names(which.min(gap)), -1)
   return(coi)
+}
