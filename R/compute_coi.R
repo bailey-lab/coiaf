@@ -36,7 +36,8 @@ simulated_coi <- function(sim, seq_error, cuts, theoretical_cois){
 
   # Average over intervals of PLAF
   df_sim_grouped <- dplyr::group_by(df_sim, .data$PLAF_cut) %>%
-    dplyr::summarise(m_variant = mean(.data$variant), m_true_variant = mean(.data$true_variant))
+    dplyr::summarise(m_variant = mean(.data$variant),
+                     m_true_variant = mean(.data$true_variant))
   df_sim_grouped <- as.data.frame(df_sim_grouped)
 
   # Include midpoints
