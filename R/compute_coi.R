@@ -20,6 +20,8 @@
 simulated_coi <- function(sim, seq_error, cuts, theoretical_cois){
   # Check inputs
   assert_single_bounded(seq_error)
+  assert_bounded(cuts, left = 0, right = 0.5)
+  assert_increasing(cuts)
 
   # Extract information from simulation
   df_sim <- data.frame(
@@ -81,6 +83,15 @@ simulated_coi <- function(sim, seq_error, cuts, theoretical_cois){
 compute_coi <- function(theory_cois_interval, sim_coi, cuts,
                         method = c("end", "ideal", "overall"),
                         dist_method = c("abs_sum", "sum_abs", "squared", "KL")){
+  ##Check inputs
+  assert_pos_int(theory_cois_interval, zero_allowed = FALSE)
+  assert_bounded(cuts, left = 0, right = 0.5)
+  assert_increasing(cuts)
+  assert_single_string(method)
+  assert_in(method, c("end", "ideal", "overall"))
+  assert_single_string(dist_method)
+  assert_in(dist_method, c("abs_sum", "sum_abs", "squared", "KL"))
+
   # Calculate theoretical COI curves for the inteval specified. Since we want
   # the theoretical curves and the simulated curves to have the PLAF values, we
   # compute the theoretical coi curves at sim_coi$midpoints
@@ -106,7 +117,8 @@ compute_coi <- function(theory_cois_interval, sim_coi, cuts,
     coi <- stringr::str_sub(names(which.min(abs(last_theory - last_sim))), -1)
   } else if (method == "ideal"){
     ## Method 2: Compute ideal PLAF
-    # For each COI, find best PLAF and get theoretical and simulated values at that PLAF
+    # For each COI, find best PLAF and get theoretical and simulated values at
+    # that PLAF
     dist <- list()
     for (i in 2:bound_coi){
       # Want maximum point of the following
@@ -137,12 +149,16 @@ compute_coi <- function(theory_cois_interval, sim_coi, cuts,
     if (dist_method == "abs_sum"){
       # Find sum of differences
       gap <- abs(colSums(match_theory_cois - sim_coi$m_variant))
+
     } else if (dist_method == "sum_abs"){
       # Find absolute value of differences
       gap <- colSums(abs(match_theory_cois - sim_coi$m_variant))
+
     } else if (dist_method == "squared"){
+      # Squared distance
       gap <- colSums((match_theory_cois - sim_coi$m_variant)^2)
     } else if (dist_method == "KL"){
+      # KL divergence
       gap <-  list()
       Q <- sim_coi$m_variant
       Q <- Q/sum(Q)
@@ -151,6 +167,7 @@ compute_coi <- function(theory_cois_interval, sim_coi, cuts,
         P <- P/sum(P)
         gap[i] <- philentropy::KL(rbind(P, Q), unit = "log2")
       }
+
       names(gap) <- colnames(theory_cois)[2:bound_coi]
     }
 
