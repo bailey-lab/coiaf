@@ -175,6 +175,5 @@ compute_coi <- function(theory_cois_interval, sim_coi, cuts,
     coi <- stringr::str_sub(names(which.min(gap)), -1)
   }
 
-  ret_str <- paste("COI is", coi, sep = " ")
-  return(ret_str)
+  return(coi)
 }
