@@ -23,7 +23,7 @@ distance_curves(
 the theoretical and simulated curves for the "overall" method. One of
 \code{"abs_sum", "sum_abs", "squared", "KL"}}
 
-\item{weighted}{An indicator indicated whether compute weighted distance}
+\item{weighted}{An indicator indicating whether to compute weighted distance}
 }
 \value{
 COI for the simulation

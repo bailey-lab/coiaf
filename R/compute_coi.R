@@ -78,7 +78,7 @@ simulated_coi <- function(sim, seq_error, cuts){
 #' @param dist_method The distance method used to determine the distance between
 #' the theoretical and simulated curves for the "overall" method. One of
 #' \code{"abs_sum", "sum_abs", "squared", "KL"}
-#' @param weighted An indicator indicated whether compute weighted distance
+#' @param weighted An indicator indicating whether to compute weighted distance
 #' @return COI for the simulation
 #'
 #' @export
@@ -95,6 +95,7 @@ compute_coi <- function(theory_cois_interval, sim_coi, cuts,
   assert_in(method, c("end", "ideal", "overall"))
   assert_single_string(dist_method)
   assert_in(dist_method, c("abs_sum", "sum_abs", "squared", "KL"))
+  assert_logical(weighted)
 
   # Calculate theoretical COI curves for the inteval specified. Since we want
   # the theoretical curves and the simulated curves to have the PLAF values, we
@@ -173,12 +174,19 @@ compute_coi <- function(theory_cois_interval, sim_coi, cuts,
 #' @param dist_method The distance method used to determine the distance between
 #' the theoretical and simulated curves for the "overall" method. One of
 #' \code{"abs_sum", "sum_abs", "squared", "KL"}
-#' @param weighted An indicator indicated whether compute weighted distance
+#' @param weighted An indicator indicating whether to compute weighted distance
 #' @return COI for the simulation
 
 distance_curves <- function(theory_cois, sim_coi, cuts,
                         dist_method = c("abs_sum", "sum_abs", "squared", "KL"),
                         weighted = FALSE){
+  # Check inputs
+  assert_bounded(cuts, left = 0, right = 0.5)
+  assert_increasing(cuts)
+  assert_single_string(dist_method)
+  assert_in(dist_method, c("abs_sum", "sum_abs", "squared", "KL"))
+  assert_logical(weighted)
+
   # Find bound of COIs. Substract 1 because theory_cois includes the PLAF at
   # the end
   bound_coi = ncol(theory_cois) - 1
