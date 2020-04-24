@@ -76,6 +76,9 @@ sim_biallelic <- function(COI = 3,
   m <- mapply(function(x) rbinom(COI, 1, x), x = PLAF)
   p_levels <- colSums(sweep(m, 1, w, "*"))
 
+  # rounding errors from multiplying w by m can cause numbers just greater than 1
+  p_levels[p_levels>1] <- 1L
+
   # add in genotyping error
   p_error <- p_levels*(1-epsilon) + (1-p_levels)*epsilon
 
