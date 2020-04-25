@@ -27,6 +27,7 @@ Imports:
 Suggests:
     ggplot2,
     knitr,
+    pbapply,
     rmarkdown,
     spelling,
     testthat

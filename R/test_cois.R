@@ -97,7 +97,6 @@ coi_test <- function(repetitions = 10,
                      weighted = FALSE){
 
   # Check inputs
-  # Check inputs
   assert_pos_int(COI)
   assert_pos_int(COI_range)
   assert_vector(PLAF)
@@ -128,8 +127,18 @@ coi_test <- function(repetitions = 10,
                             weighted = weighted,
                             stringsAsFactors = FALSE)
 
+  # Functino to determine if pbapply is installed. If it is installed, it will
+  # display a progress bar
+  list_apply <- function(x, fun, ...){
+    if (requireNamespace("pbapply", quietly = TRUE)) {
+      pbapply::pblapply(x, fun, ...)
+    } else {
+      lapply(x, fun, ...)
+    }
+  }
+
   # Run each row of param_grid
-  coi_pred <- lapply(seq_len(nrow(param_grid)), function(x) {
+  coi_pred <- list_apply(seq_len(nrow(param_grid)), function(x) {
 
     # Run each sample repetitions times
     repeats <- vapply(seq_len(repetitions), function(y) {
@@ -168,3 +177,4 @@ coi_test <- function(repetitions = 10,
               param_grid    = param_grid)
   return (ret)
 }
+
