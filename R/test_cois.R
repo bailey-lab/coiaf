@@ -155,8 +155,16 @@ coi_test <- function(repetitions = 10,
   # Name the predicted COIs
   names(coi_pred) <- paste("coi_", param_grid$COI, sep="")
 
+  # # Calculate error
+  len <- nrow(param_grid)
+  coi_error <- lapply(seq_len(len), function(x) {
+    sum((coi_pred[[x]] - param_grid$COI[x]) ^ 2) / length(coi_pred[[x]])
+    })
+  names(coi_error) <- names(coi_pred)
+
   # Return predicted COIs and param_grid
   ret <- list(predicted_coi = as.data.frame(coi_pred),
+              coi_error     = as.data.frame(coi_error),
               param_grid    = param_grid)
   return (ret)
 }
