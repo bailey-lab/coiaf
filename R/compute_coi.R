@@ -20,6 +20,7 @@ simulated_coi <- function(sim, seq_error, cuts){
   # Check inputs
   assert_single_bounded(seq_error)
   assert_bounded(cuts, left = 0, right = 0.5)
+  assert_vector(cuts)
   assert_increasing(cuts)
 
   # Extract information from simulation
@@ -93,13 +94,16 @@ compute_coi <- function(theory_cois_interval, sim_coi, cuts,
                         weighted = FALSE){
   ##Check inputs
   assert_pos_int(theory_cois_interval, zero_allowed = FALSE)
+  assert_vector(theory_cois_interval)
+  assert_increasing(theory_cois_interval)
   assert_bounded(cuts, left = 0, right = 0.5)
+  assert_vector(cuts)
   assert_increasing(cuts)
   assert_single_string(method)
   assert_in(method, c("end", "ideal", "overall"))
   assert_single_string(dist_method)
   assert_in(dist_method, c("abs_sum", "sum_abs", "squared", "KL"))
-  assert_logical(weighted)
+  assert_single_logical(weighted)
 
   # Calculate theoretical COI curves for the inteval specified. Since we want
   # the theoretical curves and the simulated curves to have the PLAF values, we
@@ -191,6 +195,7 @@ distance_curves <- function(theory_cois, sim_coi, cuts,
                         weighted = FALSE){
   # Check inputs
   assert_bounded(cuts, left = 0, right = 0.5)
+  assert_vector(cuts)
   assert_increasing(cuts)
   assert_single_string(dist_method)
   assert_in(dist_method, c("abs_sum", "sum_abs", "squared", "KL"))

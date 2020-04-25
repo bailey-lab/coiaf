@@ -15,6 +15,7 @@
 theoretical_coi <- function(cois, interval){
   # Check inputs
   assert_pos_int(cois, zero_allowed = FALSE)
+  assert_vector(interval)
   assert_bounded(interval, left = 0, right = 0.5)
   assert_increasing(interval)
 
@@ -49,6 +50,7 @@ theoretical_coi <- function(cois, interval){
 single_theoretical_coi <- function(coi, interval){
   # Check inputs
   assert_single_pos_int(coi)
+  assert_vector(interval)
   assert_bounded(interval, left = 0, right = 0.5)
   assert_increasing(interval)
 

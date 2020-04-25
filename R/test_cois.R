@@ -26,6 +26,24 @@ run_coi_test <- function(COI = 3,
                          dist_method = c("abs_sum", "sum_abs", "squared", "KL"),
                          weighted = FALSE){
 
+  # Check inputs
+  assert_single_pos_int(COI)
+  assert_single_pos_int(COI_range)
+  assert_vector(PLAF)
+  assert_bounded(PLAF, left = 0, right = 0.5)
+  assert_single_pos_int(coverage)
+  # alpha?
+  # epsilon?
+  assert_single_bounded(seq_error)
+  assert_bounded(cut, left = 0, right = 0.5)
+  assert_vector(cut)
+  assert_increasing(cut)
+  assert_single_string(method)
+  assert_in(method, c("end", "ideal", "overall"))
+  assert_single_string(dist_method)
+  assert_in(dist_method, c("abs_sum", "sum_abs", "squared", "KL"))
+  assert_single_logical(weighted)
+
   # Simulate data
   sim <- sim_biallelic(COI, PLAF, coverage, alpha, overdispersion, epsilon)
 
@@ -77,6 +95,25 @@ coi_test <- function(repetitions = 10,
                      method = c("end", "ideal", "overall"),
                      dist_method = c("abs_sum", "sum_abs", "squared", "KL"),
                      weighted = FALSE){
+
+  # Check inputs
+  # Check inputs
+  assert_pos_int(COI)
+  assert_pos_int(COI_range)
+  assert_vector(PLAF)
+  assert_bounded(PLAF, left = 0, right = 0.5)
+  assert_pos_int(coverage)
+  # alpha?
+  # epsilon?
+  assert_bounded(seq_error)
+  assert_bounded(cut, left = 0, right = 0.5)
+  assert_vector(cut)
+  assert_increasing(cut)
+  assert_string(method)
+  assert_in(method, c("end", "ideal", "overall"))
+  assert_string(dist_method)
+  assert_in(dist_method, c("abs_sum", "sum_abs", "squared", "KL"))
+  assert_logical(weighted)
 
   # Create parameter grid
   param_grid <- expand.grid(COI = COI,
