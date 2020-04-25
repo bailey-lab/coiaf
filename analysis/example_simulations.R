@@ -1,5 +1,4 @@
 param_grid <- expand.grid(COI=2:6, epsilon = c(0.0,0.1))
-
 repetitons <- 10
 
 out <- lapply(seq_len(nrow(param_grid)), function(x) {
@@ -20,4 +19,3 @@ out <- lapply(seq_len(nrow(param_grid)), function(x) {
   return(out)
 
 })
-
