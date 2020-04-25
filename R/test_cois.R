@@ -108,7 +108,7 @@ coi_test <- function(repetitions = 10,
                      cut,
                      param_grid$method[x],
                      param_grid$dist_method[x],
-                     weighted)
+                     param_grid$weighted[x])
       return (test_result)
     }, FUN.VALUE = numeric(1))
 

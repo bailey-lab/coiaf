@@ -194,7 +194,7 @@ distance_curves <- function(theory_cois, sim_coi, cuts,
   assert_increasing(cuts)
   assert_single_string(dist_method)
   assert_in(dist_method, c("abs_sum", "sum_abs", "squared", "KL"))
-  assert_logical(weighted)
+  assert_single_logical(weighted)
 
   # Find bound of COIs. Substract 1 because theory_cois includes the PLAF at
   # the end
