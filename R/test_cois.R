@@ -164,19 +164,27 @@ coi_test <- function(repetitions = 10,
   # Name the predicted COIs
   names(coi_pred) <- paste("coi_", param_grid$COI, sep="")
 
-  # # Calculate error
+  # Calculate mean absolute error
   len <- nrow(param_grid)
   coi_error <- lapply(seq_len(len), function(x) {
-    sum((coi_pred[[x]] - param_grid$COI[x]) ^ 2) / length(coi_pred[[x]])
+    sum(abs(coi_pred[[x]] - param_grid$COI[x])) / length(coi_pred[[x]])
     })
 
-  # Combine param_grid with errors
-  params_error <- param_grid
-  params_error$errors <- unlist(coi_error)
+  # Calculate bias (mean error)
+  coi_bias <- lapply(seq_len(len), function(x) {
+    sum(coi_pred[[x]] - param_grid$COI[x]) / length(coi_pred[[x]])
+  })
+
+  # Save error and bias with changing parameters
+  error_bias <- param_grid %>%
+    dplyr::select_if(function(x) dplyr::n_distinct(x) > 1)
+  error_bias$error <- unlist(coi_error)
+  error_bias$bias  <- unlist(coi_bias)
 
   # Return predicted COIs and param_grid
-  ret <- list(predicted_coi     = as.data.frame(coi_pred),
-              params_and_error  = params_error)
+  ret <- list(predicted_coi = as.data.frame(coi_pred),
+              param_grid   = param_grid,
+              error_bias    = error_bias)
   return (ret)
 }
 
