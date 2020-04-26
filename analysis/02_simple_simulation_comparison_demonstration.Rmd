@@ -84,7 +84,7 @@ par(mfrow = c(3,3))
 p_vec <- seq(0, 0.5, l=101)
 y <- list()
 for (k in 1:10) {
-  y[[k]] <- single_theoretical_coi(k, p_vec)
+  y[[k]] <- theoretical_coi(k, p_vec)[[1]]
 
   if(k>1) {
    new_y <- y[[k]]-y[[k-1]]
