@@ -26,17 +26,17 @@
 #'     distribution is binomial, rather than beta-binomial.
 #'   }
 #'
-#' @param COI complexity of infection.
-#' @param PLAF vector of population-level allele frequencies at each locus.
-#' @param coverage coverage at each locus. If a single value then the same
+#' @param COI Complexity of infection.
+#' @param PLAF Vector of population-level allele frequencies at each locus.
+#' @param coverage Coverage at each locus. If a single value then the same
 #'   coverage is applied over all loci.
-#' @param alpha shape parameter of the symmetric Dirichlet prior on strain
+#' @param alpha Shape parameter of the symmetric Dirichlet prior on strain
 #'   proportions.
-#' @param overdispersion the extent to which counts are over-dispersed relative
+#' @param overdispersion The extent to which counts are over-dispersed relative
 #'   to the binomial distribution. Counts are Beta-binomially distributed, with
 #'   the beta distribution having shape parameters \code{p/overdispersion} and
 #'   \code{(1-p)/overdispersion}.
-#' @param epsilon the probability of a single read being miscalled as the other
+#' @param epsilon The probability of a single read being miscalled as the other
 #'   allele. Applies in both directions.
 #'
 #' @export

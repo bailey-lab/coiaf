@@ -7,12 +7,12 @@
 theoretical_coi(cois, interval)
 }
 \arguments{
-\item{cois}{The COIs for which the curve will be calculated}
+\item{cois}{The COIs for which the curve will be calculated.}
 
-\item{interval}{The interval over which the curve will be calculated}
+\item{interval}{The interval over which the curve will be calculated.}
 }
 \value{
-The theoretical COI curves for the specified COIs and interval
+The theoretical COI curves for the specified COIs and interval.
 }
 \description{
 Generate theoretical COI curves. At each locus defined as:

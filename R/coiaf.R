@@ -1,9 +1,7 @@
 #' \pkg{coiaf} COI Estimation from Allele Frequency
 #'
-#'
-#'
 #' @docType package
-#' @name rdhs
+#' @name coiaf
 #'
 #' @importFrom stats rbeta rbinom rgamma runif
 #' @importFrom rlang .data

@@ -14,22 +14,22 @@ sim_biallelic(
 )
 }
 \arguments{
-\item{COI}{complexity of infection.}
+\item{COI}{Complexity of infection.}
 
-\item{PLAF}{vector of population-level allele frequencies at each locus.}
+\item{PLAF}{Vector of population-level allele frequencies at each locus.}
 
-\item{coverage}{coverage at each locus. If a single value then the same
+\item{coverage}{Coverage at each locus. If a single value then the same
 coverage is applied over all loci.}
 
-\item{alpha}{shape parameter of the symmetric Dirichlet prior on strain
+\item{alpha}{Shape parameter of the symmetric Dirichlet prior on strain
 proportions.}
 
-\item{overdispersion}{the extent to which counts are over-dispersed relative
+\item{overdispersion}{The extent to which counts are over-dispersed relative
 to the binomial distribution. Counts are Beta-binomially distributed, with
 the beta distribution having shape parameters \code{p/overdispersion} and
 \code{(1-p)/overdispersion}.}
 
-\item{epsilon}{the probability of a single read being miscalled as the other
+\item{epsilon}{The probability of a single read being miscalled as the other
 allele. Applies in both directions.}
 }
 \description{

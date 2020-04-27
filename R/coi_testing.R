@@ -3,13 +3,14 @@
 #'
 #' @description Runs a single full COI test.
 #'
-#' @param COI_range The range of COIs to test
+#' @param COI_range A number indicating the range of COIs to compare the
+#' simulated data to.
 #' @inheritParams sim_biallelic
 #' @inheritParams simulated_coi
-#' @param cut How often the data is summarized
+#' @param cut A vector indicating how often the data is summarized.
 #' @inheritParams compute_coi
 #'
-#' @return Computed COI values
+#' @return Predicted COI value.
 #'
 #' @keywords internal
 
@@ -71,19 +72,27 @@ run_coi_test <- function(COI = 3,
 #' @description Runs several iterations of a full COI test with varying
 #' parameters
 #'
-#' @param repetitions The number of times each sample will be run
-#' @param COI_range The range of COIs to test
+#' @param repetitions The number of times each sample will be run.
+#' @param COI_range A number indicating the range of COIs to compare the
+#' simulated data to.
 #' @inheritParams sim_biallelic
 #' @inheritParams simulated_coi
-#' @param cut How often the data is summarized
+#' @param cut A vector indicating how often the data is summarized.
 #' @inheritParams compute_coi
 #'
-#' @return A list
-#' \itemize{
-#'   \item{\code{predicted_coi}} {The predicted COIs. COIs are predicted using
-#'   \link{compute_coi}}
-#'   \item{\code{param_grid}} {The parameter grid}
-#'   \item{\code{error_bias}} {The errors and bias for the COI calculations}
+#' @return A list of the following dataframes:
+#' \describe{
+#'   \item{\code{predicted_coi}:}{ A dataframe of the predicted COIs. COIs are
+#'   predicted using \link{compute_coi}. Each column represents a separate set
+#'   of parameters. Each row represents a predicted COI. Predictions are done
+#'   many times, depending on the value of \code{repetitions}.}
+#'   \item{\code{param_grid}:}{ The parameter grid. The parameter grid is all
+#'   possible combinations of the parameters inputted. Each row represents a
+#'   unique combination.}
+#'   \item{\code{error_bias}:}{ A dataframe containing any parameter that was
+#'   varied and the associated mean absolute error and bias (mean error). By
+#'   showing only parameters that were varied, the output is easier to interpret
+#'   and does not have information about parameters that were held constant.}
 #' }
 #'
 #' @export

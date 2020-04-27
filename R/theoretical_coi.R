@@ -5,10 +5,10 @@
 #' \eqn{1-p^coi-q^coi}. This expression is derived in the corresponding
 #' manuscript.
 #'
-#' @param cois The COIs for which the curve will be calculated
-#' @param interval The interval over which the curve will be calculated
+#' @param cois The COIs for which the curve will be calculated.
+#' @param interval The interval over which the curve will be calculated.
 #'
-#' @return The theoretical COI curves for the specified COIs and interval
+#' @return The theoretical COI curves for the specified COIs and interval.
 #'
 #' @export
 
@@ -40,10 +40,10 @@ theoretical_coi <- function(cois, interval){
 #' \eqn{1-p^coi-q^coi}. This expression is derived in the corresponding
 #' manuscript.
 #'
-#' @param coi The COI
-#' @param interval The interval over which the curve will be calculated
+#' @param coi The COI.
+#' @param interval The interval over which the curve will be calculated.
 #'
-#' @return The theoretical COI curve for the specified interval
+#' @return The theoretical COI curve for the specified interval.
 #'
 #' @keywords internal
 
