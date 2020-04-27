@@ -7,7 +7,7 @@
 simulated_coi(sim, seq_error, cuts)
 }
 \arguments{
-\item{sim}{Output of \code{\link{sim_biallelic}}.}
+\item{sim}{Output of \code{\link{sim_biallelic}}}
 
 \item{seq_error}{The level of sequencing error that is assumed.}
 

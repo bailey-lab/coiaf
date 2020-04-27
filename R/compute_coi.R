@@ -9,7 +9,7 @@
 #'  site or not, we determine whether a site should be variant or not using
 #'  the phased haplotype of the parasites.
 #'
-#' @param sim Output of \code{\link{sim_biallelic}}.
+#' @param sim Output of \code{\link{sim_biallelic}}
 #' @param seq_error The level of sequencing error that is assumed.
 #' @param cuts How often the data is summarized.
 #'
