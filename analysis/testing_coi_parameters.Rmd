@@ -20,7 +20,7 @@ our COI framework. The parameters that we will examine are:
 
 * COI_range: A number indicating the range of COIs to compare the simulated 
 data to.
-* coverage: Coverage at each locus
+* coverage: Coverage at each locus.
 * alpha: Shape parameter of the symmetric Dirichlet prior on strain proportions.
 * overdispersion: The extent to which counts are over-dispersed relative to the 
 binomial distribution. Counts are Beta-binomially distributed, with the beta 
@@ -61,24 +61,65 @@ error and bias start to increase quite rapidly. At a COI of 10, if one were to
 look at the predicted COI values, it becomes immediatl clear that our process
 of calculating the COI fails. The predicted COIs have a very large range and
 very often, the predicted COI value will be zero. In addition, the mean is
-roughly 5, very far away from the actual COI of ten.
+roughly 5, very far away from the actual COI of ten. In fact, for all COIs 10 or
+greater, the mean COI is very far away from the true COI value.
 
 ## COI Range
 ```{r}
-test <- coi_test(COI = 2:15, COI_range = 1:10, repetitions = 100,
+test <- coi_test(COI = 2:9, COI_range = 1:10, repetitions = 100,
                  PLAF = p, method = "overall", dist_method = "squared")
 test$error_bias
 ```
 
+As expected, the lower the COI range, the lower the error and bias. This makes
+intuitive sense as the COI_range allows us to determine how many theoretical
+COI values we will test to see which our simulated data is closest to. The fact
+that our model works well with large `COI_range` values is promising and implies
+that our model can accuratly compute the COI.
+
 ## Coverage
+```{r}
+test <- coi_test(COI = 2:9, coverage = seq(100, 500, 100), 
+                 COI_range = 10, repetitions = 100,
+                 PLAF = p, method = "overall", dist_method = "squared")
+test$error_bias
+```
 
 ## Alpha
+```{r}
+test <- coi_test(COI = 2:9, alpha = 1:10, 
+                 COI_range = 10, repetitions = 100,
+                 PLAF = p, method = "overall", dist_method = "squared")
+test$error_bias
+```
 
 ## Overdispersion
+```{r}
+test <- coi_test(COI = 2:9, overdispersion = seq(0, 0.1, 0.05), 
+                 COI_range = 10, repetitions = 100,
+                 PLAF = p, method = "overall", dist_method = "squared")
+test$error_bias
+```
+
+When you introduce overdispersion, models perform poorly. If you introduce 0.1, 
+models do not perform terribly. What is the cutoff here? How much overdispersion
+can we introduce?
 
 ## Epsilon
+```{r}
+test <- coi_test(COI = 2:9, epsilon = seq(0, 1, 0.1), 
+                 COI_range = 10, repetitions = 100,
+                 PLAF = p, method = "overall", dist_method = "squared")
+test$error_bias
+```
 
 ## Sequencing Error
+```{r}
+test <- coi_test(COI = 2:9, seq_error = seq(0, 0.1, 0.02), 
+                 COI_range = 10, repetitions = 100,
+                 PLAF = p, method = "overall", dist_method = "squared")
+test$error_bias
+```
 
 ## Method
 ```{r}
@@ -95,3 +136,8 @@ test$error_bias
 ```
 
 ## Weighted
+```{r}
+test <- coi_test(COI = 2:9, weighted = c(FALSE, TRUE),
+                 PLAF = p, method = "overall", repetitions = 50)
+test$error_bias
+```
