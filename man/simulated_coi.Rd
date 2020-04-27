@@ -14,7 +14,7 @@ simulated_coi(sim, seq_error, cuts)
 \item{cuts}{How often the data is summarized}
 }
 \value{
-Simulated COI curve
+Simulated COI curve.
 }
 \description{
 Generate the simulated COI curve. In order to do this, we

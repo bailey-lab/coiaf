@@ -7,5 +7,5 @@
 Pf_chrom_lengths()
 }
 \description{
-Get dataframe of P.falciparum chromosome lengths
+Get dataframe of P.falciparum chromosome lengths.
 }

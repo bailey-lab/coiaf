@@ -4,9 +4,9 @@
 #' @description Draw from Dirichlet distribution given a vector of shape
 #'   parameters.
 #'
-#' @param shape vector of shape parameters.
+#' @param shape Vector of shape parameters.
 #'
-#' @export
+#' @keywords internal
 
 rdirichlet <- function(shape = rep(1,3)) {
   x <- rgamma(length(shape), shape = shape, rate = max(shape))
@@ -18,16 +18,15 @@ rdirichlet <- function(shape = rep(1,3)) {
 #'
 #' @description Draw from Beta-binomial distribution.
 #'
-#' @param n number of draws.
-#' @param k number of binomial trials.
-#' @param alpha first shape parameter of beta distribution.
-#' @param beta second shape parameter of beta distribution.
+#' @param n Number of draws.
+#' @param k Number of binomial trials.
+#' @param alpha First shape parameter of beta distribution.
+#' @param beta Second shape parameter of beta distribution.
 #'
-#' @export
+#' @keywords internal
 
 rbetabinom <- function(n = 1, k = 10, alpha = 1, beta = 1) {
   p <- rbeta(n = n, shape1 = alpha, shape2 = beta)
   ret <- rbinom(n = n, size = k, prob = p)
   return(ret)
 }
-

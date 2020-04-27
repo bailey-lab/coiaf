@@ -7,9 +7,10 @@
 rdirichlet(shape = rep(1, 3))
 }
 \arguments{
-\item{shape}{vector of shape parameters.}
+\item{shape}{Vector of shape parameters.}
 }
 \description{
 Draw from Dirichlet distribution given a vector of shape
   parameters.
 }
+\keyword{internal}

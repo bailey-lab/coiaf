@@ -7,14 +7,15 @@
 rbetabinom(n = 1, k = 10, alpha = 1, beta = 1)
 }
 \arguments{
-\item{n}{number of draws.}
+\item{n}{Number of draws.}
 
-\item{k}{number of binomial trials.}
+\item{k}{Number of binomial trials.}
 
-\item{alpha}{first shape parameter of beta distribution.}
+\item{alpha}{First shape parameter of beta distribution.}
 
-\item{beta}{second shape parameter of beta distribution.}
+\item{beta}{Second shape parameter of beta distribution.}
 }
 \description{
 Draw from Beta-binomial distribution.
 }
+\keyword{internal}

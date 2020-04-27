@@ -13,28 +13,27 @@ distance_curves(
 )
 }
 \arguments{
-\item{theory_cois}{The theoretical COI curves}
+\item{sim_coi}{The simulated COI curve, which is the output of
+\link{sim_biallelic}.}
 
-\item{sim_coi}{The simulated COI curve}
-
-\item{cuts}{How often the data is summarized}
+\item{cuts}{A vector indicating how often the data is summarized.}
 
 \item{dist_method}{The distance method used to determine the distance between
 the theoretical and simulated curves for the "overall" method. One of
-\code{"abs_sum", "sum_abs", "squared", "KL"}}
+\code{"abs_sum", "sum_abs", "squared", "KL"}.}
 
-\item{weighted}{An indicator indicating whether to compute weighted distance}
+\item{weighted}{An indicator indicating whether to compute weighted distance.}
 }
 \value{
-COI for the simulation
+The distance between two curves.
 }
 \description{
 Compute the distance between two curves using several methods.
 \describe{
-  \item{\code{abs_sum}}{Absolute value of sum of difference}
-  \item{\code{sum_abs}}{Sum of absolute difference}
-  \item{\code{squared}}{Sum of squared difference}
-  \item{\code{KL}}{Kullback-Leibler divergence}
+  \item{\code{abs_sum}}{Absolute value of sum of difference.}
+  \item{\code{sum_abs}}{Sum of absolute difference.}
+  \item{\code{squared}}{Sum of squared difference.}
+  \item{\code{KL}}{Kullback-Leibler divergence.}
   }
 }
 \keyword{internal}

@@ -12,7 +12,8 @@
 #' @param sim Output of \code{\link{sim_biallelic}}
 #' @param seq_error The level of sequencing error that is assumed
 #' @param cuts How often the data is summarized
-#' @return Simulated COI curve
+#'
+#' @return Simulated COI curve.
 #'
 #' @export
 
@@ -54,13 +55,13 @@ simulated_coi <- function(sim, seq_error, cuts){
 #------------------------------------------------
 #' @title Compute COI
 #'
-#' @description Generate the COI of the sample by comparing the simulated
-#' COI curve to the theoretical COI curve. To determine the actual COI value,
+#' @description Predict the COI of the sample by comparing the simulated
+#' COI curve to the theoretical COI curve. To determine the predicted COI value,
 #' three different methods are utilized:
 #' \describe{
 #'   \item{\code{end}}{Determines the distance between the theoretical and
 #'   simulated curve at a PLAF of 0.5. The COI is whichever theoretical COI
-#'   curve is the closest to the simulated data..}
+#'   curve is the closest to the simulated data.}
 #'   \item{\code{ideal}}{Determines the distance between the theoretical and
 #'   simulated curve at the ideal PLAF. The ideal PLAF is calculated by looking
 #'   at the change between the COI of \eqn{i} and the COI of \eqn{i-1} and
@@ -70,21 +71,29 @@ simulated_coi <- function(sim, seq_error, cuts){
 #'   \item{\code{overall}}{Determines the distance between the theoretical and
 #'   simulated curve at for all PLAFs. Computes the distance between the
 #'   theoretical curves and the simulated curve. The COI is whichever
-#'   theoretical curve has the smallest distance from the simulated curve.}
+#'   theoretical curve has the smallest distance from the simulated curve.
+#'   There is an option to choose one of several distance metrics:
+#'   \itemize{
+#'     \item{\code{abs_sum}:}{ Absolute value of sum of difference.}
+#'     \item{\code{sum_abs}:}{ Sum of absolute difference.}
+#'     \item{\code{squared}:}{ Sum of squared difference.}
+#'     \item{\code{KL}:}{ Kullback-Leibler divergence.}
+#'   }}
 #'   }
 #'
 #' @param theory_cois_interval The range of COIs for which theoretical curves
-#' will be calculated
-#' @param sim_coi The simulated COI curve
-#' @param cuts How often the data is summarized
+#' will be calculated.
+#' @param sim_coi The simulated COI curve, which is the output of
+#' \link{sim_biallelic}.
+#' @param cuts A vector indicating how often the data is summarized.
 #' @param method The method to be employed. One of
-#' \code{"end", "ideal", "overall"}
+#' \code{"end", "ideal", "overall"}.
 #' @param dist_method The distance method used to determine the distance between
 #' the theoretical and simulated curves for the "overall" method. One of
-#' \code{"abs_sum", "sum_abs", "squared", "KL"}
-#' @param weighted An indicator indicating whether to compute weighted distance
+#' \code{"abs_sum", "sum_abs", "squared", "KL"}.
+#' @param weighted An indicator indicating whether to compute weighted distance.
 #'
-#' @return COI for the simulation
+#' @return The predicted COI for the simulation.
 #'
 #' @export
 
@@ -172,21 +181,15 @@ compute_coi <- function(theory_cois_interval, sim_coi, cuts,
 #'
 #' @description Compute the distance between two curves using several methods.
 #' \describe{
-#'   \item{\code{abs_sum}}{Absolute value of sum of difference}
-#'   \item{\code{sum_abs}}{Sum of absolute difference}
-#'   \item{\code{squared}}{Sum of squared difference}
-#'   \item{\code{KL}}{Kullback-Leibler divergence}
+#'   \item{\code{abs_sum}}{Absolute value of sum of difference.}
+#'   \item{\code{sum_abs}}{Sum of absolute difference.}
+#'   \item{\code{squared}}{Sum of squared difference.}
+#'   \item{\code{KL}}{Kullback-Leibler divergence.}
 #'   }
 #'
-#' @param theory_cois The theoretical COI curves
-#' @param sim_coi The simulated COI curve
-#' @param cuts How often the data is summarized
-#' @param dist_method The distance method used to determine the distance between
-#' the theoretical and simulated curves for the "overall" method. One of
-#' \code{"abs_sum", "sum_abs", "squared", "KL"}
-#' @param weighted An indicator indicating whether to compute weighted distance
+#' @inheritParams compute_coi
 #'
-#' @return COI for the simulation
+#' @return The distance between two curves.
 #'
 #' @keywords internal
 
