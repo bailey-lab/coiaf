@@ -57,7 +57,13 @@ the theoretical and simulated curves for the "overall" method. One of
 \item{weighted}{An indicator indicating whether to compute weighted distance}
 }
 \value{
-Computed COI values
+A list
+\itemize{
+  \item{\code{predicted_coi}} {The predicted COIs. COIs are predicted using
+  \link{compute_coi}}
+  \item{\code{param_grid}} {The parameter grid}
+  \item{\code{error_bias}} {The errors and bias for the COI calculations}
+}
 }
 \description{
 Runs several iterations of a full COI test with varying

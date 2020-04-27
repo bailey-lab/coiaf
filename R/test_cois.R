@@ -78,7 +78,13 @@ run_coi_test <- function(COI = 3,
 #' @param cut How often the data is summarized
 #' @inheritParams compute_coi
 #'
-#' @return Computed COI values
+#' @return A list
+#' \itemize{
+#'   \item{\code{predicted_coi}} {The predicted COIs. COIs are predicted using
+#'   \link{compute_coi}}
+#'   \item{\code{param_grid}} {The parameter grid}
+#'   \item{\code{error_bias}} {The errors and bias for the COI calculations}
+#' }
 #'
 #' @export
 
@@ -183,7 +189,7 @@ coi_test <- function(repetitions = 10,
 
   # Return predicted COIs and param_grid
   ret <- list(predicted_coi = as.data.frame(coi_pred),
-              param_grid   = param_grid,
+              param_grid    = param_grid,
               error_bias    = error_bias)
   return (ret)
 }
