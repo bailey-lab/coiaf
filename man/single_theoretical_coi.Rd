@@ -4,12 +4,15 @@
 \alias{single_theoretical_coi}
 \title{Generate Theoretical COI Curve}
 \usage{
-single_theoretical_coi(coi, interval)
+single_theoretical_coi(coi, interval, method = "1")
 }
 \arguments{
 \item{coi}{The COI.}
 
 \item{interval}{The interval over which the curve will be calculated.}
+
+\item{method}{The method we will use to calculate the theoretical COI.
+The method is either "1" or "2". The default value is "1".}
 }
 \value{
 The theoretical COI curve for the specified interval.
