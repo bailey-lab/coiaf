@@ -110,6 +110,7 @@ par(mfrow = c(3,2))
 for (k in 2:7) {
 
   # simulate data and subset to heterozygous sites only
+  # set.seed(1)
   sim1 <- sim_biallelic(COI = k, PLAF = p, overdispersion = 0.01)
   sim1$data <- subset(sim1$data, WSAF > 0 & WSAF < 1)
 
@@ -119,9 +120,9 @@ for (k in 2:7) {
 
   # overlay analytical expectations for COI=2:7
   p_vec <- seq(0, 0.5, l=101)
-  for (k in 2:7) {
-    x <- (p_vec - p_vec^k)/(1 - p_vec^k - (1 - p_vec)^k)
-    lines(p_vec, x, col = 2, lwd = 2)
+  theory_cois <- theoretical_coi(seq(1, 7), p_vec, method = "2")
+  for (i in 2:7) {
+    lines(p_vec, theory_cois[[paste("coi_", i, sep = "")]], col = 2, lwd = 2)
   }
   text(x = rep(-0.005, 6), y = 1/2:7, labels = 2:7, col = "red", cex = 0.6)
 
