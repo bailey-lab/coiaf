@@ -136,7 +136,8 @@ compute_coi <- function(theory_cois_interval, sim_coi, cuts,
     last_sim <- sim_coi$m_variant[nrow(sim_coi)]
 
     # Find coi by looking at minimum distance
-    coi <- stringr::str_sub(names(which.min(abs(last_theory - last_sim))), -1)
+    min_dist <- names(which.min(abs(last_theory - last_sim)))
+    coi <- unlist(stringr::str_split(min_dist, "_"))[2]
   } else if (method == "ideal"){
     ## Method 2: Compute ideal PLAF
     # For each COI, find best PLAF and get theoretical and simulated values at
@@ -163,7 +164,7 @@ compute_coi <- function(theory_cois_interval, sim_coi, cuts,
     names(dist) <- colnames(theory_cois)[2:bound_coi]
 
     # Find coi by looking at minimum distance
-    coi <- stringr::str_sub(names(which.min(dist)), -1)
+    coi <- unlist(stringr::str_split(names(which.min(dist)), "_"))[2]
   } else if (method == "overall"){
     ## Method 3: Find distance between curves
     # Utilize helper function to compute overall distance betweent two curves
@@ -244,6 +245,6 @@ distance_curves <- function(theory_cois, sim_coi, cuts,
   }
 
   # Find coi by looking at minimum distance
-  coi <- stringr::str_sub(names(which.min(gap)), -1)
+  coi <- unlist(stringr::str_split(names(which.min(gap)), "_"))[2]
   return(coi)
 }
