@@ -51,7 +51,7 @@ We first want to understand for what range our model can accurately predict
 the COI.
 
 ```{r}
-test <- coi_test(COI = 2:20, repetitions = 1000,
+test <- coi_test(COI = 2:20, repetitions = 100,
                  PLAF = p, method = "overall", dist_method = "squared")
 test$error_bias
 ```
@@ -66,7 +66,7 @@ greater, the mean COI is very far away from the true COI value.
 
 ## COI Range
 ```{r}
-test <- coi_test(COI = 2:9, COI_range = 1:10, repetitions = 100,
+test <- coi_test(COI = 2:20, COI_range = 10:20, repetitions = 100,
                  PLAF = p, method = "overall", dist_method = "squared")
 test$error_bias
 ```
@@ -79,25 +79,25 @@ that our model can accuratly compute the COI.
 
 ## Coverage
 ```{r}
-test <- coi_test(COI = 2:9, coverage = seq(100, 500, 100), 
-                 COI_range = 10, repetitions = 100,
-                 PLAF = p, method = "overall", dist_method = "squared")
+test <- coi_test(COI = 2:20, coverage = c(25, 50, 100, 200, 400), 
+                 repetitions = 100, PLAF = p,
+                 method = "overall", dist_method = "squared")
 test$error_bias
 ```
 
 ## Alpha
 ```{r}
-test <- coi_test(COI = 2:9, alpha = 1:10, 
-                 COI_range = 10, repetitions = 100,
-                 PLAF = p, method = "overall", dist_method = "squared")
+test <- coi_test(COI = 2:20, alpha = 1:10, 
+                 repetitions = 100, PLAF = p, 
+                 method = "overall", dist_method = "squared")
 test$error_bias
 ```
 
 ## Overdispersion
 ```{r}
-test <- coi_test(COI = 2:9, overdispersion = seq(0, 0.1, 0.05), 
-                 COI_range = 10, repetitions = 100,
-                 PLAF = p, method = "overall", dist_method = "squared")
+test <- coi_test(COI = 2:20, overdispersion = seq(0, 0.1, 0.05), 
+                 repetitions = 100, PLAF = p, 
+                 method = "overall", dist_method = "squared")
 test$error_bias
 ```
 
@@ -107,23 +107,23 @@ can we introduce?
 
 ## Epsilon
 ```{r}
-test <- coi_test(COI = 2:9, epsilon = seq(0, 1, 0.1), 
-                 COI_range = 10, repetitions = 100,
-                 PLAF = p, method = "overall", dist_method = "squared")
+test <- coi_test(COI = 2:20, epsilon = seq(0, 1, 0.1), 
+                 repetitions = 100, PLAF = p, 
+                 method = "overall", dist_method = "squared")
 test$error_bias
 ```
 
 ## Sequencing Error
 ```{r}
-test <- coi_test(COI = 2:9, seq_error = seq(0, 0.1, 0.02), 
-                 COI_range = 10, repetitions = 100,
-                 PLAF = p, method = "overall", dist_method = "squared")
+test <- coi_test(COI = 2:20, seq_error = seq(0, 0.1, 0.02), 
+                 repetitions = 100, PLAF = p, 
+                 method = "overall", dist_method = "squared")
 test$error_bias
 ```
 
 ## Method
 ```{r}
-test <- coi_test(COI = 10:20, PLAF = p, dist_method = "squared", 
+test <- coi_test(COI = 2:20, PLAF = p, dist_method = "squared", 
                  repetitions = 100)
 test$error_bias
 ```
@@ -131,13 +131,13 @@ test$error_bias
 
 ## Distance Method
 ```{r}
-test <- coi_test(COI = 2:15, PLAF = p, method = "overall", repetitions = 100)
+test <- coi_test(COI = 2:20, PLAF = p, method = "overall", repetitions = 100)
 test$error_bias
 ```
 
 ## Weighted
 ```{r}
-test <- coi_test(COI = 2:9, weighted = c(FALSE, TRUE),
-                 PLAF = p, method = "overall", repetitions = 50)
+test <- coi_test(COI = 2:20, weighted = c(FALSE, TRUE),
+                 PLAF = p, method = "overall", repetitions = 100)
 test$error_bias
 ```
