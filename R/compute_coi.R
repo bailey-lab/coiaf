@@ -110,8 +110,6 @@ compute_coi <- function(theory_cois_interval, sim_coi, cuts,
   assert_increasing(cuts)
   assert_single_string(method)
   assert_in(method, c("end", "ideal", "overall"))
-  assert_single_string(dist_method)
-  assert_in(dist_method, c("abs_sum", "sum_abs", "squared", "KL"))
   assert_single_logical(weighted)
 
   # Calculate theoretical COI curves for the inteval specified. Since we want
