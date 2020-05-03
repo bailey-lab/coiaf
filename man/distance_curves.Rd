@@ -25,7 +25,12 @@ the theoretical and simulated curves for the "overall" method. One of
 \item{weighted}{An indicator indicating whether to compute weighted distance.}
 }
 \value{
-The distance between two curves.
+A list of the following:
+\describe{
+  \item{\code{coi}}{The predicted COI for the simulation.}
+  \item{\code{dist}}{The distance between each theoretical COI and the
+  simulated COI curve.}
+  }
 }
 \description{
 Compute the distance between two curves using several methods.

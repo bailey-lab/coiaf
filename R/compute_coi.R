@@ -93,7 +93,12 @@ simulated_coi <- function(sim, seq_error, cuts){
 #' \code{"abs_sum", "sum_abs", "squared", "KL"}.
 #' @param weighted An indicator indicating whether to compute weighted distance.
 #'
-#' @return The predicted COI for the simulation.
+#' @return A list of the following:
+#' \describe{
+#'   \item{\code{coi}}{The predicted COI for the simulation.}
+#'   \item{\code{probability}}{A probability density function representing the
+#'   probability of each COI.}
+#'   }
 #'
 #' @export
 
@@ -199,7 +204,12 @@ compute_coi <- function(theory_cois_interval, sim_coi, cuts,
 #'
 #' @inheritParams compute_coi
 #'
-#' @return The distance between two curves.
+#' @return A list of the following:
+#' \describe{
+#'   \item{\code{coi}}{The predicted COI for the simulation.}
+#'   \item{\code{dist}}{The distance between each theoretical COI and the
+#'   simulated COI curve.}
+#'   }
 #'
 #' @keywords internal
 

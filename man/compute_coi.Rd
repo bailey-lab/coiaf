@@ -32,7 +32,12 @@ the theoretical and simulated curves for the "overall" method. One of
 \item{weighted}{An indicator indicating whether to compute weighted distance.}
 }
 \value{
-The predicted COI for the simulation.
+A list of the following:
+\describe{
+  \item{\code{coi}}{The predicted COI for the simulation.}
+  \item{\code{probability}}{A probability density function representing the
+  probability of each COI.}
+  }
 }
 \description{
 Predict the COI of the sample by comparing the simulated
