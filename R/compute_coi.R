@@ -181,7 +181,7 @@ compute_coi <- function(theory_cois_interval, sim_coi, cuts,
   }
 
   # Distance to probability
-  dist <- 1 / dist
+  dist <- 1 / (dist + 1e-5)
   dist <- dist / sum(dist)
 
   # Prepare list to return
@@ -261,6 +261,7 @@ distance_curves <- function(theory_cois, sim_coi, cuts,
       gap[i] <- suppressMessages(philentropy::KL(rbind(P, Q), unit = "log2"))
     }
     names(gap) <- colnames(theory_cois)[2:bound_coi]
+    gap <- unlist(gap)
   }
 
   # Find coi by looking at minimum distance
