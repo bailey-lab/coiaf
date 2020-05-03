@@ -60,14 +60,14 @@ the theoretical and simulated curves for the "overall" method. One of
 \value{
 A list of the following dataframes:
 \describe{
-  \item{\code{predicted_coi}:}{ A dataframe of the predicted COIs. COIs are
+  \item{\code{predicted_coi}}{A dataframe of the predicted COIs. COIs are
   predicted using \link{compute_coi}. Each column represents a separate set
   of parameters. Each row represents a predicted COI. Predictions are done
   many times, depending on the value of \code{repetitions}.}
-  \item{\code{param_grid}:}{ The parameter grid. The parameter grid is all
+  \item{\code{param_grid}}{The parameter grid. The parameter grid is all
   possible combinations of the parameters inputted. Each row represents a
   unique combination.}
-  \item{\code{error_bias}:}{ A dataframe containing any parameter that was
+  \item{\code{error_bias}}{A dataframe containing any parameter that was
   varied and the associated mean absolute error and bias (mean error). By
   showing only parameters that were varied, the output is easier to interpret
   and does not have information about parameters that were held constant.}
