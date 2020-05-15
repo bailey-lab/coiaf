@@ -26,11 +26,13 @@ Imports:
     utils
 Suggests:
     ggplot2,
+    ggpubr,
     knitr,
     pbapply,
     rmarkdown,
     spelling,
-    testthat
+    testthat,
+    tidyr
 License: MIT + file LICENSE
 RoxygenNote: 7.1.0
 VignetteBuilder: knitr
