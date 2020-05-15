@@ -13,6 +13,8 @@ editor_options:
 
 ```{r imports, echo=F, warning=F, message=F, results='hide'}
 library(coiaf)
+library(ggplot2)
+library(ggpubr)
 ```
 
 In this analysis file, we aim to understand the effect of varying parameters on
@@ -51,9 +53,28 @@ We first want to understand for what range our model can accurately predict
 the COI.
 
 ```{r}
-tcoi <- coi_test(COI = 2:40, repetitions = 100,
+tcoi <- coi_test(COI = 2:10, repetitions = 10,
                  PLAF = p, method = "overall", dist_method = "squared")
 tcoi$error_bias
+
+haha = tcoi$predicted_coi %>% tidyr::gather(true_COI, estimated_COI) %>%
+  tidyr::extract(true_COI, c("true_COI", "loop_number"), "coi_(.+)_(.+)") %>%
+  dplyr::mutate_all(as.numeric)
+
+for (i in unique(haha$loop_number)){
+  assign(paste("p", i, sep = ""),
+         ggplot(dplyr::filter(haha, loop_number == i), aes(x = true_COI, y = estimated_COI)) +
+           geom_count(color = "blue", alpha = 0.7, show.legend = FALSE) +
+           geom_abline(color = "red") +
+           theme_classic() +
+           theme(plot.title = element_text(hjust = 0.5, size = 10),
+                 axis.title = element_text(size = 10),
+                 legend.title = element_text(size = 8),
+                 legend.text = element_text(size = 8)) +
+           labs(x = "True COI", y = "Estimated COI"))
+}
+
+p1
 ```
 
 Based on the above set of runs, it appears that the algorithm performs well for
@@ -74,6 +95,35 @@ COIs of 2 till 20.
 tcoi_range <- coi_test(COI = 2:20, COI_range = 10:20, repetitions = 100,
                  PLAF = p, method = "overall", dist_method = "squared")
 tcoi_range$error_bias
+
+haha2 = tcoi_range$predicted_coi %>% tidyr::gather(true_COI, estimated_COI) %>% 
+  tidyr::extract(true_COI, c("true_COI", "loop_number"), "coi_(.+)_(.+)") %>% 
+  dplyr::mutate_all(as.numeric)
+
+plot_data_column = function (data, loop_num, change_param = NULL, change_param_val = NULL){ 
+  ggplot(dplyr::filter(data, loop_number == loop_num), 
+         aes(x = true_COI, y = estimated_COI)) + 
+    geom_count(color = "blue", alpha = 0.7, show.legend = FALSE) + 
+    geom_abline(color = "red") +
+    theme_classic() + 
+    theme(plot.title = element_text(hjust = 0.5, size = 10), 
+         axis.title = element_text(size = 10),
+         legend.title = element_text(size = 8),
+         legend.text = element_text(size = 8)) +   
+    labs(x = "True COI", 
+         y = "Estimated COI", 
+         title = paste(change_param, change_param_val[loop_num], sep = " = "))
+}
+
+uniq = unique(haha2$loop_number)
+myplots <- lapply(uniq, plot_data_column, data = haha2, change_param = "COI Range", change_param_val = 10:11)
+
+
+myplots2 <- lapply(unique(haha$loop_number), plot_data_column, data = haha)
+
+ggarrange(plotlist = myplots,
+          labels = "AUTO",
+          ncol = 2)
 ```
 
 As expected, the lower the COI range, the lower the error and bias. This makes
