@@ -6,7 +6,7 @@
 \usage{
 run_coi_test(
   COI = 3,
-  COI_range = 5,
+  COI_range = 10,
   PLAF = runif(1000, 0, 0.5),
   coverage = 100,
   alpha = 1,
