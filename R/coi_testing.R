@@ -142,7 +142,7 @@ coi_test <- function(repetitions = 10,
                             weighted = weighted,
                             stringsAsFactors = FALSE)
 
-  # Functino to determine if pbapply is installed. If it is installed, it will
+  # Function to determine if pbapply is installed. If it is installed, it will
   # display a progress bar
   list_apply <- function(x, fun, ...){
     if (requireNamespace("pbapply", quietly = TRUE)) {
@@ -176,8 +176,17 @@ coi_test <- function(repetitions = 10,
     return(repeats)
   })
 
-  # Name the predicted COIs
-  names(coi_pred) <- paste("coi_", param_grid$COI, sep="")
+  # Determine how many unique COIs there are
+  num_cois = length(COI)
+
+  # Calculate the number of times each COI is repeated in param_grid
+  num_repeat_cois = length(param_grid$COI) / num_cois
+
+  # Name the predicted cois
+  names(coi_pred) <- paste("coi",
+                           param_grid$COI,
+                           rep(seq(num_repeat_cois), each = num_cois),
+                           sep="_")
 
   # Calculate mean absolute error
   len <- nrow(param_grid)
