@@ -68,7 +68,7 @@ sensitivity_plot <- function(data,
   suggested_dims = plot_dims[1] * plot_dims[2]
   needed_dims    = length(num_loops)
   if (!all(suggested_dims >= needed_dims)) {
-    warning(sprintf("Not enough panels have been specified. User input %s panels, but %s panels needed.",
+    stop(sprintf("Not enough panels have been specified. User input %s panels, but %s panels needed.",
                     suggested_dims, needed_dims), call. = FALSE)
   }
 
