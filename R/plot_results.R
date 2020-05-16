@@ -41,8 +41,9 @@ sensitivity_plot <- function(data,
   # how often the other parameter is changing. In the end, there will be three
   # columns: true_COI, estimated_COI, and loop_number.
   plot_df = data$predicted_coi %>%
-    tidyr::gather(true_COI, estimated_COI) %>%
-    tidyr::extract(true_COI, c("true_COI", "loop_number"), "coi_(.+)_(.+)") %>%
+    tidyr::gather(.data$true_COI, .data$estimated_COI) %>%
+    tidyr::extract(.data$true_COI, c("true_COI", "loop_number"),
+                   "coi_(.+)_(.+)") %>%
     dplyr::mutate_all(as.numeric)
 
   # We determine how many different panels there will be by finding the unique
@@ -81,9 +82,10 @@ sensitivity_plot <- function(data,
   }
 
 
-  arranged_plots <- annotate_figure(arranged_plots,
-                                    top = text_grob(title, size = 13),
-                                    bottom = text_grob(caption,
+  arranged_plots <-
+    ggpubr::annotate_figure(arranged_plots,
+                            top = ggpubr::text_grob(title, size = 13),
+                            bottom = ggpubr::text_grob(caption,
                                                        hjust = 0,
                                                        x = 0.01,
                                                        size = 10))
@@ -111,18 +113,19 @@ sensitivity_plot_element <- function(data,
                                      change_param,
                                      change_param_val){
 
-  single_plot <- ggplot2::ggplot(dplyr::filter(data, loop_number == loop_num),
-                                 aes(x = true_COI, y = estimated_COI)) +
-    geom_count(color = "blue", alpha = 0.7, show.legend = FALSE) +
-    geom_abline(color = "red", size = 1) +
-    theme_classic() +
-    theme(plot.title = element_text(hjust = 0.5, size = 10),
-          axis.title = element_text(size = 7),
-          legend.title = element_text(size = 7),
-          legend.text = element_text(size = 7)) +
-    labs(x = "True COI",
-         y = "Estimated COI",
-         title = paste0(change_param, change_param_val[loop_num]))
+  single_plot <-
+    ggplot2::ggplot(dplyr::filter(data, .data$loop_number == loop_num),
+                    ggplot2::aes(x = .data$true_COI, y = .data$estimated_COI)) +
+    ggplot2::geom_count(color = "blue", alpha = 0.7, show.legend = FALSE) +
+    ggplot2::geom_abline(color = "red", size = 1) +
+    ggplot2::theme_classic() +
+    ggplot2::theme(plot.title  = ggplot2::element_text(hjust = 0.5, size = 10),
+                   axis.title  = ggplot2::element_text(size = 7),
+                  legend.title = ggplot2::element_text(size = 7),
+                   legend.text = ggplot2::element_text(size = 7)) +
+    ggplot2::labs(x = "True COI",
+                  y = "Estimated COI",
+                  title = paste0(change_param, change_param_val[loop_num]))
 
   return(single_plot)
 }
