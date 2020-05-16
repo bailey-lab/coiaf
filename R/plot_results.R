@@ -54,8 +54,8 @@ sensitivity_plot <- function(data,
   # parameter. Thus, we establish another column: loop number, that tells us
   # how often the other parameter is changing. In the end, there will be three
   # columns: true_COI, estimated_COI, and loop_number.
-  plot_df = data$predicted_coi %>%
-    tidyr::gather(.data$true_COI, .data$estimated_COI) %>%
+  plot_df <- data$predicted_coi %>%
+    tidyr::gather("true_COI", "estimated_COI") %>%
     tidyr::extract(.data$true_COI, c("true_COI", "loop_number"),
                    "coi_(.+)_(.+)") %>%
     dplyr::mutate_all(as.numeric)
