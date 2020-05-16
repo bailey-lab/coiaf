@@ -33,8 +33,9 @@ run_coi_test <- function(COI = 3,
   assert_vector(PLAF)
   assert_bounded(PLAF, left = 0, right = 0.5)
   assert_single_pos_int(coverage)
-  # alpha?
-  # epsilon?
+  assert_single_pos(alpha, zero_allowed = FALSE)
+  assert_single_pos(overdispersion)
+  assert_single_bounded(epsilon)
   assert_single_bounded(seq_error)
   assert_bounded(cut, left = 0, right = 0.5)
   assert_vector(cut)
@@ -112,13 +113,15 @@ coi_test <- function(repetitions = 10,
                      weighted = FALSE){
 
   # Check inputs
+  assert_pos_int(repetitions)
   assert_pos_int(COI)
   assert_pos_int(COI_range)
   assert_vector(PLAF)
   assert_bounded(PLAF, left = 0, right = 0.5)
   assert_pos_int(coverage)
-  # alpha?
-  # epsilon?
+  assert_pos(alpha, zero_allowed = FALSE)
+  assert_pos(overdispersion)
+  assert_bounded(epsilon)
   assert_bounded(seq_error)
   assert_bounded(cut, left = 0, right = 0.5)
   assert_vector(cut)
