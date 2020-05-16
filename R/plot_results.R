@@ -24,8 +24,8 @@ sensitivity_plot <- function(data,
   assert_eq(names(data), c("predicted_coi", "param_grid", "error_bias"))
   assert_pos_int(plot_dims, zero_allowed = FALSE)
   assert_length(plot_dims, 2)
-  if (!assert_null(change_param)) {assert_string(change_param)}
-  if (!assert_null(change_param_val)) {assert_vector(change_param_val)}
+  if (!is.null(change_param)) {assert_string(change_param)}
+  if (!is.null(change_param_val)) {assert_vector(change_param_val)}
 
   # Convert the predicted_coi dataframe into a long format. More specifically,
   # establish a column for the true coi and a column for the estimated coi
@@ -43,8 +43,13 @@ sensitivity_plot <- function(data,
   # values of loop_number
   num_loops <- unique(plot_df$loop_number)
 
-  # Need to make sure that there are enough panels to include all the graphs
-  assert_greq(plot_dims[1] * plot_dims[2], length(num_loops))
+  # Ensure that there are enough panels to include all the graphs
+  suggested_dims = plot_dims[1] * plot_dims[2]
+  needed_dims    = length(num_loops)
+  if (!all(suggested_dims >= needed_dims)) {
+    stop(sprintf("Not enough panels have been specified. User input %s panels, but %s panels needed.",
+                 suggested_dims, needed_dims), call. = FALSE)
+  }
 
   # We then call a helper function: sensitivity_plot_element, that creates each
   # individual plot and store these plots as a list
@@ -94,7 +99,7 @@ sensitivity_plot_element <- function(data,
   single_plot <- ggplot2::ggplot(dplyr::filter(data, loop_number == loop_num),
                                  aes(x = true_COI, y = estimated_COI)) +
     geom_count(color = "blue", alpha = 0.7, show.legend = FALSE) +
-    geom_abline(color = "red") +
+    geom_abline(color = "red", size = 1) +
     theme_classic() +
     theme(plot.title = element_text(hjust = 0.5, size = 10),
           axis.title = element_text(size = 10),
