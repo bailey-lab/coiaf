@@ -181,6 +181,7 @@ compute_coi <- function(theory_cois_interval, sim_coi, cuts,
   }
 
   # Distance to probability
+  dist <- as.numeric(dist)
   dist <- 1 / (dist + 1e-5)
   dist <- dist / sum(dist)
 
