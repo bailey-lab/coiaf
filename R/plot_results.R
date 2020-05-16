@@ -122,7 +122,7 @@ sensitivity_plot_element <- function(data,
           legend.text = element_text(size = 7)) +
     labs(x = "True COI",
          y = "Estimated COI",
-         title = paste(change_param, change_param_val[loop_num], sep = " = "))
+         title = paste0(change_param, change_param_val[loop_num]))
 
   return(single_plot)
 }
