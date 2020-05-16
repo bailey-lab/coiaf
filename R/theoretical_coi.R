@@ -27,9 +27,9 @@ theoretical_coi <- function(cois, interval, method = "1"){
   for (i in cois){
     if (i == cois[1]){
       curves <- data.frame(first = single_theoretical_coi(i, interval, method))
-      colnames(curves) <- paste("coi_", i, sep="")
+      colnames(curves) <- paste0("coi_", i)
     } else {
-      curves[[paste("coi_", i, sep="")]] =
+      curves[[paste0("coi_", i)]] =
         single_theoretical_coi(i, interval, method)
     }
   }
