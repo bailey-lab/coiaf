@@ -24,6 +24,20 @@ sensitivity_plot <- function(data,
                              change_param_val = NULL,
                              title = NULL,
                              caption = NULL){
+
+  # Ensure that ggplot2 and ggpubr are installed
+  if (!requireNamespace("ggplot2", quietly = TRUE) &
+      !requireNamespace("ggpubr", quietly = TRUE)) {
+    stop('Packages \"ggplot2\" and \"ggpubr\" must be installed in order to plot the tests.',
+         call. = FALSE)
+  } else if (!requireNamespace("ggplot2", quietly = TRUE)) {
+    stop('Package \"ggplot2\" must be installed in order to plot the tests.',
+         call. = FALSE)
+  } else if (!requireNamespace("ggpubr", quietly = TRUE)) {
+    stop('Package \"ggpubr\" must be installed in order to plot the tests.',
+         call. = FALSE)
+  }
+
   # Check inputs
   assert_eq(names(data), c("predicted_coi", "param_grid", "error_bias"))
   assert_pos_int(plot_dims, zero_allowed = FALSE)
@@ -54,8 +68,8 @@ sensitivity_plot <- function(data,
   suggested_dims = plot_dims[1] * plot_dims[2]
   needed_dims    = length(num_loops)
   if (!all(suggested_dims >= needed_dims)) {
-    stop(sprintf("Not enough panels have been specified. User input %s panels, but %s panels needed.",
-                 suggested_dims, needed_dims), call. = FALSE)
+    warning(sprintf("Not enough panels have been specified. User input %s panels, but %s panels needed.",
+                    suggested_dims, needed_dims), call. = FALSE)
   }
 
   # We then call a helper function: sensitivity_plot_element, that creates each
@@ -113,6 +127,13 @@ sensitivity_plot_element <- function(data,
                                      change_param,
                                      change_param_val){
 
+  # Ensure that ggplot2 is installed
+  if (!requireNamespace("ggplot2", quietly = TRUE)) {
+    stop('Package \"ggplot2\" must be installed in order to plot the test.',
+       call. = FALSE)
+  }
+
+  # Plot the figure
   single_plot <-
     ggplot2::ggplot(dplyr::filter(data, .data$loop_number == loop_num),
                     ggplot2::aes(x = .data$true_COI, y = .data$estimated_COI)) +
