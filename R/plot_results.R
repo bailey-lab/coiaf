@@ -11,6 +11,8 @@
 #' @param change_param The title of the plot. The title specifies the parameter
 #' that is being changed.
 #' @param change_param_val The values the changed parameter ranges over.
+#' @param title The title of the figure
+#' @param caption The caption of the figure
 #'
 #' @return A grid of plots that represents the sensitivity analysis
 #'
@@ -19,13 +21,17 @@
 sensitivity_plot <- function(data,
                              plot_dims,
                              change_param = NULL,
-                             change_param_val = NULL){
+                             change_param_val = NULL,
+                             title = NULL,
+                             caption = NULL){
   # Check inputs
   assert_eq(names(data), c("predicted_coi", "param_grid", "error_bias"))
   assert_pos_int(plot_dims, zero_allowed = FALSE)
   assert_length(plot_dims, 2)
   if (!is.null(change_param)) {assert_string(change_param)}
   if (!is.null(change_param_val)) {assert_vector(change_param_val)}
+  if (!is.null(title)) {assert_string(title)}
+  if (!is.null(caption)) {assert_string(caption)}
 
   # Convert the predicted_coi dataframe into a long format. More specifically,
   # establish a column for the true coi and a column for the estimated coi
@@ -69,9 +75,18 @@ sensitivity_plot <- function(data,
     # Include panel labels if there are more than one plots
     arranged_plots <- ggpubr::ggarrange(plotlist = myplots,
                                         labels = "AUTO",
+                                        font.label = list(size = 10),
                                         nrow = plot_dims[1],
                                         ncol = plot_dims[2])
   }
+
+
+  arranged_plots <- annotate_figure(arranged_plots,
+                                    top = text_grob(title, size = 13),
+                                    bottom = text_grob(caption,
+                                                       hjust = 0,
+                                                       x = 0.01,
+                                                       size = 10))
 
   # Lastly, we return the arranged plots
   return(arranged_plots)
@@ -102,9 +117,9 @@ sensitivity_plot_element <- function(data,
     geom_abline(color = "red", size = 1) +
     theme_classic() +
     theme(plot.title = element_text(hjust = 0.5, size = 10),
-          axis.title = element_text(size = 10),
-          legend.title = element_text(size = 8),
-          legend.text = element_text(size = 8)) +
+          axis.title = element_text(size = 7),
+          legend.title = element_text(size = 7),
+          legend.text = element_text(size = 7)) +
     labs(x = "True COI",
          y = "Estimated COI",
          title = paste(change_param, change_param_val[loop_num], sep = " = "))

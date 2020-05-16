@@ -4,7 +4,14 @@
 \alias{sensitivity_plot}
 \title{Plot sensitivity analysis}
 \usage{
-sensitivity_plot(data, plot_dims, change_param = NULL, change_param_val = NULL)
+sensitivity_plot(
+  data,
+  plot_dims,
+  change_param = NULL,
+  change_param_val = NULL,
+  title = NULL,
+  caption = NULL
+)
 }
 \arguments{
 \item{data}{The data to be plotted.}
@@ -16,6 +23,10 @@ will be split into.}
 that is being changed.}
 
 \item{change_param_val}{The values the changed parameter ranges over.}
+
+\item{title}{The title of the figure}
+
+\item{caption}{The caption of the figure}
 }
 \value{
 A grid of plots that represents the sensitivity analysis
