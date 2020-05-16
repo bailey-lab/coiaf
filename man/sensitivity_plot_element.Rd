@@ -2,23 +2,26 @@
 % Please edit documentation in R/plot_results.R
 \name{sensitivity_plot_element}
 \alias{sensitivity_plot_element}
-\title{Helper function for \code{\link{sensitivity_plot}}}
+\title{Plot a single panel of the sensitivity analysis}
 \usage{
 sensitivity_plot_element(data, loop_num, change_param, change_param_val)
 }
 \arguments{
-\item{data}{The data to be plotted}
+\item{data}{The data to be plotted.}
 
-\item{loop_num}{The loop number}
+\item{loop_num}{The loop number. Represents how many total panels will
+be plotted.}
 
-\item{change_param}{The parameter being changed}
+\item{change_param}{The title of the plot. The title specifies the parameter
+that is being changed.}
 
-\item{change_param_val}{The values the changed parameter takes}
+\item{change_param_val}{The values the changed parameter ranges over.}
 }
 \value{
-Plot
+A single panel of the sensitivity analysis.
 }
 \description{
-Plots a singular result
+Plots a single panel of the sensitivity analysis. Used as a
+helper function to \code{\link{sensitivity_plot}}.
 }
 \keyword{internal}

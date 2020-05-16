@@ -2,22 +2,26 @@
 % Please edit documentation in R/plot_results.R
 \name{sensitivity_plot}
 \alias{sensitivity_plot}
-\title{Function to plot results from \code{\link{coi_test}}}
+\title{Plot sensitivity analysis}
 \usage{
 sensitivity_plot(data, plot_dims, change_param = NULL, change_param_val = NULL)
 }
 \arguments{
-\item{data}{The data to be plotted}
+\item{data}{The data to be plotted.}
 
-\item{plot_dims}{A list representing the number of rows and columns}
+\item{plot_dims}{A list representing the number of rows and columns our plots
+will be split into.}
 
-\item{change_param}{The parameter being changed}
+\item{change_param}{The title of the plot. The title specifies the parameter
+that is being changed.}
 
-\item{change_param_val}{The values the changed parameter takes}
+\item{change_param_val}{The values the changed parameter ranges over.}
 }
 \value{
-Plot
+A grid of plots that represents the sensitivity analysis
 }
 \description{
-Plots a result
+The function is used to plot any sensitivity analysis that is
+run. It takes in the output of \code{\link{coi_test}} and creates a grid of
+plots.
 }
