@@ -52,7 +52,7 @@ run_coi_test <- function(COI = 3,
   # Simulated data results
   sim_results <- simulated_coi(sim, seq_error, cut)
 
-  # Determine ideal COI range (what true COIs to compare simulaiton to)
+  # Determine ideal COI range (what true COIs to compare simulation to)
   if (COI <= COI_range){
     theory_cois_interval <-seq(1, COI + COI_range)
   } else {

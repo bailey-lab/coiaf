@@ -1,5 +1,5 @@
 #------------------------------------------------
-#' @title Get dataframe of P.falciparum chromosome lengths
+#' @title Get dataframe of P. falciparum chromosome lengths
 #'
 #' @description Get dataframe of P. falciparum chromosome lengths.
 #'

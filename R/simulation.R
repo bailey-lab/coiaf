@@ -48,19 +48,19 @@ sim_biallelic <- function(COI = 3,
                           overdispersion = 0,
                           epsilon = 0) {
 
-  # check inputs
+  # Check inputs
   assert_single_pos_int(COI)
   assert_vector(PLAF)
   assert_bounded(PLAF)
 
-  # if a single value was inputed, then repeat coverage so that coverage is
+  # If a single value was input, then repeat coverage so that coverage is
   # applied over all loci.
   L <- length(PLAF)
   if (length(coverage) == 1) {
     coverage <- rep(coverage, L)
   }
 
-  # contine to check inputs
+  # Continue to check inputs
   assert_vector(coverage)
   assert_pos_int(coverage)
   assert_same_length(PLAF, coverage)
@@ -69,20 +69,20 @@ sim_biallelic <- function(COI = 3,
   assert_single_pos(epsilon, zero_allowed = TRUE)
   assert_bounded(epsilon)
 
-  # generate strain proportions
+  # Generate strain proportions
   w <- rdirichlet(rep(alpha, COI))
 
-  # generate true WSAF levels by summing binomial draws over strain proportions
+  # Generate true WSAF levels by summing binomial draws over strain proportions
   m <- mapply(function(x) rbinom(COI, 1, x), x = PLAF)
   p_levels <- colSums(sweep(m, 1, w, "*"))
 
-  # rounding errors from multiplying w by m can cause numbers greater than 1
+  # Rounding errors from multiplying w by m can cause numbers greater than 1
   p_levels[p_levels>1] <- 1L
 
-  # add in genotyping error
+  # Add in genotyping error
   p_error <- p_levels*(1-epsilon) + (1-p_levels)*epsilon
 
-  # draw read counts, taking into account overdispersion
+  # Draw read counts, taking into account overdispersion
   if (overdispersion == 0) {
     counts <- rbinom(L, size = coverage, prob = p_error)
   } else {
@@ -92,7 +92,7 @@ sim_biallelic <- function(COI = 3,
                          beta = (1-p_error)/overdispersion)
   }
 
-  # return list
+  # Return list
   ret <- list(COI = COI,
               strain_proportions = w,
               phased = m,

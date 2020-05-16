@@ -2,7 +2,7 @@
 % Please edit documentation in R/pf_misc.R
 \name{Pf_chrom_lengths}
 \alias{Pf_chrom_lengths}
-\title{Get dataframe of P.falciparum chromosome lengths}
+\title{Get dataframe of P. falciparum chromosome lengths}
 \usage{
 Pf_chrom_lengths()
 }

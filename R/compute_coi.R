@@ -117,7 +117,7 @@ compute_coi <- function(theory_cois_interval, sim_coi, cuts,
   assert_in(method, c("end", "ideal", "overall"))
   assert_single_logical(weighted)
 
-  # Calculate theoretical COI curves for the inteval specified. Since we want
+  # Calculate theoretical COI curves for the interval specified. Since we want
   # the theoretical curves and the simulated curves to have the PLAF values, we
   # compute the theoretical coi curves at sim_coi$midpoints
   theory_cois <- theoretical_coi(theory_cois_interval, sim_coi$midpoints)
@@ -170,7 +170,7 @@ compute_coi <- function(theory_cois_interval, sim_coi, cuts,
     coi <- unlist(stringr::str_split(names(which.min(dist)), "_"))[2]
   } else if (method == "overall"){
     ## Method 3: Find distance between curves
-    # Utilize helper function to compute overall distance betweent two curves
+    # Utilize helper function to compute overall distance between two curves
     overall_res <- distance_curves(theory_cois, sim_coi, cuts,
                                    weighted = weighted,
                                    dist_method = dist_method)
@@ -225,7 +225,7 @@ distance_curves <- function(theory_cois, sim_coi, cuts,
   assert_in(dist_method, c("abs_sum", "sum_abs", "squared", "KL"))
   assert_single_logical(weighted)
 
-  # Find bound of COIs. Substract 1 because theory_cois includes the PLAF at
+  # Find bound of COIs. Subtract 1 because theory_cois includes the PLAF at
   # the end
   bound_coi = ncol(theory_cois) - 1
 
