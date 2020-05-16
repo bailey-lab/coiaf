@@ -138,6 +138,7 @@ sensitivity_plot_element <- function(data,
     ggplot2::ggplot(dplyr::filter(data, .data$loop_number == loop_num),
                     ggplot2::aes(x = .data$true_COI, y = .data$estimated_COI)) +
     ggplot2::geom_count(color = "blue", alpha = 0.7, show.legend = FALSE) +
+    ggplot2::scale_size_area() +
     ggplot2::geom_abline(color = "red", size = 1) +
     ggplot2::theme_classic() +
     ggplot2::theme(plot.title  = ggplot2::element_text(hjust = 0.5, size = 10),
