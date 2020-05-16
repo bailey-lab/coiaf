@@ -24,8 +24,8 @@ sensitivity_plot <- function(data,
   assert_eq(names(data), c("predicted_coi", "param_grid", "error_bias"))
   assert_pos_int(plot_dims, zero_allowed = FALSE)
   assert_length(plot_dims, 2)
-  if (!is.null(change_param)) {assert_string(change_param)}
-  if (!is.null(change_param_val)) {assert_numeric(change_param_val)}
+  if (!assert_null(change_param)) {assert_string(change_param)}
+  if (!assert_null(change_param_val)) {assert_vector(change_param_val)}
 
   # Convert the predicted_coi dataframe into a long format. More specifically,
   # establish a column for the true coi and a column for the estimated coi
@@ -54,11 +54,19 @@ sensitivity_plot <- function(data,
                     change_param = change_param,
                     change_param_val = change_param_val)
 
-  # We arrange the plots
-  arranged_plots <- ggpubr::ggarrange(plotlist = myplots,
-                                      labels = "AUTO",
-                                      nrow = plot_dims[1],
-                                      ncol = plot_dims[2])
+  # Arrange the plots
+  if (plot_dims[1] * plot_dims[2] == 1){
+    # Do not include a panel label if there is only one plot
+    arranged_plots <- ggpubr::ggarrange(plotlist = myplots,
+                                        nrow = plot_dims[1],
+                                        ncol = plot_dims[2])
+  } else {
+    # Include panel labels if there are more than one plots
+    arranged_plots <- ggpubr::ggarrange(plotlist = myplots,
+                                        labels = "AUTO",
+                                        nrow = plot_dims[1],
+                                        ncol = plot_dims[2])
+  }
 
   # Lastly, we return the arranged plots
   return(arranged_plots)
