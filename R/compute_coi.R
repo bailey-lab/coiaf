@@ -130,7 +130,8 @@ compute_coi <- function(theory_cois_interval, sim_coi, cuts,
 
   if (method == "end"){
     ## Method 1: Compare last value
-    # Remove first column because it contains COI of 1
+    # Remove first column because it contains a COI we do not want tested
+    # This COI is included to aid in the calculation of the `ideal` method
     # (needed to compute ideal PLAF)
     last_theory <- theory_cois[, 2:bound_coi]
 
@@ -229,7 +230,7 @@ distance_curves <- function(theory_cois, sim_coi, cuts,
   # the end
   bound_coi = ncol(theory_cois) - 1
 
-  # Remove COI of 1 and PLAF
+  # Remove COI that is used to calculate distance method (1st one) and PLAF
   match_theory_cois <- theory_cois[, 2:bound_coi]
 
   # First find difference between theoretical and simulate curve. Weigh
