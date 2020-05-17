@@ -3,10 +3,15 @@ title: "Testing COI Parameters"
 author: "Aris Paschalidis"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 output:
-  prettydoc::html_pretty:
-    theme: cayman
-    highlight: vignette
-    fig_caption: yes
+  html_document:
+    highlight: pygments
+    toc: true
+    toc_float: true
+    number_sections: true
+  pdf_document:
+    toc: true
+    toc_depth: 2
+    number_sections: true
 editor_options:
   chunk_output_type: console
 ---
