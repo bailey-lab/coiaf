@@ -23,9 +23,9 @@ run_coi_test <- function(COI = 3,
                          epsilon = 0,
                          seq_error = 0.01,
                          cut = seq(0, 0.5, 0.01),
-                         method = c("end", "ideal", "overall"),
-                         dist_method = c("abs_sum", "sum_abs", "squared", "KL"),
-                         weighted = FALSE){
+                         method = "overall",
+                         dist_method ="squared",
+                         weighted = TRUE){
 
   # Check inputs
   assert_single_pos_int(COI)
@@ -102,7 +102,7 @@ run_coi_test <- function(COI = 3,
 
 coi_test <- function(repetitions = 10,
                      COI = 3,
-                     COI_range = 5,
+                     COI_range = 10,
                      PLAF = runif(1000, 0, 0.5),
                      coverage = 100,
                      alpha = 1,
@@ -110,9 +110,9 @@ coi_test <- function(repetitions = 10,
                      epsilon = 0,
                      seq_error = 0.01,
                      cut = seq(0, 0.5, 0.01),
-                     method = c("end", "ideal", "overall"),
-                     dist_method = c("abs_sum", "sum_abs", "squared", "KL"),
-                     weighted = FALSE){
+                     method = "overall",
+                     dist_method = "squared",
+                     weighted = TRUE){
 
   # Check inputs
   assert_pos_int(repetitions)

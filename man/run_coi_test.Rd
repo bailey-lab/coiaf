@@ -14,9 +14,9 @@ run_coi_test(
   epsilon = 0,
   seq_error = 0.01,
   cut = seq(0, 0.5, 0.01),
-  method = c("end", "ideal", "overall"),
-  dist_method = c("abs_sum", "sum_abs", "squared", "KL"),
-  weighted = FALSE
+  method = "overall",
+  dist_method = "squared",
+  weighted = TRUE
 )
 }
 \arguments{
