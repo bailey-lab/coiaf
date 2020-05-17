@@ -16,10 +16,15 @@ editor_options:
   chunk_output_type: console
 ---
 
-```{r imports, echo=F, warning=F, message=F, results='hide'}
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  comment = "#>",
+  tidy = TRUE,
+  tidy.opts = list(width.cutoff = 80)
+  eval = FALSE
+)
+
 library(coiaf)
-library(ggplot2)
-library(ggpubr)
 ```
 
 In this analysis file, we aim to understand the effect of varying parameters on
