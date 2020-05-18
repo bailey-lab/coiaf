@@ -55,7 +55,7 @@ run_coi_test <- function(COI = 3,
   # Determine ideal COI range (what true COIs to compare simulation to)
   # Include the -1 for the second loop because theoretical interval should have
   # an extra first COI. This is used for the `ideal` method
-  if (COI <= COI_range){
+  if (COI <= COI_range + 1){
     theory_cois_interval <-seq(1, COI + COI_range)
   } else {
     theory_cois_interval <- seq(COI - COI_range - 1, COI + COI_range)
