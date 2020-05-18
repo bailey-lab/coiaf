@@ -143,7 +143,8 @@ for some runs predict the correct COI. However, the distribution is quite large
 and the model does not consistently predict the same COI.
 
 The `overall` method seems to perform the best. It does underpredict the COI for 
-large COI values but it predicts the same COI consistently.
+large COI values but the variance in the prediction is less than in the `ideal`
+method.
 
 Based on these results, it seem that the `ideal` method and the `overall` method
 are the best. Which one is better is debatable, but for the rest of this 
@@ -168,11 +169,11 @@ knitr::include_graphics('Sensitivity Analysis Figures/tdistance.png')
 ```
 
 All of the distance metrics, other than KL divergence, perform quite well for
-all values of the COI. The KL divergecne, although it too performs well, for low
-COI values, it struggles in some cases overpredicting and in some cases
-underpredicting by a large amount. For a COI of 2, for example, when the 
-algorithm uses KL divergence, it predicts COI's much higher than the true COI,
-in some cases even predicting a COI of 7.
+all values of the COI. The KL divergecne, although it too performs well, it 
+struggles for low COI values. In some cases the KL method overpredicts and in 
+some cases underpredicts by a large amount. For a COI of 2, for example, the 
+algorithm predicts COI's much higher than the true COI, in some cases even 
+predicting a COI of 12.
 
 ## Weighted
 ```{r weight}
@@ -233,8 +234,8 @@ knitr::include_graphics('Sensitivity Analysis Figures/talpha.png')
 ```
 
 The larger the value of alpha is, the better our model performs. Greater than an
-alpha of 3, however, there is very litte difference. When the alpha is low, the
-model will underpredict the true COI.
+alpha of 1.6, however, there is very litte difference. When the alpha is low, 
+the model will underpredict the true COI.
 
 ## Overdispersion
 ```{r overdispersion}
@@ -252,7 +253,8 @@ knitr::include_graphics('Sensitivity Analysis Figures/tover.png')
 ```
 
 When you introduce overdispersion, models perform poorly. Any overdispersion 
-causes a large drop in accuracy.
+causes a large drop in accuracy. This drop in accuracy is caused by the model
+consistently underpredicting the COI by a large amount.
 
 ## Epsilon
 ```{r epsilon}
@@ -290,6 +292,4 @@ knitr::include_graphics('Sensitivity Analysis Figures/tseq.png')
 
 Interestingly, having no sequence errror causes problems in the algorithm. With
 a low amount of sequence error, 1\%, the model does pretty well. But, when the 
-error is roughly 4\% or larger, the model accuracy drops off. The model will
-still performs well at low COI values but with a COI greater than 5, the model
-greatly underpredicts.
+error is roughly 4\% or larger, the model accuracy drops off.
