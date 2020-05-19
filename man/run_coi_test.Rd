@@ -6,7 +6,7 @@
 \usage{
 run_coi_test(
   COI = 3,
-  COI_range = 10,
+  max_COI = 25,
   PLAF = runif(1000, 0, 0.5),
   coverage = 100,
   alpha = 1,
@@ -22,7 +22,7 @@ run_coi_test(
 \arguments{
 \item{COI}{Complexity of infection.}
 
-\item{COI_range}{A number indicating the range of COIs to compare the
+\item{max_COI}{A number indicating the maximum COI to compare the
 simulated data to.}
 
 \item{PLAF}{Vector of population-level allele frequencies at each locus.}

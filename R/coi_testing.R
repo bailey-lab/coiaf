@@ -3,7 +3,7 @@
 #'
 #' @description Runs a single full COI test.
 #'
-#' @param COI_range A number indicating the range of COIs to compare the
+#' @param max_COI A number indicating the maximum COI to compare the
 #' simulated data to.
 #' @inheritParams sim_biallelic
 #' @inheritParams simulated_coi
@@ -15,7 +15,7 @@
 #' @keywords internal
 
 run_coi_test <- function(COI = 3,
-                         COI_range = 10,
+                         max_COI = 25,
                          PLAF = runif(1000, 0, 0.5),
                          coverage = 100,
                          alpha = 1,
@@ -29,7 +29,7 @@ run_coi_test <- function(COI = 3,
 
   # Check inputs
   assert_single_pos_int(COI)
-  assert_single_pos_int(COI_range)
+  assert_single_pos_int(max_COI)
   assert_vector(PLAF)
   assert_bounded(PLAF, left = 0, right = 0.5)
   assert_single_pos_int(coverage)
@@ -52,18 +52,9 @@ run_coi_test <- function(COI = 3,
   # Simulated data results
   sim_results <- simulated_coi(sim, seq_error, cut)
 
-  # Determine ideal COI range (what true COIs to compare simulation to)
-  # Include the -1 for the second loop because theoretical interval should have
-  # an extra first COI. This is used for the `ideal` method
-  if (COI <= COI_range + 1){
-    theory_cois_interval <-seq(1, COI + COI_range)
-  } else {
-    theory_cois_interval <- seq(COI - COI_range - 1, COI + COI_range)
-  }
-
   # Compute COI
-  calc_coi <- compute_coi(theory_cois_interval, sim_results, cut, method,
-                         dist_method, weighted)
+  calc_coi <- compute_coi(theory_cois_interval = 1:max_COI,
+                          sim_results, cut, method, dist_method, weighted)
 
   return (calc_coi$coi)
 }
@@ -76,12 +67,7 @@ run_coi_test <- function(COI = 3,
 #' parameters
 #'
 #' @param repetitions The number of times each sample will be run.
-#' @param COI_range A number indicating the range of COIs to compare the
-#' simulated data to.
-#' @inheritParams sim_biallelic
-#' @inheritParams simulated_coi
-#' @param cut A vector indicating how often the data is summarized.
-#' @inheritParams compute_coi
+#' @inheritParams run_coi_test
 #'
 #' @return A list of the following dataframes:
 #' \describe{
@@ -102,7 +88,7 @@ run_coi_test <- function(COI = 3,
 
 coi_test <- function(repetitions = 10,
                      COI = 3,
-                     COI_range = 10,
+                     max_COI = 25,
                      PLAF = runif(1000, 0, 0.5),
                      coverage = 100,
                      alpha = 1,
@@ -117,7 +103,7 @@ coi_test <- function(repetitions = 10,
   # Check inputs
   assert_pos_int(repetitions)
   assert_pos_int(COI)
-  assert_pos_int(COI_range)
+  assert_single_pos_int(max_COI)
   assert_vector(PLAF)
   assert_bounded(PLAF, left = 0, right = 0.5)
   assert_pos_int(coverage)
@@ -136,7 +122,7 @@ coi_test <- function(repetitions = 10,
 
   # Create parameter grid
   param_grid <- expand.grid(COI = COI,
-                            COI_range = COI_range,
+                            max_COI = max_COI,
                             coverage = coverage,
                             alpha = alpha,
                             overdispersion = overdispersion,
@@ -164,7 +150,7 @@ coi_test <- function(repetitions = 10,
     repeats <- vapply(seq_len(repetitions), function(y) {
       test_result <-
         run_coi_test(param_grid$COI[x],
-                     param_grid$COI_range[x],
+                     param_grid$max_COI[x],
                      PLAF,
                      param_grid$coverage[x],
                      param_grid$alpha[x],
