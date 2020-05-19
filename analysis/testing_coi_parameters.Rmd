@@ -32,8 +32,6 @@ library(coiaf)
 In this analysis file, we aim to understand the effect of varying parameters on
 our COI framework. The parameters that we will examine are:
 
-* COI_range: A number indicating the range of COIs to compare the simulated 
-data to.
 * method: The method to be employed. One of `end`, `ideal`, `overall`.
 * dist_method: The distance method used to determine the distance between the 
 theoretical and simulated curves for the `overall` method. One of `abs_sum`, 
@@ -118,28 +116,6 @@ the theoretical COI curves are essentially identical. Although it is remarkable
 that the algorithm performs this well at COIs that large, COIs of greater than 
 20 are somehwat unrealistic. For the rest of this document, we only consider 
 COIs of 2 till 20.
-
-## COI Range
-```{r coi range}
-tcoi_range <- coi_test(COI = 2:20, COI_range = 10:21, repetitions = 100,
-                 PLAF = p, method = "overall", dist_method = "squared")
-
-sensitivity_plot(data = tcoi_range, 
-                 plot_dims = c(4, 3), 
-                 change_param = "COI Range = ",
-                 change_param_val = 10:21)
-```
-
-```{r coi range image, eval = T, echo = F, out.width = "75%"}
-knitr::include_graphics('Sensitivity Analysis Figures/tcoi_range.png')
-```
-
-As expected, the lower the COI range, the lower the error and bias. However,
-there does not seem to be a notable difference. Looking at the plotted data, 
-even for large COI ranges, the aglorithm performs well. As seen before, the 
-algorithm does consistently underpredict the COI. The fact that our model works 
-well with large `COI_range` values is promising and implies that our model can 
-accurately compute the COI.
 
 ## Method
 ```{r method}
