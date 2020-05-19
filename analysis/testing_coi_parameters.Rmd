@@ -52,6 +52,29 @@ Applies in both directions.
 A note of caution, in order to visualize the following tests, `ggplot2` and
 `ggpubr` must be installed.
 
+## Default Parameters
+
+```{r default table, eval = T, echo = F, results='asis'}
+default_tabl <- '
+| Parameter       | Default Value         |
+|:---------------:|:---------------------:|
+| COI             | `3`                   |
+| Max COI         | `25`                  |
+| PLAF            | `runif(1000, 0, 0.5)` |
+| Coverage        | `100`                 |
+| Aplha           | `1`                   |
+| Overdispersion  | `0`                   |
+| Epsilon         | `0`                   |
+| Sequence Error  | `0.01`                |
+| Cut             | `seq(0, 0.5, 0.01)`   |
+| Method          | `"overall"`           |
+| Distance Method | `"squared"`           |
+| Weighted        | `TRUE`                |
+'
+cat(default_tabl)
+```
+
+
 ## Setting our PLAF
 ```{r initialization}
 # Set the seed
