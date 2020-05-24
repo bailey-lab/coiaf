@@ -257,22 +257,23 @@ consistently underpredicting the COI by a large amount.
 
 ## Epsilon
 ```{r epsilon}
-tepsilon <- coi_test(COI = 2:20, epsilon = seq(0, 1, 0.1), 
+tepsilon <- coi_test(COI = 2:20, epsilon = seq(0, 0.008, 0.001), 
                  repetitions = 100, PLAF = p)
 
 sensitivity_plot(data = tepsilon,
-                 plot_dims = c(4, 3),
+                 plot_dims = c(3, 3),
                  change_param = "Epsilon = ",
-                 change_param_val = seq(0, 1, 0.1)) 
+                 change_param_val = seq(0, 0.008, 0.001)) 
 ```
 
 ```{r epsilon image, eval = T, echo = F, out.width = "75%"}
 knitr::include_graphics('Sensitivity Analysis Figures/tepsilon.png')
 ```
 
-Having epislon that is not equal to 0 or 1 causes very poor performance in the 
-model. The algoirithm will overpredict the COI every time and appears to 
-overpredict by the exact same amount.
+The algorithm performs best at an epsilon value of 0. As epislon becomes larger,
+the model greatly overpredicts the COI. This can be seen for an epsilon of 
+0.008, where the COI is almost always predicted to be 25, the maximum allowable
+COI for these tests.
 
 ## Sequencing Error
 ```{r seq error}
