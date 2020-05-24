@@ -17,12 +17,20 @@ editor_options:
 ---
 
 ```{r setup, include = FALSE}
+# Here, we set default options for our markdown file
 knitr::opts_chunk$set(
   comment = "#>",
   tidy = TRUE,
   tidy.opts = list(width.cutoff = 80),
   eval = FALSE
 )
+
+# The following two variables control which chunks are run. Either the tests are
+# run and the stored images not printed or the tests can not be run and stored 
+# images printed. To run the tests, set eval_tests to TRUE. To print the stored
+# images, set eval_tests to FALSE.
+eval_tests  = FALSE
+eval_images = !eval_tests
 
 library(coiaf)
 ```
@@ -74,7 +82,7 @@ cat(default_tabl)
 
 
 ## Setting our PLAF
-```{r initialization}
+```{r initialization, eval = eval_tests}
 # Set the seed
 set.seed(1)
 
@@ -90,7 +98,7 @@ p[p > 0.5] <- 1 - p[p > 0.5]
 We first want to understand for what range our model can accurately predict
 the COI.
 
-```{r coi}
+```{r coi, eval = eval_tests}
 tcoi <- coi_test(COI = 2:40, repetitions = 100, PLAF = p)
 
 sensitivity_plot(data = tcoi, plot_dims = c(1, 1), title = "COI")
@@ -100,7 +108,7 @@ sensitivity_plot(data = tcoi, plot_dims = c(1, 1), title = "COI")
 # %>% ggpubr::ggexport(filename = "analysis/Sensitivity Analysis Figures/tcoi.png")
 ```
 
-```{r coi image, eval = T, echo = F, out.width = "75%"}
+```{r coi image, eval = eval_images, echo = F, out.width = "75%"}
 knitr::include_graphics('Sensitivity Analysis Figures/tcoi.png')
 ```
 
@@ -118,7 +126,7 @@ that the algorithm performs this well at COIs that large, COIs of greater than
 COIs of 2 till 20.
 
 ## Method
-```{r method}
+```{r method, eval = eval_tests}
 tmethod <- coi_test(COI = 2:20, PLAF = p, method = c("end", "ideal", "overall"),
                     dist_method = "squared", repetitions = 100)
 
@@ -128,7 +136,7 @@ sensitivity_plot(data = tmethod,
                  change_param_val = c("End", "Ideal", "Overall"))
 ```
 
-```{r method image, eval = T, echo = F, out.width = "75%"}
+```{r method image, eval = eval_images, echo = F, out.width = "75%"}
 knitr::include_graphics('Sensitivity Analysis Figures/tmethod.png')
 ```
 
@@ -150,7 +158,7 @@ are the best. Which one is better is debatable, but for the rest of this
 docuement, we will use the `overall` method.
 
 ## Distance Method
-```{r distance}
+```{r distance, eval = eval_tests}
 tdistance <- coi_test(COI = 2:20, PLAF = p, method = "overall",
                       dist_method = c("abs_sum", "sum_abs",
                                       "squared", "KL"),
@@ -163,7 +171,7 @@ sensitivity_plot(data = tdistance,
                                       "Squared Error", "KL Divergence"))
 ```
 
-```{r distance image, eval = T, echo = F, out.width = "75%"}
+```{r distance image, eval = eval_images, echo = F, out.width = "75%"}
 knitr::include_graphics('Sensitivity Analysis Figures/tdistance.png')
 ```
 
@@ -175,7 +183,7 @@ algorithm predicts COI's much higher than the true COI, in some cases even
 predicting a COI of 12.
 
 ## Weighted
-```{r weight}
+```{r weight, eval = eval_tests}
 tweight <- coi_test(COI = 2:20, weighted = c(FALSE, TRUE),
                     dist_method = c("abs_sum", "sum_abs",
                                       "squared", "KL"),
@@ -189,7 +197,7 @@ sensitivity_plot(data = tweight,
                           rep(c("Not Weighted", "Weighted"), each = 4))) 
 ```
 
-```{r weight image, eval = T, echo = F, out.width = "75%"}
+```{r weight image, eval = eval_images, echo = F, out.width = "75%"}
 knitr::include_graphics('Sensitivity Analysis Figures/tweight.png')
 ```
 
@@ -199,7 +207,7 @@ appears that by weighing the distance, the algorithm does not underpredict as
 often, but the difference is very small.
 
 ## Coverage
-```{r coverage}
+```{r coverage, eval = eval_tests}
 tcoverage <- coi_test(COI = 2:20, coverage = c(25, 50, 100, 200, 400, 800), 
                  repetitions = 100, PLAF = p)
 
@@ -209,7 +217,7 @@ sensitivity_plot(data = tcoverage,
                  change_param_val = c(25, 50, 100, 200, 400, 800))
 ```
 
-```{r coverage image, eval = T, echo = F, out.width = "75%"}
+```{r coverage image, eval = eval_images, echo = F, out.width = "75%"}
 knitr::include_graphics('Sensitivity Analysis Figures/tcoverage.png')
 ```
 
@@ -218,7 +226,7 @@ our algorithm does. With a coverage greater than 100, however, there is not a
 noticable difference in performance.
 
 ## Alpha
-```{r alpha}
+```{r alpha, eval = eval_tests}
 talpha <- coi_test(COI = 2:20, alpha = seq(0.01, 5.51, 0.5), 
                  repetitions = 100, PLAF = p)
 
@@ -228,7 +236,7 @@ sensitivity_plot(data = talpha,
                  change_param_val = seq(0.01, 5.51, 0.5)) 
 ```
 
-```{r alpha image, eval = T, echo = F, out.width = "75%"}
+```{r alpha image, eval = eval_images, echo = F, out.width = "75%"}
 knitr::include_graphics('Sensitivity Analysis Figures/talpha.png')
 ```
 
@@ -237,7 +245,7 @@ alpha of 1.6, however, there is very litte difference. When the alpha is low,
 the model will underpredict the true COI.
 
 ## Overdispersion
-```{r overdispersion}
+```{r overdispersion, eval = eval_tests}
 tover <- coi_test(COI = 2:20, overdispersion = seq(0, 0.2, 0.05), 
                  repetitions = 100, PLAF = p)
 
@@ -247,7 +255,7 @@ sensitivity_plot(data = tover,
                  change_param_val = seq(0, 0.2, 0.05))
 ```
 
-```{r overdispersion image, eval = T, echo = F, out.width = "75%"}
+```{r overdispersion image, eval = eval_images, echo = F, out.width = "75%"}
 knitr::include_graphics('Sensitivity Analysis Figures/tover.png')
 ```
 
@@ -256,7 +264,7 @@ causes a large drop in accuracy. This drop in accuracy is caused by the model
 consistently underpredicting the COI by a large amount.
 
 ## Epsilon
-```{r epsilon}
+```{r epsilon, eval = eval_tests}
 tepsilon <- coi_test(COI = 2:20, epsilon = seq(0, 0.008, 0.001), 
                  repetitions = 100, PLAF = p)
 
@@ -266,7 +274,7 @@ sensitivity_plot(data = tepsilon,
                  change_param_val = seq(0, 0.008, 0.001))
 ```
 
-```{r epsilon image, eval = T, echo = F, out.width = "75%"}
+```{r epsilon image, eval = eval_images, echo = F, out.width = "75%"}
 knitr::include_graphics('Sensitivity Analysis Figures/tepsilon.png')
 ```
 
@@ -276,7 +284,7 @@ the model greatly overpredicts the COI. This can be seen for an epsilon of
 COI for these tests.
 
 ## Sequencing Error
-```{r seq error}
+```{r seq error, eval = eval_tests}
 tseq <- coi_test(COI = 2:20, epsilon = seq(0, 0.008, 0.004), 
                  seq_error = seq(0, 0.04, 0.01)[-1], 
                  repetitions = 10, PLAF = p)
@@ -292,7 +300,7 @@ sensitivity_plot(data = tseq,
                                    0.008, respectively.", width = 1000))
 ```
 
-```{r seq error image, eval = T, echo = F, out.width = "75%"}
+```{r seq error image, eval = eval_images, echo = F, out.width = "75%"}
 knitr::include_graphics('Sensitivity Analysis Figures/tseq.png')
 ```
 
