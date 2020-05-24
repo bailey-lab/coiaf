@@ -234,24 +234,49 @@ our algorithm does. With a coverage greater than 100, however, there is not a
 noticable difference in performance.
 
 ## Loci
-```{r, loci, eval = eval_tests}
-# tcoverage <- coi_test(COI = 2:20, loci, 
-#                  repetitions = 100, PLAF = p)
-# 
-# sensitivity_plot(data = tcoverage,
-#                  plot_dims = c(2, 3),
-#                  change_param = "Coverage = ",
-#                  change_param_val = c(25, 50, 100, 200, 400, 800))
+```{r loci, eval = eval_tests}
+# Set the range over which we will iterate
+loci = c(1e3, 1e4)
 
-# # Set the seed
-# set.seed(1)
-# 
-# # Define number of loci, and distribution of minor allele frequencies
-# L <- 1e3
-# p <- rbeta(L, 1, 5)
-# p[p > 0.5] <- 1 - p[p > 0.5]
+# For each loci, reset the PLAF and then run
+bloci <- lapply(loci, function(new_L){
+  new_p <- rbeta(new_L, 1, 5)
+  new_p[new_p > 0.5] <- 1 - new_p[new_p > 0.5]
+  
+  inner_tloci <- coi_test(COI = 2:20, repetitions = 100, PLAF = new_p)
+  inner_tloci$param_grid$loci <- new_L
+  return(inner_tloci)
+})
+
+# Extract the relevant information for each output: predicted_coi, param_grid,
+# and error_bias
+pc = do.call(cbind, lapply(bloci, function(test){ return(test$predicted_coi) }))
+pg = do.call(rbind, lapply(bloci, function(test){ return(test$param_grid) }))
+eb = do.call(rbind, lapply(bloci, function(test){ return(test$error_bias) }))
+
+# Fix the naming for predicted_coi
+num_cois = length(unique(pg$COI))
+num_repeat_cois = length(pg$COI) / num_cois
+names(pc) = paste("coi", pg$COI, rep(seq(num_repeat_cois), each = num_cois), sep="_")
+
+# Create the output
+tloci <- list(
+  predicted_coi = pc,
+  param_grid    = pg,
+  error_bias    = eb
+)
+
+# Plot
+tloci_image <- 
+  sensitivity_plot(data = tloci,
+                   plot_dims = c(2, 1),
+                   change_param_val = paste("Loci = ", c(1e3, 1e4)))
+tloci_image
 ```
 
+```{r loci image, eval = eval_images, echo = F, out.width = "75%"}
+knitr::include_graphics('Sensitivity Analysis Figures/tloci_image.png')
+```
 
 ## Alpha
 ```{r alpha, eval = eval_tests}
@@ -347,17 +372,18 @@ large, the model starts to underpredict the COI.
 
 ```{r save results, eval = eval_tests, echo = FALSE}
 # Below, we save the runs we performed for future use
-saved_analysis <- list(tcoi, tmethod, tdistance, tweight, tcoverage, talpha, 
-                       tover, tepsilon, tseq)
+saved_analysis <- list(tcoi, tmethod, tdistance, tweight, tcoverage, tloci,
+                       talpha, tover, tepsilon, tseq)
 saveRDS(saved_analysis, file = "analysis/saved_analysis.rds")
 
 # Here, we update all the stored images
 update_images <- list(tcoi_image, tmethod_image, tdistance_image, tweight_image,
-                      tcoverage_image, talpha_image, tover_image, 
+                      tcoverage_image, tloci_image, talpha_image, tover_image, 
                       tepsilon_image, tseq_image)
 names(update_images) <- list("tcoi_image", "tmethod_image", "tdistance_image",
-                             "tweight_image", "tcoverage_image", "talpha_image", 
-                             "tover_image", "tepsilon_image", "tseq_image")
+                             "tweight_image", "tcoverage_image", "tloci_image", 
+                             "talpha_image", "tover_image", "tepsilon_image", 
+                             "tseq_image")
 
 for (i in seq_len(length(update_images))){
   filename = paste0("analysis/Sensitivity Analysis Figures/", 
