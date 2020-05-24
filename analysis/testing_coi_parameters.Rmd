@@ -263,7 +263,7 @@ tepsilon <- coi_test(COI = 2:20, epsilon = seq(0, 0.008, 0.001),
 sensitivity_plot(data = tepsilon,
                  plot_dims = c(3, 3),
                  change_param = "Epsilon = ",
-                 change_param_val = seq(0, 0.008, 0.001)) 
+                 change_param_val = seq(0, 0.008, 0.001))
 ```
 
 ```{r epsilon image, eval = T, echo = F, out.width = "75%"}
@@ -277,19 +277,25 @@ COI for these tests.
 
 ## Sequencing Error
 ```{r seq error}
-tseq <- coi_test(COI = 2:20, seq_error = seq(0, 0.22, 0.02), 
-                 repetitions = 100, PLAF = p)
+tseq <- coi_test(COI = 2:20, epsilon = seq(0, 0.008, 0.004), 
+                 seq_error = seq(0, 0.04, 0.01)[-1], 
+                 repetitions = 10, PLAF = p)
+
+ep_title <- rep(paste0("Epsilon=", seq(0, 0.008, 0.004)), 2) 
+seq_title <- rep(paste0("Sequence Error = ", seq(0, 0.04, 0.01)[-1]), each = 3)
 
 sensitivity_plot(data = tseq,
                  plot_dims = c(4, 3),
-                 change_param = "Sequence Error = ",
-                 change_param_val = seq(0, 0.22, 0.02))
+                 change_param_val = seq_title,
+                 caption = strwrap("The first, second, and third columns 
+                                   correspond to an epsilon of 0, 0.004, and 
+                                   0.008, respectively.", width = 1000))
 ```
 
 ```{r seq error image, eval = T, echo = F, out.width = "75%"}
 knitr::include_graphics('Sensitivity Analysis Figures/tseq.png')
 ```
 
-Interestingly, having no sequence errror causes problems in the algorithm. With
-a low amount of sequence error, 1\%, the model does pretty well. But, when the 
-error is roughly 4\% or larger, the model accuracy drops off.
+Interestingly, having no sequence errror causes problems in the algorithm. Based
+off the figure, it is clear that introducing some sequence error does combat
+issues intoduced by the value of epsilon. However, if the sequence error is too
