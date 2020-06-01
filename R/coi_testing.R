@@ -207,17 +207,16 @@ coi_test <- function(repetitions = 10,
     sum(coi_pred[[x]] - param_grid$COI[x]) / length(coi_pred[[x]])
   })
 
-  # Save error and bias with changing parameters
-  error_bias <- param_grid %>%
+  # Save changing parameters with bootstrapping
+  boot_error <- param_grid %>%
     dplyr::select_if(function(x) dplyr::n_distinct(x) > 1)
-  error_bias$error <- boot_mae$mae
-  error_bias$bias  <- unlist(coi_bias)
+  boot_error <- dplyr::bind_cols(boot_error, boot_mae)
+  boot_error$bias  <- unlist(coi_bias)
 
   # Return predicted COIs and param_grid
   ret <- list(predicted_coi = as.data.frame(coi_pred),
               param_grid    = param_grid,
-              error_bias    = error_bias,
-              boot_error    = boot_mae)
+              boot_error    = boot_error)
   return (ret)
 }
 
