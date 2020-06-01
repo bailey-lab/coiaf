@@ -200,13 +200,7 @@ coi_test <- function(repetitions = 10,
   })
 
   # Convert output of bootstrapping to dataframe structre
-  boot_mae <- do.call(rbind.data.frame, boot_mae)
-
-  # Calculate mean absolute error
-  len <- nrow(param_grid)
-  coi_error <- lapply(seq_len(len), function(x) {
-    sum(abs(coi_pred[[x]] - param_grid$COI[x])) / length(coi_pred[[x]])
-  })
+  boot_mae <- as.data.frame(do.call(rbind, boot_mae))
 
   # Calculate bias (mean error)
   coi_bias <- lapply(seq_len(len), function(x) {
@@ -216,7 +210,7 @@ coi_test <- function(repetitions = 10,
   # Save error and bias with changing parameters
   error_bias <- param_grid %>%
     dplyr::select_if(function(x) dplyr::n_distinct(x) > 1)
-  error_bias$error <- unlist(coi_error)
+  error_bias$error <- boot_mae$mae
   error_bias$bias  <- unlist(coi_bias)
 
   # Return predicted COIs and param_grid
