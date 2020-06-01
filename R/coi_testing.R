@@ -192,7 +192,12 @@ coi_test <- function(repetitions = 10,
                           statistic = mae, R = 1000)
 
     # Get the normal confidence interval
-    CI <- boot::boot.ci(results, type = "norm")$norm
+    invisible(capture.output(CI <- boot::boot.ci(results, type = "norm")$norm))
+    if (is.null(CI)){
+      message(strwrap(sprintf('All values of the calculated statistic are the
+      same. Could not calculate the bootstrapped confidence interval for a COI
+                              of %s.', param_grid$COI[x])))
+    }
 
     # Store the mean absolulte error and confidence interval bounds
     extract <- list(mae = results$t0, lower = CI[2], upper = CI[3])
