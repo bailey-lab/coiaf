@@ -195,7 +195,7 @@ coi_test <- function(repetitions = 10,
     CI <- boot::boot.ci(results, type = "norm")$norm
 
     # Store the mean absolulte error and confidence interval bounds
-    extract <- list(mae = results$t0, lower = CI[2], upper = CI[2])
+    extract <- list(mae = results$t0, lower = CI[2], upper = CI[3])
     return(extract)
   })
 
