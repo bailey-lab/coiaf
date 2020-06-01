@@ -16,8 +16,9 @@ BugReports: https://github.com/ojwatson/coiaf/issues
 Description: Provides a direct method for estimating complexity of infection
   using within-sample allele frequencies from whole genome sequence data. 
 LazyData: TRUE
-Depends: R (>= 3.3.0)
+Depends: R (>= 3.5.0)
 Imports: 
+    boot,
     dplyr,
     magrittr,
     philentropy,
@@ -32,7 +33,8 @@ Suggests:
     rmarkdown,
     spelling,
     testthat,
-    tidyr
+    tidyr,
+    tidyselect
 License: MIT + file LICENSE
 RoxygenNote: 7.1.0
 VignetteBuilder: knitr

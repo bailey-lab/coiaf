@@ -158,7 +158,7 @@ sensitivity_plot_element <- function(data,
 #' @description Plots the mean absolute error and the confidence interval.
 #'
 #' @param data The data to be plotted.
-#' @param fill The variable the data will be seperated by.
+#' @param fill The variable the data will be separated by.
 #' @param fill_levels The levels for the fill variable.
 #' @param title The title of the plot. Default to \code{NULL}.
 #' @param legend_title The text for the legend. Default to \code{NULL}.
@@ -200,11 +200,12 @@ error_plot <- function(data, fill = "COI", fill_levels = NULL, title = NULL,
   # for data points where the mean absolute error is 0.
   plot_data <- plot_data %>%
     dplyr::mutate(dplyr::across(where(function(x) dplyr::n_distinct(x) > 1) &
-                                  !all_of(c("mae", "lower", "upper", "bias")),
+                                  !tidyselect::all_of(c("mae", "lower",
+                                                        "upper", "bias")),
                                 as.factor)) %>%
-    dplyr::mutate(mae   = dplyr::na_if(mae, 0)) %>%
-    dplyr::mutate(lower = dplyr::na_if(lower, 0)) %>%
-    dplyr::mutate(upper = dplyr::na_if(upper, 0))
+    dplyr::mutate(mae   = dplyr::na_if(.data$mae, 0)) %>%
+    dplyr::mutate(lower = dplyr::na_if(.data$lower, 0)) %>%
+    dplyr::mutate(upper = dplyr::na_if(.data$upper, 0))
 
   # Customize the levels of the fill variable
   if (!is.null(fill_levels)){
@@ -224,11 +225,11 @@ error_plot <- function(data, fill = "COI", fill_levels = NULL, title = NULL,
 
   # Plot the data and return
   error_plot <- ggplot2::ggplot(plot_data,
-                                ggplot2::aes(x = COI, y = mae,
+                                ggplot2::aes(x = .data$COI, y = .data$mae,
                                              fill = eval(parse(text = fill)))) +
-    ggplot2::geom_col(position = position_dodge(), na.rm = T) +
-    ggplot2::geom_errorbar(ggplot2::aes(ymin = lower, ymax = upper),
-                           width = .2, position = position_dodge(.9)) +
+    ggplot2::geom_col(position = "dodge", na.rm = T) +
+    ggplot2::geom_errorbar(ggplot2::aes(ymin = .data$lower, ymax = .data$upper),
+                           width = .2, position = ggplot2::position_dodge(.9)) +
     ggplot2::theme_classic() +
     ggplot2::theme(legend.position = legend.position,
                    plot.title   = ggplot2::element_text(hjust = 0.5, size = 13),
@@ -238,8 +239,8 @@ error_plot <- function(data, fill = "COI", fill_levels = NULL, title = NULL,
     ggplot2::labs(y = "Mean Absolute Error", title = title, fill = legend_title)
 
   if (!is.null(second_fill)){
-    error_plot <- error_plot + facet_wrap(~ plot_data[[second_fill]],
-                                          nrow = 2)
+    error_plot <- error_plot + ggplot2::facet_wrap(~ plot_data[[second_fill]],
+                                                   nrow = 2)
   }
 
   return(error_plot)

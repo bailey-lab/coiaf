@@ -17,7 +17,7 @@ error_plot(
 \arguments{
 \item{data}{The data to be plotted.}
 
-\item{fill}{The variable the data will be seperated by.}
+\item{fill}{The variable the data will be separated by.}
 
 \item{fill_levels}{The levels for the fill variable.}
 
