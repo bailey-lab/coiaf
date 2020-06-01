@@ -172,10 +172,10 @@ docuement, we will use the `overall` method.
 
 ## Distance Method
 ```{r distance, eval = eval_tests}
-tdistance <- coi_test(COI = 2:10, PLAF = p, method = "overall",
+tdistance <- coi_test(COI = 2:20, PLAF = p, method = "overall",
                       dist_method = c("abs_sum", "sum_abs",
                                       "squared", "KL"),
-                      repetitions = 10)
+                      repetitions = 100)
 
 tdistance_image <- 
   sensitivity_plot(data = tdistance,
@@ -207,10 +207,10 @@ predicting a COI of 12.
 
 ## Weighted
 ```{r weight, eval = eval_tests}
-tweight <- coi_test(COI = 2:10, weighted = c(FALSE, TRUE),
+tweight <- coi_test(COI = 2:20, weighted = c(FALSE, TRUE),
                     dist_method = c("abs_sum", "sum_abs",
                                       "squared", "KL"),
-                    PLAF = p, repetitions = 10)
+                    PLAF = p, repetitions = 100)
 
 tweight_image <- 
   sensitivity_plot(data = tweight,
@@ -239,8 +239,8 @@ often, but the difference is very small.
 
 ## Coverage
 ```{r coverage, eval = eval_tests}
-tcoverage <- coi_test(COI = 2:10, coverage = c(25, 50, 100, 200, 400, 800), 
-                 repetitions = 10, PLAF = p)
+tcoverage <- coi_test(COI = 2:20, coverage = c(25, 50, 100, 200, 400, 800), 
+                 repetitions = 100, PLAF = p)
 
 tcoverage_image <- 
   sensitivity_plot(data = tcoverage,
@@ -274,7 +274,7 @@ bloci <- lapply(loci, function(new_L){
   new_p <- rbeta(new_L, 1, 5)
   new_p[new_p > 0.5] <- 1 - new_p[new_p > 0.5]
   
-  inner_tloci <- coi_test(COI = 2:20, repetitions = 10, PLAF = new_p)
+  inner_tloci <- coi_test(COI = 2:20, repetitions = 100, PLAF = new_p)
   inner_tloci$param_grid$loci <- new_L
   return(inner_tloci)
 })
@@ -321,7 +321,7 @@ knitr::include_graphics('Sensitivity Analysis Figures/Error Images/tloci_error.p
 ## Alpha
 ```{r alpha, eval = eval_tests}
 talpha <- coi_test(COI = 2:20, alpha = seq(0.01, 5.51, 0.5), 
-                 repetitions = 10, PLAF = p)
+                 repetitions = 100, PLAF = p)
 
 talpha_image <- 
   sensitivity_plot(data = talpha,
@@ -348,7 +348,7 @@ the model will underpredict the true COI.
 ## Overdispersion
 ```{r overdispersion, eval = eval_tests}
 tover <- coi_test(COI = 2:20, overdispersion = seq(0, 0.2, 0.05), 
-                 repetitions = 10, PLAF = p)
+                 repetitions = 100, PLAF = p)
 
 tover_image <- 
   sensitivity_plot(data = tover,
@@ -375,7 +375,7 @@ consistently underpredicting the COI by a large amount.
 ## Epsilon
 ```{r epsilon, eval = eval_tests}
 tepsilon <- coi_test(COI = 2:20, epsilon = seq(0, 0.008, 0.001), 
-                 repetitions = 10, PLAF = p)
+                 repetitions = 100, PLAF = p)
 
 tepsilon_image <- 
   sensitivity_plot(data = tepsilon,
@@ -404,7 +404,7 @@ COI for these tests.
 ```{r seq error, eval = eval_tests}
 tseq <- coi_test(COI = 2:20, epsilon = seq(0, 0.008, 0.004), 
                  seq_error = seq(0, 0.04, 0.01)[-1], 
-                 repetitions = 10, PLAF = p)
+                 repetitions = 100, PLAF = p)
 
 ep_title <- rep(paste0("Epsilon=", seq(0, 0.008, 0.004)), 2) 
 seq_title <- rep(paste0("Sequence Error = ", seq(0, 0.04, 0.01)[-1]), each = 3)
@@ -439,6 +439,19 @@ large, the model starts to underpredict the COI.
 # Below, we save the runs we performed for future use
 saved_analysis <- list(tcoi, tmethod, tdistance, tweight, tcoverage, tloci,
                        talpha, tover, tepsilon, tseq)
+
+saved_analysis <- lapply(seq_len(length(saved_analysis)), function(x){
+  inner <- lapply(seq_len(length(saved_analysis[[x]])), function(y){
+    return(saved_analysis[[x]][[y]] %>% tidyr::unnest(cols = names(saved_analysis[[x]][[y]])))
+  })
+  names(inner) <- names(saved_analysis[[x]])
+  return(inner)
+})
+
+names(saved_analysis) <- list("tcoi", "tmethod", "tdistance", "tweight", 
+                              "tcoverage", "tloci", "talpha", "tover", 
+                              "tepsilon", "tseq")
+
 saveRDS(saved_analysis, file = "analysis/saved_analysis.rds")
 
 # Here, we update all the stored images
@@ -473,28 +486,3 @@ for (i in seq_len(length(update_errors))){
   suppressMessages(update_errors[i] %>% ggpubr::ggexport(filename = filename))
 }
 ```
-
-
-<!-- # ```{r} -->
-<!-- # test <- tdistance$boot_error %>% tidyr::unnest(cols = names(tdistance$boot_error)) -->
-<!-- # test <- tcoi$boot_error %>% tidyr::unnest(cols = names(tcoi$boot_error)) -->
-<!-- # test <- tmethod$boot_error %>% tidyr::unnest(cols = names(tmethod$boot_error)) -->
-<!-- #  -->
-<!-- # test <- test %>%  -->
-<!-- #   dplyr::mutate(dplyr::across(where(function(x) dplyr::n_distinct(x) > 1) &  -->
-<!-- #                   !all_of(c("mae", "lower", "upper", "bias")), as.factor)) %>% -->
-<!-- #   dplyr::mutate(mae = dplyr::na_if(mae, 0)) %>%  -->
-<!-- #   dplyr::mutate(lower = dplyr::na_if(lower, 0)) %>%  -->
-<!-- #   dplyr::mutate(upper = dplyr::na_if(upper, 0)) -->
-<!-- #  -->
-<!-- # library(ggplot2) -->
-<!-- # ggplot(test, aes(x = COI, y = mae, fill = method)) + -->
-<!-- #   geom_col(position=position_dodge(), na.rm = T) + -->
-<!-- #   geom_errorbar(aes(ymin = lower, ymax = upper), width = .2, position=position_dodge(.9)) + -->
-<!-- #   theme_classic() + -->
-<!-- #   theme(legend.position = "bottom") + -->
-<!-- #   labs(y = "Mean Absolute Error", fill = "Distance Method") -->
-<!-- #  -->
-<!-- # error_plot(tmethod, fill = "method", legend_title = "Method") -->
-<!-- # ``` -->
-
