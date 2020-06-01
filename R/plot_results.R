@@ -39,7 +39,7 @@ sensitivity_plot <- function(data,
   }
 
   # Check inputs
-  assert_eq(names(data), c("predicted_coi", "param_grid", "error_bias"))
+  assert_eq(names(data), c("predicted_coi", "param_grid", "boot_error"))
   assert_pos_int(plot_dims, zero_allowed = FALSE)
   assert_length(plot_dims, 2)
   if (!is.null(change_param)) {assert_string(change_param)}
@@ -164,13 +164,16 @@ sensitivity_plot_element <- function(data,
 #' @param legend_title The text for the legend. Default to \code{NULL}.
 #' @param legend.position The position of the legend. One of \code{"none",
 #' "left", "right", "bottom", "top"}.
+#' @param second_fill Indicates if there will be a second fill variable and
+#' what it will be.
 #'
 #' @return The plot
 #'
 #' @export
 
 error_plot <- function(data, fill = "COI", fill_levels = NULL, title = NULL,
-                       legend_title = fill, legend.position = "bottom"){
+                       legend_title = fill, legend.position = "bottom",
+                       second_fill = NULL){
 
   # Ensure that ggplot2 is installed
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
@@ -179,11 +182,13 @@ error_plot <- function(data, fill = "COI", fill_levels = NULL, title = NULL,
   }
 
   # Check inputs
+  assert_eq(names(data), c("predicted_coi", "param_grid", "boot_error"))
   assert_single_string(fill)
   if (!is.null(fill_levels)) {assert_string(fill_levels)}
   if (!is.null(title)) {assert_single_string(title)}
   assert_single_string(legend_title)
   assert_single_string(legend.position)
+  if (!is.null(second_fill)) {assert_single_string(second_fill)}
 
   # Convert data to a tibble
   plot_data <- data$boot_error %>% tidyr::unnest(cols = names(data$boot_error))
@@ -226,11 +231,16 @@ error_plot <- function(data, fill = "COI", fill_levels = NULL, title = NULL,
                            width = .2, position = position_dodge(.9)) +
     ggplot2::theme_classic() +
     ggplot2::theme(legend.position = legend.position,
-                   plot.title   = ggplot2::element_text(hjust = 0.5, size = 10),
-                   axis.title   = ggplot2::element_text(size = 7),
-                   legend.title = ggplot2::element_text(size = 7),
-                   legend.text  = ggplot2::element_text(size = 7)) +
+                   plot.title   = ggplot2::element_text(hjust = 0.5, size = 13),
+                   axis.title   = ggplot2::element_text(size = 10),
+                   legend.title = ggplot2::element_text(size = 10),
+                   legend.text  = ggplot2::element_text(size = 8)) +
     ggplot2::labs(y = "Mean Absolute Error", title = title, fill = legend_title)
+
+  if (!is.null(second_fill)){
+    error_plot <- error_plot + facet_wrap(~ plot_data[[second_fill]],
+                                          nrow = 2)
+  }
 
   return(error_plot)
 

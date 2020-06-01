@@ -10,7 +10,8 @@ error_plot(
   fill_levels = NULL,
   title = NULL,
   legend_title = fill,
-  legend.position = "bottom"
+  legend.position = "bottom",
+  second_fill = NULL
 )
 }
 \arguments{
@@ -26,6 +27,9 @@ error_plot(
 
 \item{legend.position}{The position of the legend. One of \code{"none",
 "left", "right", "bottom", "top"}.}
+
+\item{second_fill}{Indicates if there will be a second fill variable and
+what it will be.}
 }
 \value{
 The plot
