@@ -167,23 +167,46 @@ coi_test <- function(repetitions = 10,
     return(repeats)
   })
 
-  # Determine how many unique COIs there are
-  num_cois = length(COI)
+  # Name the predicted COIs
+  names(coi_pred) <- paste("coi_", param_grid$COI, sep="")
 
-  # Calculate the number of times each COI is repeated in param_grid
-  num_repeat_cois = length(param_grid$COI) / num_cois
+  # Calculate mean absolute error
+  len <- nrow(param_grid)
+  boot_mae <- lapply(seq_len(len), function(x) {
+    # Get the specific row (list of predicted COIs). Note that we convert to a
+    # data frame because the boot package requires this.
+    boot_data <- as.data.frame(coi_pred[x])
 
-  # Name the predicted cois
-  names(coi_pred) <- paste("coi",
-                           param_grid$COI,
-                           rep(seq(num_repeat_cois), each = num_cois),
-                           sep="_")
+    # Create function to find mean absolute error for bootstrapping
+    mae <- function(data, true_coi, indices){
+      # Sample from the data
+      sampled <- data[indices, ]
+
+      # Compute mean absolute error for the sampled data and return
+      sampled_mae <- sum(abs(sampled - true_coi)) / length(sampled)
+      return(sampled_mae)
+    }
+
+    # Bootstrapping
+    results <- boot::boot(data = boot_data, true_coi = param_grid$COI[x],
+                          statistic = mae, R = 1000)
+
+    # Get the normal confidence interval
+    CI <- boot::boot.ci(results, type = "norm")$norm
+
+    # Store the mean absolulte error and confidence interval bounds
+    extract <- list(mae = results$t0, lower = CI[2], upper = CI[2])
+    return(extract)
+  })
+
+  # Convert output of bootstrapping to dataframe structre
+  boot_mae <- do.call(rbind.data.frame, boot_mae)
 
   # Calculate mean absolute error
   len <- nrow(param_grid)
   coi_error <- lapply(seq_len(len), function(x) {
     sum(abs(coi_pred[[x]] - param_grid$COI[x])) / length(coi_pred[[x]])
-    })
+  })
 
   # Calculate bias (mean error)
   coi_bias <- lapply(seq_len(len), function(x) {
@@ -199,7 +222,8 @@ coi_test <- function(repetitions = 10,
   # Return predicted COIs and param_grid
   ret <- list(predicted_coi = as.data.frame(coi_pred),
               param_grid    = param_grid,
-              error_bias    = error_bias)
+              error_bias    = error_bias,
+              boot_error    = boot_mae)
   return (ret)
 }
 
