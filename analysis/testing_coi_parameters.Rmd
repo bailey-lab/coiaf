@@ -187,8 +187,8 @@ tdistance_image
 
 tdistance_error <- error_plot(tdistance, fill = "dist_method", 
                               legend_title = "Distance Method", 
-                              fill_levels = c("Absolute Sum", "Sum of Absolute",
-                                        "Squared Error", "KL Divergence"),
+                              fill_levels = c("Absolute Sum", "KL Divergence",
+                                              "Squared Error", "Sum of Absolute"),
                               title = "Error Plot for Distance Method")
 tdistance_error
 ```
@@ -221,6 +221,8 @@ tweight_image <-
 tweight_image
 
 tweight_error <- error_plot(tweight, fill = "dist_method", 
+                            fill_levels = c("Absolute Sum", "KL Divergence",
+                                              "Squared Error", "Sum of Absolute"),
                             legend_title = "Distance Method", 
                             title = "Error Plot for Weight",
                             second_fill = "weighted")
