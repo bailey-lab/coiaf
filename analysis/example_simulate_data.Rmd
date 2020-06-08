@@ -1,0 +1,122 @@
+---
+title: "Example Simulated Data"
+author: "Aris Paschalidis"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    highlight: pygments
+    toc: true
+    toc_float: true
+    number_sections: true
+  pdf_document:
+    toc: true
+    toc_depth: 2
+    number_sections: true
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include = FALSE}
+# Here, we set default options for our markdown file
+knitr::opts_chunk$set(
+  comment = "#>",
+  tidy = TRUE,
+  tidy.opts = list(width.cutoff = 80),
+  echo = FALSE
+)
+
+library(coiaf)
+```
+
+```{r default values, eval = T, echo = F, results='asis'}
+# Default values
+COI = 3
+PLAF = runif(10, 0, 0.5)
+coverage = 100
+alpha = 1
+overdispersion = 0
+epsilon = 0
+
+# Print default values
+default_tabl <- '
+| Parameter       | Default Value         |
+|:---------------:|:---------------------:|
+| COI             | `3`                   |
+| PLAF            | `runif(10, 0, 0.5)` |
+| Coverage        | `100`                 |
+| Alpha           | `1`                   |
+| Overdispersion  | `0`                   |
+| Epsilon         | `0`                   |
+'
+cat(default_tabl)
+```
+
+```{r functions}
+rdirichlet <- function(shape = rep(1,3)) {
+  x <- rgamma(length(shape), shape = shape, rate = max(shape))
+  return(x/sum(x))
+}
+```
+
+PLAF
+```{r PLAF}
+# Set the seed
+# set.seed(1)
+
+# Define number of loci, and distribution of minor allele frequencies
+L <- 5
+PLAF <- rbeta(L, 1, 5)
+PLAF[PLAF > 0.5] <- 1 - PLAF[PLAF > 0.5]
+
+tbl_PLAF <- t(PLAF)
+colnames(tbl_PLAF) <- paste("Locus", 1:5)
+knitr::kable(tbl_PLAF, digits = 3, align = "l")
+```
+
+Strain proportinos
+```{r strain proportions}
+# Generate strain proportions
+strain_p <- rdirichlet(rep(alpha, COI))
+names(strain_p) <- paste("Strain", 1:3)
+
+knitr::kable(strain_p, digits = 3, align = "l")
+```
+
+True WSAF
+```{r, true wsaf}
+true_wsaf <- mapply(function(x) rbinom(COI, 1, x), x = PLAF)
+rownames(true_wsaf) <- paste("Strain", 1:3)
+colnames(true_wsaf) <- paste("Locus", 1:5)
+
+knitr::kable(true_wsaf, digits = 3, align = "l")
+```
+
+Simulated WSAF
+```{r}
+# Coverage
+L <- length(PLAF)
+  if (length(coverage) == 1) {
+    coverage <- rep(coverage, L)
+  }
+
+p_levels <- colSums(sweep(true_wsaf, 1, strain_p, "*"))
+
+# Rounding errors from multiplying w by m can cause numbers greater than 1
+p_levels[p_levels>1] <- 1L
+
+# Add in genotyping error
+p_error <- p_levels*(1-epsilon) + (1-p_levels)*epsilon
+
+# Draw read counts, taking into account overdispersion
+if (overdispersion == 0) {
+  counts <- rbinom(L, size = coverage, prob = p_error)
+}
+
+sim_wsaf = counts/coverage
+
+tbl_sim_wsaf <- t(sim_wsaf)
+colnames(tbl_sim_wsaf) <- paste("Locus", 1:5)
+
+knitr::kable(tbl_sim_wsaf, digits = 3, align = "l")
+```
+

@@ -11,3 +11,4 @@
 ^analysis$
 ^README\.Rmd$
 ^example_simulations\.R$
+^analysis/example_simulate_data\.Rmd$
