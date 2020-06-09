@@ -1,0 +1,84 @@
+#------------------------------------------------
+#' @title Run Real Data COIs
+#'
+#' @description Run the algorithm on real data
+#'
+#' @param data The dataset.
+#' @inheritParams coi_test
+#'
+#'
+#' @return A list of the following dataframes:
+#' \describe{
+#'   \item{\code{predicted_coi}}{A dataframe of the predicted COIs. COIs are
+#'   predicted using \link{compute_coi}. Each column represents a separate set
+#'   of parameters. Each row represents a predicted COI. Predictions are done
+#'   many times, depending on the value of \code{repetitions}.}
+#'   \item{\code{param_grid}}{The parameter grid. The parameter grid is all
+#'   possible combinations of the parameters inputted. Each row represents a
+#'   unique combination.}
+#'   \item{\code{error_bias}}{A dataframe containing any parameter that was
+#'   varied and the associated mean absolute error and bias (mean error). By
+#'   showing only parameters that were varied, the output is easier to interpret
+#'   and does not have information about parameters that were held constant.}
+#' }
+#'
+#' @export
+
+run_real_data <- function(data,
+                          seq_error = 0.01,
+                          cut = seq(0, 0.5, 0.01),
+                          max_COI = 25,
+                          method = "overall",
+                          dist_method = "squared",
+                          weighted = TRUE){
+
+  # Check inputs
+  assert_single_pos_int(max_COI)
+  assert_single_bounded(seq_error)
+  assert_bounded(cut, left = 0, right = 0.5)
+  assert_vector(cut)
+  assert_increasing(cut)
+  assert_single_string(method)
+  assert_in(method, c("end", "ideal", "overall"))
+  assert_single_string(dist_method)
+  assert_in(dist_method, c("abs_sum", "sum_abs", "squared", "KL"))
+  assert_logical(weighted)
+
+  # Function to determine if pbapply is installed. If it is installed, it will
+  # display a progress bar
+  list_apply <- function(x, fun, ...){
+    if (requireNamespace("pbapply", quietly = TRUE)) {
+      pbapply::pblapply(x, fun, ...)
+    } else {
+      lapply(x, fun, ...)
+    }
+  }
+
+  # PLAF is the same for the entire area so we can compute it once outside the
+  # lapply
+  plaf <- colMeans(data, na.rm = T)
+
+  # Run each sample in the data input
+  coi_pred <- list_apply(seq_len(nrow(data)), function(x) {
+    # Get wsaf and remove any missing data
+    wsaf  <- data[x,]
+    input <- data.frame(wsaf = wsaf, plaf = plaf) %>% na.omit()
+
+    # Format data in the proper way
+    res <- process_real_data(input$wsaf, input$plaf, cut = cut)
+
+    # Compute the coi
+    sample_coi <- compute_coi(theory_cois_interval = 1:25, res, cuts = cut,
+                              method = "overall", dist_method ="squared",
+                              weighted = TRUE)
+
+    return(sample_coi)
+  })
+
+  # Add names to the output
+  names(coi_pred) <- rownames(data)
+
+  # Return predicted COIs and probabilities for each sample
+  return (coi_pred)
+}
+
