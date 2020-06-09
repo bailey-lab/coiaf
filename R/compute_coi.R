@@ -69,7 +69,7 @@ compute_coi <- function(theory_cois_interval, sim_coi, cuts,
   theory_cois <- theoretical_coi(theory_cois_interval, sim_coi$midpoints)
 
   # To check that PLAFs are the same
-  assert_eq(theory_cois$PLAF, sim_coi$midpoints)
+  assert_eq(theory_cois$plaf, sim_coi$midpoints)
 
   # Minus 1 because theory_cois now includes the PLAF at the end
   bound_coi = ncol(theory_cois) - 1
@@ -98,7 +98,7 @@ compute_coi <- function(theory_cois_interval, sim_coi, cuts,
       diff = theory_cois[i] - theory_cois[i - 1]
 
       # Get max value and determine the PLAF
-      ideal_PLAF <- theory_cois$PLAF[which.max(diff[[1]])]
+      ideal_PLAF <- theory_cois$plaf[which.max(diff[[1]])]
 
       # Get max value and determine the theory WSAF
       theory_WSAF <- theory_cois[which.max(diff[[1]]), i]

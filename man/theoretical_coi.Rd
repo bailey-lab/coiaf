@@ -4,18 +4,18 @@
 \alias{theoretical_coi}
 \title{Generate Theoretical COI Curves}
 \usage{
-theoretical_coi(coi_range, interval = seq(0, 0.5, l = 101), method = "1")
+theoretical_coi(coi_range, plaf = seq(0, 0.5, l = 101), method = "1")
 }
 \arguments{
 \item{coi_range}{The COIs for which the curve will be calculated.}
 
-\item{interval}{The interval over which the curve will be calculated.}
+\item{plaf}{The PLAF over which the curve will be calculated.}
 
 \item{method}{The method we will use to calculate the theoretical COI.
 The method is either "1" or "2". The default value is "1".}
 }
 \value{
-The theoretical COI curves for the specified COIs and interval.
+The theoretical COI curves for the specified COIs and PLAF.
 }
 \description{
 Generate theoretical COI curves. At each locus defined as:
