@@ -221,4 +221,47 @@ distance_curves <- function(theory_cois, sim_coi, cuts,
   return(ret)
 }
 
+#------------------------------------------------
+#' @title Generate Real COI Curve
+#'
+#' @description Generate the COI curve for real data.
+#'
+#' @param wsaf WSAF.
+#' @param plaf PLAF.
+#' @param seq_error The sequencing error.
+#' @param cut How often the data is summarized.
+#'
+#' @return Real COI curve.
+#'
+#' @export
 
+real_data <- function(wsaf, plaf, seq_error = 0.01, cut = seq(0, 0.5, 0.01)){
+  # Check inputs
+  assert_bounded(wsaf)
+  assert_single_bounded(seq_error)
+  assert_bounded(cut, left = 0, right = 0.5)
+  assert_vector(cut)
+  assert_increasing(cut)
+
+  # Ensure that the PLAF is at most 0.5
+  plaf[plaf > 0.5] <- 1 - plaf[plaf > 0.5]
+  assert_bounded(plaf, left = 0, right = 0.5)
+
+  # Isolate PLAF, determine the PLAF cuts, and whether a site is a variant
+  df <- data.frame(
+    PLAF = plaf,
+    PLAF_cut = cut(plaf, cut, include.lowest = TRUE),
+    variant = ifelse(wsaf < seq_error | wsaf > (1 - seq_error), 0, 1))
+
+  # Average over intervals of PLAF
+  df_grouped <- df %>%
+    dplyr::group_by(.data$PLAF_cut) %>%
+    dplyr::summarise(m_variant = mean(.data$variant),
+                     bucket_size = dplyr::n()) %>%
+    as.data.frame()
+
+  # Include midpoints
+  df_grouped$midpoints <- cut[-length(cut)] + diff(cut)/2
+
+  return(df_grouped)
+}
