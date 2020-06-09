@@ -15,6 +15,7 @@
 process_real_data <- function(wsaf, plaf, seq_error = 0.01,
                               cut = seq(0, 0.5, 0.01)){
   # Check inputs
+  assert_vector(wsaf)
   assert_bounded(wsaf)
   assert_vector(plaf)
   assert_bounded(plaf)
@@ -29,14 +30,13 @@ process_real_data <- function(wsaf, plaf, seq_error = 0.01,
 
   # Isolate PLAF, determine the PLAF cuts, and whether a site is a variant
   df <- data.frame(
-    PLAF = plaf,
-    PLAF_cut = cut(plaf, cut, include.lowest = TRUE),
-    variant = ifelse(wsaf < seq_error | wsaf > (1 - seq_error), 0, 1))
+    plaf_cut = cut(plaf, cut, include.lowest = TRUE),
+    variant  = ifelse(wsaf < seq_error | wsaf > (1 - seq_error), 0, 1))
 
   # Average over intervals of PLAF
   df_grouped <- df %>%
-    dplyr::group_by(.data$PLAF_cut) %>%
-    dplyr::summarise(m_variant = mean(.data$variant),
+    dplyr::group_by(.data$plaf_cut) %>%
+    dplyr::summarise(m_variant   = mean(.data$variant),
                      bucket_size = dplyr::n()) %>%
     as.data.frame()
 

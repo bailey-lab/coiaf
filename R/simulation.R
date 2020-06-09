@@ -132,8 +132,7 @@ simulated_coi <- function(sim, seq_error = 0.01, cut = seq(0, 0.5, 0.01)){
   # Extract information from simulation
   df_sim <- data.frame(
     # PLAF
-    PLAF = sim$data$PLAF,
-    PLAF_cut = cut(sim$data$PLAF, cut, include.lowest = TRUE),
+    plaf_cut = cut(sim$data$PLAF, cut, include.lowest = TRUE),
 
     # Determine if a site is a variant, accounting for sequencing error.
     variant = ifelse(sim$data$WSAF < seq_error |
@@ -146,7 +145,8 @@ simulated_coi <- function(sim, seq_error = 0.01, cut = seq(0, 0.5, 0.01)){
   )
 
   # Average over intervals of PLAF
-  df_sim_grouped <- dplyr::group_by(df_sim, .data$PLAF_cut) %>%
+  df_sim_grouped <- df_sim %>%
+    dplyr::group_by(.data$plaf_cut) %>%
     dplyr::summarise(m_variant      = mean(.data$variant),
                      m_true_variant = mean(.data$true_variant),
                      bucket_size    = dplyr::n()) %>%
