@@ -4,10 +4,10 @@
 \alias{theoretical_coi}
 \title{Generate Theoretical COI Curves}
 \usage{
-theoretical_coi(cois, interval, method = "1")
+theoretical_coi(coi_range, interval = seq(0, 0.5, l = 101), method = "1")
 }
 \arguments{
-\item{cois}{The COIs for which the curve will be calculated.}
+\item{coi_range}{The COIs for which the curve will be calculated.}
 
 \item{interval}{The interval over which the curve will be calculated.}
 
