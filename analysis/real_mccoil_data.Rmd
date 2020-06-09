@@ -1,0 +1,55 @@
+---
+title: "REAL McCOIL Data"
+author: "Aris Paschalidis"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    highlight: pygments
+    toc: true
+    toc_float: true
+    number_sections: true
+  pdf_document:
+    toc: true
+    toc_depth: 2
+    number_sections: true
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include = FALSE}
+# Here, we set default options for our markdown file
+knitr::opts_chunk$set(
+  comment = "#>",
+  tidy = TRUE,
+  tidy.opts = list(width.cutoff = 80)
+)
+
+library(coiaf)
+```
+
+# Introduction
+
+In this analysis file, we run our COI algorithm on a collection of real data.
+
+```{r read data}
+# Path to data
+path = "~/Desktop/Malaria/COI data/"
+
+rmcl_wsafs <- readRDS(paste0(path, "RMCL_wsafs.rds"))
+rmcl_coi_out <- readRDS(paste0(path, "RMCL_coi_out.rds"))
+```
+
+```{r test}
+sample <- rmcl_wsafs$cat_region_8_vcf_0
+
+wsaf <- sample[1,]
+plaf <- colMeans(sample, na.rm = T)
+input <- data.frame(wsaf = wsaf, plaf = plaf) %>% na.omit()
+
+cut = seq(0, 0.5, 0.01)
+
+res <- real_data(input$wsaf, input$plaf, cut = cut)
+compute_coi(theory_cois_interval = 1:25, res, cut, method = "overall",
+            dist_method ="squared", weighted = TRUE)
+```
+
