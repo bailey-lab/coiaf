@@ -5,22 +5,22 @@
 \title{Compute COI}
 \usage{
 compute_coi(
-  theory_cois_interval,
-  sim_coi,
-  cuts,
-  method = c("end", "ideal", "overall"),
-  dist_method = c("abs_sum", "sum_abs", "squared", "KL"),
-  weighted = FALSE
+  processed_data,
+  theory_coi_range,
+  cut,
+  method = "overall",
+  dist_method = "squared",
+  weighted = TRUE
 )
 }
 \arguments{
-\item{theory_cois_interval}{The range of COIs for which theoretical curves
+\item{processed_data}{The simulated COI curve, which is the output of
+\link{simulated_coi} or \link{process_real_data}.}
+
+\item{theory_coi_range}{The range of COIs for which theoretical curves
 will be calculated.}
 
-\item{sim_coi}{The simulated COI curve, which is the output of
-\link{sim_biallelic}.}
-
-\item{cuts}{A vector indicating how often the data is summarized.}
+\item{cut}{A vector indicating how often the data is summarized.}
 
 \item{method}{The method to be employed. One of
 \code{"end", "ideal", "overall"}.}

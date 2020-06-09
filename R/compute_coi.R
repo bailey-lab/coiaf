@@ -27,11 +27,11 @@
 #'   }}
 #'   }
 #'
-#' @param theory_cois_interval The range of COIs for which theoretical curves
+#' @param processed_data The simulated COI curve, which is the output of
+#' \link{simulated_coi} or \link{process_real_data}.
+#' @param theory_coi_range The range of COIs for which theoretical curves
 #' will be calculated.
-#' @param sim_coi The simulated COI curve, which is the output of
-#' \link{sim_biallelic}.
-#' @param cuts A vector indicating how often the data is summarized.
+#' @param cut A vector indicating how often the data is summarized.
 #' @param method The method to be employed. One of
 #' \code{"end", "ideal", "overall"}.
 #' @param dist_method The distance method used to determine the distance between
@@ -48,28 +48,30 @@
 #'
 #' @export
 
-compute_coi <- function(theory_cois_interval, sim_coi, cuts,
-                        method = c("end", "ideal", "overall"),
-                        dist_method = c("abs_sum", "sum_abs", "squared", "KL"),
-                        weighted = FALSE){
+compute_coi <- function(processed_data, theory_coi_range, cut,
+                        method = "overall",
+                        dist_method = "squared",
+                        weighted = TRUE){
   ##Check inputs
-  assert_pos_int(theory_cois_interval, zero_allowed = FALSE)
-  assert_vector(theory_cois_interval)
-  assert_increasing(theory_cois_interval)
-  assert_bounded(cuts, left = 0, right = 0.5)
-  assert_vector(cuts)
-  assert_increasing(cuts)
+  assert_pos_int(theory_coi_range, zero_allowed = FALSE)
+  assert_vector(theory_coi_range)
+  assert_increasing(theory_coi_range)
+  assert_bounded(cut, left = 0, right = 0.5)
+  assert_vector(cut)
+  assert_increasing(cut)
   assert_single_string(method)
   assert_in(method, c("end", "ideal", "overall"))
+  assert_single_string(dist_method)
+  assert_in(dist_method, c("abs_sum", "sum_abs", "squared", "KL"))
   assert_single_logical(weighted)
 
   # Calculate theoretical COI curves for the interval specified. Since we want
   # the theoretical curves and the simulated curves to have the PLAF values, we
-  # compute the theoretical coi curves at sim_coi$midpoints
-  theory_cois <- theoretical_coi(theory_cois_interval, sim_coi$midpoints)
+  # compute the theoretical coi curves at processed_data$midpoints
+  theory_cois <- theoretical_coi(theory_coi_range, processed_data$midpoints)
 
   # To check that PLAFs are the same
-  assert_eq(theory_cois$plaf, sim_coi$midpoints)
+  assert_eq(theory_cois$plaf, processed_data$midpoints)
 
   # Minus 1 because theory_cois now includes the PLAF at the end
   bound_coi = ncol(theory_cois) - 1
@@ -83,7 +85,7 @@ compute_coi <- function(theory_cois_interval, sim_coi, cuts,
 
     # Get last row of theoretical COI curves and simulated date (PLAF of 0.5)
     last_theory <- last_theory[nrow(last_theory),]
-    last_sim <- sim_coi$m_variant[nrow(sim_coi)]
+    last_sim <- processed_data$m_variant[nrow(processed_data)]
 
     # Find coi by looking at minimum distance
     dist <- abs(last_theory - last_sim)
@@ -105,7 +107,7 @@ compute_coi <- function(theory_cois_interval, sim_coi, cuts,
 
       # Using max PLAF, determine which cut it would be part of
       # and then figure out m_variant value at this cut
-      m_var <- sim_coi$m_variant[cut(ideal_PLAF, cuts)]
+      m_var <- processed_data$m_variant[cut(ideal_PLAF, cut)]
 
       # Find distance between theoretical and simulated curves
       dist[i-1] <- abs(theory_WSAF - m_var)
