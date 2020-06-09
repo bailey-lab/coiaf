@@ -114,12 +114,11 @@ run_real_data <- function(data,
     input <- data.frame(wsaf = wsaf, plaf = plaf) %>% tidyr::drop_na
 
     # Format data in the proper way
-    res <- process_real_data(input$wsaf, input$plaf, cut = cut)
+    processed_data <- process_real_data(input$wsaf, input$plaf, seq_error, cut)
 
     # Compute the coi
-    sample_coi <- compute_coi(theory_cois_interval = 1:25, res, cuts = cut,
-                              method = "overall", dist_method ="squared",
-                              weighted = TRUE)
+    sample_coi <- compute_coi(processed_data, 1:max_COI, cut,
+                              method, dist_method, weighted)
 
     return(sample_coi)
   })

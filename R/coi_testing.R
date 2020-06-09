@@ -47,14 +47,14 @@ run_coi_test <- function(COI = 3,
   assert_single_logical(weighted)
 
   # Simulate data
-  sim <- sim_biallelic(COI, PLAF, coverage, alpha, overdispersion, epsilon)
+  sim_data <- sim_biallelic(COI, PLAF, coverage, alpha, overdispersion, epsilon)
 
   # Simulated data results
-  sim_results <- simulated_coi(sim, seq_error, cut)
+  processed_sim <- simulated_coi(sim_data, seq_error, cut)
 
   # Compute COI
-  calc_coi <- compute_coi(theory_cois_interval = 1:max_COI,
-                          sim_results, cut, method, dist_method, weighted)
+  calc_coi <- compute_coi(processed_sim, 1:max_COI, cut,
+                          method, dist_method, weighted)
 
   return (calc_coi$coi)
 }
