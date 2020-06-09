@@ -111,7 +111,7 @@ run_real_data <- function(data,
   coi_pred <- list_apply(seq_len(nrow(data)), function(x) {
     # Get wsaf and remove any missing data
     wsaf  <- data[x,]
-    input <- data.frame(wsaf = wsaf, plaf = plaf) %>% na.omit()
+    input <- data.frame(wsaf = wsaf, plaf = plaf) %>% tidyr::drop_na
 
     # Format data in the proper way
     res <- process_real_data(input$wsaf, input$plaf, cut = cut)

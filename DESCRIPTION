@@ -24,6 +24,7 @@ Imports:
     philentropy,
     rlang,
     stringr,
+    tidyr,
     utils
 Suggests:
     ggplot2,
@@ -33,7 +34,6 @@ Suggests:
     rmarkdown,
     spelling,
     testthat,
-    tidyr,
     tidyselect
 License: MIT + file LICENSE
 RoxygenNote: 7.1.0
