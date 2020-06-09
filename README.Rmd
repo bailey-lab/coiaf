@@ -13,18 +13,27 @@ knitr::opts_chunk$set(
 )
 ```
 
-# coiaf
+# coiaf <a href='https://github.com/OJWatson/coiaf'><img src='man/figures/logo.png' align="right" height="139" /></a>
+
+```{r logo, eval = F, include = F}
+# Code for logo. To run, use the R package `hexSticker`
+sticker("man/figures/logo_background.jpg", package="coiaf", 
+        filename="man/figures/logo.png", 
+        s_x = 1, s_y = 1, s_width = 1.7,
+        p_size = 12, p_x = 0.95, p_y = 1.5, p_color = "bisque",
+        white_around_sticker = T, dpi = 500)
+```
+
 
 <!-- badges: start -->
-[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)]()
-
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 <!-- badges: end -->
 
-## Introduction
+# Introduction
 In malaria infections, individuals can often be infected by multiple parasites due to repeated mosquito bites or mosquitoes harboring multiple parasites. Such mixed infections may represent unrelated strains or parasites that are related. The number of strains found in an individual is known as the Complexity Of Infection (COI). Previous methods have utilized statistics to determine the relative COI based on the assumption that parasites are unrelated. While such assumptions often do not hold, these methods provide insight into the force of infection and the parasite population. While multiple methods have been proposed to measure COI, there have been no direct statistics allowing for direct calculation of the COI. Probabilistic likelihood and Bayesian models have been developed but a rapid direct measure such as heterozygosity or FwS have not been directly tied to the COI. Here we present two measures that show equivalent power to other methods, but are directly calculable from allele observed proportions within infection based on the knowledge of overall population allele frequencies.  
 
-## Installation
+# Installation
 To install the package, please follow the code below. In order to install,
 devtools must be installed and loaded.
 ```{r, eval = FALSE}
@@ -32,10 +41,10 @@ devtools must be installed and loaded.
 devtools::install_github("https://github.com/OJWatson/coiaf")
 ```
 
-## Usage
-In order to run the two measures, please refer to the analysis folder. 
-More specifically, the script that is titled: 
-`02_simple_simulation_comparison_demonstration.Rmd`. 
+# Usage
+In order to run real data, please refer to the analysis folder. 
+More specifically, the script that is titled, `real_mccoil_data.Rmd` provides
+a comprehensive set of instructions on how to run real data.
 
 ## Development
 Please note that this package is still under development and therefore 

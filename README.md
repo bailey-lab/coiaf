@@ -1,17 +1,17 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# coiaf
+# coiaf <a href='https://github.com/OJWatson/coiaf'><img src='man/figures/logo.png' align="right" height="139" /></a>
 
 <!-- badges: start -->
 
 [![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)]()
-
+stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
+[![License:
+MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 <!-- badges: end -->
 
-## Introduction
+# Introduction
 
 In malaria infections, individuals can often be infected by multiple
 parasites due to repeated mosquito bites or mosquitoes harboring
@@ -31,7 +31,7 @@ are directly calculable from allele observed proportions within
 infection based on the knowledge of overall population allele
 frequencies.
 
-## Installation
+# Installation
 
 To install the package, please follow the code below. In order to
 install, devtools must be installed and loaded.
@@ -41,11 +41,11 @@ install, devtools must be installed and loaded.
 devtools::install_github("https://github.com/OJWatson/coiaf")
 ```
 
-## Usage
+# Usage
 
-In order to run the two measures, please refer to the analysis folder.
-More specifically, the script that is titled:
-`02_simple_simulation_comparison_demonstration.Rmd`.
+In order to run real data, please refer to the analysis folder. More
+specifically, the script that is titled, `real_mccoil_data.Rmd` provides
+a comprehensive set of instructions on how to run real data.
 
 ## Development
 

@@ -6,6 +6,8 @@
 \alias{coiaf-package}
 \title{\pkg{coiaf} COI Estimation from Allele Frequency}
 \description{
+\if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
+
 Provides a direct method for estimating complexity of infection
   using within-sample allele frequencies from whole genome sequence data.
 }
