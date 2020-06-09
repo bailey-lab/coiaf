@@ -120,9 +120,8 @@ compute_coi <- function(processed_data, theory_coi_range, cut,
   } else if (method == "overall"){
     ## Method 3: Find distance between curves
     # Utilize helper function to compute overall distance between two curves
-    overall_res <- distance_curves(theory_cois, sim_coi, cuts,
-                                   weighted = weighted,
-                                   dist_method = dist_method)
+    overall_res <- distance_curves(processed_data, theory_cois, dist_method,
+                                   weighted)
 
     # Extract information from the helper function
     coi  <- overall_res$coi
@@ -153,6 +152,7 @@ compute_coi <- function(processed_data, theory_coi_range, cut,
 #'   }
 #'
 #' @inheritParams compute_coi
+#' @param theory_cois The theoretical COI curves.
 #'
 #' @return A list of the following:
 #' \describe{
@@ -163,13 +163,9 @@ compute_coi <- function(processed_data, theory_coi_range, cut,
 #'
 #' @keywords internal
 
-distance_curves <- function(theory_cois, sim_coi, cuts,
-                        dist_method = c("abs_sum", "sum_abs", "squared", "KL"),
-                        weighted = FALSE){
+distance_curves <- function(processed_data, theory_cois,
+                            dist_method = "squared", weighted = TRUE){
   # Check inputs
-  assert_bounded(cuts, left = 0, right = 0.5)
-  assert_vector(cuts)
-  assert_increasing(cuts)
   assert_single_string(dist_method)
   assert_in(dist_method, c("abs_sum", "sum_abs", "squared", "KL"))
   assert_single_logical(weighted)
@@ -183,9 +179,9 @@ distance_curves <- function(theory_cois, sim_coi, cuts,
 
   # First find difference between theoretical and simulate curve. Weigh
   # difference if wanted
-  gap <- match_theory_cois - sim_coi$m_variant
+  gap <- match_theory_cois - processed_data$m_variant
   if (weighted){
-    gap <- (gap * sim_coi$bucket_size) / sum(sim_coi$bucket_size)
+    gap <- (gap * processed_data$bucket_size) / sum(processed_data$bucket_size)
   }
 
   if (dist_method == "abs_sum"){
@@ -203,7 +199,7 @@ distance_curves <- function(theory_cois, sim_coi, cuts,
   } else if (dist_method == "KL"){
     # KL divergence
     gap <-  list()
-    Q <- sim_coi$m_variant
+    Q <- processed_data$m_variant
     Q <- Q/sum(Q)
     for (i in 1:ncol(match_theory_cois)){
       P <- match_theory_cois[,i]

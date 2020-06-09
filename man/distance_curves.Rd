@@ -5,18 +5,17 @@
 \title{Compute distance between two curves}
 \usage{
 distance_curves(
+  processed_data,
   theory_cois,
-  sim_coi,
-  cuts,
-  dist_method = c("abs_sum", "sum_abs", "squared", "KL"),
-  weighted = FALSE
+  dist_method = "squared",
+  weighted = TRUE
 )
 }
 \arguments{
-\item{sim_coi}{The simulated COI curve, which is the output of
-\link{sim_biallelic}.}
+\item{processed_data}{The simulated COI curve, which is the output of
+\link{simulated_coi} or \link{process_real_data}.}
 
-\item{cuts}{A vector indicating how often the data is summarized.}
+\item{theory_cois}{The theoretical COI curves.}
 
 \item{dist_method}{The distance method used to determine the distance between
 the theoretical and simulated curves for the "overall" method. One of
