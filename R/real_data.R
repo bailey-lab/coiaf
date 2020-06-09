@@ -55,34 +55,21 @@ process_real_data <- function(wsaf, plaf, seq_error = 0.01,
 #' @param data The dataset.
 #' @inheritParams coi_test
 #'
-#'
-#' @return A list of the following dataframes:
-#' \describe{
-#'   \item{\code{predicted_coi}}{A dataframe of the predicted COIs. COIs are
-#'   predicted using \link{compute_coi}. Each column represents a separate set
-#'   of parameters. Each row represents a predicted COI. Predictions are done
-#'   many times, depending on the value of \code{repetitions}.}
-#'   \item{\code{param_grid}}{The parameter grid. The parameter grid is all
-#'   possible combinations of the parameters inputted. Each row represents a
-#'   unique combination.}
-#'   \item{\code{error_bias}}{A dataframe containing any parameter that was
-#'   varied and the associated mean absolute error and bias (mean error). By
-#'   showing only parameters that were varied, the output is easier to interpret
-#'   and does not have information about parameters that were held constant.}
-#' }
+#' @return A list of the predicted cois and the probability distribution for the
+#' predictions.
 #'
 #' @export
 
 run_real_data <- function(data,
+                          max_coi = 25,
                           seq_error = 0.01,
                           cut = seq(0, 0.5, 0.01),
-                          max_COI = 25,
                           method = "overall",
                           dist_method = "squared",
                           weighted = TRUE){
 
   # Check inputs
-  assert_single_pos_int(max_COI)
+  assert_single_pos_int(max_coi)
   assert_single_bounded(seq_error)
   assert_bounded(cut, left = 0, right = 0.5)
   assert_vector(cut)
@@ -111,13 +98,13 @@ run_real_data <- function(data,
   coi_pred <- list_apply(seq_len(nrow(data)), function(x) {
     # Get wsaf and remove any missing data
     wsaf  <- data[x,]
-    input <- data.frame(wsaf = wsaf, plaf = plaf) %>% tidyr::drop_na
+    input <- data.frame(wsaf = wsaf, plaf = plaf) %>% tidyr::drop_na()
 
     # Format data in the proper way
     processed_data <- process_real_data(input$wsaf, input$plaf, seq_error, cut)
 
     # Compute the coi
-    sample_coi <- compute_coi(processed_data, 1:max_COI, cut,
+    sample_coi <- compute_coi(processed_data, 1:max_coi, cut,
                               method, dist_method, weighted)
 
     return(sample_coi)

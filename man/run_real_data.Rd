@@ -6,9 +6,9 @@
 \usage{
 run_real_data(
   data,
+  max_coi = 25,
   seq_error = 0.01,
   cut = seq(0, 0.5, 0.01),
-  max_COI = 25,
   method = "overall",
   dist_method = "squared",
   weighted = TRUE
@@ -21,9 +21,6 @@ run_real_data(
 
 \item{cut}{A vector indicating how often the data is summarized.}
 
-\item{max_COI}{A number indicating the maximum COI to compare the
-simulated data to.}
-
 \item{method}{The method to be employed. One of
 \code{"end", "ideal", "overall"}.}
 
@@ -34,20 +31,8 @@ the theoretical and simulated curves for the "overall" method. One of
 \item{weighted}{An indicator indicating whether to compute weighted distance.}
 }
 \value{
-A list of the following dataframes:
-\describe{
-  \item{\code{predicted_coi}}{A dataframe of the predicted COIs. COIs are
-  predicted using \link{compute_coi}. Each column represents a separate set
-  of parameters. Each row represents a predicted COI. Predictions are done
-  many times, depending on the value of \code{repetitions}.}
-  \item{\code{param_grid}}{The parameter grid. The parameter grid is all
-  possible combinations of the parameters inputted. Each row represents a
-  unique combination.}
-  \item{\code{error_bias}}{A dataframe containing any parameter that was
-  varied and the associated mean absolute error and bias (mean error). By
-  showing only parameters that were varied, the output is easier to interpret
-  and does not have information about parameters that were held constant.}
-}
+A list of the predicted cois and the probability distribution for the
+predictions.
 }
 \description{
 Run the algorithm on real data
