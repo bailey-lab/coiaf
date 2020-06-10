@@ -68,7 +68,7 @@ for (k in 2:7){
   lines(df_grouped$midpoints, df_grouped$m_true_variant, 
         col = "blue", lwd = 2, type = "o", pch = 20)
   
-  calc_coi = compute_coi(seq(1, 7), df_grouped, cut, "overall", "KL", TRUE)
+  calc_coi = compute_coi(df_grouped, seq(1, 7), cut, "overall", "KL", TRUE)
   print(paste("Actual COI is ", k, ", Calculated COI is ", calc_coi$coi, sep = ""))
 }
 ```

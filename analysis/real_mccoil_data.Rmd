@@ -35,21 +35,19 @@ In this analysis file, we run our COI algorithm on a collection of real data.
 # Path to data
 path = "~/Desktop/Malaria/COI data/"
 
-rmcl_wsafs <- readRDS(paste0(path, "RMCL_wsafs.rds"))
-rmcl_coi_out <- readRDS(paste0(path, "RMCL_coi_out.rds"))
+# Read in the real data and the real mccoil coi predictions
+rmcl_wsafs   <- readRDS(paste0(path, "RMCL_wsafs.rds"))
+rmcl_coi_out <- readRDS(paste0(path, "RMCL_coi_out.rds")) %>% 
+  as.data.frame() %>% 
+  dplyr::mutate(dplyr::across(c(file, name), as.character))
 ```
 
-```{r test}
+```{r testing}
+# The predictions works!
 sample <- rmcl_wsafs$cat_region_8_vcf_0
+predicted <- run_real_data(sample)
 
-wsaf <- sample[1,]
-plaf <- colMeans(sample, na.rm = T)
-input <- data.frame(wsaf = wsaf, plaf = plaf) %>% na.omit()
 
-cut = seq(0, 0.5, 0.01)
 
-res <- real_data(input$wsaf, input$plaf, cut = cut)
-compute_coi(theory_cois_interval = 1:25, res, cut, method = "overall",
-            dist_method ="squared", weighted = TRUE)
 ```
 
