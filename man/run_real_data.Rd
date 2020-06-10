@@ -17,6 +17,9 @@ run_real_data(
 \arguments{
 \item{data}{The dataset.}
 
+\item{max_coi}{The maximum COI that the model will look at. Looks at the
+theoretical COIs from 2:max_coi}
+
 \item{seq_error}{The level of sequencing error that is assumed.}
 
 \item{cut}{A vector indicating how often the data is summarized.}

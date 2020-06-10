@@ -53,6 +53,8 @@ process_real_data <- function(wsaf, plaf, seq_error = 0.01,
 #' @description Run the algorithm on real data
 #'
 #' @param data The dataset.
+#' @param max_coi The maximum COI that the model will look at. Looks at the
+#' theoretical COIs from 2:max_coi
 #' @inheritParams coi_test
 #'
 #' @return A list of the predicted cois and the probability distribution for the
