@@ -99,17 +99,18 @@ We first want to understand for what range our model can accurately predict
 the COI.
 
 ```{r coi, eval = eval_tests}
-tcoi <- coi_test(COI = 2:40, repetitions = 100, PLAF = p)
+tcoi <- coi_test(COI = 2:40, max_COI = 40, repetitions = 100, PLAF = p)
 
 tcoi_image <- sensitivity_plot(data = tcoi, plot_dims = c(1, 1), title = "COI")
-tcoi_image
+tcoi_image 
 
 tcoi_error <- error_plot(tcoi, legend.position = "none")
 tcoi_error
 
 # N.B. to save the plots, we can use the following code. Write this after the
 # call to sensitivity_plot().
-# %>% ggpubr::ggexport(filename = "Sensitivity Analysis Figures/tcoi.png")
+# %>% ggpubr::ggexport(filename = "analysis/Sensitivity Analysis Figures/Sensitivity Plots/tcoi_image.png")
+# %>% ggpubr::ggexport(filename = "analysis/Sensitivity Analysis Figures/Error Images/tcoi_error.png")
 ```
 
 ```{r coi image, eval = eval_images, echo = F, out.width = "75%"}
