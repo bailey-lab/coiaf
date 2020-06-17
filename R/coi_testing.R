@@ -6,7 +6,7 @@
 #' @param max_COI A number indicating the maximum COI to compare the
 #' simulated data to.
 #' @inheritParams sim_biallelic
-#' @inheritParams simulated_coi
+#' @inheritParams process_simulated_coi
 #' @param cut A vector indicating how often the data is summarized.
 #' @inheritParams compute_coi
 #'
@@ -50,7 +50,7 @@ run_coi_test <- function(COI = 3,
   sim_data <- sim_biallelic(COI, PLAF, coverage, alpha, overdispersion, epsilon)
 
   # Simulated data results
-  processed_sim <- simulated_coi(sim_data, seq_error, cut)
+  processed_sim <- process_simulated_coi(sim_data, seq_error, cut)
 
   # Compute COI
   calc_coi <- compute_coi(processed_sim, 1:max_COI, cut,

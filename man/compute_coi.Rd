@@ -15,7 +15,7 @@ compute_coi(
 }
 \arguments{
 \item{processed_data}{The simulated COI curve, which is the output of
-\link{simulated_coi} or \link{process_real_data}.}
+\link{process_simulated_coi} or \link{process_real_data}.}
 
 \item{theory_coi_range}{The range of COIs for which theoretical curves
 will be calculated.}
