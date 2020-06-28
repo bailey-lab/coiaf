@@ -31,7 +31,7 @@ process_real_data <- function(wsaf, plaf, seq_error = 0.01,
   # Isolate PLAF, determine the PLAF cuts, and whether a site is a variant
   df <- data.frame(
     plaf_cut = cut(plaf, cut, include.lowest = TRUE),
-    variant  = ifelse(wsaf < seq_error | wsaf > (1 - seq_error), 0, 1))
+    variant  = ifelse(wsaf <= seq_error | wsaf >= (1 - seq_error), 0, 1))
 
   # Average over intervals of PLAF
   df_grouped <- df %>%

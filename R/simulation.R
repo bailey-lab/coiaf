@@ -136,8 +136,8 @@ process_simulated_coi <- function(sim, seq_error = 0.01,
     plaf_cut = cut(sim$data$PLAF, cut, include.lowest = TRUE),
 
     # Determine if a site is a variant, accounting for sequencing error.
-    variant = ifelse(sim$data$WSAF < seq_error |
-                       sim$data$WSAF > (1 - seq_error), 0, 1),
+    variant = ifelse(sim$data$WSAF <= seq_error |
+                       sim$data$WSAF >= (1 - seq_error), 0, 1),
 
     # True variant
     true_variant = as.integer(!apply(sim$phased,
