@@ -18,7 +18,7 @@ run_real_data(
 \item{data}{The dataset.}
 
 \item{max_coi}{The maximum COI that the model will look at. Looks at the
-theoretical COIs from 2:max_coi}
+theoretical COIs from 2 till `max_coi`}
 
 \item{seq_error}{The level of sequencing error that is assumed.}
 
@@ -34,7 +34,7 @@ the theoretical and simulated curves for the "overall" method. One of
 \item{weighted}{An indicator indicating whether to compute weighted distance.}
 }
 \value{
-A list of the predicted cois and the probability distribution for the
+A list of the predicted COIs and the probability distribution for the
 predictions.
 }
 \description{
