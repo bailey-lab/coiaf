@@ -23,20 +23,18 @@ individual is known as the Complexity Of Infection (COI). Previous
 methods have utilized statistics to determine the relative COI based on
 the assumption that parasites are unrelated. While such assumptions
 often do not hold, these methods provide insight into the force of
-infection and the parasite population. While multiple methods have been
-proposed to measure COI, there have been no direct statistics allowing
-for direct calculation of the COI. Probabilistic likelihood and Bayesian
-models have been developed but a rapid direct measure such as
-heterozygosity or FwS have not been directly tied to the COI. Here we
-present two measures that show equivalent power to other methods, but
-are directly calculable from allele observed proportions within
-infection based on the knowledge of overall population allele
-frequencies.
+infection and the parasite population. Prior methods have been proposed
+to measure COI, including probabilistic likelihood models and Bayesian
+models. However, a rapid direct measure such as heterozygosity or FwS
+has not yet been developed. Here we present two measures that show
+equivalent power to other methods, but are directly calculable from
+allele observed proportions based on the knowledge of overall population
+allele frequencies.
 
 # Installation
 
 To install the package, please follow the code below. In order to
-install, devtools must be installed and loaded.
+install, devtools must be installed.
 
 ``` r
 # install.packages("devtools")
@@ -51,6 +49,6 @@ a comprehensive set of instructions on how to run real data.
 
 ## Development
 
-Please note that this package is still under development and therefore
-there may be missing features. This `README` will be updated as the
-package is developed accordingly.
+Please note that this package is still under development and may be
+missing features. This `README` will be updated as the package is
+developed accordingly.

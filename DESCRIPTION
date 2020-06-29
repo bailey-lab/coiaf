@@ -36,7 +36,7 @@ Suggests:
     testthat,
     tidyselect
 License: MIT + file LICENSE
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 Language: en-US
 Encoding: UTF-8
