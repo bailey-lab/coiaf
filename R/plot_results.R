@@ -39,7 +39,8 @@ sensitivity_plot <- function(data,
   }
 
   # Check inputs
-  assert_eq(names(data), c("predicted_coi", "param_grid", "boot_error"))
+  assert_eq(names(data),
+            c("predicted_coi", "probability", "param_grid", "boot_error"))
   assert_pos_int(plot_dims, zero_allowed = FALSE)
   assert_length(plot_dims, 2)
   if (!is.null(change_param)) {assert_string(change_param)}
@@ -182,7 +183,8 @@ error_plot <- function(data, fill = "COI", fill_levels = NULL, title = NULL,
   }
 
   # Check inputs
-  assert_eq(names(data), c("predicted_coi", "param_grid", "boot_error"))
+  assert_eq(names(data),
+            c("predicted_coi", "probability", "param_grid", "boot_error"))
   assert_single_string(fill)
   if (!is.null(fill_levels)) {assert_string(fill_levels)}
   if (!is.null(title)) {assert_single_string(title)}

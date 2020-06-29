@@ -56,7 +56,7 @@ run_coi_test <- function(COI = 3,
   calc_coi <- compute_coi(processed_sim, 1:max_COI, cut,
                           method, dist_method, weighted)
 
-  return (calc_coi$coi)
+  return(calc_coi)
 }
 
 
@@ -147,7 +147,7 @@ coi_test <- function(repetitions = 10,
   coi_pred <- list_apply(seq_len(nrow(param_grid)), function(x) {
 
     # Run each sample repetitions times
-    repeats <- vapply(seq_len(repetitions), function(y) {
+    repeats <- lapply(seq_len(repetitions), function(y) {
       test_result <-
         run_coi_test(param_grid$COI[x],
                      param_grid$max_COI[x],
@@ -162,9 +162,30 @@ coi_test <- function(repetitions = 10,
                      param_grid$dist_method[x],
                      param_grid$weighted[x])
       return (test_result)
-    }, FUN.VALUE = numeric(1))
+    })
 
     return(repeats)
+  })
+
+  # Extract the COIs from the result list
+  extracted_cois <- lapply(coi_pred, function(x){
+    unlist(lapply(x, function(i) { i$coi }))
+  })
+
+  # Extract the probabilities from the result list
+  extracted_probs <- lapply(coi_pred, function(x){
+    # Get the probabilities
+    matrix <- do.call(rbind, lapply(x, function(i) { i$probability }))
+
+    # Name the matrix and return
+    colnames(matrix) <- paste("coi", 2:max_COI, sep = "_")
+    rownames(matrix) <- paste("rep", seq(repetitions), sep = "_")
+
+    # Add a average row to the matrix
+    matrix <- rbind(colMeans(matrix), matrix)
+    rownames(matrix)[1] <- "average"
+
+    return(matrix)
   })
 
   ## Naming
@@ -174,11 +195,12 @@ coi_test <- function(repetitions = 10,
   # Calculate the number of times each COI is repeated in param_grid
   num_repeat_cois = length(param_grid$COI) / num_cois
 
-  # Name the predicted cois
-  names(coi_pred) <- paste("coi",
+  # Name the predicted COIs
+  names(extracted_cois) <- paste("coi",
                            param_grid$COI,
                            rep(seq(num_repeat_cois), each = num_cois),
                            sep="_")
+  names(extracted_probs) <- names(extracted_cois)
 
   ## Calculations
   # Calculate mean absolute error
@@ -186,7 +208,7 @@ coi_test <- function(repetitions = 10,
   boot_mae <- lapply(seq_len(len), function(x) {
     # Get the specific row (list of predicted COIs). Note that we convert to a
     # data frame because the boot package requires this.
-    boot_data <- as.data.frame(coi_pred[x])
+    boot_data <- as.data.frame(extracted_cois[x])
 
     # Create function to find mean absolute error for bootstrapping
     mae <- function(data, true_coi, indices){
@@ -212,17 +234,17 @@ coi_test <- function(repetitions = 10,
                               of %s.', param_grid$COI[x])))
     }
 
-    # Store the mean absolulte error and confidence interval bounds
+    # Store the mean absolute error and confidence interval bounds
     extract <- list(mae = results$t0, lower = CI[2], upper = CI[3])
     return(extract)
   })
 
-  # Convert output of bootstrapping to dataframe structre
+  # Convert output of bootstrapping to data frame structure
   boot_mae <- as.data.frame(do.call(rbind, boot_mae))
 
   # Calculate bias (mean error)
   coi_bias <- lapply(seq_len(len), function(x) {
-    sum(coi_pred[[x]] - param_grid$COI[x]) / length(coi_pred[[x]])
+    sum(extracted_cois[[x]] - param_grid$COI[x]) / length(extracted_cois[[x]])
   })
 
   # Save changing parameters with bootstrapping
@@ -232,9 +254,10 @@ coi_test <- function(repetitions = 10,
   boot_error$bias  <- unlist(coi_bias)
 
   # Return predicted COIs and param_grid
-  ret <- list(predicted_coi = as.data.frame(coi_pred),
+  ret <- list(predicted_coi = as.data.frame(extracted_cois),
+              probability   = extracted_probs,
               param_grid    = param_grid,
               boot_error    = boot_error)
-  return (ret)
+  return(ret)
 }
 
