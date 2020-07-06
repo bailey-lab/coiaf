@@ -175,7 +175,7 @@ distance_curves <- function(processed_data, theory_cois,
   bound_coi = ncol(theory_cois) - 1
 
   # Remove COI that is used to calculate distance method (1st one) and PLAF
-  match_theory_cois <- theory_cois[, 2:bound_coi]
+  match_theory_cois <- theory_cois[, 1:bound_coi]
 
   # First find difference between theoretical and simulate curve. Weigh
   # difference if wanted
@@ -206,7 +206,7 @@ distance_curves <- function(processed_data, theory_cois,
       P <- P/sum(P)
       gap[i] <- suppressMessages(philentropy::KL(rbind(P, Q), unit = "log2"))
     }
-    names(gap) <- colnames(theory_cois)[2:bound_coi]
+    names(gap) <- colnames(theory_cois)[1:bound_coi]
     gap <- unlist(gap)
   }
 
