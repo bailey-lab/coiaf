@@ -35,19 +35,32 @@ In this analysis file, we run our COI algorithm on a collection of real data.
 # Path to data
 path = "~/Desktop/Malaria/COI data/"
 
-# Read in the real data and the real mccoil coi predictions
+# Read in the real data and the REAL McCOIL COI predictions
 rmcl_wsafs   <- readRDS(paste0(path, "RMCL_wsafs.rds"))
 rmcl_coi_out <- readRDS(paste0(path, "RMCL_coi_out.rds")) %>% 
-  as.data.frame() %>% 
+  tibble::as_tibble() %>% 
   dplyr::mutate(dplyr::across(c(file, name), as.character))
 ```
 
 ```{r testing}
 # The predictions works!
-sample <- rmcl_wsafs$cat_region_8_vcf_0
+sample <- rmcl_wsafs$cat_region_1_vcf_0
 predicted <- run_real_data(sample)
 
+# Extract coi from the predictions
+extract_coi <- tibble::enframe(unlist(lapply(predicted, function(x){ x$coi })),
+                               value = "prediction")
+                       
+# Get correct info from the real mccoil outputs
+test <- rmcl_coi_out %>% 
+  dplyr::filter(stringr::str_detect(file, "cat_region_1_vcf_0")) %>% 
+  dplyr::group_by(name) %>% 
+  dplyr::summarise(COI = mean(COI),
+                   COI_025 = mean(COI_025),
+                   COI_975 = mean(COI_975),
+                   .groups = "drop")
 
-
+# Join the tibbles and find difference
+res <- dplyr::full_join(extract_coi, test, by = "name") %>%
+  dplyr::mutate(difference = prediction - COI)
 ```
-
