@@ -23,6 +23,18 @@ knitr::opts_chunk$set(
   tidy = TRUE,
   tidy.opts = list(width.cutoff = 80)
 )
+# Change the way tibble prints so only prints 5 extra columns
+options(tibble.max_extra_cols = 5)
+
+# Function to determine if pbapply is installed. If it is installed, it will
+# display a progress bar
+list_apply <- function(x, fun, ...){
+  if (requireNamespace("pbapply", quietly = TRUE)) {
+    pbapply::pblapply(x, fun, ...)
+    } else {
+    lapply(x, fun, ...)
+  }
+}
 
 library(coiaf)
 ```
@@ -36,31 +48,48 @@ In this analysis file, we run our COI algorithm on a collection of real data.
 path = "~/Desktop/Malaria/COI data/"
 
 # Read in the real data and the REAL McCOIL COI predictions
-rmcl_wsafs   <- readRDS(paste0(path, "RMCL_wsafs.rds"))
+rmcl_wsafs   <- readRDS(paste0(path, "RMCL_wsafs_unique.rds"))
 rmcl_coi_out <- readRDS(paste0(path, "RMCL_coi_out.rds")) %>% 
   tibble::as_tibble() %>% 
-  dplyr::mutate(dplyr::across(c(file, name), as.character))
+  dplyr::mutate(dplyr::across(c(file, name), as.character)) %>% 
+  dplyr::rename(rmcl = COI) %>% 
+  dplyr::rename(rmcl_025 = COI_025) %>% 
+  dplyr::rename(rmcl_975 = COI_975)
 ```
 
 ```{r testing}
-# The predictions works!
-sample <- rmcl_wsafs$cat_region_1_vcf_0
-predicted <- run_real_data(sample)
+# No longer to shave off data because the condensed version is stored
+# unique_wsafs <- rmcl_wsafs[seq(1, length(rmcl_wsafs), 5)]
 
-# Extract coi from the predictions
-extract_coi <- tibble::enframe(unlist(lapply(predicted, function(x){ x$coi })),
-                               value = "prediction")
-                       
-# Get correct info from the real mccoil outputs
-test <- rmcl_coi_out %>% 
-  dplyr::filter(stringr::str_detect(file, "cat_region_1_vcf_0")) %>% 
-  dplyr::group_by(name) %>% 
-  dplyr::summarise(COI = mean(COI),
-                   COI_025 = mean(COI_025),
-                   COI_975 = mean(COI_975),
-                   .groups = "drop")
+out <- list_apply(seq_len(length(rmcl_wsafs))[1:5], function(x) {
+  # Run predictions
+  sample <- rmcl_wsafs[[x]]
+  # print(tibble::as_tibble(sample))
+  predicted <- run_real_data(sample)
 
-# Join the tibbles and find difference
-res <- dplyr::full_join(extract_coi, test, by = "name") %>%
-  dplyr::mutate(difference = prediction - COI)
+  # Extract coi from the predictions
+  extract_coi <- tibble::enframe(unlist(lapply(predicted, function(x){ x$coi })),
+                                 value = "prediction") %>%
+    dplyr::mutate(file = names(rmcl_wsafs)[x])
+
+  # Get correct info from the real mccoil outputs
+  test <- rmcl_coi_out %>%
+    dplyr::filter(stringr::str_detect(file, names(rmcl_wsafs)[x])) %>%
+    dplyr::group_by(name) %>%
+    dplyr::summarise(rmcl = mean(rmcl),
+                     rmcl_median = median(rmcl),
+                     rmcl_025 = mean(rmcl_025),
+                     rmcl_975 = mean(rmcl_975),
+                     .groups = "drop")
+
+  # Join the tibbles and find difference
+  res <- dplyr::full_join(extract_coi, test, by = "name") %>%
+    dplyr::mutate(difference = prediction - rmcl) %>%
+    dplyr::mutate(in_CI = ifelse(prediction >= rmcl_025 &
+                                   prediction <= rmcl_975, 1, 0)) %>%
+    dplyr::relocate(file, .after = tidyselect::last_col())
+  
+  return(res)
+})
+names(out) <- names(rmcl_wsafs)[1:5]
 ```
