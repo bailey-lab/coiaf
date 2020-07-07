@@ -13,17 +13,17 @@ knitr::opts_chunk$set(
 )
 ```
 
-# coiaf <a href='https://github.com/OJWatson/coiaf'><img src='man/figures/logo.png' align="right" height="139" /></a>
+# coiaf <a href='https://github.com/OJWatson/coiaf'><img src='man/figures/logo_v2_light_green.png' align="right" height="139" /></a>
 
 ```{r logo, eval = F, include = F}
 # Code for logo. To run, use the R package `hexSticker`
 sticker("man/figures/logo_background.jpg", package="coiaf", 
-        filename="man/figures/logo.png", 
+        filename="man/figures/logo2.png", 
         s_x = 1, s_y = 1, s_width = 1.7,
-        p_size = 12, p_x = 0.95, p_y = 1.5, p_color = "bisque",
+        p_size = 12, p_x = 0.95, p_y = 1.5, p_color = "#fdead4",
+        h_color = "#93a448", h_fill = "#75d8c3",
         white_around_sticker = T, dpi = 500)
 ```
-
 
 <!-- badges: start -->
 [![R build status](https://github.com/OJWatson/coiaf/workflows/R-CMD-check/badge.svg)](https://github.com/OJWatson/coiaf/actions)

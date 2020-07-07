@@ -6,8 +6,6 @@
 \alias{coiaf-package}
 \title{\pkg{coiaf} COI Estimation from Allele Frequency}
 \description{
-\if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
-
 Provides a direct method for estimating complexity of infection
   using within-sample allele frequencies from whole genome sequence data.
 }
@@ -23,7 +21,7 @@ Useful links:
 
 Authors:
 \itemize{
-  \item Aris Paschalidis
+  \item Aris Paschalidis \email{aris_paschalidis@brown.edu} (\href{https://orcid.org/0000-0003-2247-1885}{ORCID})
 }
 
 }
