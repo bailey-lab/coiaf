@@ -1,0 +1,30 @@
+template:
+  params:
+    bootswatch: flatly
+
+reference:
+  - title: COI
+    desc: >
+      Determine the COI of the sample
+    contents:
+    - compute_coi
+    - theoretical_coi
+  - title: Real Data
+    desc: >
+      Process real data and run algorithm
+    contents:
+    - run_real_data
+    - process_real_data
+  - title: Simulation
+    desc: >
+      Simulate data and run algorithm on the simulated data
+    contents:
+    - sim_biallelic
+    - process_simulated_coi
+    - coi_test
+  - title: Visualize
+    desc: >
+      Plot the results
+    contents:
+    - matches("plot")
+

@@ -10,7 +10,9 @@ Authors@R:
              comment = c(ORCID = "0000-0003-2374-0741")),
       person(given = "Aris",
              family = "Paschalidis",
-             role = "aut"))
+             role = "aut",
+             email = "aris_paschalidis@brown.edu",
+             comment = c(ORCID = "0000-0003-2247-1885")))
 Maintainer: OJ Watson <oj.watson@hotmail.co.uk>
 BugReports: https://github.com/ojwatson/coiaf/issues
 Description: Provides a direct method for estimating complexity of infection
