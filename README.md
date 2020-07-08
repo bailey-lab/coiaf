@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# coiaf <a href='https://ojwatson.github.io/coiaf/'><img src='man/figures/logo_v2_light_green_no_background.png' align="right" height="139" /></a>
+# coiaf <a href='https://ojwatson.github.io/coiaf/'><img src='man/figures/logo.png' align="right" height="139" /></a>
 
 <!-- badges: start -->
 
