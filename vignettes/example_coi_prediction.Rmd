@@ -43,6 +43,7 @@ increasing PLAF to infer COI.
 ```{r method 1}
 # Loop over range of COIs 
 end_coi = list()
+par(mar=c(1,1,1,1))
 par(mfrow = c(3,2))
 for (k in 2:7){
 
@@ -85,6 +86,7 @@ gaps can be found at different COI, with smaller PLAF:
 
 ```{r ideal PLAF}
 ## Best place to calculate COI:
+par(mar=c(1,1,1,1))
 par(mfrow = c(3,3))
 p_vec <- seq(0, 0.5, l=101)
 y <- list()
@@ -111,6 +113,7 @@ heterogeneous, i.e. not all REF or ALT calls.
 
 ```{r method 2}
 # loop over range of COIs
+par(mar=c(1,1,1,1))
 par(mfrow = c(3,2))
 for (k in 2:7) {
 
