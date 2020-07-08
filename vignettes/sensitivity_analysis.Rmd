@@ -1,19 +1,12 @@
 ---
-title: "Testing COI Parameters"
+title: "Sensitivity Analysis"
 author: "Aris Paschalidis"
-date: "`r format(Sys.time(), '%B %d, %Y')`"
-output:
-  html_document:
-    highlight: pygments
-    toc: true
-    toc_float: true
-    number_sections: true
-  pdf_document:
-    toc: true
-    toc_depth: 2
-    number_sections: true
-editor_options:
-  chunk_output_type: console
+date: "`r format(Sys.time(), '%B %Y')`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Sensitivity Analysis}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include = FALSE}
@@ -60,8 +53,6 @@ A note of caution, in order to visualize the following tests, `ggplot2` and
 
 ## Default Parameters
 
-```{r default table, eval = T, echo = F, results='asis'}
-default_tabl <- '
 | Parameter       | Default Value         |
 |:---------------:|:---------------------:|
 | COI             | `3`                   |
@@ -76,9 +67,6 @@ default_tabl <- '
 | Method          | `"overall"`           |
 | Distance Method | `"squared"`           |
 | Weighted        | `TRUE`                |
-'
-cat(default_tabl)
-```
 
 
 ## Setting our PLAF
@@ -114,8 +102,8 @@ tcoi_error
 ```
 
 ```{r coi image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('Sensitivity Analysis Figures/Sensitivity Plots/tcoi_image.png')
-knitr::include_graphics('Sensitivity Analysis Figures/Error Images/tcoi_error.png')
+knitr::include_graphics('vignettes/Sensitivity Analysis Figures/Sensitivity Plots/tcoi_image.png')
+knitr::include_graphics('vignettes/Sensitivity Analysis Figures/Error Images/tcoi_error.png')
 ```
 
 Based on the above set of runs, it appears that the algorithm performs well for
@@ -150,8 +138,8 @@ tmethod_error
 ```
 
 ```{r method image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('Sensitivity Analysis Figures/Sensitivity Plots/tmethod_image.png')
-knitr::include_graphics('Sensitivity Analysis Figures/Error Images/tmethod_error.png')
+knitr::include_graphics('vignettes/Sensitivity Analysis Figures/Sensitivity Plots/tmethod_image.png')
+knitr::include_graphics('vignettes/Sensitivity Analysis Figures/Error Images/tmethod_error.png')
 ```
 
 Looking at the images for the three methods: `end`, `ideal`, `overall`, it is
@@ -195,8 +183,8 @@ tdistance_error
 ```
 
 ```{r distance image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('Sensitivity Analysis Figures/Sensitivity Plots/tdistance_image.png')
-knitr::include_graphics('Sensitivity Analysis Figures/Error Images/tdistance_error.png')
+knitr::include_graphics('vignettes/Sensitivity Analysis Figures/Sensitivity Plots/tdistance_image.png')
+knitr::include_graphics('vignettes/Sensitivity Analysis Figures/Error Images/tdistance_error.png')
 ```
 
 All of the distance metrics, other than KL divergence, perform quite well for
@@ -231,8 +219,8 @@ tweight_error
 ```
 
 ```{r weight image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('Sensitivity Analysis Figures/Sensitivity Plots/tweight_image.png')
-knitr::include_graphics('Sensitivity Analysis Figures/Error Images/tweight_error.png')
+knitr::include_graphics('vignettes/Sensitivity Analysis Figures/Sensitivity Plots/tweight_image.png')
+knitr::include_graphics('vignettes/Sensitivity Analysis Figures/Error Images/tweight_error.png')
 ```
 
 Comparing weighted to non-weighted distance metrics, it appears that there is
@@ -259,8 +247,8 @@ tcoverage_error
 ```
 
 ```{r coverage image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('Sensitivity Analysis Figures/Sensitivity Plots/tcoverage_image.png')
-knitr::include_graphics('Sensitivity Analysis Figures/Error Images/tcoverage_error.png')
+knitr::include_graphics('vignettes/Sensitivity Analysis Figures/Sensitivity Plots/tcoverage_image.png')
+knitr::include_graphics('vignettes/Sensitivity Analysis Figures/Error Images/tcoverage_error.png')
 ```
 
 It can be seen, based on the figures, that the lower the coverage is, the worse
@@ -317,8 +305,8 @@ tloci_error
 ```
 
 ```{r loci image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('Sensitivity Analysis Figures/Sensitivity Plots/tloci_image.png')
-knitr::include_graphics('Sensitivity Analysis Figures/Error Images/tloci_error.png')
+knitr::include_graphics('vignettes/Sensitivity Analysis Figures/Sensitivity Plots/tloci_image.png')
+knitr::include_graphics('vignettes/Sensitivity Analysis Figures/Error Images/tloci_error.png')
 ```
 
 ## Alpha
@@ -340,8 +328,8 @@ talpha_error
 ```
 
 ```{r alpha image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('Sensitivity Analysis Figures/Sensitivity Plots/talpha_image.png')
-knitr::include_graphics('Sensitivity Analysis Figures/Error Images/talpha_error.png')
+knitr::include_graphics('vignettes/Sensitivity Analysis Figures/Sensitivity Plots/talpha_image.png')
+knitr::include_graphics('vignettes/Sensitivity Analysis Figures/Error Images/talpha_error.png')
 ```
 
 The larger the value of alpha is, the better our model performs. Greater than an
@@ -367,8 +355,8 @@ tover_error
 ```
 
 ```{r overdispersion image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('Sensitivity Analysis Figures/Sensitivity Plots/tover_image.png')
-knitr::include_graphics('Sensitivity Analysis Figures/Error Images/tover_error.png')
+knitr::include_graphics('vignettes/Sensitivity Analysis Figures/Sensitivity Plots/tover_image.png')
+knitr::include_graphics('vignettes/Sensitivity Analysis Figures/Error Images/tover_error.png')
 ```
 
 When you introduce overdispersion, models perform poorly. Any overdispersion 
@@ -394,8 +382,8 @@ tepsilon_error
 ```
 
 ```{r epsilon image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('Sensitivity Analysis Figures/Sensitivity Plots/tepsilon_image.png')
-knitr::include_graphics('Sensitivity Analysis Figures/Error Images/tepsilon_error.png')
+knitr::include_graphics('vignettes/Sensitivity Analysis Figures/Sensitivity Plots/tepsilon_image.png')
+knitr::include_graphics('vignettes/Sensitivity Analysis Figures/Error Images/tepsilon_error.png')
 ```
 
 The algorithm performs best at an epsilon value of 0. As epislon becomes larger,
@@ -429,8 +417,8 @@ tseq_error
 ```
 
 ```{r seq error image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('Sensitivity Analysis Figures/Sensitivity Plots/tseq_image.png')
-knitr::include_graphics('Sensitivity Analysis Figures/Error Images/tseq_error.png')
+knitr::include_graphics('vignettes/Sensitivity Analysis Figures/Sensitivity Plots/tseq_image.png')
+knitr::include_graphics('vignettes/Sensitivity Analysis Figures/Error Images/tseq_error.png')
 ```
 
 Interestingly, having no sequence errror causes problems in the algorithm. Based
@@ -456,7 +444,7 @@ names(saved_analysis) <- list("tcoi", "tmethod", "tdistance", "tweight",
                               "tcoverage", "tloci", "talpha", "tover", 
                               "tepsilon", "tseq")
 
-saveRDS(saved_analysis, file = "analysis/saved_analysis.rds")
+saveRDS(saved_analysis, file = "vignettes/saved_analysis.rds")
 
 # Here, we update all the stored images
 update_images <- list(tcoi_image, tmethod_image, tdistance_image, tweight_image,
@@ -468,7 +456,7 @@ names(update_images) <- list("tcoi_image", "tmethod_image", "tdistance_image",
                              "tseq_image")
 
 for (i in seq_len(length(update_images))){
-  filename = paste0("analysis/Sensitivity Analysis Figures/Sensitivity Plots/", 
+  filename = paste0("vignettes/Sensitivity Analysis Figures/Sensitivity Plots/", 
                     names(update_images)[i], 
                     ".png")
   suppressMessages(update_images[i] %>% ggpubr::ggexport(filename = filename))
@@ -484,7 +472,7 @@ names(update_errors) <- list("tcoi_error", "tmethod_error", "tdistance_error",
                              "tseq_error")
 
 for (i in seq_len(length(update_errors))){
-  filename = paste0("analysis/Sensitivity Analysis Figures/Error Images/", 
+  filename = paste0("vignettes/Sensitivity Analysis Figures/Error Images/", 
                     names(update_errors)[i], 
                     ".png")
   suppressMessages(update_errors[i] %>% ggpubr::ggexport(filename = filename))
