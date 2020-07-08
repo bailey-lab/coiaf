@@ -35,13 +35,14 @@ process_real_data <- function(wsaf, plaf, seq_error = 0.01,
 
   # Average over intervals of PLAF
   df_grouped <- df %>%
-    dplyr::group_by(.data$plaf_cut) %>%
+    dplyr::group_by(.data$plaf_cut, .drop = FALSE) %>%
     dplyr::summarise(m_variant   = mean(.data$variant),
                      bucket_size = dplyr::n()) %>%
     as.data.frame()
 
-  # Include midpoints
+  # Include midpoints and remove missing data
   df_grouped$midpoints <- cut[-length(cut)] + diff(cut)/2
+  df_grouped <- na.omit(df_grouped)
 
   return(df_grouped)
 }
