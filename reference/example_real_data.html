@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Draw from Dirichlet distribution — rdirichlet • coiaf</title>
+<title>Example Real Data — example_real_data • coiaf</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,9 +46,8 @@
 
 
 
-<meta property="og:title" content="Draw from Dirichlet distribution — rdirichlet" />
-<meta property="og:description" content="Draw from Dirichlet distribution given a vector of shape
-  parameters." />
+<meta property="og:title" content="Example Real Data — example_real_data" />
+<meta property="og:description" content="A small example dataset that contains WSAF from a sample of individuals." />
 
 
 
@@ -138,27 +137,23 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Draw from Dirichlet distribution</h1>
-    <small class="dont-index">Source: <a href='https://github.com/ojwatson/coiaf/blob/master/R/probability.R'><code>R/probability.R</code></a></small>
-    <div class="hidden name"><code>rdirichlet.Rd</code></div>
+    <h1>Example Real Data</h1>
+    <small class="dont-index">Source: <a href='https://github.com/ojwatson/coiaf/blob/master/R/coiaf.R'><code>R/coiaf.R</code></a></small>
+    <div class="hidden name"><code>example_real_data.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Draw from Dirichlet distribution given a vector of shape
-  parameters.</p>
+    <p>A small example dataset that contains WSAF from a sample of individuals.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>rdirichlet</span>(shape = <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fl'>3</span>))</pre>
 
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>shape</th>
-      <td><p>Vector of shape parameters.</p></td>
-    </tr>
-    </table>
 
+    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
+
+    <p>A list of matrices. The list indicates the region of the genome and
+the VCF file where the samples came from. The two matrices have the same
+structure. The rows of the matrix indicate the patient and the columns of
+the matrix indicate the WSAF at each locus.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

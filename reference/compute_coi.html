@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Compute COI — compute_coi • coiaf</title>
+<title>Predict the COI — compute_coi • coiaf</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,23 +46,28 @@
 
 
 
-<meta property="og:title" content="Compute COI — compute_coi" />
-<meta property="og:description" content="Predict the COI of the sample by comparing the simulated
-COI curve to the theoretical COI curve. To determine the predicted COI value,
-three different methods are utilized:
+<meta property="og:title" content="Predict the COI — compute_coi" />
+<meta property="og:description" content="Predict the COI of the sample by comparing the within sample
+allele frequency (WSAF) and the population level allele frequency (PLAF) of
+the sample to what a theoretical WSAF and PLAF should look like. By examining
+the sample's WSAF and PLAF to the theoretical WSAF and PLAF, an estimation
+can be made about what the COI of the sample is. We refer to the sample's
+WSAF vs PLAF as the &quot;sample curve&quot; and refer to the theoretical WSAF vs
+PLAF as the &quot;theoretical curve.&quot; To determine the predicted COI value, one of
+three different methods can be selected:
   endDetermines the distance between the theoretical and
-  simulated curve at a PLAF of 0.5. The COI is whichever theoretical COI
-  curve is the closest to the simulated data.
+  sample curve at a PLAF of 0.5. The COI is whichever theoretical COI
+  curve has the smallest distance to the simulated data.
   idealDetermines the distance between the theoretical and
-  simulated curve at the ideal PLAF. The ideal PLAF is calculated by looking
+  sample curve at the ideal PLAF. The ideal PLAF is calculated by looking
   at the change between the COI of \(i\) and the COI of \(i-1\) and
-  finding the PLAF for which this distance is maximal. The COI is whichever
-  theoretical COI curve is the closet to the simulated data at the ideal
-  PLAF.
+  finding the PLAF for which this distance is maximized. The COI is whichever
+  theoretical COI curve has the smallest distance to the simulated data at
+  the ideal PLAF.
   overallDetermines the distance between the theoretical and
-  simulated curve at for all PLAFs. Computes the distance between the
+  simulated curve for all PLAFs. Computes the distance between the
   theoretical curves and the simulated curve. The COI is whichever
-  theoretical curve has the smallest distance from the simulated curve.
+  theoretical curve has the smallest distance to the simulated curve.
   There is an option to choose one of several distance metrics:
   
 abs_sum: Absolute value of sum of difference.
@@ -111,13 +116,35 @@ KL: Kullback-Leibler divergence.
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+  <a href="..//index.html">
+    <span class="fa fa-home fa-lg"></span>
      
   </a>
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/sensitivity_analysis.html">Sensitivity Αnalysis</a>
+    </li>
+    <li>
+      <a href="../articles/example_real_data.html">Real Data</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="../articles/example_coi_prediction.html">COI Prediction</a>
+    </li>
+    <li>
+      <a href="../articles/example_simulation.html">Simulation Example</a>
+    </li>
+  </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -140,28 +167,33 @@ KL: Kullback-Leibler divergence.
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Compute COI</h1>
+    <h1>Predict the COI</h1>
     <small class="dont-index">Source: <a href='https://github.com/ojwatson/coiaf/blob/master/R/compute_coi.R'><code>R/compute_coi.R</code></a></small>
     <div class="hidden name"><code>compute_coi.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Predict the COI of the sample by comparing the simulated
-COI curve to the theoretical COI curve. To determine the predicted COI value,
-three different methods are utilized:</p><dl>
+    <p>Predict the COI of the sample by comparing the within sample
+allele frequency (WSAF) and the population level allele frequency (PLAF) of
+the sample to what a theoretical WSAF and PLAF should look like. By examining
+the sample's WSAF and PLAF to the theoretical WSAF and PLAF, an estimation
+can be made about what the COI of the sample is. We refer to the sample's
+WSAF vs PLAF as the "sample curve" and refer to the theoretical WSAF vs
+PLAF as the "theoretical curve." To determine the predicted COI value, one of
+three different methods can be selected:</p><dl>
   <dt><code>end</code></dt><dd><p>Determines the distance between the theoretical and
-  simulated curve at a PLAF of 0.5. The COI is whichever theoretical COI
-  curve is the closest to the simulated data.</p></dd>
+  sample curve at a PLAF of 0.5. The COI is whichever theoretical COI
+  curve has the smallest distance to the simulated data.</p></dd>
   <dt><code>ideal</code></dt><dd><p>Determines the distance between the theoretical and
-  simulated curve at the ideal PLAF. The ideal PLAF is calculated by looking
+  sample curve at the ideal PLAF. The ideal PLAF is calculated by looking
   at the change between the COI of \(i\) and the COI of \(i-1\) and
-  finding the PLAF for which this distance is maximal. The COI is whichever
-  theoretical COI curve is the closet to the simulated data at the ideal
-  PLAF.</p></dd>
+  finding the PLAF for which this distance is maximized. The COI is whichever
+  theoretical COI curve has the smallest distance to the simulated data at
+  the ideal PLAF.</p></dd>
   <dt><code>overall</code></dt><dd><p>Determines the distance between the theoretical and
-  simulated curve at for all PLAFs. Computes the distance between the
+  simulated curve for all PLAFs. Computes the distance between the
   theoretical curves and the simulated curve. The COI is whichever
-  theoretical curve has the smallest distance from the simulated curve.
+  theoretical curve has the smallest distance to the simulated curve.
   There is an option to choose one of several distance metrics:
   <ul>
 <li><p><code>abs_sum</code>: Absolute value of sum of difference.</p></li>
@@ -188,13 +220,13 @@ three different methods are utilized:</p><dl>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>processed_data</th>
-      <td><p>The simulated COI curve, which is the output of
+      <td><p>The processed COI data. This is the output of
 process_simulated_coi or process_real_data.</p></td>
     </tr>
     <tr>
       <th>theory_coi_range</th>
       <td><p>The range of COIs for which theoretical curves
-will be calculated.</p></td>
+will be generated.</p></td>
     </tr>
     <tr>
       <th>cut</th>
@@ -208,19 +240,20 @@ will be calculated.</p></td>
     <tr>
       <th>dist_method</th>
       <td><p>The distance method used to determine the distance between
-the theoretical and simulated curves for the "overall" method. One of
+the theoretical and simulated curves for the <code>"overall"</code> method. One of
 <code>"abs_sum", "sum_abs", "squared", "KL"</code>.</p></td>
     </tr>
     <tr>
       <th>weighted</th>
-      <td><p>An indicator indicating whether to compute weighted distance.</p></td>
+      <td><p>An indicator indicating whether to compute the weighted
+distance.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A list of the following:</p><dl>
-  <dt><code>coi</code></dt><dd><p>The predicted COI for the simulation.</p></dd>
+  <dt><code>coi</code></dt><dd><p>The predicted COI of the sample.</p></dd>
   <dt><code>probability</code></dt><dd><p>A probability density function representing the
   probability of each COI.</p></dd>
   
@@ -238,7 +271,7 @@ the theoretical and simulated curves for the "overall" method. One of
 
       <footer>
       <div class="copyright">
-  <p>Developed by OJ Watson, Aris Paschalidis.</p>
+  <p>Developed by Aris Paschalidis, OJ Watson.</p>
 </div>
 
 <div class="pkgdown">

@@ -87,13 +87,35 @@ parameters" />
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+  <a href="..//index.html">
+    <span class="fa fa-home fa-lg"></span>
      
   </a>
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/sensitivity_analysis.html">Sensitivity Αnalysis</a>
+    </li>
+    <li>
+      <a href="../articles/example_real_data.html">Real Data</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="../articles/example_coi_prediction.html">COI Prediction</a>
+    </li>
+    <li>
+      <a href="../articles/example_simulation.html">Simulation Example</a>
+    </li>
+  </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -200,12 +222,13 @@ allele. Applies in both directions.</p></td>
     <tr>
       <th>dist_method</th>
       <td><p>The distance method used to determine the distance between
-the theoretical and simulated curves for the "overall" method. One of
+the theoretical and simulated curves for the <code>"overall"</code> method. One of
 <code>"abs_sum", "sum_abs", "squared", "KL"</code>.</p></td>
     </tr>
     <tr>
       <th>weighted</th>
-      <td><p>An indicator indicating whether to compute weighted distance.</p></td>
+      <td><p>An indicator indicating whether to compute the weighted
+distance.</p></td>
     </tr>
     </table>
 
@@ -216,13 +239,17 @@ the theoretical and simulated curves for the "overall" method. One of
   predicted using compute_coi. Each column represents a separate set
   of parameters. Each row represents a predicted COI. Predictions are done
   many times, depending on the value of <code>repetitions</code>.</p></dd>
+  <dt><code>probability</code></dt><dd><p>A list of matrices containing the probability
+  that our model predicted each COI value. Each row contains the probability
+  for a different run. The first row contains the average probabilities over
+  all the runs.</p></dd>
   <dt><code>param_grid</code></dt><dd><p>The parameter grid. The parameter grid is all
   possible combinations of the parameters inputted. Each row represents a
   unique combination.</p></dd>
-  <dt><code>error_bias</code></dt><dd><p>A dataframe containing any parameter that was
-  varied and the associated mean absolute error and bias (mean error). By
-  showing only parameters that were varied, the output is easier to interpret
-  and does not have information about parameters that were held constant.</p></dd>
+  <dt><code>boot_error</code></dt><dd><p>A dataframe containing information about the error
+  of the algorithm. The first column indicates the COI that was fed into the
+  simulation. The other columns indicate the mean absolute error (mae),
+  the lower and upper bounds of the 95% confidence interval and the bias.</p></dd>
 
 </dl>
 
@@ -238,7 +265,7 @@ the theoretical and simulated curves for the "overall" method. One of
 
       <footer>
       <div class="copyright">
-  <p>Developed by OJ Watson, Aris Paschalidis.</p>
+  <p>Developed by Aris Paschalidis, OJ Watson.</p>
 </div>
 
 <div class="pkgdown">
