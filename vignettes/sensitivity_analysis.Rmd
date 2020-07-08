@@ -97,13 +97,13 @@ tcoi_error
 
 # N.B. to save the plots, we can use the following code. Write this after the
 # call to sensitivity_plot().
-# %>% ggpubr::ggexport(filename = "analysis/Sensitivity Analysis Figures/Sensitivity Plots/tcoi_image.png")
-# %>% ggpubr::ggexport(filename = "analysis/Sensitivity Analysis Figures/Error Images/tcoi_error.png")
+# %>% ggpubr::ggexport(filename = "analysis/figures/sensitivity_plots/tcoi_image.png")
+# %>% ggpubr::ggexport(filename = "analysis/figures/error_images/tcoi_error.png")
 ```
 
 ```{r coi image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('Sensitivity Analysis Figures/Sensitivity Plots/tcoi_image.png')
-knitr::include_graphics('Sensitivity Analysis Figures/Error Images/tcoi_error.png')
+knitr::include_graphics('figures/sensitivity_plots/tcoi_image.png')
+knitr::include_graphics('figures/error_images/tcoi_error.png')
 ```
 
 Based on the above set of runs, it appears that the algorithm performs well for
@@ -116,7 +116,7 @@ underpredicts the COI.
 The fact that our model struggles with larger COIs makes sense as at that point,
 the theoretical COI curves are essentially identical. Although it is remarkable
 that the algorithm performs this well at COIs that large, COIs of greater than 
-20 are somehwat unrealistic. For the rest of this document, we only consider 
+20 are somewhat unrealistic. For the rest of this document, we only consider 
 COIs of 2 till 20.
 
 ## Method
@@ -138,8 +138,8 @@ tmethod_error
 ```
 
 ```{r method image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('Sensitivity Analysis Figures/Sensitivity Plots/tmethod_image.png')
-knitr::include_graphics('Sensitivity Analysis Figures/Error Images/tmethod_error.png')
+knitr::include_graphics('figures/sensitivity_plots/tmethod_image.png')
+knitr::include_graphics('figures/error_images/tmethod_error.png')
 ```
 
 Looking at the images for the three methods: `end`, `ideal`, `overall`, it is
@@ -157,7 +157,7 @@ method.
 
 Based on these results, it seem that the `ideal` method and the `overall` method
 are the best. Which one is better is debatable, but for the rest of this 
-docuement, we will use the `overall` method.
+document, we will use the `overall` method.
 
 ## Distance Method
 ```{r distance, eval = eval_tests}
@@ -183,15 +183,15 @@ tdistance_error
 ```
 
 ```{r distance image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('Sensitivity Analysis Figures/Sensitivity Plots/tdistance_image.png')
-knitr::include_graphics('Sensitivity Analysis Figures/Error Images/tdistance_error.png')
+knitr::include_graphics('figures/sensitivity_plots/tdistance_image.png')
+knitr::include_graphics('figures/error_images/tdistance_error.png')
 ```
 
 All of the distance metrics, other than KL divergence, perform quite well for
-all values of the COI. The KL divergecne, although it too performs well, it 
+all values of the COI. The KL divergence, although it too performs well, it 
 struggles for low COI values. In some cases the KL method overpredicts and in 
 some cases underpredicts by a large amount. For a COI of 2, for example, the 
-algorithm predicts COI's much higher than the true COI, in some cases even 
+algorithm predicts COIs much higher than the true COI, in some cases even 
 predicting a COI of 12.
 
 ## Weighted
@@ -219,8 +219,8 @@ tweight_error
 ```
 
 ```{r weight image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('Sensitivity Analysis Figures/Sensitivity Plots/tweight_image.png')
-knitr::include_graphics('Sensitivity Analysis Figures/Error Images/tweight_error.png')
+knitr::include_graphics('figures/sensitivity_plots/tweight_image.png')
+knitr::include_graphics('figures/error_images/tweight_error.png')
 ```
 
 Comparing weighted to non-weighted distance metrics, it appears that there is
@@ -247,13 +247,13 @@ tcoverage_error
 ```
 
 ```{r coverage image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('Sensitivity Analysis Figures/Sensitivity Plots/tcoverage_image.png')
-knitr::include_graphics('Sensitivity Analysis Figures/Error Images/tcoverage_error.png')
+knitr::include_graphics('figures/sensitivity_plots/tcoverage_image.png')
+knitr::include_graphics('figures/error_images/tcoverage_error.png')
 ```
 
 It can be seen, based on the figures, that the lower the coverage is, the worse
 our algorithm does. With a coverage greater than 100, however, there is not a
-noticable difference in performance.
+noticeable difference in performance.
 
 ## Loci
 ```{r loci, eval = eval_tests}
@@ -305,8 +305,8 @@ tloci_error
 ```
 
 ```{r loci image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('Sensitivity Analysis Figures/Sensitivity Plots/tloci_image.png')
-knitr::include_graphics('Sensitivity Analysis Figures/Error Images/tloci_error.png')
+knitr::include_graphics('figures/sensitivity_plots/tloci_image.png')
+knitr::include_graphics('figures/error_images/tloci_error.png')
 ```
 
 ## Alpha
@@ -328,12 +328,12 @@ talpha_error
 ```
 
 ```{r alpha image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('Sensitivity Analysis Figures/Sensitivity Plots/talpha_image.png')
-knitr::include_graphics('Sensitivity Analysis Figures/Error Images/talpha_error.png')
+knitr::include_graphics('figures/sensitivity_plots/talpha_image.png')
+knitr::include_graphics('figures/error_images/talpha_error.png')
 ```
 
 The larger the value of alpha is, the better our model performs. Greater than an
-alpha of 1.6, however, there is very litte difference. When the alpha is low, 
+alpha of 1.6, however, there is very little difference. When the alpha is low, 
 the model will underpredict the true COI.
 
 ## Overdispersion
@@ -355,8 +355,8 @@ tover_error
 ```
 
 ```{r overdispersion image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('Sensitivity Analysis Figures/Sensitivity Plots/tover_image.png')
-knitr::include_graphics('Sensitivity Analysis Figures/Error Images/tover_error.png')
+knitr::include_graphics('figures/sensitivity_plots/tover_image.png')
+knitr::include_graphics('figures/error_images/tover_error.png')
 ```
 
 When you introduce overdispersion, models perform poorly. Any overdispersion 
@@ -382,11 +382,11 @@ tepsilon_error
 ```
 
 ```{r epsilon image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('Sensitivity Analysis Figures/Sensitivity Plots/tepsilon_image.png')
-knitr::include_graphics('Sensitivity Analysis Figures/Error Images/tepsilon_error.png')
+knitr::include_graphics('figures/sensitivity_plots/tepsilon_image.png')
+knitr::include_graphics('figures/error_images/tepsilon_error.png')
 ```
 
-The algorithm performs best at an epsilon value of 0. As epislon becomes larger,
+The algorithm performs best at an epsilon value of 0. As epsilon becomes larger,
 the model greatly overpredicts the COI. This can be seen for an epsilon of 
 0.008, where the COI is almost always predicted to be 25, the maximum allowable
 COI for these tests.
@@ -417,13 +417,13 @@ tseq_error
 ```
 
 ```{r seq error image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('Sensitivity Analysis Figures/Sensitivity Plots/tseq_image.png')
-knitr::include_graphics('Sensitivity Analysis Figures/Error Images/tseq_error.png')
+knitr::include_graphics('figures/sensitivity_plots/tseq_image.png')
+knitr::include_graphics('figures/error_images/tseq_error.png')
 ```
 
-Interestingly, having no sequence errror causes problems in the algorithm. Based
+Interestingly, having no sequence error causes problems in the algorithm. Based
 off the figure, it is clear that introducing some sequence error does combat
-issues intoduced by the value of epsilon. However, if the sequence error is too
+issues introduced by the value of epsilon. However, if the sequence error is too
 large, the model starts to underpredict the COI.
 
 ```{r save results, eval = eval_tests, echo = FALSE}
@@ -456,13 +456,13 @@ names(update_images) <- list("tcoi_image", "tmethod_image", "tdistance_image",
                              "tseq_image")
 
 for (i in seq_len(length(update_images))){
-  filename = paste0("Sensitivity Analysis Figures/Sensitivity Plots/", 
+  filename = paste0("figures/sensitivity_plots/", 
                     names(update_images)[i], 
                     ".png")
   suppressMessages(update_images[i] %>% ggpubr::ggexport(filename = filename))
 }
 
-# Here, we update all the stored error images
+# Here, we update all the stored error_images
 update_errors <- list(tcoi_error, tmethod_error, tdistance_error, tweight_error,
                       tcoverage_error, tloci_error, talpha_error, tover_error, 
                       tepsilon_error, tseq_error)
@@ -472,7 +472,7 @@ names(update_errors) <- list("tcoi_error", "tmethod_error", "tdistance_error",
                              "tseq_error")
 
 for (i in seq_len(length(update_errors))){
-  filename = paste0("Sensitivity Analysis Figures/Error Images/", 
+  filename = paste0("figures/error_images/", 
                     names(update_errors)[i], 
                     ".png")
   suppressMessages(update_errors[i] %>% ggpubr::ggexport(filename = filename))

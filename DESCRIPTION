@@ -37,6 +37,7 @@ Suggests:
     rmarkdown,
     spelling,
     testthat,
+    tibble,
     tidyselect
 License: MIT + file LICENSE
 RoxygenNote: 7.1.1

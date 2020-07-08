@@ -162,7 +162,7 @@ process_simulated_coi <- function(sim, seq_error = 0.01,
 
   # Include midpoints
   df_sim_grouped$midpoints <- cut[-length(cut)] + diff(cut)/2
-  df_sim_grouped <- na.omit(df_sim_grouped)
+  df_sim_grouped <- stats::na.omit(df_sim_grouped)
 
   return(df_sim_grouped)
 }

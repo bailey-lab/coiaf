@@ -42,7 +42,7 @@ process_real_data <- function(wsaf, plaf, seq_error = 0.01,
 
   # Include midpoints and remove missing data
   df_grouped$midpoints <- cut[-length(cut)] + diff(cut)/2
-  df_grouped <- na.omit(df_grouped)
+  df_grouped <- stats::na.omit(df_grouped)
 
   return(df_grouped)
 }
