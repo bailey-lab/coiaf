@@ -1,57 +1,61 @@
 ---
-title: "Example Simulated Sequencing Reads and Inferred COI"
-author: "OJ Watson"
-date: "`r format(Sys.time(), '%B %d, %Y')`"
-output:
-  prettydoc::html_pretty:
-    theme: cayman
-    highlight: vignette
-    toc: true
-    fig_caption: yes
-editor_options:
-  chunk_output_type: console
+title: "Example COI Prediction"
+author: "Aris Paschalidis"
+date: "`r format(Sys.time(), '%B %Y')`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Example COI Prediction}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
-```{r imports, echo=F, warning=F, message=F, results='hide'}
-library(tidyverse)
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  comment = "#>",
+  tidy = TRUE,
+  tidy.opts = list(width.cutoff = 80)
+)
+
 library(coiaf)
 ```
 
 In this analysis the two COI estimation methods are demonstrated. In these we 
-will simualate 1000 loci for an individual:
+will simulate 1000 loci for an individual. We first initialize the population
+level allele frequency (PLAF) using a beta distribution.
 
 ```{r initialize PLAF}
-# set seed
+# Set seed
 set.seed(1)
 
-# define number of loci, and distribution of minor allele frequencies
+# Define the number of loci and the distribution of minor allele frequencies
 L <- 1e3
 p <- stats::rbeta(L, 1, 5)
 p[p > 0.5] <- 1 - p[p > 0.5]
 ```
 
 
-## Method 1
+# Method 1
 
-The first approach in the manuscript document for estimating COU is shown below. 
-This works by using the mean number of variant sites, binned
-in groups of increasing population allele frequency to infer COI.
+The first approach in the manuscript document for estimating COI is shown below. 
+This works by using the mean number of variant sites, binned in groups of 
+increasing PLAF to infer COI.
 
 ```{r method 1}
-# loop over range of COIs 
+# Loop over range of COIs 
+end_coi = list()
 par(mfrow = c(3,2))
 for (k in 2:7){
 
-  # simulate data and subset to heterozygous sites only
-  # set.seed(1)
+  # Simulate data and subset to heterozygous sites only
+  set.seed(1)
   sim1 <- sim_biallelic(COI = k, PLAF = p)
 
-  # plot raw WSAF as grey dots
+  # Plot raw WSAF as gray dots
   plot(sim1$data$PLAF, sim1$data$WSAF, 
        pch = 20, cex = 0.5, col = "gray", ylim = c(0,1),
        xlab = "PLAF", ylab = "WSAF", main = paste("COI =", k))
 
-  # overlay analytical expectations for COI=2:7
+  # Overlay analytical expectations for COI of 2:7
   p_vec <- seq(0, 0.5, l=101)
   theory_cois <- theoretical_coi(seq(1, 7), p_vec)
   for (i in 2:7) {
@@ -61,15 +65,16 @@ for (k in 2:7){
   text(x = rep(0.505, 6), y = 1 - 0.5^(1:6), labels = 2:7, 
        col = "red", cex = 0.6)
 
-  # compute windowed averages over WSAF and overlay in blue
+  # Compute windowed averages over WSAF and overlay in blue
   cut <- seq(0,0.5,0.01)
   df_grouped <- process_simulated_coi(sim1, 0.01, cut)
 
   lines(df_grouped$midpoints, df_grouped$m_true_variant, 
         col = "blue", lwd = 2, type = "o", pch = 20)
   
-  calc_coi = compute_coi(df_grouped, seq(1, 7), cut, "ideal", "squared", TRUE)
-  print(paste("Actual COI is ", k, ", Calculated COI is ", calc_coi$coi, sep = ""))
+  # Predict the COI and print the results
+  calc_coi = compute_coi(df_grouped, seq(1, 7), cut, "overall", "squared", TRUE)
+  end_coi = unlist(c(end_coi, calc_coi$coi))
 }
 ```
 
@@ -99,7 +104,7 @@ for (k in 1:10) {
 }
 ```
 
-## Method 2
+# Method 2
 
 In method 2, we plot WSAF against PLAF for only the sites that are 
 heterogeneous, i.e. not all REF or ALT calls. 
