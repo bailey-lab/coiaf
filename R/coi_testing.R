@@ -178,7 +178,7 @@ coi_test <- function(repetitions = 10,
     matrix <- do.call(rbind, lapply(x, function(i) { i$probability }))
 
     # Name the matrix and return
-    colnames(matrix) <- paste("coi", 2:max_COI, sep = "_")
+    colnames(matrix) <- paste("coi", 1:max_COI, sep = "_")
     rownames(matrix) <- paste("rep", seq(repetitions), sep = "_")
 
     # Add a average row to the matrix

@@ -74,10 +74,14 @@ sim_biallelic <- function(COI = 3,
 
   # Generate true WSAF levels by summing binomial draws over strain proportions
   m <- mapply(function(x) rbinom(COI, 1, x), x = PLAF)
-  p_levels <- colSums(sweep(m, 1, w, "*"))
+  if (COI == 1){
+    p_levels = m*w
+  } else{
+    p_levels <- colSums(sweep(m, 1, w, "*"))
+  }
 
   # Rounding errors from multiplying w by m can cause numbers greater than 1
-  p_levels[p_levels>1] <- 1L
+  p_levels[p_levels > 1] <- 1L
 
   # Add in genotyping error
   p_error <- p_levels*(1-epsilon) + (1-p_levels)*epsilon
@@ -137,13 +141,16 @@ process_simulated_coi <- function(sim, seq_error = 0.01,
 
     # Determine if a site is a variant, accounting for sequencing error.
     variant = ifelse(sim$data$WSAF <= seq_error |
-                       sim$data$WSAF >= (1 - seq_error), 0, 1),
-
-    # True variant
-    true_variant = as.integer(!apply(sim$phased,
-                                     2,
-                                     function(x) {all(x) || all(!x)}))
+                       sim$data$WSAF >= (1 - seq_error), 0, 1)
   )
+
+  # Case where COI is 1
+  if (sim$COI == 1){
+    df_sim$true_variant = df_sim$variant
+  } else {
+    df_sim$true_variant = as.integer(!apply(sim$phased, 2,
+                                            function(x) {all(x) || all(!x)}))
+  }
 
   # Average over intervals of PLAF
   df_sim_grouped <- df_sim %>%
