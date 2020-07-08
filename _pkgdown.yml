@@ -38,15 +38,16 @@ navbar:
     href: /index.html
   - text: Reference
     href: reference/index.html
-  - text: Articles
-    menu:
-    - text: Sensitivity Αnalysis
-      href: articles/sensitivity_analysis.html
-    - text: Real Data
-      href: articles/example_real_data.html
-    - text: -------
-    - text: COI Prediction
-      href: articles/example_coi_prediction.html
-    - text: Simulation Example
-      href: articles/example_simulation.html
+  articles: ~
+  # - text: Articles
+  #   menu:
+  #   - text: Sensitivity Αnalysis
+  #     href: articles/sensitivity_analysis.html
+  #   - text: Real Data
+  #     href: articles/example_real_data.html
+  #   - text: -------
+  #   - text: COI Prediction
+  #     href: articles/example_coi_prediction.html
+  #   - text: Simulation Example
+  #     href: articles/example_simulation.html
 
