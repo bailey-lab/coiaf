@@ -32,6 +32,7 @@ Imports:
 Suggests:
     ggplot2,
     ggpubr,
+    ggsci,
     knitr,
     pbapply,
     rmarkdown,

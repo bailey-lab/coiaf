@@ -1,0 +1,92 @@
+---
+title: "Real Data Example"
+author: "Aris Paschalidis"
+date: "`r format(Sys.time(), '%B %Y')`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Real Data Example}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+# Here, we set default options for our markdown file
+knitr::opts_chunk$set(
+  comment = "#>",
+  tidy = TRUE,
+  tidy.opts = list(width.cutoff = 80)
+)
+# Change the way tibble prints so only prints 5 extra columns
+options(tibble.max_extra_cols = 5)
+
+library(ggplot2)
+library(coiaf)
+```
+
+# Data Structure
+
+# Run The Algorithm
+
+Running the algorithm is quite straightforward.
+
+```{r predict coi}
+coi_pred <- lapply(seq_len(length(example_real_data)), function(x) {
+  # Run predictions
+  sample <- example_real_data[[x]]
+  predicted <- run_real_data(sample)
+
+  # Extract COI from the predictions
+  extract_coi <- tibble::enframe(unlist(lapply(predicted, function(x){ x$coi })),
+                                 value = "prediction") %>%
+    dplyr::mutate(file = names(example_real_data)[x])
+
+  return(extract_coi)
+})
+
+# Name the predictions so that it is easier to understand
+names(coi_pred) <- names(example_real_data)
+
+# Print out the predicted COI
+coi_pred
+```
+
+For roughly 5000 loci and 500 patients, the model will take about 20 seconds to
+run. It may be helpful to include a progress bar in the code by replacing 
+`lapply` in the above function with a user defined function. For example, the 
+package `pbapply` can be used as follows:
+
+```{r progress bar function, eval = F}
+# Function to determine if pbapply is installed. If it is installed, it will
+# display a progress bar
+list_apply <- function(x, fun, ...){
+  if (requireNamespace("pbapply", quietly = TRUE)) {
+    pbapply::pblapply(x, fun, ...)
+    } else {
+    lapply(x, fun, ...)
+  }
+}
+```
+
+All that is left to do is to replace the above `lapply` with the newly defined
+`list_apply`.
+
+```{r graphing}
+# Change the names of the file to be more clear
+coi_pred_tib <- tibble::as_tibble(do.call(rbind, coi_pred)) %>% 
+  dplyr::mutate(file = factor(ifelse(file == "cat_region_1_vcf_0", 
+                                     "Region 1 VCF 0", 
+                                     "Region 1 VCF 1"))) 
+
+# Plot
+ggplot(coi_pred_tib, aes(factor(prediction), fill = factor(prediction))) + 
+  geom_bar(stat = "count") + 
+  facet_grid(. ~file) + 
+  ggsci::scale_fill_locuszoom() +
+  geom_text(aes(label = ..count..), stat = 'count', vjust = -0.3, color = "black", size = 3.5) +
+  theme_classic() +
+  theme(plot.title   = element_text(hjust = 0.5, size = 10),
+        axis.title   = element_text(size = 8)) +
+  guides(fill = FALSE) +
+  labs(x = "Predicted COI", y = "Count", title = "Bar Plot of Predicted COI")
+```
+
