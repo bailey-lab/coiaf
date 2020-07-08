@@ -13,3 +13,6 @@
 ^example_simulations\.R$
 ^analysis/example_simulate_data\.Rmd$
 ^pkgdown$
+^00_Pf6k_vcf_download_loci_selection_and_RMCL\.Rmd$
+^01_Pf6k_WSAF_creation_for_coiaf\.Rmd$
+^03_Pf6k_sample_locations_and_regions_plot\.Rmd$

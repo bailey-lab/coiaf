@@ -1,10 +1,10 @@
 ---
-title: "Example of a Simulation"
+title: "Example Simulation"
 author: "Aris Paschalidis"
 date: "`r format(Sys.time(), '%B %Y')`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Example of a Simulation}
+  %\VignetteIndexEntry{Example Simulation}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

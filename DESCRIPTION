@@ -3,17 +3,17 @@ Type: Package
 Title: Complexity of Infection Estimation with Allele Frequencies
 Version: 0.1.0
 Authors@R: 
-    c(person(given = "OJ",
-             family = "Watson",
-             role = c("aut", "cre"),
-             email = "oj.watson@hotmail.co.uk",
-             comment = c(ORCID = "0000-0003-2374-0741")),
-      person(given = "Aris",
+    c(person(given = "Aris",
              family = "Paschalidis",
-             role = "aut",
+             role = c("aut", "cre"),
              email = "aris_paschalidis@brown.edu",
-             comment = c(ORCID = "0000-0003-2247-1885")))
-Maintainer: OJ Watson <oj.watson@hotmail.co.uk>
+             comment = c(ORCID = "0000-0003-2247-1885")),
+      person(given = "OJ",
+             family = "Watson",
+             role = "aut",
+             email = "oj.watson@hotmail.co.uk",
+             comment = c(ORCID = "0000-0003-2374-0741")))
+Maintainer: Aris Paschalidis <aris_paschalidis@brown.edu>
 URL: https://ojwatson.github.io/coiaf/
 BugReports: https://github.com/ojwatson/coiaf/issues
 Description: Provides a direct method for estimating complexity of infection
