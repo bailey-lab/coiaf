@@ -1,34 +1,48 @@
 ---
-title: "Example Simulated Data"
+title: "Example of a Simulation"
 author: "Aris Paschalidis"
-date: "`r format(Sys.time(), '%B %d, %Y')`"
-output:
-  html_document:
-    highlight: pygments
-    toc: true
-    toc_float: true
-    number_sections: true
-  pdf_document:
-    toc: true
-    toc_depth: 2
-    number_sections: true
-editor_options:
-  chunk_output_type: console
+date: "`r format(Sys.time(), '%B %Y')`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Example of a Simulation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
+
+# Simulation
+
+In this package, data are simulated using a simple statistical model:
+1. Strain proportions are drawn from a symmetric Dirichlet distribution with 
+shape parameter alpha.
+
+1. Phased haplotypes are drawn at every locus, one for each COI. The allele at 
+each locus is drawn from a Bernoulli distribution with probability given by the 
+PLAF.
+
+1. The "true" within-sample allele frequency at every locus is obtained by 
+multiplying haplotypes by their strain proportions, and summing over haplotypes.
+Errors are introduced through the equation,
+$$wsaf_{error} = wsaf*(1-e) + (1-wsaf)*e$$
+where $wsaf$ is the WSAF without error and $e$ is the error parameter epsilon.
+
+1. Final read counts are drawn from a beta-binomial distribution with 
+expectation $w_{error}$. The raw number of draws is given by the coverage, and 
+the skew of the distribution is given by the overdispersion parameter. If the
+overdispersion is equal to zero, then the distribution is binomial, rather 
+than beta-binomial.
+
+# Example
 
 ```{r setup, include = FALSE}
 # Here, we set default options for our markdown file
 knitr::opts_chunk$set(
   comment = "#>",
   tidy = TRUE,
-  tidy.opts = list(width.cutoff = 80),
-  echo = FALSE
+  tidy.opts = list(width.cutoff = 80)
 )
 
 library(coiaf)
-```
 
-```{r default values, eval = T, echo = F, results='asis'}
 # Default values
 COI = 3
 PLAF = runif(10, 0, 0.5)
@@ -37,8 +51,15 @@ alpha = 1
 overdispersion = 0
 epsilon = 0
 
-# Print default values
-default_tabl <- '
+# Must define some functions because they are internal in the package
+rdirichlet <- function(shape = rep(1,3)) {
+  x <- rgamma(length(shape), shape = shape, rate = max(shape))
+  return(x/sum(x))
+}
+```
+
+The default values when a simulation is run are detailed in the table below.
+
 | Parameter       | Default Value         |
 |:---------------:|:---------------------:|
 | COI             | `3`                   |
@@ -47,42 +68,33 @@ default_tabl <- '
 | Alpha           | `1`                   |
 | Overdispersion  | `0`                   |
 | Epsilon         | `0`                   |
-'
-cat(default_tabl)
-```
 
-```{r functions}
-rdirichlet <- function(shape = rep(1,3)) {
-  x <- rgamma(length(shape), shape = shape, rate = max(shape))
-  return(x/sum(x))
-}
-```
 
-PLAF
+The PLAF can be generated as follows
 ```{r PLAF}
 # Set the seed
-# set.seed(1)
+set.seed(1)
 
-# Define number of loci, and distribution of minor allele frequencies
+# Define number of loci, and the distribution of the minor allele frequencies
 L <- 5
 PLAF <- rbeta(L, 1, 5)
 PLAF[PLAF > 0.5] <- 1 - PLAF[PLAF > 0.5]
 
 tbl_PLAF <- t(PLAF)
 colnames(tbl_PLAF) <- paste("Locus", 1:5)
+
 knitr::kable(tbl_PLAF, digits = 3, align = "l")
 ```
 
-Strain proportinos
+Strain proportions can be generated as follows
 ```{r strain proportions}
-# Generate strain proportions
 strain_p <- rdirichlet(rep(alpha, COI))
 names(strain_p) <- paste("Strain", 1:3)
 
 knitr::kable(strain_p, digits = 3, align = "l")
 ```
 
-True WSAF
+True WSAF can be found by
 ```{r, true wsaf}
 true_wsaf <- mapply(function(x) rbinom(COI, 1, x), x = PLAF)
 rownames(true_wsaf) <- paste("Strain", 1:3)
@@ -91,7 +103,7 @@ colnames(true_wsaf) <- paste("Locus", 1:5)
 knitr::kable(true_wsaf, digits = 3, align = "l")
 ```
 
-Simulated WSAF
+Simulated WSAF can be found by
 ```{r}
 # Coverage
 L <- length(PLAF)
@@ -119,4 +131,3 @@ colnames(tbl_sim_wsaf) <- paste("Locus", 1:5)
 
 knitr::kable(tbl_sim_wsaf, digits = 3, align = "l")
 ```
-
