@@ -18,11 +18,11 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: OJ Watson \email{oj.watson@hotmail.co.uk} (\href{https://orcid.org/0000-0003-2374-0741}{ORCID})
+\strong{Maintainer}: Aris Paschalidis \email{aris_paschalidis@brown.edu} (\href{https://orcid.org/0000-0003-2247-1885}{ORCID})
 
 Authors:
 \itemize{
-  \item Aris Paschalidis \email{aris_paschalidis@brown.edu} (\href{https://orcid.org/0000-0003-2247-1885}{ORCID})
+  \item OJ Watson \email{oj.watson@hotmail.co.uk} (\href{https://orcid.org/0000-0003-2374-0741}{ORCID})
 }
 
 }

@@ -58,10 +58,7 @@ rmcl_coi_out <- readRDS(paste0(path, "RMCL_coi_out.rds")) %>%
 ```
 
 ```{r testing}
-# No longer to shave off data because the condensed version is stored
-# unique_wsafs <- rmcl_wsafs[seq(1, length(rmcl_wsafs), 5)]
-
-out <- list_apply(seq_len(length(rmcl_wsafs))[1:5], function(x) {
+out <- list_apply(seq_len(length(rmcl_wsafs))1:5], function(x) {
   # Run predictions
   sample <- rmcl_wsafs[[x]]
   # print(tibble::as_tibble(sample))

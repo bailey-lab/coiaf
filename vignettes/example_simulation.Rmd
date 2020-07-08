@@ -22,6 +22,7 @@ PLAF.
 1. The "true" within-sample allele frequency at every locus is obtained by 
 multiplying haplotypes by their strain proportions, and summing over haplotypes.
 Errors are introduced through the equation,
+
 $$wsaf_{error} = wsaf*(1-e) + (1-wsaf)*e$$
 where $wsaf$ is the WSAF without error and $e$ is the error parameter epsilon.
 
