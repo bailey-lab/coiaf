@@ -67,7 +67,7 @@ compute_coi <- function(processed_data, theory_coi_range, cut,
 
   # Calculate theoretical COI curves for the interval specified. Since we want
   # the theoretical curves and the simulated curves to have the PLAF values, we
-  # compute the theoretical coi curves at processed_data$midpoints
+  # compute the theoretical COI curves at processed_data$midpoints
   theory_cois <- theoretical_coi(theory_coi_range, processed_data$midpoints)
 
   # To check that PLAFs are the same
@@ -78,45 +78,50 @@ compute_coi <- function(processed_data, theory_coi_range, cut,
 
   if (method == "end"){
     ## Method 1: Compare last value
-    # Remove first column because it contains a COI we do not want tested
-    # This COI is included to aid in the calculation of the `ideal` method
-    # (needed to compute ideal PLAF)
-    last_theory <- theory_cois[, 2:bound_coi]
+    # Get last row of theoretical COI curves and simulated data (PLAF of 0.5)
+    # Last column is removed because it contains the PLAF
+    last_theory <- theory_cois[nrow(theory_cois), 1:bound_coi]
+    last_sim    <- processed_data$m_variant[nrow(processed_data)]
 
-    # Get last row of theoretical COI curves and simulated date (PLAF of 0.5)
-    last_theory <- last_theory[nrow(last_theory),]
-    last_sim <- processed_data$m_variant[nrow(processed_data)]
-
-    # Find coi by looking at minimum distance
+    # Find COI by looking at minimum distance
     dist <- abs(last_theory - last_sim)
     coi <- unlist(stringr::str_split(names(which.min(dist)), "_"))[2]
+
   } else if (method == "ideal"){
     ## Method 2: Compute ideal PLAF
     # For each COI, find best PLAF and get theoretical and simulated values at
     # that PLAF
     dist <- list()
-    for (i in 2:bound_coi){
-      # Want maximum point of the following
-      diff = theory_cois[i] - theory_cois[i - 1]
+    for (i in 1:bound_coi){
+      if (i != 1){
+        # Find difference between i and i-1 curve
+        diff = theory_cois[i] - theory_cois[i - 1]
 
-      # Get max value and determine the PLAF
-      ideal_PLAF <- theory_cois$plaf[which.max(diff[[1]])]
+        # Get max value and determine the PLAF
+        ideal_PLAF <- theory_cois$plaf[which.max(diff[[1]])]
 
-      # Get max value and determine the theory WSAF
-      theory_WSAF <- theory_cois[which.max(diff[[1]]), i]
+        # Get max value and determine the theory WSAF
+        theory_WSAF <- theory_cois[which.max(diff[[1]]), i]
 
-      # Using max PLAF, determine which cut it would be part of
+      } else{
+        # Determine ideal PLAF and WSAF
+        ideal_PLAF  <- theory_cois$plaf[length(theory_cois$plaf)]
+        theory_WSAF <- theory_cois[length(theory_cois$plaf), i]
+      }
+
+      # Using ideal PLAF, determine which cut it would be part of
       # and then figure out m_variant value at this cut
       m_var <- processed_data$m_variant[cut(ideal_PLAF, cut)]
 
       # Find distance between theoretical and simulated curves
-      dist[i-1] <- abs(theory_WSAF - m_var)
+      dist[i] <- abs(theory_WSAF - m_var)
     }
     # Name the distance vector so can extract COI information
-    names(dist) <- colnames(theory_cois)[2:bound_coi]
+    names(dist) <- colnames(theory_cois)[1:bound_coi]
 
     # Find coi by looking at minimum distance
     coi <- unlist(stringr::str_split(names(which.min(dist)), "_"))[2]
+
   } else if (method == "overall"){
     ## Method 3: Find distance between curves
     # Utilize helper function to compute overall distance between two curves
@@ -174,7 +179,7 @@ distance_curves <- function(processed_data, theory_cois,
   # the end
   bound_coi = ncol(theory_cois) - 1
 
-  # Remove COI that is used to calculate distance method (1st one) and PLAF
+  # Remove COI that indicates the PLAF
   match_theory_cois <- theory_cois[, 1:bound_coi]
 
   # First find difference between theoretical and simulate curve. Weigh
@@ -214,7 +219,7 @@ distance_curves <- function(processed_data, theory_cois,
     gap <- unlist(gap)
   }
 
-  # Find coi by looking at minimum distance
+  # Find COI by looking at minimum distance
   coi <- unlist(stringr::str_split(names(which.min(gap)), "_"))[2]
 
   # Prepare list to return
