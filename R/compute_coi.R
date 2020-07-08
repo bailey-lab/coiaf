@@ -40,7 +40,7 @@
 #' @param method The method to be employed. One of
 #' \code{"end", "ideal", "overall"}.
 #' @param dist_method The distance method used to determine the distance between
-#' the theoretical and simulated curves for the `"overall"` method. One of
+#' the theoretical and simulated curves for the \code{"overall"} method. One of
 #' \code{"abs_sum", "sum_abs", "squared", "KL"}.
 #' @param weighted An indicator indicating whether to compute the weighted
 #' distance.

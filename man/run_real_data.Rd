@@ -18,7 +18,7 @@ run_real_data(
 \item{data}{The dataset.}
 
 \item{max_coi}{The maximum COI that the model will look at. Looks at the
-theoretical COIs from 2 till `max_coi`}
+theoretical COIs from 2 till \code{max_coi}.}
 
 \item{seq_error}{The level of sequencing error that is assumed.}
 
@@ -28,10 +28,11 @@ theoretical COIs from 2 till `max_coi`}
 \code{"end", "ideal", "overall"}.}
 
 \item{dist_method}{The distance method used to determine the distance between
-the theoretical and simulated curves for the "overall" method. One of
+the theoretical and simulated curves for the \code{"overall"} method. One of
 \code{"abs_sum", "sum_abs", "squared", "KL"}.}
 
-\item{weighted}{An indicator indicating whether to compute weighted distance.}
+\item{weighted}{An indicator indicating whether to compute the weighted
+distance.}
 }
 \value{
 A list of the predicted COIs and the probability distribution for the

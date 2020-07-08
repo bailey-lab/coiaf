@@ -12,16 +12,17 @@ distance_curves(
 )
 }
 \arguments{
-\item{processed_data}{The simulated COI curve, which is the output of
+\item{processed_data}{The processed COI data. This is the output of
 \link{process_simulated_coi} or \link{process_real_data}.}
 
 \item{theory_cois}{The theoretical COI curves.}
 
 \item{dist_method}{The distance method used to determine the distance between
-the theoretical and simulated curves for the "overall" method. One of
+the theoretical and simulated curves for the \code{"overall"} method. One of
 \code{"abs_sum", "sum_abs", "squared", "KL"}.}
 
-\item{weighted}{An indicator indicating whether to compute weighted distance.}
+\item{weighted}{An indicator indicating whether to compute the weighted
+distance.}
 }
 \value{
 A list of the following:

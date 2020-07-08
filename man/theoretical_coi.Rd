@@ -19,6 +19,6 @@ The theoretical COI curves for the specified COIs and PLAF.
 }
 \description{
 Generate theoretical COI curves. At each locus defined as:
-\eqn{1-p^coi-q^coi}. This expression is derived in the corresponding
+\eqn{1-p^{coi}-q^{coi}}. This expression is derived in the corresponding
 manuscript.
 }

@@ -52,10 +52,11 @@ allele. Applies in both directions.}
 \code{"end", "ideal", "overall"}.}
 
 \item{dist_method}{The distance method used to determine the distance between
-the theoretical and simulated curves for the "overall" method. One of
+the theoretical and simulated curves for the \code{"overall"} method. One of
 \code{"abs_sum", "sum_abs", "squared", "KL"}.}
 
-\item{weighted}{An indicator indicating whether to compute weighted distance.}
+\item{weighted}{An indicator indicating whether to compute the weighted
+distance.}
 }
 \value{
 A list of the following dataframes:
@@ -64,13 +65,17 @@ A list of the following dataframes:
   predicted using \link{compute_coi}. Each column represents a separate set
   of parameters. Each row represents a predicted COI. Predictions are done
   many times, depending on the value of \code{repetitions}.}
+  \item{\code{probability}}{A list of matrices containing the probability
+  that our model predicted each COI value. Each row contains the probability
+  for a different run. The first row contains the average probabilities over
+  all the runs.}
   \item{\code{param_grid}}{The parameter grid. The parameter grid is all
   possible combinations of the parameters inputted. Each row represents a
   unique combination.}
-  \item{\code{error_bias}}{A dataframe containing any parameter that was
-  varied and the associated mean absolute error and bias (mean error). By
-  showing only parameters that were varied, the output is easier to interpret
-  and does not have information about parameters that were held constant.}
+  \item{\code{boot_error}}{A dataframe containing information about the error
+  of the algorithm. The first column indicates the COI that was fed into the
+  simulation. The other columns indicate the mean absolute error (mae),
+  the lower and upper bounds of the 95\% confidence interval and the bias.}
 }
 }
 \description{

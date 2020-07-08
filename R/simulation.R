@@ -17,13 +17,13 @@
 #'     \item The "true" within-sample allele frequency at every locus is
 #'     obtained by multiplying haplotypes by their strain proportions, and
 #'     summing over haplotypes. Errors are introduced through the equation
-#'     \deqn{wsaf_error = wsaf*(1-e) + (1-wsaf)*e}where \eqn{wsaf} is the WSAF
+#'     \deqn{wsaf_{error} = wsaf*(1-e) + (1-wsaf)*e}where \eqn{wsaf} is the WSAF
 #'     without error and \eqn{e} is the error parameter \code{epsilon}.
 #'     \item Final read counts are drawn from a beta-binomial distribution with
-#'     expectation \eqn{w_error}. The raw number of draws is given by the
+#'     expectation \eqn{w_{error}}. The raw number of draws is given by the
 #'     \code{coverage}, and the skew of the distribution is given by the
-#'     \code{overdispersion} parameter. If \code{overdispersion = 0} then the
-#'     distribution is binomial, rather than beta-binomial.
+#'     \code{overdispersion} parameter. If the \code{overdispersion} is equal to
+#'     zero, then the distribution is binomial, rather than beta-binomial.
 #'   }
 #'
 #' @param COI Complexity of infection.

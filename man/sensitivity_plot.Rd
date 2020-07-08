@@ -28,9 +28,6 @@ that is being changed.}
 
 \item{caption}{The caption of the figure}
 }
-\value{
-A grid of plots that represents the sensitivity analysis
-}
 \description{
 The function is used to plot any sensitivity analysis that is
 run. It takes in the output of \code{\link{coi_test}} and creates a grid of

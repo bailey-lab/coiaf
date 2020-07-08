@@ -31,9 +31,6 @@ error_plot(
 \item{second_fill}{Indicates if there will be a second fill variable and
 what it will be.}
 }
-\value{
-The plot
-}
 \description{
 Plots the mean absolute error and the confidence interval.
 }

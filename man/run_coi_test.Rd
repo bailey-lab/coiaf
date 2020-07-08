@@ -49,10 +49,11 @@ allele. Applies in both directions.}
 \code{"end", "ideal", "overall"}.}
 
 \item{dist_method}{The distance method used to determine the distance between
-the theoretical and simulated curves for the "overall" method. One of
+the theoretical and simulated curves for the \code{"overall"} method. One of
 \code{"abs_sum", "sum_abs", "squared", "KL"}.}
 
-\item{weighted}{An indicator indicating whether to compute weighted distance.}
+\item{weighted}{An indicator indicating whether to compute the weighted
+distance.}
 }
 \value{
 Predicted COI value.

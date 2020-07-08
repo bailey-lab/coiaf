@@ -17,9 +17,6 @@ that is being changed.}
 
 \item{change_param_val}{The values the changed parameter ranges over.}
 }
-\value{
-A single panel of the sensitivity analysis.
-}
 \description{
 Plots a single panel of the sensitivity analysis. Used as a
 helper function to \code{\link{sensitivity_plot}}.

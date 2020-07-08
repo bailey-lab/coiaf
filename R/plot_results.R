@@ -14,8 +14,6 @@
 #' @param title The title of the figure
 #' @param caption The caption of the figure
 #'
-#' @return A grid of plots that represents the sensitivity analysis
-#'
 #' @export
 
 sensitivity_plot <- function(data,
@@ -119,8 +117,6 @@ sensitivity_plot <- function(data,
 #' be plotted.
 #' @inheritParams sensitivity_plot
 #'
-#' @return A single panel of the sensitivity analysis.
-#'
 #' @keywords internal
 
 sensitivity_plot_element <- function(data,
@@ -167,8 +163,6 @@ sensitivity_plot_element <- function(data,
 #' "left", "right", "bottom", "top"}.
 #' @param second_fill Indicates if there will be a second fill variable and
 #' what it will be.
-#'
-#' @return The plot
 #'
 #' @export
 
