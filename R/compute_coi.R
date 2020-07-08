@@ -1,23 +1,28 @@
 #------------------------------------------------
-#' @title Compute COI
+#' @title Predict the COI
 #'
-#' @description Predict the COI of the sample by comparing the simulated
-#' COI curve to the theoretical COI curve. To determine the predicted COI value,
-#' three different methods are utilized:
+#' @description Predict the COI of the sample by comparing the within sample
+#' allele frequency (WSAF) and the population level allele frequency (PLAF) of
+#' the sample to what a theoretical WSAF and PLAF should look like. By examining
+#' the sample's WSAF and PLAF to the theoretical WSAF and PLAF, an estimation
+#' can be made about what the COI of the sample is. We refer to the sample's
+#' WSAF vs PLAF as the "sample curve" and refer to the theoretical WSAF vs
+#' PLAF as the "theoretical curve." To determine the predicted COI value, one of
+#' three different methods can be selected:
 #' \describe{
 #'   \item{\code{end}}{Determines the distance between the theoretical and
-#'   simulated curve at a PLAF of 0.5. The COI is whichever theoretical COI
-#'   curve is the closest to the simulated data.}
+#'   sample curve at a PLAF of 0.5. The COI is whichever theoretical COI
+#'   curve has the smallest distance to the simulated data.}
 #'   \item{\code{ideal}}{Determines the distance between the theoretical and
-#'   simulated curve at the ideal PLAF. The ideal PLAF is calculated by looking
+#'   sample curve at the ideal PLAF. The ideal PLAF is calculated by looking
 #'   at the change between the COI of \eqn{i} and the COI of \eqn{i-1} and
-#'   finding the PLAF for which this distance is maximal. The COI is whichever
-#'   theoretical COI curve is the closet to the simulated data at the ideal
-#'   PLAF.}
+#'   finding the PLAF for which this distance is maximized. The COI is whichever
+#'   theoretical COI curve has the smallest distance to the simulated data at
+#'   the ideal PLAF.}
 #'   \item{\code{overall}}{Determines the distance between the theoretical and
-#'   simulated curve at for all PLAFs. Computes the distance between the
+#'   simulated curve for all PLAFs. Computes the distance between the
 #'   theoretical curves and the simulated curve. The COI is whichever
-#'   theoretical curve has the smallest distance from the simulated curve.
+#'   theoretical curve has the smallest distance to the simulated curve.
 #'   There is an option to choose one of several distance metrics:
 #'   \itemize{
 #'     \item{\code{abs_sum}:}{ Absolute value of sum of difference.}
@@ -27,21 +32,22 @@
 #'   }}
 #'   }
 #'
-#' @param processed_data The simulated COI curve, which is the output of
+#' @param processed_data The processed COI data. This is the output of
 #' \link{process_simulated_coi} or \link{process_real_data}.
 #' @param theory_coi_range The range of COIs for which theoretical curves
-#' will be calculated.
+#' will be generated.
 #' @param cut A vector indicating how often the data is summarized.
 #' @param method The method to be employed. One of
 #' \code{"end", "ideal", "overall"}.
 #' @param dist_method The distance method used to determine the distance between
-#' the theoretical and simulated curves for the "overall" method. One of
+#' the theoretical and simulated curves for the `"overall"` method. One of
 #' \code{"abs_sum", "sum_abs", "squared", "KL"}.
-#' @param weighted An indicator indicating whether to compute weighted distance.
+#' @param weighted An indicator indicating whether to compute the weighted
+#' distance.
 #'
 #' @return A list of the following:
 #' \describe{
-#'   \item{\code{coi}}{The predicted COI for the simulation.}
+#'   \item{\code{coi}}{The predicted COI of the sample.}
 #'   \item{\code{probability}}{A probability density function representing the
 #'   probability of each COI.}
 #'   }

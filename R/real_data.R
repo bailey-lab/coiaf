@@ -97,7 +97,7 @@ run_real_data <- function(data,
   plaf <- colMeans(data, na.rm = T)
 
   # Run each sample in the data input
-  coi_pred <- list_apply(seq_len(nrow(data)), function(x) {
+  coi_pred <- lapply(seq_len(nrow(data)), function(x) {
     # Get wsaf and remove any missing data
     wsaf  <- data[x,]
     input <- data.frame(wsaf = wsaf, plaf = plaf) %>% tidyr::drop_na()

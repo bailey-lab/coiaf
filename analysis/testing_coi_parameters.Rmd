@@ -445,7 +445,8 @@ saved_analysis <- list(tcoi, tmethod, tdistance, tweight, tcoverage, tloci,
 
 saved_analysis <- lapply(seq_len(length(saved_analysis)), function(x){
   inner <- lapply(seq_len(length(saved_analysis[[x]])), function(y){
-    return(saved_analysis[[x]][[y]] %>% tidyr::unnest(cols = names(saved_analysis[[x]][[y]])))
+    return(saved_analysis[[x]][[y]] %>% 
+             tidyr::unnest(cols = names(saved_analysis[[x]][[y]])))
   })
   names(inner) <- names(saved_analysis[[x]])
   return(inner)

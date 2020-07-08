@@ -2,7 +2,7 @@
 #' @title Generate Theoretical COI Curves
 #'
 #' @description Generate theoretical COI curves. At each locus defined as:
-#' \eqn{1-p^coi-q^coi}. This expression is derived in the corresponding
+#' \eqn{1-p^{coi}-q^{coi}}. This expression is derived in the corresponding
 #' manuscript.
 #'
 #' @param coi_range The COIs for which the curve will be calculated.

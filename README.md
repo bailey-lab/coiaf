@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# coiaf <a href='https://github.com/OJWatson/coiaf'><img src='man/figures/logo_v2_light_green.png' align="right" height="139" /></a>
+# coiaf <a href='https://ojwatson.github.io/coiaf/'><img src='man/figures/logo_v2_light_green_no_background.png' align="right" height="139" /></a>
 
 <!-- badges: start -->
 
@@ -45,7 +45,9 @@ devtools::install_github("https://github.com/OJWatson/coiaf")
 
 In order to run real data, please refer to the analysis folder. More
 specifically, the script that is titled, `real_mccoil_data.Rmd` provides
-a comprehensive set of instructions on how to run real data.
+a comprehensive set of instructions on how to run real data. For
+questions regarding documentation, please refer to the [online package
+website](ojwatson.github.io/coiaf/).
 
 ## Development
 
