@@ -202,9 +202,13 @@ distance_curves <- function(processed_data, theory_cois,
     Q <- processed_data$m_variant
     Q <- Q/sum(Q)
     for (i in 1:ncol(match_theory_cois)){
-      P <- match_theory_cois[,i]
-      P <- P/sum(P)
-      gap[i] <- suppressMessages(philentropy::KL(rbind(P, Q), unit = "log2"))
+      if (names(match_theory_cois)[i] == "coi_1"){
+        warning("KL Divergence cannot be calculated for a COI of 1")
+      } else{
+        P <- match_theory_cois[,i]
+        P <- P/sum(P)
+        gap[i] <- suppressMessages(philentropy::KL(rbind(P, Q), unit = "log2"))
+      }
     }
     names(gap) <- colnames(theory_cois)[1:bound_coi]
     gap <- unlist(gap)
