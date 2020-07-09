@@ -35,10 +35,11 @@ navbar:
   type: default
   left:
   - icon: fa-home fa-lg
-    href: /index.html
+    href: index.html
   - text: Reference
     href: reference/index.html
   articles: ~
+  # When include the articles in the website, uncomment the below code
   # - text: Articles
   #   menu:
   #   - text: Sensitivity Αnalysis

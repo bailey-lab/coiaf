@@ -4,9 +4,9 @@ author: "Aris Paschalidis"
 date: "`r format(Sys.time(), '%B %Y')`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Sensitivity Analysis}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+ %\VignetteIndexEntry{Sensitivity Analysis}
+ %\VignetteEngine{knitr::rmarkdown}
+ %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include = FALSE}
