@@ -8,7 +8,7 @@ run_coi_test(
   COI = 3,
   max_COI = 25,
   PLAF = runif(1000, 0, 0.5),
-  coverage = 100,
+  coverage = 200,
   alpha = 1,
   overdispersion = 0,
   epsilon = 0,
