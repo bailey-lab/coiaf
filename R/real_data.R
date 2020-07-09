@@ -80,7 +80,7 @@ run_real_data <- function(data,
   assert_single_string(method)
   assert_in(method, c("end", "ideal", "overall"))
   assert_single_string(dist_method)
-  assert_in(dist_method, c("abs_sum", "sum_abs", "squared", "KL"))
+  assert_in(dist_method, c("abs_sum", "sum_abs", "squared"))
   assert_logical(weighted)
 
   # Function to determine if pbapply is installed. If it is installed, it will

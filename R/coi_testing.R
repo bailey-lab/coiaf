@@ -43,7 +43,7 @@ run_coi_test <- function(COI = 3,
   assert_single_string(method)
   assert_in(method, c("end", "ideal", "overall"))
   assert_single_string(dist_method)
-  assert_in(dist_method, c("abs_sum", "sum_abs", "squared", "KL"))
+  assert_in(dist_method, c("abs_sum", "sum_abs", "squared"))
   assert_single_logical(weighted)
 
   # Simulate data
@@ -121,7 +121,7 @@ coi_test <- function(repetitions = 10,
   assert_string(method)
   assert_in(method, c("end", "ideal", "overall"))
   assert_string(dist_method)
-  assert_in(dist_method, c("abs_sum", "sum_abs", "squared", "KL"))
+  assert_in(dist_method, c("abs_sum", "sum_abs", "squared"))
   assert_logical(weighted)
 
   # Create parameter grid

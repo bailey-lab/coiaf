@@ -27,7 +27,7 @@ will be generated.}
 
 \item{dist_method}{The distance method used to determine the distance between
 the theoretical and simulated curves for the \code{"overall"} method. One of
-\code{"abs_sum", "sum_abs", "squared", "KL"}.}
+\code{"abs_sum", "sum_abs", "squared"}.}
 
 \item{weighted}{An indicator indicating whether to compute the weighted
 distance.}
@@ -68,7 +68,6 @@ three different methods can be selected:
     \item{\code{abs_sum}:}{ Absolute value of sum of difference.}
     \item{\code{sum_abs}:}{ Sum of absolute difference.}
     \item{\code{squared}:}{ Sum of squared difference.}
-    \item{\code{KL}:}{ Kullback-Leibler divergence.}
   }}
   }
 }

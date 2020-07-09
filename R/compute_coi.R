@@ -28,7 +28,6 @@
 #'     \item{\code{abs_sum}:}{ Absolute value of sum of difference.}
 #'     \item{\code{sum_abs}:}{ Sum of absolute difference.}
 #'     \item{\code{squared}:}{ Sum of squared difference.}
-#'     \item{\code{KL}:}{ Kullback-Leibler divergence.}
 #'   }}
 #'   }
 #'
@@ -41,7 +40,7 @@
 #' \code{"end", "ideal", "overall"}.
 #' @param dist_method The distance method used to determine the distance between
 #' the theoretical and simulated curves for the \code{"overall"} method. One of
-#' \code{"abs_sum", "sum_abs", "squared", "KL"}.
+#' \code{"abs_sum", "sum_abs", "squared"}.
 #' @param weighted An indicator indicating whether to compute the weighted
 #' distance.
 #'
@@ -68,7 +67,7 @@ compute_coi <- function(processed_data, theory_coi_range, cut,
   assert_single_string(method)
   assert_in(method, c("end", "ideal", "overall"))
   assert_single_string(dist_method)
-  assert_in(dist_method, c("abs_sum", "sum_abs", "squared", "KL"))
+  assert_in(dist_method, c("abs_sum", "sum_abs", "squared"))
   assert_single_logical(weighted)
 
   # Calculate theoretical COI curves for the interval specified. Since we want
@@ -159,7 +158,6 @@ compute_coi <- function(processed_data, theory_coi_range, cut,
 #'   \item{\code{abs_sum}}{Absolute value of sum of difference.}
 #'   \item{\code{sum_abs}}{Sum of absolute difference.}
 #'   \item{\code{squared}}{Sum of squared difference.}
-#'   \item{\code{KL}}{Kullback-Leibler divergence.}
 #'   }
 #'
 #' @inheritParams compute_coi
@@ -178,7 +176,7 @@ distance_curves <- function(processed_data, theory_cois,
                             dist_method = "squared", weighted = TRUE){
   # Check inputs
   assert_single_string(dist_method)
-  assert_in(dist_method, c("abs_sum", "sum_abs", "squared", "KL"))
+  assert_in(dist_method, c("abs_sum", "sum_abs", "squared"))
   assert_single_logical(weighted)
 
   # Find bound of COIs. Subtract 1 because theory_cois includes the PLAF at
@@ -206,23 +204,6 @@ distance_curves <- function(processed_data, theory_cois,
   } else if (dist_method == "squared"){
     # Squared distance
     gap <- colSums(gap ^ 2)
-
-  } else if (dist_method == "KL"){
-    # KL divergence
-    gap <-  list()
-    Q <- processed_data$m_variant
-    Q <- Q/sum(Q)
-    for (i in 1:ncol(match_theory_cois)){
-      if (names(match_theory_cois)[i] == "coi_1"){
-        warning("KL Divergence cannot be calculated for a COI of 1")
-      } else{
-        P <- match_theory_cois[,i]
-        P <- P/sum(P)
-        gap[i] <- suppressMessages(philentropy::KL(rbind(P, Q), unit = "log2"))
-      }
-    }
-    names(gap) <- colnames(theory_cois)[1:bound_coi]
-    gap <- unlist(gap)
   }
 
   # Find COI by looking at minimum distance

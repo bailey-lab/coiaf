@@ -24,7 +24,6 @@ Imports:
     boot,
     dplyr,
     magrittr,
-    philentropy,
     rlang,
     stringr,
     tidyr,
