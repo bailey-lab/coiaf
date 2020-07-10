@@ -125,3 +125,60 @@ ggplot(na.omit(complete_predictions), aes(factor(difference_median),
        title = "Difference Between coiaf And REAL McCOIL Median By Region")
 ```
 
+```{r world map}
+## What would be ideal is to somehow find the lat and long of each patient
+## then, it would be a lot simpler to plot these types of graphs
+world <- ggplot2::map_data("world")
+average_coi <- complete %>% 
+  dplyr::group_by(Region) %>% 
+  dplyr::summarise(coi_mean = mean(prediction),
+                   coi_med = median(prediction), .groups = "drop")
+
+# Meta come from the 03 analysis file!
+# In order to get the 24 regions, I take the mean of the lat and long of all
+# the patients in each region. This is not the best way to do this, but it is
+# the simplest way.
+test <- meta %>% 
+  dplyr::group_by(color) %>% 
+  dplyr::summarise(lat = mean(Lat),
+                   long = mean(Long), .groups = "drop")
+test$color <- as.numeric(test$color)
+
+# Combine lat and long with the average coi from our predictions
+map_data <- dplyr::full_join(average_coi, test, by = c("Region" = "color"))
+
+ggplot() +
+  borders("world") +
+  geom_polygon(data=world, aes(x=long, y = lat, group = group), fill="grey", alpha=0.3) +
+  geom_point(data=map_data, aes(x=long, y=lat, size=coi_med, color=coi_med)) +
+  scale_color_viridis(limits = c(1, 2), breaks = c(1.0, 1.5, 2.0)) + 
+  theme_void() + 
+  theme(legend.position = "bottom") +
+  scale_size(guide = "none") + 
+  labs(color = "Median COI") +
+  coord_quickmap(xlim = c(-75, 150), ylim = c(-20, 20))
+```
+
+```{r all patients map}
+tf <- tempfile()
+download.file("ftp://ngs.sanger.ac.uk/production/malaria/pfcommunityproject/Pf6/Pf_6_samples.txt",tf)
+meta <- data.table::fread(tf)
+
+world <- ggplot2::map_data("world")
+patient_lat_long <- dplyr::left_join(complete, meta, by = c("name" = "Sample")) %>% 
+  dplyr::filter(prediction <= 10) %>% 
+  dplyr::arrange(desc(prediction))
+
+ggplot() +
+  borders("world") +
+  geom_polygon(data=world, aes(x=long, y = lat, group = group), fill="grey", alpha=0.3) +
+  geom_point(data=patient_lat_long, 
+             aes(x=Long, y=Lat, size=prediction, color=prediction), alpha=0.1) +
+  scale_color_viridis(limits = c(1, 10)) +
+  theme_void() + 
+  theme(legend.position = "bottom") +
+  scale_size(guide = "none") + 
+  labs(color = "COI") +
+  coord_quickmap(xlim = c(-75, 150), ylim = c(-25, 25))
+```
+

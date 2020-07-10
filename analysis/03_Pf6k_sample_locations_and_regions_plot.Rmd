@@ -56,6 +56,6 @@ For the RMCL analysis, 24 locations were chosen:
 ks <- cluster::pam(meta[,c("Lat","Long")], k = 24)
 meta$color <- as.factor(ks$clustering)
 
-fig2 <- roxer::map_plot(unique(meta[,c("Lat", "Long",)]),"Lat","Long")
+fig2 <- roxer::map_plot(unique(meta[,c("Lat", "Long")]),"Lat","Long")
 fig2
 ```
