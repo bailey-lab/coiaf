@@ -6,21 +6,15 @@
 #' plots.
 #'
 #' @param data The data to be plotted.
-#' @param plot_dims A list representing the number of rows and columns our plots
+#' @param dims A list representing the number of rows and columns our plots
 #' will be split into.
-#' @param change_param The title of the plot. The title specifies the parameter
-#' that is being changed.
-#' @param change_param_val The values the changed parameter ranges over.
-#' @param title The title of the figure
-#' @param caption The caption of the figure
+#' @param sub_title A list of titles for each individual subplot.
+#' @param title The title of the overall figure.
+#' @param caption The caption of the overall figure.
 #'
 #' @export
 
-sensitivity_plot <- function(data,
-                             plot_dims,
-                             change_param = NULL,
-                             change_param_val = NULL,
-                             title = NULL,
+sensitivity_plot <- function(data, dims, sub_title = NULL, title = NULL,
                              caption = NULL){
 
   # Ensure that ggplot2 and ggpubr are installed
@@ -39,10 +33,9 @@ sensitivity_plot <- function(data,
   # Check inputs
   assert_eq(names(data),
             c("predicted_coi", "probability", "param_grid", "boot_error"))
-  assert_pos_int(plot_dims, zero_allowed = FALSE)
-  assert_length(plot_dims, 2)
-  if (!is.null(change_param)) {assert_string(change_param)}
-  if (!is.null(change_param_val)) {assert_vector(change_param_val)}
+  assert_pos_int(dims, zero_allowed = FALSE)
+  assert_length(dims, 2)
+  if (!is.null(sub_title)) {assert_vector(sub_title)}
   if (!is.null(title)) {assert_single_string(title)}
   if (!is.null(caption)) {assert_single_string(caption)}
 
@@ -64,11 +57,11 @@ sensitivity_plot <- function(data,
   num_loops <- unique(plot_df$loop_number)
 
   # Ensure that there are enough panels to include all the graphs
-  suggested_dims = plot_dims[1] * plot_dims[2]
+  user_dims = dims[1] * dims[2]
   needed_dims    = length(num_loops)
-  if (!all(suggested_dims >= needed_dims)) {
+  if (!all(user_dims >= needed_dims)) {
     message <- sprintf("Not enough panels have been specified. User input %s
-                       panel(s), but %s panel(s) needed.", suggested_dims,
+                       panel(s), but %s panel(s) needed.", user_dims,
                        needed_dims) %>%
       stringr::str_squish() %>%
       stringr::str_wrap()
@@ -80,22 +73,21 @@ sensitivity_plot <- function(data,
   myplots <- lapply(num_loops,
                     sensitivity_plot_element,
                     data = plot_df,
-                    change_param = change_param,
-                    change_param_val = change_param_val)
+                    sub_title = sub_title)
 
   # Arrange the plots
-  if (plot_dims[1] * plot_dims[2] == 1){
+  if (dims[1] * dims[2] == 1){
     # Do not include a panel label if there is only one plot
     arranged_plots <- ggpubr::ggarrange(plotlist = myplots,
-                                        nrow = plot_dims[1],
-                                        ncol = plot_dims[2])
+                                        nrow = dims[1],
+                                        ncol = dims[2])
   } else {
     # Include panel labels if there are more than one plots
     arranged_plots <- ggpubr::ggarrange(plotlist = myplots,
                                         labels = "AUTO",
                                         font.label = list(size = 10),
-                                        nrow = plot_dims[1],
-                                        ncol = plot_dims[2])
+                                        nrow = dims[1],
+                                        ncol = dims[2])
   }
 
 
@@ -125,8 +117,7 @@ sensitivity_plot <- function(data,
 
 sensitivity_plot_element <- function(data,
                                      loop_num,
-                                     change_param,
-                                     change_param_val){
+                                     sub_title){
 
   # Ensure that ggplot2 is installed
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
@@ -146,9 +137,7 @@ sensitivity_plot_element <- function(data,
                    axis.title   = ggplot2::element_text(size = 7),
                    legend.title = ggplot2::element_text(size = 7),
                    legend.text  = ggplot2::element_text(size = 7)) +
-    ggplot2::labs(x = "True COI",
-                  y = "Estimated COI",
-                  title = paste0(change_param, change_param_val[loop_num]))
+    ggplot2::labs(x = "True COI", y = "Estimated COI", title = sub_title[loop_num])
 
   return(single_plot)
 }

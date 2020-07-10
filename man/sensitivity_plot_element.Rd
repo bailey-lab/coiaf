@@ -4,7 +4,7 @@
 \alias{sensitivity_plot_element}
 \title{Plot a single panel of the sensitivity analysis}
 \usage{
-sensitivity_plot_element(data, loop_num, change_param, change_param_val)
+sensitivity_plot_element(data, loop_num, sub_title)
 }
 \arguments{
 \item{data}{The data to be plotted.}
@@ -12,10 +12,7 @@ sensitivity_plot_element(data, loop_num, change_param, change_param_val)
 \item{loop_num}{The loop number. Represents how many total panels will
 be plotted.}
 
-\item{change_param}{The title of the plot. The title specifies the parameter
-that is being changed.}
-
-\item{change_param_val}{The values the changed parameter ranges over.}
+\item{sub_title}{A list of titles for each individual subplot.}
 }
 \description{
 Plots a single panel of the sensitivity analysis. Used as a

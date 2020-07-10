@@ -4,29 +4,19 @@
 \alias{sensitivity_plot}
 \title{Plot sensitivity analysis}
 \usage{
-sensitivity_plot(
-  data,
-  plot_dims,
-  change_param = NULL,
-  change_param_val = NULL,
-  title = NULL,
-  caption = NULL
-)
+sensitivity_plot(data, dims, sub_title = NULL, title = NULL, caption = NULL)
 }
 \arguments{
 \item{data}{The data to be plotted.}
 
-\item{plot_dims}{A list representing the number of rows and columns our plots
+\item{dims}{A list representing the number of rows and columns our plots
 will be split into.}
 
-\item{change_param}{The title of the plot. The title specifies the parameter
-that is being changed.}
+\item{sub_title}{A list of titles for each individual subplot.}
 
-\item{change_param_val}{The values the changed parameter ranges over.}
+\item{title}{The title of the overall figure.}
 
-\item{title}{The title of the figure}
-
-\item{caption}{The caption of the figure}
+\item{caption}{The caption of the overall figure.}
 }
 \description{
 The function is used to plot any sensitivity analysis that is

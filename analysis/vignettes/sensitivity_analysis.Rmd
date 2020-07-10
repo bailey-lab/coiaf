@@ -111,7 +111,7 @@ the COI.
 ```{r coi, eval = eval_tests}
 tcoi <- coi_test(COI = 2:40, max_COI = 40, repetitions = 100, PLAF = p)
 
-tcoi_image <- sensitivity_plot(data = tcoi, plot_dims = c(1, 1), title = "COI")
+tcoi_image <- sensitivity_plot(data = tcoi, dims = c(1, 1), title = "COI")
 tcoi_image 
 
 tcoi_error <- error_plot(tcoi, legend.position = "none")
@@ -143,9 +143,8 @@ tmethod <- coi_test(COI = 2:20, PLAF = p, method = c("end", "ideal", "overall"),
 
 tmethod_image <- 
   sensitivity_plot(data = tmethod,
-                   plot_dims = c(3, 1),
-                   change_param = "Method = ",
-                   change_param_val = c("End", "Ideal", "Overall"))
+                   dims = c(3, 1),
+                   sub_title = paste0("Method = ", c("End", "Ideal", "Overall")))
 tmethod_image
 
 tmethod_error <- error_plot(tmethod, fill = "method", legend_title = "Method", 
@@ -184,10 +183,10 @@ tdistance <- coi_test(COI = 2:20, PLAF = p, method = "overall",
 
 tdistance_image <- 
   sensitivity_plot(data = tdistance,
-                   plot_dims = c(3, 1),
-                   change_param = "Distance Method = ",
-                   change_param_val = c("Absolute Sum", "Sum of Absolute",
-                                        "Squared Error"))
+                   dims = c(3, 1),
+                   sub_title = paste0("Distance Method = ", 
+                                      c("Absolute Sum", "Sum of Absolute",
+                                        "Squared Error")))
 tdistance_image
 
 tdistance_error <- error_plot(tdistance, fill = "dist_method", 
@@ -211,8 +210,8 @@ tweight <- coi_test(COI = 2:20, weighted = c(FALSE, TRUE),
 
 tweight_image <- 
   sensitivity_plot(data = tweight,
-                   plot_dims = c(2, 3),
-                   change_param_val = 
+                   dims = c(2, 3),
+                   sub_title = 
                    paste(rep(c("Abs Sum", "Sum Abs", "Squared"), 2),
                          rep(c("Not Weighted", "Weighted"), each = 4)))
 tweight_image
@@ -243,9 +242,9 @@ tcoverage <- coi_test(COI = 2:20, coverage = c(25, 50, 100, 200, 400, 800),
 
 tcoverage_image <- 
   sensitivity_plot(data = tcoverage,
-                   plot_dims = c(2, 3),
-                   change_param = "Coverage = ",
-                   change_param_val = c(25, 50, 100, 200, 400, 800))
+                   dims = c(2, 3),
+                   sub_title = paste0("Coverage = ", 
+                                      c(25, 50, 100, 200, 400, 800)))
 tcoverage_image
 
 tcoverage_error <- error_plot(tcoverage, fill = "coverage", 
@@ -301,8 +300,8 @@ tloci <- list(
 # Plot
 tloci_image <- 
   sensitivity_plot(data = tloci,
-                   plot_dims = c(2, 1),
-                   change_param_val = paste("Loci = ", c(1e3, 1e4)))
+                   dims = c(2, 1),
+                   sub_title = paste0("Loci = ", c(1e3, 1e4)))
 tloci_image
 
 # Add a loci column
@@ -326,9 +325,8 @@ talpha <- coi_test(COI = 2:20, alpha = seq(0.01, 5.51, 0.5),
 
 talpha_image <- 
   sensitivity_plot(data = talpha,
-                   plot_dims = c(4, 3),
-                   change_param = "Alpha = ",
-                   change_param_val = seq(0.01, 5.51, 0.5)) 
+                   dims = c(4, 3),
+                   sub_title = paste0("Alpha = ", seq(0.01, 5.51, 0.5)))
 talpha_image
 
 talpha_error <- error_plot(talpha, fill = "alpha", 
@@ -353,9 +351,8 @@ tover <- coi_test(COI = 2:20, overdispersion = seq(0, 0.2, 0.05),
 
 tover_image <- 
   sensitivity_plot(data = tover,
-                   plot_dims = c(3, 2),
-                   change_param = "Overdispersion = ",
-                   change_param_val = seq(0, 0.2, 0.05))
+                   dims = c(3, 2),
+                   sub_title = paste0("Overdispersion = ", seq(0, 0.2, 0.05)))
 tover_image
 
 tover_error <- error_plot(tover, fill = "overdispersion", 
@@ -380,9 +377,8 @@ tepsilon <- coi_test(COI = 2:20, epsilon = seq(0, 0.008, 0.001),
 
 tepsilon_image <- 
   sensitivity_plot(data = tepsilon,
-                   plot_dims = c(3, 3),
-                   change_param = "Epsilon = ",
-                   change_param_val = seq(0, 0.008, 0.001))
+                   dims = c(3, 3),
+                   sub_title = paste0("Epsilon = ", seq(0, 0.008, 0.001)))
 tepsilon_image
 
 tepsilon_error <- error_plot(tepsilon, fill = "epsilon", 
@@ -412,11 +408,12 @@ seq_title <- rep(paste0("Sequence Error = ", seq(0, 0.04, 0.01)[-1]), each = 3)
 
 tseq_image <- 
   sensitivity_plot(data = tseq,
-                   plot_dims = c(4, 3),
-                   change_param_val = seq_title,
-                   caption = strwrap("The first, second, and third columns 
-                                     correspond to an epsilon of 0, 0.004, and 
-                                     0.008, respectively.", width = 1000))
+                   dims = c(4, 3),
+                   sub_title = seq_title,
+                   caption = stringr::str_wrap("The first, second, and third 
+                                               columns correspond to an epsilon
+                                               of 0, 0.004, and 0.008, 
+                                               respectively."))
 tseq_image
 
 tseq_error <- error_plot(tseq, fill = "seq_error", 
