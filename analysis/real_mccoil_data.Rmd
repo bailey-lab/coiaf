@@ -39,7 +39,7 @@ list_apply <- function(x, fun, ...){
 library(coiaf)
 ```
 
-# Introduction
+# Run Real Data
 
 In this analysis file, we run our COI algorithm on a collection of real data.
 
@@ -56,6 +56,8 @@ rmcl_coi_out <- readRDS(paste0(path, "RMCL_coi_out.rds")) %>%
   dplyr::rename(rmcl_025 = COI_025) %>% 
   dplyr::rename(rmcl_975 = COI_975)
 ```
+
+Run our data, set it up in an ideal format and save the data sets as .rds files
 
 ```{r run data}
 raw_predictions <- list_apply(seq_len(length(rmcl_wsafs)), function(x) {
@@ -100,6 +102,8 @@ saveRDS(raw_predictions, file = "analysis/rmcl_raw_predictions.rds")
 saveRDS(complete_predictions, file = "analysis/rmcl_complete_predictions.rds")
 ```
 
+Plot the results looking at COI and comparison to REAL McCOIL.
+
 ```{r plots}
 ggplot(complete_predictions, aes(factor(prediction), 
                                  fill = factor(prediction))) +
@@ -124,6 +128,10 @@ ggplot(na.omit(complete_predictions), aes(factor(difference_median),
   labs(x = "Difference Between coiaf And REAL McCOIL Median", y = "Count", 
        title = "Difference Between coiaf And REAL McCOIL Median By Region")
 ```
+
+# World Maps
+
+World map with average COI
 
 ```{r world map}
 ## What would be ideal is to somehow find the lat and long of each patient
@@ -158,6 +166,8 @@ ggplot() +
   labs(color = "Median COI") +
   coord_quickmap(xlim = c(-75, 150), ylim = c(-20, 20))
 ```
+
+World map with all data
 
 ```{r all patients map}
 tf <- tempfile()

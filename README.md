@@ -34,7 +34,7 @@ allele frequencies.
 # Installation
 
 To install the package, please follow the code below. In order to
-install, devtools must be installed.
+install, `devtools` must be installed.
 
 ``` r
 # install.packages("devtools")
@@ -43,11 +43,11 @@ devtools::install_github("https://github.com/OJWatson/coiaf")
 
 # Usage
 
-In order to run real data, please refer to the analysis folder. More
-specifically, the script that is titled, `real_mccoil_data.Rmd` provides
-a comprehensive set of instructions on how to run real data. For
-questions regarding documentation, please refer to the [online package
-website](https://ojwatson.github.io/coiaf/).
+In order to run real data, please refer to the Articles drop down menu.
+Several articles are provided which detail how the algorithm works, how
+data was simulated to test the algorithm, and importantly how to run
+real data. A short example on running real data is included and outlines
+the necessary data structure as well as the commands to run.
 
 ## Development
 
