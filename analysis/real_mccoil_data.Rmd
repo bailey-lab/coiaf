@@ -57,11 +57,10 @@ rmcl_coi_out <- readRDS(paste0(path, "RMCL_coi_out.rds")) %>%
   dplyr::rename(rmcl_975 = COI_975)
 ```
 
-```{r testing}
-out <- list_apply(seq_len(length(rmcl_wsafs))1:5], function(x) {
+```{r run data}
+raw_predictions <- list_apply(seq_len(length(rmcl_wsafs)), function(x) {
   # Run predictions
   sample <- rmcl_wsafs[[x]]
-  # print(tibble::as_tibble(sample))
   predicted <- run_real_data(sample)
 
   # Extract coi from the predictions
@@ -69,8 +68,8 @@ out <- list_apply(seq_len(length(rmcl_wsafs))1:5], function(x) {
                                  value = "prediction") %>%
     dplyr::mutate(file = names(rmcl_wsafs)[x])
 
-  # Get correct info from the real mccoil outputs
-  test <- rmcl_coi_out %>%
+  # Summarize over the 5 rmcl runs
+  rmcl_outputs <- rmcl_coi_out %>%
     dplyr::filter(stringr::str_detect(file, names(rmcl_wsafs)[x])) %>%
     dplyr::group_by(name) %>%
     dplyr::summarise(rmcl = mean(rmcl),
@@ -80,13 +79,49 @@ out <- list_apply(seq_len(length(rmcl_wsafs))1:5], function(x) {
                      .groups = "drop")
 
   # Join the tibbles and find difference
-  res <- dplyr::full_join(extract_coi, test, by = "name") %>%
-    dplyr::mutate(difference = prediction - rmcl) %>%
-    dplyr::mutate(in_CI = ifelse(prediction >= rmcl_025 &
-                                   prediction <= rmcl_975, 1, 0)) %>%
-    dplyr::relocate(file, .after = tidyselect::last_col())
-  
+  res <- dplyr::full_join(extract_coi, rmcl_outputs, by = "name")
   return(res)
 })
-names(out) <- names(rmcl_wsafs)[1:5]
+names(raw_predictions) <- names(rmcl_wsafs)
+
+# Set up a tibble with all the information from the runs
+complete_predictions <- raw_predictions %>%
+  dplyr::bind_rows() %>% 
+  dplyr::mutate(difference_mean = prediction - rmcl) %>% 
+  dplyr::mutate(difference_median = prediction - rmcl_median) %>%
+  dplyr::mutate(in_CI = ifelse(prediction >= rmcl_025 & 
+                                 prediction <= rmcl_975, 1, 0)) %>%
+  dplyr::mutate(Region = as.numeric(stringr::str_extract(file, "(?<=region_)[:digit:]*"))) %>% 
+  dplyr::mutate(VCF = as.numeric(stringr::str_extract(file, "(?<=vcf_)[:digit:]*"))) %>% 
+  dplyr::relocate(file, .after = tidyselect::last_col())
+
+# Save data
+saveRDS(raw_predictions, file = "analysis/rmcl_raw_predictions.rds")
+saveRDS(complete_predictions, file = "analysis/rmcl_complete_predictions.rds")
 ```
+
+```{r plots}
+ggplot(complete_predictions, aes(factor(prediction), 
+                                 fill = factor(prediction))) +
+  geom_bar(stat = "count") + 
+  facet_wrap(. ~ Region, nrow = 4, scales = "free", labeller = "label_both") + 
+  ggsci::scale_fill_d3() +
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5, size = 13),
+        axis.title = element_text(size = 10)) +
+  guides(fill = FALSE) +
+  labs(x = "Predicted COI", y = "Count", title = "Predicted COI in Each Region")
+
+ggplot(na.omit(complete_predictions), aes(factor(difference_median), 
+                                          fill = factor(difference_median))) +
+  geom_bar(stat = "count") + 
+  facet_wrap(. ~ Region, nrow = 4, scales = "free", labeller = "label_both") + 
+  # ggsci::scale_fill_d3() +
+  theme_classic() +
+  theme(plot.title  = element_text(hjust = 0.5, size = 13),
+        axis.title = element_text(size = 10)) +
+  guides(fill = FALSE) +
+  labs(x = "Difference Between coiaf And REAL McCOIL Median", y = "Count", 
+       title = "Difference Between coiaf And REAL McCOIL Median By Region")
+```
+
