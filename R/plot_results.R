@@ -26,13 +26,13 @@ sensitivity_plot <- function(data,
   # Ensure that ggplot2 and ggpubr are installed
   if (!requireNamespace("ggplot2", quietly = TRUE) &
       !requireNamespace("ggpubr", quietly = TRUE)) {
-    stop('Packages \"ggplot2\" and \"ggpubr\" must be installed in order to plot the tests.',
+    stop("Packages \"ggplot2\" and \"ggpubr\" must be installed in order to plot the tests.",
          call. = FALSE)
   } else if (!requireNamespace("ggplot2", quietly = TRUE)) {
-    stop('Package \"ggplot2\" must be installed in order to plot the tests.',
+    stop("Package \"ggplot2\" must be installed in order to plot the tests.",
          call. = FALSE)
   } else if (!requireNamespace("ggpubr", quietly = TRUE)) {
-    stop('Package \"ggpubr\" must be installed in order to plot the tests.',
+    stop("Package \"ggpubr\" must be installed in order to plot the tests.",
          call. = FALSE)
   }
 
@@ -67,8 +67,12 @@ sensitivity_plot <- function(data,
   suggested_dims = plot_dims[1] * plot_dims[2]
   needed_dims    = length(num_loops)
   if (!all(suggested_dims >= needed_dims)) {
-    stop(sprintf("Not enough panels have been specified. User input %s panels, but %s panels needed.",
-                    suggested_dims, needed_dims), call. = FALSE)
+    message <- sprintf("Not enough panels have been specified. User input %s
+                       panel(s), but %s panel(s) needed.", suggested_dims,
+                       needed_dims) %>%
+      stringr::str_squish() %>%
+      stringr::str_wrap()
+    stop(message, call. = FALSE)
   }
 
   # We then call a helper function: sensitivity_plot_element, that creates each
@@ -172,7 +176,7 @@ error_plot <- function(data, fill = "COI", fill_levels = NULL, title = NULL,
 
   # Ensure that ggplot2 is installed
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
-    stop('Package \"ggplot2\" must be installed in order to plot the test.',
+    stop("Package \"ggplot2\" must be installed in order to plot the test.",
          call. = FALSE)
   }
 
@@ -208,10 +212,13 @@ error_plot <- function(data, fill = "COI", fill_levels = NULL, title = NULL,
     # Ensure that the number of levels input (fill_levels) are the same as the
     # number of levels for the fill variable
     if (length(fill_levels) != nlevels(plot_data[[fill]])){
-      stop(strwrap(sprintf("The length of the fill_levels variable (%s) does not
-      match with the number of levels of the fill variable (%s)",
-                           length(fill_levels), nlevels(plot_data[[fill]]))),
-           call. = FALSE)
+      message <- sprintf("The length of the \"fill_levels\" variable (%s) does
+                         not match with the number of levels of the fill
+                         variable (%s)", length(fill_levels),
+                         nlevels(plot_data[[fill]])) %>%
+        stringr::str_squish() %>%
+        stringr::str_wrap()
+      stop(message, call. = FALSE)
     }
     else {
       # Customize labels

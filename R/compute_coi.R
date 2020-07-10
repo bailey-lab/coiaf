@@ -70,6 +70,25 @@ compute_coi <- function(processed_data, theory_coi_range, cut,
   assert_in(dist_method, c("abs_sum", "sum_abs", "squared"))
   assert_single_logical(weighted)
 
+  # Warnings
+  if (method != "overall"){
+    message <- sprintf('The method selected ("%s") is not the recommended
+                       method. Please use the "overall" method for the best
+                       performance.', method) %>%
+      stringr::str_squish() %>%
+      stringr::str_wrap()
+    warning(message, call. = FALSE)
+    }
+  if (dist_method != "squared"){
+    message <- sprintf('The distance method metric ("%s") is not the
+                       recommended distance metric. Please use the
+                       "squared" metric for the best performance.',
+                       dist_method) %>%
+      stringr::str_squish() %>%
+      stringr::str_wrap()
+    warning(message, call. = FALSE)
+    }
+
   # Calculate theoretical COI curves for the interval specified. Since we want
   # the theoretical curves and the simulated curves to have the PLAF values, we
   # compute the theoretical COI curves at processed_data$midpoints
