@@ -35,7 +35,7 @@ our COI framework. The parameters that we will examine are:
 * method: The method to be employed. One of `"end"`, `"ideal"`, `"overall"`.
 * dist_method: The distance method used to determine the distance between the 
 theoretical and simulated curves for the `"overall"` method. One of `"abs_sum"`, 
-`"sum_abs"`, `"squared"`, `"KL"`.
+`"sum_abs"`, `"squared"`.
 * weighted: An indicator indicating whether to compute weighted distance.
 * coverage: Coverage at each locus.
 * loci: The number of loci.
@@ -58,7 +58,7 @@ A note of caution, in order to visualize the following tests, `ggplot2` and
 | COI             | `3`                   |
 | Max COI         | `25`                  |
 | PLAF            | `runif(1000, 0, 0.5)` |
-| Coverage        | `100`                 |
+| Coverage        | `200`                 |
 | Alpha           | `1`                   |
 | Overdispersion  | `0`                   |
 | Epsilon         | `0`                   |
@@ -97,13 +97,13 @@ tcoi_error
 
 # N.B. to save the plots, we can use the following code. Write this after the
 # call to sensitivity_plot().
-# %>% ggpubr::ggexport(filename = "analysis/figures/sensitivity_plots/tcoi_image.png")
-# %>% ggpubr::ggexport(filename = "analysis/figures/error_images/tcoi_error.png")
+# %>% ggpubr::ggexport(filename = "analysis/analysis/vignettes/figures/sensitivity_plots/tcoi_image.png")
+# %>% ggpubr::ggexport(filename = "analysis/analysis/vignettes/figures/error_images/tcoi_error.png")
 ```
 
 ```{r coi image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/sensitivity_plots/tcoi_image.png')
-knitr::include_graphics('figures/error_images/tcoi_error.png')
+knitr::include_graphics('analysis/vignettes/figures/sensitivity_plots/tcoi_image.png')
+knitr::include_graphics('analysis/vignettes/figures/error_images/tcoi_error.png')
 ```
 
 Based on the above set of runs, it appears that the algorithm performs well for
@@ -138,8 +138,8 @@ tmethod_error
 ```
 
 ```{r method image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/sensitivity_plots/tmethod_image.png')
-knitr::include_graphics('figures/error_images/tmethod_error.png')
+knitr::include_graphics('analysis/vignettes/figures/sensitivity_plots/tmethod_image.png')
+knitr::include_graphics('analysis/vignettes/figures/error_images/tmethod_error.png')
 ```
 
 Looking at the images for the three methods: `end`, `ideal`, `overall`, it is
@@ -147,9 +147,9 @@ clear that the `end` method does not perform particularly well. For low COI
 values, more specifically a COI of below 5, the method is accurate. However, 
 with a COI of greater than 5, the algorithm consistently over predicts the COI.
 
-The `ideal` method, on the other hand performs quite well. For every COI, it will
-for some runs predict the correct COI. However, the distribution is quite large
-and the model does not consistently predict the same COI.
+The `ideal` method, on the other hand performs quite well. For every COI, it 
+will for some runs predict the correct COI. However, the distribution is quite 
+large and the model does not consistently predict the same COI.
 
 The `overall` method seems to perform the best. It does underpredict the COI for 
 large COI values but the variance in the prediction is less than in the `ideal`
@@ -162,56 +162,47 @@ document, we will use the `overall` method.
 ## Distance Method
 ```{r distance, eval = eval_tests}
 tdistance <- coi_test(COI = 2:20, PLAF = p, method = "overall",
-                      dist_method = c("abs_sum", "sum_abs",
-                                      "squared", "KL"),
+                      dist_method = c("abs_sum", "sum_abs", "squared"),
                       repetitions = 100)
 
 tdistance_image <- 
   sensitivity_plot(data = tdistance,
-                   plot_dims = c(2, 2),
+                   plot_dims = c(3, 1),
                    change_param = "Distance Method = ",
                    change_param_val = c("Absolute Sum", "Sum of Absolute",
-                                        "Squared Error", "KL Divergence"))
+                                        "Squared Error"))
 tdistance_image
 
 tdistance_error <- error_plot(tdistance, fill = "dist_method", 
                               legend_title = "Distance Method", 
-                              fill_levels = c("Absolute Sum", "KL Divergence",
-                                              "Squared Error", "Sum of Absolute"),
+                              fill_levels = c("Absolute Sum", "Squared Error", 
+                                              "Sum of Absolute"),
                               title = "Error Plot for Distance Method")
 tdistance_error
 ```
 
 ```{r distance image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/sensitivity_plots/tdistance_image.png')
-knitr::include_graphics('figures/error_images/tdistance_error.png')
+knitr::include_graphics('analysis/vignettes/figures/sensitivity_plots/tdistance_image.png')
+knitr::include_graphics('analysis/vignettes/figures/error_images/tdistance_error.png')
 ```
-
-All of the distance metrics, other than KL divergence, perform quite well for
-all values of the COI. The KL divergence, although it too performs well, it 
-struggles for low COI values. In some cases the KL method overpredicts and in 
-some cases underpredicts by a large amount. For a COI of 2, for example, the 
-algorithm predicts COIs much higher than the true COI, in some cases even 
-predicting a COI of 12.
 
 ## Weighted
 ```{r weight, eval = eval_tests}
 tweight <- coi_test(COI = 2:20, weighted = c(FALSE, TRUE),
-                    dist_method = c("abs_sum", "sum_abs",
-                                      "squared", "KL"),
+                    dist_method = c("abs_sum", "sum_abs", "squared"),
                     PLAF = p, repetitions = 100)
 
 tweight_image <- 
   sensitivity_plot(data = tweight,
-                   plot_dims = c(2, 4),
+                   plot_dims = c(2, 3),
                    change_param_val = 
-                   paste(rep(c("Abs Sum", "Sum Abs", "Squared", "KL"), 2),
+                   paste(rep(c("Abs Sum", "Sum Abs", "Squared"), 2),
                          rep(c("Not Weighted", "Weighted"), each = 4)))
 tweight_image
 
 tweight_error <- error_plot(tweight, fill = "dist_method", 
-                            fill_levels = c("Absolute Sum", "KL Divergence",
-                                              "Squared Error", "Sum of Absolute"),
+                            fill_levels = c("Absolute Sum", "Squared Error", 
+                                            "Sum of Absolute"),
                             legend_title = "Distance Method", 
                             title = "Error Plot for Weight",
                             second_fill = "weighted")
@@ -219,8 +210,8 @@ tweight_error
 ```
 
 ```{r weight image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/sensitivity_plots/tweight_image.png')
-knitr::include_graphics('figures/error_images/tweight_error.png')
+knitr::include_graphics('analysis/vignettes/figures/sensitivity_plots/tweight_image.png')
+knitr::include_graphics('analysis/vignettes/figures/error_images/tweight_error.png')
 ```
 
 Comparing weighted to non-weighted distance metrics, it appears that there is
@@ -247,8 +238,8 @@ tcoverage_error
 ```
 
 ```{r coverage image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/sensitivity_plots/tcoverage_image.png')
-knitr::include_graphics('figures/error_images/tcoverage_error.png')
+knitr::include_graphics('analysis/vignettes/figures/sensitivity_plots/tcoverage_image.png')
+knitr::include_graphics('analysis/vignettes/figures/error_images/tcoverage_error.png')
 ```
 
 It can be seen, based on the figures, that the lower the coverage is, the worse
@@ -256,7 +247,7 @@ our algorithm does. With a coverage greater than 100, however, there is not a
 noticeable difference in performance.
 
 ## Loci
-```{r loci, eval = eval_tests}
+```{r loci}
 # Set the range over which we will iterate
 loci = c(1e3, 1e4)
 
@@ -270,9 +261,10 @@ bloci <- lapply(loci, function(new_L){
   return(inner_tloci)
 })
 
-# Extract the relevant information for each output: predicted_coi, param_grid,
-# and boot_error
+# Extract the relevant information for each output: predicted_coi, probability, 
+# param_grid, and boot_error
 pc = do.call(cbind, lapply(bloci, function(test){ return(test$predicted_coi) }))
+pb = do.call(c, lapply(bloci, function(test){ return(test$probability) }))
 pg = do.call(rbind, lapply(bloci, function(test){ return(test$param_grid) }))
 be = do.call(rbind, lapply(bloci, function(test){ return(test$boot_error) }))
 
@@ -284,6 +276,7 @@ names(pc) = paste("coi", pg$COI, rep(seq(num_repeat_cois), each = num_cois), sep
 # Create the output
 tloci <- list(
   predicted_coi = pc,
+  probability   = pb,
   param_grid    = pg,
   boot_error    = be
 )
@@ -305,8 +298,8 @@ tloci_error
 ```
 
 ```{r loci image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/sensitivity_plots/tloci_image.png')
-knitr::include_graphics('figures/error_images/tloci_error.png')
+knitr::include_graphics('analysis/vignettes/figures/sensitivity_plots/tloci_image.png')
+knitr::include_graphics('analysis/vignettes/figures/error_images/tloci_error.png')
 ```
 
 ## Alpha
@@ -328,8 +321,8 @@ talpha_error
 ```
 
 ```{r alpha image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/sensitivity_plots/talpha_image.png')
-knitr::include_graphics('figures/error_images/talpha_error.png')
+knitr::include_graphics('analysis/vignettes/figures/sensitivity_plots/talpha_image.png')
+knitr::include_graphics('analysis/vignettes/figures/error_images/talpha_error.png')
 ```
 
 The larger the value of alpha is, the better our model performs. Greater than an
@@ -355,8 +348,8 @@ tover_error
 ```
 
 ```{r overdispersion image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/sensitivity_plots/tover_image.png')
-knitr::include_graphics('figures/error_images/tover_error.png')
+knitr::include_graphics('analysis/vignettes/figures/sensitivity_plots/tover_image.png')
+knitr::include_graphics('analysis/vignettes/figures/error_images/tover_error.png')
 ```
 
 When you introduce overdispersion, models perform poorly. Any overdispersion 
@@ -382,8 +375,8 @@ tepsilon_error
 ```
 
 ```{r epsilon image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/sensitivity_plots/tepsilon_image.png')
-knitr::include_graphics('figures/error_images/tepsilon_error.png')
+knitr::include_graphics('analysis/vignettes/figures/sensitivity_plots/tepsilon_image.png')
+knitr::include_graphics('analysis/vignettes/figures/error_images/tepsilon_error.png')
 ```
 
 The algorithm performs best at an epsilon value of 0. As epsilon becomes larger,
@@ -417,8 +410,8 @@ tseq_error
 ```
 
 ```{r seq error image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/sensitivity_plots/tseq_image.png')
-knitr::include_graphics('figures/error_images/tseq_error.png')
+knitr::include_graphics('analysis/vignettes/figures/sensitivity_plots/tseq_image.png')
+knitr::include_graphics('analysis/vignettes/figures/error_images/tseq_error.png')
 ```
 
 Interestingly, having no sequence error causes problems in the algorithm. Based
@@ -431,20 +424,11 @@ large, the model starts to underpredict the COI.
 saved_analysis <- list(tcoi, tmethod, tdistance, tweight, tcoverage, tloci,
                        talpha, tover, tepsilon, tseq)
 
-saved_analysis <- lapply(seq_len(length(saved_analysis)), function(x){
-  inner <- lapply(seq_len(length(saved_analysis[[x]])), function(y){
-    return(saved_analysis[[x]][[y]] %>% 
-             tidyr::unnest(cols = names(saved_analysis[[x]][[y]])))
-  })
-  names(inner) <- names(saved_analysis[[x]])
-  return(inner)
-})
-
 names(saved_analysis) <- list("tcoi", "tmethod", "tdistance", "tweight", 
                               "tcoverage", "tloci", "talpha", "tover", 
                               "tepsilon", "tseq")
 
-saveRDS(saved_analysis, file = "saved_analysis.rds")
+saveRDS(saved_analysis, file = "analysis/vignettes/saved_analysis.rds")
 
 # Here, we update all the stored images
 update_images <- list(tcoi_image, tmethod_image, tdistance_image, tweight_image,
@@ -456,7 +440,7 @@ names(update_images) <- list("tcoi_image", "tmethod_image", "tdistance_image",
                              "tseq_image")
 
 for (i in seq_len(length(update_images))){
-  filename = paste0("figures/sensitivity_plots/", 
+  filename = paste0("analysis/vignettes/figures/sensitivity_plots/", 
                     names(update_images)[i], 
                     ".png")
   suppressMessages(update_images[i] %>% ggpubr::ggexport(filename = filename))
@@ -472,7 +456,7 @@ names(update_errors) <- list("tcoi_error", "tmethod_error", "tdistance_error",
                              "tseq_error")
 
 for (i in seq_len(length(update_errors))){
-  filename = paste0("figures/error_images/", 
+  filename = paste0("analysis/vignettes/figures/error_images/", 
                     names(update_errors)[i], 
                     ".png")
   suppressMessages(update_errors[i] %>% ggpubr::ggexport(filename = filename))
