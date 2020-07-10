@@ -129,14 +129,7 @@ run. It takes in the output of <code>coi_test</code> and creates a grid of
 plots.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>sensitivity_plot</span>(
-  <span class='kw'>data</span>,
-  <span class='kw'>plot_dims</span>,
-  change_param = <span class='kw'>NULL</span>,
-  change_param_val = <span class='kw'>NULL</span>,
-  title = <span class='kw'>NULL</span>,
-  caption = <span class='kw'>NULL</span>
-)</pre>
+    <pre class="usage"><span class='fu'>sensitivity_plot</span>(<span class='kw'>data</span>, <span class='kw'>dims</span>, sub_title = <span class='kw'>NULL</span>, title = <span class='kw'>NULL</span>, caption = <span class='kw'>NULL</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -146,26 +139,21 @@ plots.</p>
       <td><p>The data to be plotted.</p></td>
     </tr>
     <tr>
-      <th>plot_dims</th>
+      <th>dims</th>
       <td><p>A list representing the number of rows and columns our plots
 will be split into.</p></td>
     </tr>
     <tr>
-      <th>change_param</th>
-      <td><p>The title of the plot. The title specifies the parameter
-that is being changed.</p></td>
-    </tr>
-    <tr>
-      <th>change_param_val</th>
-      <td><p>The values the changed parameter ranges over.</p></td>
+      <th>sub_title</th>
+      <td><p>A list of titles for each individual subplot.</p></td>
     </tr>
     <tr>
       <th>title</th>
-      <td><p>The title of the figure</p></td>
+      <td><p>The title of the overall figure.</p></td>
     </tr>
     <tr>
       <th>caption</th>
-      <td><p>The caption of the figure</p></td>
+      <td><p>The caption of the overall figure.</p></td>
     </tr>
     </table>
 
