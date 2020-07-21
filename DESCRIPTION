@@ -14,7 +14,7 @@ Authors@R:
              email = "oj.watson@hotmail.co.uk",
              comment = c(ORCID = "0000-0003-2374-0741")))
 Maintainer: Aris Paschalidis <aris_paschalidis@brown.edu>
-URL: https://ojwatson.github.io/coiaf/
+URL: https://ojwatson.github.io/coiaf/, https://github.com/ojwatson/coiaf/
 BugReports: https://github.com/ojwatson/coiaf/issues
 Description: Provides a direct method for estimating complexity of infection
   using within-sample allele frequencies from whole genome sequence data. 

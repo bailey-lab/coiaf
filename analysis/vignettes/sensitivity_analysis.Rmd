@@ -24,6 +24,11 @@ knitr::opts_chunk$set(
 eval_tests  = FALSE
 eval_images = !eval_tests
 
+# N.B. to save the plots, we can use the following code. Write this after the
+# call to sensitivity_plot().
+# %>% ggpubr::ggexport(filename = "analysis/vignettes/figures/sensitivity_plots/toverall_image.png")
+# %>% ggpubr::ggexport(filename = "analysis/vignettes/figures/error_images/toverall_error.png")
+
 library(coiaf)
 ```
 
@@ -90,11 +95,6 @@ toverall_image
 
 toverall_error <- error_plot(toverall, legend.position = "none")
 toverall_error
-
-# N.B. to save the plots, we can use the following code. Write this after the
-# call to sensitivity_plot().
-# %>% ggpubr::ggexport(filename = "analysis/vignettes/figures/sensitivity_plots/toverall_image.png")
-# %>% ggpubr::ggexport(filename = "analysis/vignettes/figures/error_images/toverall_error.png")
 ```
 
 ```{r overall image, eval = eval_images, echo = F, out.width = "75%"}
@@ -476,3 +476,5 @@ for (i in seq_len(length(update_errors))){
   suppressMessages(update_errors[i] %>% ggpubr::ggexport(filename = filename))
 }
 ```
+
+
