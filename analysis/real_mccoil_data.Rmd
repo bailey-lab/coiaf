@@ -34,9 +34,9 @@ list_apply <- function(x, fun, ...){
   }
 }
 
-# Define a boolean to determine whether the real data should be rerun. Remember,
-# the real data is saved as .rds files!
+# Define booleans to determine whether certain code chunks should be run.
 run_real = FALSE
+read_pf3k = FALSE
 
 library(coiaf)
 library(ggplot2)
@@ -109,8 +109,8 @@ saveRDS(complete_predictions, file = "analysis/rmcl_complete_predictions.rds")
 ```
 
 ```{r load data, eval = !run_real, include = FALSE}
-raw_predictions <- readRDS("analysis/rmcl_raw_predictions.rds")
-complete_predictions <- readRDS("analysis/rmcl_complete_predictions.rds")
+raw_predictions <- readRDS("rmcl_raw_predictions.rds")
+complete_predictions <- readRDS("rmcl_complete_predictions.rds")
 ```
 
 # Evaluate Our Predictions
@@ -156,15 +156,122 @@ ggplot(na.omit(complete_predictions), aes(factor(difference_median),
        title = "Difference Between coiaf And REAL McCOIL Median By Region")
 ```
 
-# Construct World Maps
+## Incorrect Trends
+Why does our model get samples wrong?
 
-We need to access the Pf3k data in order to create a world map. We can combine
-the Pf3k data with our predictions as well.
-```{r read Pf3k}
+```{r, eval = FALSE}
+incorrect <- complete_predictions %>% 
+  dplyr::filter(prediction != rmcl) %>% 
+  dplyr::distinct(name, .keep_all = TRUE)
+
+# Diff <= -3
+minoff <- incorrect %>% 
+  dplyr::filter(difference_median <= -3) %>% 
+  dplyr::arrange(prediction)
+par(mfrow = c(5,4))
+for (i in 1:nrow(minoff)){
+  file = minoff$file[i]
+  name = minoff$name[i]
+  plot(rmcl_wsafs[[file]][name,], pch = 20, cex = 0.5, 
+      ylim = c(0,1), ylab = "WSAF", 
+      main = paste0(name, ", coiaf = ", minoff[i,]$prediction, ", rmcl = ", minoff[i,]$rmcl))
+}
+
+# Diff -2
+minoff <- incorrect %>% 
+  dplyr::filter(difference_median == -2) %>% 
+  dplyr::arrange(prediction)
+for (i in 1:nrow(minoff)){
+  if (i %% 36 == 1){ 
+    png(paste0("~/Desktop/Images for OJ-Jeff/diff-2/diff2set", i, ".png"), 
+        width = 1500, height = 1500)
+    par(mfrow = c(6,6)) }
+  file = minoff$file[i]
+  name = minoff$name[i]
+  plot(rmcl_wsafs[[file]][name,], pch = 20, cex = 0.5, 
+      ylim = c(0,1), ylab = "WSAF", 
+      main = paste0(name, ", coiaf = ", minoff[i,]$prediction, ", rmcl = ", minoff[i,]$rmcl))
+  if (i %% 36 == 0) { dev.off() }
+}
+
+# Diff -1
+minoff <- incorrect %>% 
+  dplyr::filter(difference_median == -1) %>% 
+  dplyr::arrange(prediction)
+for (i in 1:nrow(minoff)){
+  if (i %% 49 == 1){ 
+    png(paste0("~/Desktop/Images for OJ-Jeff/diff-1/diff1set", i, ".png"), 
+        width = 1500, height = 1500)
+    par(mfrow = c(7,7)) }
+  file = minoff$file[i]
+  name = minoff$name[i]
+  plot(rmcl_wsafs[[file]][name,], pch = 20, cex = 0.5, 
+      ylim = c(0,1), ylab = "WSAF", 
+      main = paste0(name, ", coiaf = ", minoff[i,]$prediction, ", rmcl = ", minoff[i,]$rmcl))
+  if (i %% 49 == 0) { dev.off() }
+}
+
+# Diff > -1
+minoff <- incorrect %>% 
+  dplyr::filter(difference_median > -1) %>% 
+  dplyr::arrange(prediction)
+for (i in 1:nrow(minoff)){
+  if (i %% 49 == 1){ 
+    png(paste0("~/Desktop/Images for OJ-Jeff/diffg-1/diffg1set", i, ".png"), 
+        width = 1500, height = 1500)
+    par(mfrow = c(7,7)) }
+  file = minoff$file[i]
+  name = minoff$name[i]
+  plot(rmcl_wsafs[[file]][name,], pch = 20, cex = 0.5, 
+      ylim = c(0,1), ylab = "WSAF", 
+      main = paste0(name, ", coiaf = ", minoff[i,]$prediction, ", rmcl = ", minoff[i,]$rmcl))
+  if (i %% 49 == 0) { dev.off() }
+}
+```
+
+
+# World Maps
+
+## Pf3k Data
+
+We need to access the Pf3k data in order to create a world map. 
+
+```{r read Pf3k, eval = read_pf3k}
+# Read in
 tf <- tempfile()
 download.file("ftp://ngs.sanger.ac.uk/production/malaria/pfcommunityproject/Pf6/Pf_6_samples.txt",tf)
 meta <- data.table::fread(tf)
+saveRDS(meta, file = "analysis/pf3k_meta.rds")
+```
 
+```{r load Pf3k, eval = !read_pf3k, include = FALSE}
+meta <- readRDS("pf3k_meta.rds")
+```
+
+We can then cluster our samples into suitably close regions, for which we assume
+the same PLAF exists but without reducing our n. We can use a silhouette plot to 
+visualize the optimum number of regions to guide our decisions.
+
+```{r k-means}
+# K Means
+locations <- unique(meta[, c("Lat", "Long")])
+
+sis <- 2:(nrow(locations) - 1)
+for(k in sis) {
+  si <- cluster::silhouette(cluster::pam(x = locations, k))
+  sis[k - 1] <- mean(si[, 3])
+}
+
+plot(sis)
+abline(v = which(diff(sign(diff(sis))) == -2) + 1)
+text(which(diff(sign(diff(sis))) == -2) + 2, 0.1, 
+     which(diff(sign(diff(sis)))== -2) + 2)
+```
+
+Based on this plot, we select 24 regions as the optimal cluster number. We then
+cluster our samples and combine the data with our predictions.
+
+```{r cluster}
 # Clustering with 24 locations
 ks <- cluster::pam(meta[,c("Lat","Long")], k = 24)
 meta$color <- as.factor(ks$clustering)
@@ -178,7 +285,7 @@ patient_lat_long <- dplyr::left_join(complete_predictions, meta,
 
 World map with average COI
 
-```{r world map}
+```{r world map, fig.height = 2}
 # Get average of data
 map_average <- patient_lat_long %>% 
   dplyr::group_by(color) %>% 
@@ -187,18 +294,20 @@ map_average <- patient_lat_long %>%
                    coi_mean = mean(prediction),
                    coi_med = median(prediction), .groups = "drop")
 
-# Plot the mean COI
+# Plot the mean COI (theme is added so that there is less whitespace)
 world_map(map_average, map_average$coi_mean, label = "Mean COI", 
-          alpha = 1, breaks = c(1.0, 1.5, 2.0, 2.5, 3.0))
+          alpha = 1, breaks = c(1.0, 1.5, 2.0, 2.5, 3.0)) + 
+  theme(plot.margin = unit(c(-1, 0, -1, 0), "null"))
 
-# Plot the median COI
+# Plot the median COI (theme is added so that there is less whitespace)
 world_map(map_average, map_average$coi_med, label = "Median COI", 
-          alpha = 1, breaks = c(1.0, 1.5, 2.0))
+          alpha = 1, breaks = c(1.0, 1.5, 2.0)) + 
+  theme(plot.margin = unit(c(-0.9, 0, -0.9, 0), "null"))
 ```
 
 World map with all data
 
-```{r all patients map}
+```{r all patients map, fig.height = 2}
 # Get data that has a COI of less than 10. This is done for now as we suspect
 # there are some samples that are wrong! Regions that predict 25! 
 # We also set up data to be descending so that smaller COIs stay on top.
@@ -208,7 +317,8 @@ all_world_map <- patient_lat_long %>%
   dplyr::rename(lat = Lat) %>% 
   dplyr::rename(long = Long)
 
-# Plot all patient COIs
-world_map(all_world_map, all_world_map$prediction, "COI", breaks = c(1, 2, 4, 6, 8, 10))
+# Plot all patient COIs (theme is added so that there is less whitespace)
+world_map(all_world_map, all_world_map$prediction, "COI", 
+          breaks = c(1, 2, 4, 6, 8, 10))
 ```
 
