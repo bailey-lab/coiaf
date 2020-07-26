@@ -174,10 +174,7 @@ patient_lat_long <- dplyr::left_join(complete_predictions, meta,
                                      by = c("name" = "Sample")) 
 ```
 
-```{r ggplot2 map data}
-# Access world map data from ggplot2
-world <- ggplot2::map_data("world")
-```
+## Plotting
 
 World map with average COI
 
@@ -190,19 +187,13 @@ map_average <- patient_lat_long %>%
                    coi_mean = mean(prediction),
                    coi_med = median(prediction), .groups = "drop")
 
-# Plot world map
-ggplot() +
-  borders("world") +
-  geom_polygon(data = world, aes(x = long, y = lat, group = group), 
-               fill = "grey", alpha = 0.3) +
-  geom_point(data = map_average, aes(x = long, y = lat, 
-                                     size = coi_med, color = coi_med)) +
-  viridis::scale_color_viridis(limits = c(1, 2), breaks = c(1.0, 1.5, 2.0)) + 
-  theme_void() + 
-  theme(legend.position = "bottom") +
-  scale_size(guide = "none") + 
-  labs(color = "Median COI") +
-  coord_quickmap(xlim = c(-75, 150), ylim = c(-20, 20))
+# Plot the mean COI
+world_map(map_average, map_average$coi_mean, label = "Mean COI", 
+          alpha = 1, breaks = c(1.0, 1.5, 2.0, 2.5, 3.0))
+
+# Plot the median COI
+world_map(map_average, map_average$coi_med, label = "Median COI", 
+          alpha = 1, breaks = c(1.0, 1.5, 2.0))
 ```
 
 World map with all data
@@ -213,19 +204,11 @@ World map with all data
 # We also set up data to be descending so that smaller COIs stay on top.
 all_world_map <- patient_lat_long %>% 
   dplyr::filter(prediction <= 10) %>% 
-  dplyr::arrange(desc(prediction))
+  dplyr::arrange(desc(prediction)) %>% 
+  dplyr::rename(lat = Lat) %>% 
+  dplyr::rename(long = Long)
 
-# Plot the world map
-ggplot() +
-  borders("world") +
-  geom_polygon(data=world, aes(x=long, y = lat, group = group), fill="grey", alpha=0.3) +
-  geom_point(data=patient_lat_long, 
-             aes(x=Long, y=Lat, size=prediction, color=prediction), alpha=0.1) +
-  viridis::scale_color_viridis(limits = c(1, 10)) +
-  theme_void() + 
-  theme(legend.position = "bottom") +
-  scale_size(guide = "none") + 
-  labs(color = "COI") +
-  coord_quickmap(xlim = c(-75, 150), ylim = c(-25, 25))
+# Plot all patient COIs
+world_map(all_world_map, all_world_map$prediction, "COI", breaks = c(1, 2, 4, 6, 8, 10))
 ```
 

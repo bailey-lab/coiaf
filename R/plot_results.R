@@ -238,3 +238,46 @@ error_plot <- function(data, fill = "COI", fill_levels = NULL, title = NULL,
   return(error_plot)
 
 }
+
+#------------------------------------------------
+#' @title Plot a world map showing the COI
+#'
+#' @description Plot a world map showing the COI in each region where reads
+#' were sampled from.
+#'
+#' @param data The data to be plotted.
+#' @param variable The variable the data will plot.
+#' @param label The label for the variable.
+#' @param alpha The alpha value for the plotted data.
+#' @param breaks The breaks for the color scale.
+#'
+#' @export
+#'
+world_map <- function(data, variable, label = NULL, alpha = 0.1,
+                      breaks = c(1,2)){
+
+  # Access world map data from ggplot2
+  world <- ggplot2::map_data("world")
+
+  # Plot world map
+  map <- ggplot2::ggplot() +
+    ggplot2::borders("world") +
+    ggplot2::geom_polygon(data = world,
+                          ggplot2::aes(x = .data$long, y = .data$lat,
+                                       group = .data$group),
+                          fill = "grey", alpha = 0.3) +
+    ggplot2::geom_point(data = data,
+                        ggplot2::aes(x = .data$long, y = .data$lat,
+                                     size = variable, color = variable),
+                        alpha = alpha) +
+    ggplot2::scale_colour_viridis_c(limits = c(breaks[1],
+                                               breaks[length(breaks)]),
+                                    breaks = breaks) +
+    ggplot2::theme_void() +
+    ggplot2::theme(legend.position = "bottom") +
+    ggplot2::scale_size(guide = "none") +
+    ggplot2::labs(color = label) +
+    ggplot2::coord_quickmap(xlim = c(-75, 150), ylim = c(-20, 20))
+
+  return(map)
+}
