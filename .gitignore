@@ -10,3 +10,4 @@ analysis/data/derived/McCOIL_work
 00_Pf6k_vcf_download_loci_selection_and_RMCL.Rmd
 01_Pf6k_WSAF_creation_for_coiafRmd
 03_Pf6k_sample_locations_and_regions_plot.Rmd
+scripts
