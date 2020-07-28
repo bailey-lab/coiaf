@@ -201,12 +201,12 @@ res <- rslurm::get_slurm_out(sjob)
 
 ## Select intermediate frequency and high quality SNPs
 
-We'll continue by subsetting to the SNPs that have a minor allele frequency greater than 0.05.
+We'll continue by subsetting to the SNPs that have a minor allele frequency greater than 0.01.
 
 ```{r}
 
 # frequency filter
-bcf_allele_frequency <- function(vcf, minor = 0.05) {
+bcf_allele_frequency <- function(vcf, minor = 0.01) {
   
   # outvcf <- gsub(".vcf.gz", "maf_filter.vcf.gz", vcf, fixed = TRUE)
   bcft(paste0("view -O z -q ",minor,":alt1 "), vcf)
@@ -217,7 +217,7 @@ bcf_allele_frequency <- function(vcf, minor = 0.05) {
 l <- list.files(new_dir, full.names = TRUE)
 
 # submit filter 
-pars <- data.frame("vcf" = l, "minor" = 0.05, stringsAsFactors = FALSE)
+pars <- data.frame("vcf" = l, "minor" = 0.01, stringsAsFactors = FALSE)
 sopt <- list(time = '4:00:00', mem = "16Gb")
 
 setwd(file.path(here::here(), "analysis/data/slurm_outs/"))
@@ -313,7 +313,7 @@ plot_locations <- function(df) {
   print(plot1)
   invisible(plot1)
 }
-plot_locations(df)
+ggplot2::ggsave(file.path(here::here(), "analysis/plots/chrom_locations.png"), plot_locations(df))
 ```
 
 ## Subset SNPs to those that pass at regional level
@@ -448,7 +448,7 @@ res <- rslurm::get_slurm_out(sjob)
 
 ```
 
-Now processing to calculate the intercepting SNPs between regionally MAF>0.05 and global MAF>0.05
+Now processing to calculate the intercepting SNPs between regionally MAF>0.01 and global MAF>0.01
 
 ```{r}
 
@@ -472,7 +472,8 @@ for(i in seq_len(length(l))) {
 # plot the fall of loci with regions
 inclusions <- data.frame("regions" = 1:24,
                          "loci" = sapply(1:24,function(x) {length(unlist(lapply(intersects, "[[", x)))}))
-ggplot(inclusions, aes(x=regions, y=loci)) + geom_point() + geom_line()
+inclusions_plot <- ggplot(inclusions, aes(x=regions, y=loci)) + geom_point() + geom_line()
+ggplot2::ggsave(file.path(here::here(), "analysis/plots/inclusions.png"), inclusions_plot)
 
 # is it the same region screwing up as we go between the loci found in 24 regions vs 23 regions
 missing <- lapply(1:14, function(x) {
@@ -506,7 +507,7 @@ global_snps <- lapply(loci, readLines)
 
 # intersect
 intersect_snps <- mapply(intersect, regional_snps, global_snps)
-saveRDS(intersect_snps, file.path(here::here(),"analysis/data/derived/McCOIL_work/intercept_snps.rds"))
+saveRDS(intersect_snps, file.path(here::here(),"analysis/data/derived/McCOIL_work/intercept_snps_0.01.rds"))
 ```
 
 ## Subsetting to intersecting SNPs
@@ -529,7 +530,7 @@ loci_subset <- function(loci, vcf, chrom, vcfout) {
 
 # samples to be filtered
 intersect_snps <- readRDS(
-  file.path(here::here(),"analysis/data/derived/McCOIL_work/intercept_snps.rds")
+  file.path(here::here(),"analysis/data/derived/McCOIL_work/intercept_snps_0.01.rds")
   )
 
 l <- list.files(new_dir, full.names = TRUE)
@@ -613,6 +614,7 @@ saveRDS(newvcfR, vcf_rds)
 We can now filter to create subsets that are not in LD. 
 
 ```{r}
+
 devtools::install_github("OJWatson/vcfRmanip")
 library(vcfR)
 
@@ -626,7 +628,7 @@ saveRDS(gen, gen_rds)
 
 # Create subsets
 # --------------------------
-
+gen <- readRDS(gen_rds)
 # LD filter wrapped
 ld_filter <- function(vcfRobj_rds, genauto_rds, threshR2 = 0.8, random=TRUE){
   
@@ -744,12 +746,12 @@ for(i in seq_along(obj_list)) {
 
 # submit filter 
 setwd(file.path(here::here(), "analysis/data/slurm_outs/"))
-sopt <- list(time = '4:00:00', mem = "16Gb")
+sopt <- list(time = '24:00:00', mem = "16Gb")
 
 # submit jobs
 sjob <- rslurm::slurm_apply(
   f = function(i) {
-  loci_subset(
+  submit_rmcl(
   rep = obj_list[[i]]$rep,
   vcf_rds = obj_list[[i]]$vcf_rds,
   region = obj_list[[i]]$region,
@@ -763,7 +765,7 @@ sjob <- rslurm::slurm_apply(
   nodes = length(obj_list),
   cpus_per_node = 1,
   slurm_options = sopt,
-  submit = TRUE
+  submit = FALSE
   )
 rslurm::print_job_status(sjob)
 res <- rslurm::get_slurm_out(sjob)
