@@ -17,8 +17,8 @@
 #' 3. The "true" within-sample allele frequency at every locus is
 #'    obtained by multiplying haplotypes by their strain proportions, and
 #'    summing over haplotypes. Errors are introduced through the equation
-#'    \mjsdeqn{\text{wsaf}_{\text{error}} = \text{wsaf}(1-e) + (1-\text{wsaf})e}
-#'    where \mjseqn{\text{wsaf}} is the WSAF without error and \mjseqn{e} is
+#'    \mjsdeqn{wsaf_{error} = wsaf(1-e) + (1-wsaf)e}
+#'    where \mjseqn{wsaf} is the WSAF without error and \mjseqn{e} is
 #'    the error parameter `epsilon`.
 #' 4. Final read counts are drawn from a beta-binomial distribution with
 #'    expectation \mjseqn{w_{error}}. The raw number of draws is given by the
@@ -35,8 +35,8 @@
 #' @param overdispersion The extent to which counts are over-dispersed relative
 #'   to the binomial distribution. Counts are Beta-binomially distributed, with
 #'   the beta distribution having shape parameters
-#'   \mjseqn{\frac{p}{\text{overdispersion}}} and
-#'   \mjseqn{\frac{1-p}{\text{overdispersion}}}.
+#'   \mjseqn{\frac{p}{overdispersion}} and
+#'   \mjseqn{\frac{1-p}{overdispersion}}.
 #' @param epsilon The probability of a single read being miscalled as the other
 #'   allele. Applies in both directions.
 #'

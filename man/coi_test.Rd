@@ -39,8 +39,8 @@ proportions.}
 \item{overdispersion}{The extent to which counts are over-dispersed relative
 to the binomial distribution. Counts are Beta-binomially distributed, with
 the beta distribution having shape parameters
-\mjseqn{\frac{p}{\text{overdispersion}}} and
-\mjseqn{\frac{1-p}{\text{overdispersion}}}.}
+\mjseqn{\frac{p}{overdispersion}} and
+\mjseqn{\frac{1-p}{overdispersion}}.}
 
 \item{epsilon}{The probability of a single read being miscalled as the other
 allele. Applies in both directions.}
