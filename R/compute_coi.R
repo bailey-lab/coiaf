@@ -32,7 +32,7 @@
 #'   }}
 #'
 #' @param processed_data The processed COI data. This is the output of
-#' [process_sim()] or [process_real_data()].
+#' [process_sim()] or [process_real()].
 #' @param theory_coi_range The range of COIs for which theoretical curves
 #' will be generated.
 #' @param cut A vector indicating how often the data is summarized.

@@ -18,7 +18,7 @@ reference:
       Process real data and run algorithm
     contents:
     - run_real_data
-    - process_real_data
+    - process_real
   - title: Simulation
     desc: >
       Simulate data and run algorithm on the simulated data

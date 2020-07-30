@@ -92,7 +92,7 @@ optimize <- function(data,
   if (data_type == "sim"){
     processed_data <- process_sim(data, seq_error, cut)
   } else if (data_type == "real"){
-    processed_data <- process_real_data(data$wsaf, data$plaf, seq_error, cut)
+    processed_data <- process_real(data$wsaf, data$plaf, seq_error, cut)
   }
 
   # Compute COI

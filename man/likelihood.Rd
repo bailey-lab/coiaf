@@ -10,7 +10,7 @@ likelihood(coi, processed_data, dist_method = "squared", weighted = TRUE)
 \item{coi}{The COI for which the likelihood will be generated.}
 
 \item{processed_data}{The processed COI data. This is the output of
-\code{\link[=process_sim]{process_sim()}} or \code{\link[=process_real_data]{process_real_data()}}.}
+\code{\link[=process_sim]{process_sim()}} or \code{\link[=process_real]{process_real()}}.}
 
 \item{dist_method}{The distance method used to determine the distance between
 the theoretical and simulated curves for the \code{"overall"} method. One of

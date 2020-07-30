@@ -12,7 +12,7 @@
 #'
 #' @export
 
-process_real_data <- function(wsaf, plaf, seq_error = 0.01,
+process_real <- function(wsaf, plaf, seq_error = 0.01,
                               cut = seq(0, 0.5, 0.01)){
   # Check inputs
   assert_vector(wsaf)
@@ -104,7 +104,7 @@ run_real_data <- function(data,
     input <- data.frame(wsaf = wsaf, plaf = plaf) %>% tidyr::drop_na()
 
     # Format data in the proper way
-    processed_data <- process_real_data(input$wsaf, input$plaf, seq_error, cut)
+    processed_data <- process_real(input$wsaf, input$plaf, seq_error, cut)
 
     # Compute the coi
     sample_coi <- compute_coi(processed_data, 1:max_coi, cut,
