@@ -4,9 +4,6 @@
     <loc>https://ojwatson.github.io/coiaf//index.html</loc>
   </url>
   <url>
-    <loc>https://ojwatson.github.io/coiaf//reference/Pf_chrom_lengths.html</loc>
-  </url>
-  <url>
     <loc>https://ojwatson.github.io/coiaf//reference/coi_test.html</loc>
   </url>
   <url>
@@ -25,13 +22,19 @@
     <loc>https://ojwatson.github.io/coiaf//reference/example_real_data.html</loc>
   </url>
   <url>
+    <loc>https://ojwatson.github.io/coiaf//reference/likelihood.html</loc>
+  </url>
+  <url>
+    <loc>https://ojwatson.github.io/coiaf//reference/optimize.html</loc>
+  </url>
+  <url>
     <loc>https://ojwatson.github.io/coiaf//reference/pipe.html</loc>
   </url>
   <url>
-    <loc>https://ojwatson.github.io/coiaf//reference/process_real_data.html</loc>
+    <loc>https://ojwatson.github.io/coiaf//reference/process_real.html</loc>
   </url>
   <url>
-    <loc>https://ojwatson.github.io/coiaf//reference/process_simulated_coi.html</loc>
+    <loc>https://ojwatson.github.io/coiaf//reference/process_sim.html</loc>
   </url>
   <url>
     <loc>https://ojwatson.github.io/coiaf//reference/rbetabinom.html</loc>
@@ -59,5 +62,8 @@
   </url>
   <url>
     <loc>https://ojwatson.github.io/coiaf//reference/theoretical_coi.html</loc>
+  </url>
+  <url>
+    <loc>https://ojwatson.github.io/coiaf//reference/world_map.html</loc>
   </url>
 </urlset>

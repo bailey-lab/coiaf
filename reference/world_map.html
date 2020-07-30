@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Example Real Data — example_real_data • coiaf</title>
+<title>Plot a world map showing the COI — world_map • coiaf</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,9 @@
 
 
 
-<meta property="og:title" content="Example Real Data — example_real_data" />
-<meta property="og:description" content="A small example dataset that contains WSAF from a sample of individuals." />
+<meta property="og:title" content="Plot a world map showing the COI — world_map" />
+<meta property="og:description" content="Plot a world map showing the COI in each region where reads
+were sampled from." />
 <meta property="og:image" content="https://ojwatson.github.io/coiaf/logo.png" />
 
 
@@ -116,23 +117,43 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Example Real Data</h1>
-    <small class="dont-index">Source: <a href='https://github.com/ojwatson/coiaf/blob/master/R/coiaf.R'><code>R/coiaf.R</code></a></small>
-    <div class="hidden name"><code>example_real_data.Rd</code></div>
+    <h1>Plot a world map showing the COI</h1>
+    <small class="dont-index">Source: <a href='https://github.com/ojwatson/coiaf/blob/master/R/plot_results.R'><code>R/plot_results.R</code></a></small>
+    <div class="hidden name"><code>world_map.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>A small example dataset that contains WSAF from a sample of individuals.</p>
+    <p>Plot a world map showing the COI in each region where reads
+were sampled from.</p>
     </div>
 
+    <pre class="usage"><span class='fu'>world_map</span>(<span class='no'>data</span>, <span class='no'>variable</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>breaks</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>))</pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>data</th>
+      <td><p>The data to be plotted.</p></td>
+    </tr>
+    <tr>
+      <th>variable</th>
+      <td><p>The variable the data will plot.</p></td>
+    </tr>
+    <tr>
+      <th>label</th>
+      <td><p>The label for the variable.</p></td>
+    </tr>
+    <tr>
+      <th>alpha</th>
+      <td><p>The alpha value for the plotted data.</p></td>
+    </tr>
+    <tr>
+      <th>breaks</th>
+      <td><p>The breaks for the color scale.</p></td>
+    </tr>
+    </table>
 
-    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
-
-    <p>A list of matrices. The list indicates the region of the genome and
-the VCF file where the samples came from. The two matrices have the same
-structure. The rows of the matrix indicate the patient and the columns of
-the matrix indicate the WSAF at each locus.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -47,36 +47,7 @@
 
 
 <meta property="og:title" content="Predict the COI — compute_coi" />
-<meta property="og:description" content="Predict the COI of the sample by comparing the within sample
-allele frequency (WSAF) and the population level allele frequency (PLAF) of
-the sample to what a theoretical WSAF and PLAF should look like. By examining
-the sample's WSAF and PLAF to the theoretical WSAF and PLAF, an estimation
-can be made about what the COI of the sample is. We refer to the sample's
-WSAF vs PLAF as the &quot;sample curve&quot; and refer to the theoretical WSAF vs
-PLAF as the &quot;theoretical curve.&quot; To determine the predicted COI value, one of
-three different methods can be selected:
-  endDetermines the distance between the theoretical and
-  sample curve at a PLAF of 0.5. The COI is whichever theoretical COI
-  curve has the smallest distance to the simulated data.
-  idealDetermines the distance between the theoretical and
-  sample curve at the ideal PLAF. The ideal PLAF is calculated by looking
-  at the change between the COI of \(i\) and the COI of \(i-1\) and
-  finding the PLAF for which this distance is maximized. The COI is whichever
-  theoretical COI curve has the smallest distance to the simulated data at
-  the ideal PLAF.
-  overallDetermines the distance between the theoretical and
-  simulated curve for all PLAFs. Computes the distance between the
-  theoretical curves and the simulated curve. The COI is whichever
-  theoretical curve has the smallest distance to the simulated curve.
-  There is an option to choose one of several distance metrics:
-  
-abs_sum: Absolute value of sum of difference.
-sum_abs: Sum of absolute difference.
-squared: Sum of squared difference.
-
-  
-
-" />
+<meta property="og:description" content="Predict the COI of the sample." />
 <meta property="og:image" content="https://ojwatson.github.io/coiaf/logo.png" />
 
 
@@ -151,45 +122,16 @@ squared: Sum of squared difference.
     </div>
 
     <div class="ref-description">
-    <p>Predict the COI of the sample by comparing the within sample
-allele frequency (WSAF) and the population level allele frequency (PLAF) of
-the sample to what a theoretical WSAF and PLAF should look like. By examining
-the sample's WSAF and PLAF to the theoretical WSAF and PLAF, an estimation
-can be made about what the COI of the sample is. We refer to the sample's
-WSAF vs PLAF as the "sample curve" and refer to the theoretical WSAF vs
-PLAF as the "theoretical curve." To determine the predicted COI value, one of
-three different methods can be selected:</p><dl>
-  <dt><code>end</code></dt><dd><p>Determines the distance between the theoretical and
-  sample curve at a PLAF of 0.5. The COI is whichever theoretical COI
-  curve has the smallest distance to the simulated data.</p></dd>
-  <dt><code>ideal</code></dt><dd><p>Determines the distance between the theoretical and
-  sample curve at the ideal PLAF. The ideal PLAF is calculated by looking
-  at the change between the COI of \(i\) and the COI of \(i-1\) and
-  finding the PLAF for which this distance is maximized. The COI is whichever
-  theoretical COI curve has the smallest distance to the simulated data at
-  the ideal PLAF.</p></dd>
-  <dt><code>overall</code></dt><dd><p>Determines the distance between the theoretical and
-  simulated curve for all PLAFs. Computes the distance between the
-  theoretical curves and the simulated curve. The COI is whichever
-  theoretical curve has the smallest distance to the simulated curve.
-  There is an option to choose one of several distance metrics:
-  <ul>
-<li><p><code>abs_sum</code>: Absolute value of sum of difference.</p></li>
-<li><p><code>sum_abs</code>: Sum of absolute difference.</p></li>
-<li><p><code>squared</code>: Sum of squared difference.</p></li>
-</ul></p></dd>
-  
-</dl>
-
+    <p>Predict the COI of the sample.</p>
     </div>
 
     <pre class="usage"><span class='fu'>compute_coi</span>(
-  <span class='kw'>processed_data</span>,
-  <span class='kw'>theory_coi_range</span>,
-  <span class='kw'>cut</span>,
-  method = <span class='st'>"overall"</span>,
-  dist_method = <span class='st'>"squared"</span>,
-  weighted = <span class='fl'>TRUE</span>
+  <span class='no'>processed_data</span>,
+  <span class='no'>theory_coi_range</span>,
+  <span class='no'>cut</span>,
+  <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"overall"</span>,
+  <span class='kw'>dist_method</span> <span class='kw'>=</span> <span class='st'>"squared"</span>,
+  <span class='kw'>weighted</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -198,7 +140,7 @@ three different methods can be selected:</p><dl>
     <tr>
       <th>processed_data</th>
       <td><p>The processed COI data. This is the output of
-process_simulated_coi or process_real_data.</p></td>
+<code><a href='process_sim.html'>process_sim()</a></code> or <code><a href='process_real.html'>process_real()</a></code>.</p></td>
     </tr>
     <tr>
       <th>theory_coi_range</th>
@@ -211,14 +153,14 @@ will be generated.</p></td>
     </tr>
     <tr>
       <th>method</th>
-      <td><p>The method to be employed. One of
-<code>"end", "ideal", "overall"</code>.</p></td>
+      <td><p>The method to be employed. One of <code>"end"</code>, <code>"ideal"</code>,
+<code>"overall"</code>.</p></td>
     </tr>
     <tr>
       <th>dist_method</th>
       <td><p>The distance method used to determine the distance between
 the theoretical and simulated curves for the <code>"overall"</code> method. One of
-<code>"abs_sum", "sum_abs", "squared"</code>.</p></td>
+<code>"abs_sum"</code>, <code>"sum_abs"</code>, <code>"squared"</code>.</p></td>
     </tr>
     <tr>
       <th>weighted</th>
@@ -229,11 +171,43 @@ distance.</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list of the following:</p><dl>
-  <dt><code>coi</code></dt><dd><p>The predicted COI of the sample.</p></dd>
-  <dt><code>probability</code></dt><dd><p>A probability density function representing the
-  probability of each COI.</p></dd>
-  
+    <p>A list of the following:</p><ul>
+<li><p><code>coi</code>: The predicted COI of the sample.</p></li>
+<li><p><code>probability</code>: A probability density function representing the probability
+of each COI.</p></li>
+</ul>
+
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p><script id="MathJax-script" async src="../../mathjaxr/doc/mathjax/es5/tex-chtml-full.js"></script>
+
+Compare the within sample allele frequency (WSAF) and the population level
+allele frequency (PLAF) of the sample to what a theoretical WSAF and PLAF
+should look like. By examining the sample's WSAF and PLAF to the theoretical
+WSAF and PLAF, an estimation can be made about what the COI of the sample is.
+We refer to the sample's WSAF vs PLAF as the "sample curve" and refer to the
+theoretical WSAF vs PLAF as the "theoretical curve." To determine the
+predicted COI value, one of three different methods can be selected:</p><dl'>
+<dt><code>end</code></dt><dd><p>Determines the distance between the theoretical and
+sample curve at a PLAF of 0.5. The COI is whichever theoretical COI
+curve has the smallest distance to the simulated data.</p></dd>
+<dt><code>ideal</code></dt><dd><p>Determines the distance between the theoretical and
+sample curve at the ideal PLAF. The ideal PLAF is calculated by looking
+at the change between the COI of \(i\) and the COI of \(i-1\) and
+finding the PLAF for which this distance is maximized. The COI is whichever
+theoretical COI curve has the smallest distance to the simulated data at
+the ideal PLAF.</p></dd>
+<dt><code>overall</code></dt><dd><p>Determines the distance between the theoretical and
+simulated curve for all PLAFs. Computes the distance between the
+theoretical curves and the simulated curve. The COI is whichever
+theoretical curve has the smallest distance to the simulated curve.
+There is an option to choose one of several distance metrics:
+<ul>
+<li><p><code>abs_sum</code>: Absolute value of sum of difference.</p></li>
+<li><p><code>sum_abs</code>: Sum of absolute difference.</p></li>
+<li><p><code>squared</code>: Sum of squared difference.</p></li>
+</ul></p></dd>
+
 </dl>
 
 
@@ -252,7 +226,7 @@ distance.</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>

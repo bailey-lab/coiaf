@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Example Real Data — example_real_data • coiaf</title>
+<title>Likelihood of a COI — likelihood • coiaf</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,11 @@
 
 
 
-<meta property="og:title" content="Example Real Data — example_real_data" />
-<meta property="og:description" content="A small example dataset that contains WSAF from a sample of individuals." />
+<meta property="og:title" content="Likelihood of a COI — likelihood" />
+<meta property="og:description" content="A function to generate the likelihood of a specific COI value.
+The likelihood can be thought of the distance between two curves: the &quot;real&quot;
+COI curve, generated from the inputted data, and the &quot;simulated&quot; COI curve,
+which depends on the COI value specified." />
 <meta property="og:image" content="https://ojwatson.github.io/coiaf/logo.png" />
 
 
@@ -116,23 +119,48 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Example Real Data</h1>
-    <small class="dont-index">Source: <a href='https://github.com/ojwatson/coiaf/blob/master/R/coiaf.R'><code>R/coiaf.R</code></a></small>
-    <div class="hidden name"><code>example_real_data.Rd</code></div>
+    <h1>Likelihood of a COI</h1>
+    <small class="dont-index">Source: <a href='https://github.com/ojwatson/coiaf/blob/master/R/optimize.R'><code>R/optimize.R</code></a></small>
+    <div class="hidden name"><code>likelihood.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>A small example dataset that contains WSAF from a sample of individuals.</p>
+    <p>A function to generate the likelihood of a specific COI value.
+The likelihood can be thought of the distance between two curves: the "real"
+COI curve, generated from the inputted data, and the "simulated" COI curve,
+which depends on the COI value specified.</p>
     </div>
 
+    <pre class="usage"><span class='fu'>likelihood</span>(<span class='no'>coi</span>, <span class='no'>processed_data</span>, <span class='kw'>dist_method</span> <span class='kw'>=</span> <span class='st'>"squared"</span>, <span class='kw'>weighted</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>coi</th>
+      <td><p>The COI for which the likelihood will be generated.</p></td>
+    </tr>
+    <tr>
+      <th>processed_data</th>
+      <td><p>The processed COI data. This is the output of
+<code><a href='process_sim.html'>process_sim()</a></code> or <code><a href='process_real.html'>process_real()</a></code>.</p></td>
+    </tr>
+    <tr>
+      <th>dist_method</th>
+      <td><p>The distance method used to determine the distance between
+the theoretical and simulated curves for the <code>"overall"</code> method. One of
+<code>"abs_sum"</code>, <code>"sum_abs"</code>, <code>"squared"</code>.</p></td>
+    </tr>
+    <tr>
+      <th>weighted</th>
+      <td><p>An indicator indicating whether to compute the weighted
+distance.</p></td>
+    </tr>
+    </table>
 
-    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list of matrices. The list indicates the region of the genome and
-the VCF file where the samples came from. The two matrices have the same
-structure. The rows of the matrix indicate the patient and the columns of
-the matrix indicate the WSAF at each locus.</p>
+    <p>The likelihood for a specific COI value.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

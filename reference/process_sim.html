@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Example Real Data — example_real_data • coiaf</title>
+<title>Process simulated data — process_sim • coiaf</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,14 @@
 
 
 
-<meta property="og:title" content="Example Real Data — example_real_data" />
-<meta property="og:description" content="A small example dataset that contains WSAF from a sample of individuals." />
+<meta property="og:title" content="Process simulated data — process_sim" />
+<meta property="og:description" content="Generate the simulated COI curve. In order to do this, we
+utilize the output of sim_biallelic(), which created simulated
+data. We keep the PLAF, and compute whether a SNP is a variant or not, based
+on the simulated WSAF at that SNP -- accounting for potential sequencing
+error. To check whether our simulated WSAF correctly indicated a variant
+site or not, we determine whether a site should be variant or not using
+the phased haplotype of the parasites." />
 <meta property="og:image" content="https://ojwatson.github.io/coiaf/logo.png" />
 
 
@@ -116,23 +122,43 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Example Real Data</h1>
-    <small class="dont-index">Source: <a href='https://github.com/ojwatson/coiaf/blob/master/R/coiaf.R'><code>R/coiaf.R</code></a></small>
-    <div class="hidden name"><code>example_real_data.Rd</code></div>
+    <h1>Process simulated data</h1>
+    <small class="dont-index">Source: <a href='https://github.com/ojwatson/coiaf/blob/master/R/simulate.R'><code>R/simulate.R</code></a></small>
+    <div class="hidden name"><code>process_sim.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>A small example dataset that contains WSAF from a sample of individuals.</p>
+    <p>Generate the simulated COI curve. In order to do this, we
+utilize the output of <code><a href='sim_biallelic.html'>sim_biallelic()</a></code>, which created simulated
+data. We keep the PLAF, and compute whether a SNP is a variant or not, based
+on the simulated WSAF at that SNP -- accounting for potential sequencing
+error. To check whether our simulated WSAF correctly indicated a variant
+site or not, we determine whether a site should be variant or not using
+the phased haplotype of the parasites.</p>
     </div>
 
+    <pre class="usage"><span class='fu'>process_sim</span>(<span class='no'>sim</span>, <span class='kw'>seq_error</span> <span class='kw'>=</span> <span class='fl'>0.01</span>, <span class='kw'>cut</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>0</span>, <span class='fl'>0.5</span>, <span class='fl'>0.01</span>))</pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>sim</th>
+      <td><p>Output of <code><a href='sim_biallelic.html'>sim_biallelic()</a></code>.</p></td>
+    </tr>
+    <tr>
+      <th>seq_error</th>
+      <td><p>The level of sequencing error that is assumed.</p></td>
+    </tr>
+    <tr>
+      <th>cut</th>
+      <td><p>How often the data is summarized.</p></td>
+    </tr>
+    </table>
 
-    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list of matrices. The list indicates the region of the genome and
-the VCF file where the samples came from. The two matrices have the same
-structure. The rows of the matrix indicate the patient and the columns of
-the matrix indicate the WSAF at each locus.</p>
+    <p>Simulated COI curve.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

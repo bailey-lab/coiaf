@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Example Real Data — example_real_data • coiaf</title>
+<title>Generate Real COI Curve — process_real • coiaf</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,8 @@
 
 
 
-<meta property="og:title" content="Example Real Data — example_real_data" />
-<meta property="og:description" content="A small example dataset that contains WSAF from a sample of individuals." />
+<meta property="og:title" content="Generate Real COI Curve — process_real" />
+<meta property="og:description" content="Generate the COI curve for real data." />
 <meta property="og:image" content="https://ojwatson.github.io/coiaf/logo.png" />
 
 
@@ -116,23 +116,41 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Example Real Data</h1>
-    <small class="dont-index">Source: <a href='https://github.com/ojwatson/coiaf/blob/master/R/coiaf.R'><code>R/coiaf.R</code></a></small>
-    <div class="hidden name"><code>example_real_data.Rd</code></div>
+    <h1>Generate Real COI Curve</h1>
+    <small class="dont-index">Source: <a href='https://github.com/ojwatson/coiaf/blob/master/R/real_data.R'><code>R/real_data.R</code></a></small>
+    <div class="hidden name"><code>process_real.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>A small example dataset that contains WSAF from a sample of individuals.</p>
+    <p>Generate the COI curve for real data.</p>
     </div>
 
+    <pre class="usage"><span class='fu'>process_real</span>(<span class='no'>wsaf</span>, <span class='no'>plaf</span>, <span class='kw'>seq_error</span> <span class='kw'>=</span> <span class='fl'>0.01</span>, <span class='kw'>cut</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>0</span>, <span class='fl'>0.5</span>, <span class='fl'>0.01</span>))</pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>wsaf</th>
+      <td><p>WSAF.</p></td>
+    </tr>
+    <tr>
+      <th>plaf</th>
+      <td><p>PLAF.</p></td>
+    </tr>
+    <tr>
+      <th>seq_error</th>
+      <td><p>The sequencing error.</p></td>
+    </tr>
+    <tr>
+      <th>cut</th>
+      <td><p>How often the data is summarized.</p></td>
+    </tr>
+    </table>
 
-    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list of matrices. The list indicates the region of the genome and
-the VCF file where the samples came from. The two matrices have the same
-structure. The rows of the matrix indicate the patient and the columns of
-the matrix indicate the WSAF at each locus.</p>
+    <p>Real COI curve.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

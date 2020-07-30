@@ -48,10 +48,10 @@
 
 <meta property="og:title" content="Compute distance between two curves — distance_curves" />
 <meta property="og:description" content="Compute the distance between two curves using several methods.
-  abs_sumAbsolute value of sum of difference.
-  sum_absSum of absolute difference.
-  squaredSum of squared difference.
-  
+abs_sumAbsolute value of sum of difference.
+sum_absSum of absolute difference.
+squaredSum of squared difference.
+
 
 " />
 <meta property="og:image" content="https://ojwatson.github.io/coiaf/logo.png" />
@@ -128,20 +128,20 @@
     </div>
 
     <div class="ref-description">
-    <p>Compute the distance between two curves using several methods.</p><dl>
-  <dt><code>abs_sum</code></dt><dd><p>Absolute value of sum of difference.</p></dd>
-  <dt><code>sum_abs</code></dt><dd><p>Sum of absolute difference.</p></dd>
-  <dt><code>squared</code></dt><dd><p>Sum of squared difference.</p></dd>
-  
+    <p>Compute the distance between two curves using several methods.</p><dl'>
+<dt><code>abs_sum</code></dt><dd><p>Absolute value of sum of difference.</p></dd>
+<dt><code>sum_abs</code></dt><dd><p>Sum of absolute difference.</p></dd>
+<dt><code>squared</code></dt><dd><p>Sum of squared difference.</p></dd>
+
 </dl>
 
     </div>
 
     <pre class="usage"><span class='fu'>distance_curves</span>(
-  <span class='kw'>processed_data</span>,
-  <span class='kw'>theory_cois</span>,
-  dist_method = <span class='st'>"squared"</span>,
-  weighted = <span class='fl'>TRUE</span>
+  <span class='no'>processed_data</span>,
+  <span class='no'>theory_cois</span>,
+  <span class='kw'>dist_method</span> <span class='kw'>=</span> <span class='st'>"squared"</span>,
+  <span class='kw'>weighted</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -150,7 +150,7 @@
     <tr>
       <th>processed_data</th>
       <td><p>The processed COI data. This is the output of
-process_simulated_coi or process_real_data.</p></td>
+<code><a href='process_sim.html'>process_sim()</a></code> or <code><a href='process_real.html'>process_real()</a></code>.</p></td>
     </tr>
     <tr>
       <th>theory_cois</th>
@@ -160,7 +160,7 @@ process_simulated_coi or process_real_data.</p></td>
       <th>dist_method</th>
       <td><p>The distance method used to determine the distance between
 the theoretical and simulated curves for the <code>"overall"</code> method. One of
-<code>"abs_sum", "sum_abs", "squared"</code>.</p></td>
+<code>"abs_sum"</code>, <code>"sum_abs"</code>, <code>"squared"</code>.</p></td>
     </tr>
     <tr>
       <th>weighted</th>
@@ -171,11 +171,11 @@ distance.</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list of the following:</p><dl>
-  <dt><code>coi</code></dt><dd><p>The predicted COI for the simulation.</p></dd>
-  <dt><code>dist</code></dt><dd><p>The distance between each theoretical COI and the
-  simulated COI curve.</p></dd>
-  
+    <p>A list of the following:</p><dl'>
+<dt><code>coi</code></dt><dd><p>The predicted COI for the simulation.</p></dd>
+<dt><code>dist</code></dt><dd><p>The distance between each theoretical COI and the
+simulated COI curve.</p></dd>
+
 </dl>
 
 
@@ -194,7 +194,7 @@ distance.</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>

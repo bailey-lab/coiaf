@@ -126,13 +126,13 @@
     </div>
 
     <pre class="usage"><span class='fu'>run_real_data</span>(
-  <span class='kw'>data</span>,
-  max_coi = <span class='fl'>25</span>,
-  seq_error = <span class='fl'>0.01</span>,
-  cut = <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>0</span>, <span class='fl'>0.5</span>, <span class='fl'>0.01</span>),
-  method = <span class='st'>"overall"</span>,
-  dist_method = <span class='st'>"squared"</span>,
-  weighted = <span class='fl'>TRUE</span>
+  <span class='no'>data</span>,
+  <span class='kw'>max_coi</span> <span class='kw'>=</span> <span class='fl'>25</span>,
+  <span class='kw'>seq_error</span> <span class='kw'>=</span> <span class='fl'>0.01</span>,
+  <span class='kw'>cut</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>0</span>, <span class='fl'>0.5</span>, <span class='fl'>0.01</span>),
+  <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"overall"</span>,
+  <span class='kw'>dist_method</span> <span class='kw'>=</span> <span class='st'>"squared"</span>,
+  <span class='kw'>weighted</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -157,14 +157,14 @@ theoretical COIs from 2 till <code>max_coi</code>.</p></td>
     </tr>
     <tr>
       <th>method</th>
-      <td><p>The method to be employed. One of
-<code>"end", "ideal", "overall"</code>.</p></td>
+      <td><p>The method to be employed. One of <code>"end"</code>, <code>"ideal"</code>,
+<code>"overall"</code>.</p></td>
     </tr>
     <tr>
       <th>dist_method</th>
       <td><p>The distance method used to determine the distance between
 the theoretical and simulated curves for the <code>"overall"</code> method. One of
-<code>"abs_sum", "sum_abs", "squared"</code>.</p></td>
+<code>"abs_sum"</code>, <code>"sum_abs"</code>, <code>"squared"</code>.</p></td>
     </tr>
     <tr>
       <th>weighted</th>
@@ -193,7 +193,7 @@ predictions.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>
