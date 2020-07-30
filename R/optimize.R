@@ -79,7 +79,7 @@ optimize <- function(data,
   # Check inputs
   assert_in(data_type, c("sim", "real"))
   assert_single_string(data_type)
-  assert_single_pos_int(max_coi)
+  assert_single_pos_int(max_COI)
   assert_single_bounded(seq_error)
   assert_bounded(cut, left = 0, right = 0.5)
   assert_vector(cut)
@@ -103,13 +103,13 @@ optimize <- function(data,
   #   control:
   #     fnscale: Indicates that we want to minimize
   #     ndeps: The step sizes in the optimizer
-  fit <- optim(par = 1,
-               fn = likelihood,
-               processed_data = processed_data,
-               dist_method = "squared",
-               weighted = TRUE,
-               method = "L-BFGS-B", lower = 1, upper = max_coi,
-               control = list(fnscale = 1, ndeps = 1e-5))
+  fit <- stats::optim(par = 1,
+                      fn = likelihood,
+                      processed_data = processed_data,
+                      dist_method = "squared",
+                      weighted = TRUE,
+                      method = "L-BFGS-B", lower = 1, upper = max_COI,
+                      control = list(fnscale = 1, ndeps = 1e-5))
 
   # Output warning if the model does not converge
   if (fit$convergence != 0){
