@@ -136,8 +136,7 @@ sim_biallelic <- function(COI = 3,
 #'
 #' @export
 
-process_simulated_coi <- function(sim, seq_error = 0.01,
-                                  cut = seq(0, 0.5, 0.01)){
+process_sim <- function(sim, seq_error = 0.01, cut = seq(0, 0.5, 0.01)) {
   # Check inputs
   assert_single_bounded(seq_error)
   assert_bounded(cut, left = 0, right = 0.5)

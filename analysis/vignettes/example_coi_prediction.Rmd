@@ -69,7 +69,7 @@ for (k in 2:7){
 
   # Compute windowed averages over WSAF and overlay in blue
   cut <- seq(0,0.5,0.01)
-  df_grouped <- process_simulated_coi(sim1, 0.01, cut)
+  df_grouped <- process_sim(sim1, 0.01, cut)
 
   lines(df_grouped$midpoints, df_grouped$m_true_variant, 
         col = "blue", lwd = 2, type = "o", pch = 20)

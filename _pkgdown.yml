@@ -9,6 +9,8 @@ reference:
     desc: >
       Determine the COI of the sample
     contents:
+    - optimize
+    - likelihood
     - compute_coi
     - theoretical_coi
   - title: Real Data
@@ -22,13 +24,12 @@ reference:
       Simulate data and run algorithm on the simulated data
     contents:
     - sim_biallelic
-    - process_simulated_coi
+    - process_sim
     - coi_test
   - title: Visualize
-    desc: >
-      Plot the results
     contents:
     - matches("plot")
+    - world_map
 
 navbar:
   title: coiaf

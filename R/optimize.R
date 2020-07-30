@@ -1,5 +1,5 @@
 #------------------------------------------------
-#' Likelihood
+#' Likelihood of a COI
 #'
 #' A function to generate the likelihood of a specific COI value.
 #' The likelihood can be thought of the distance between two curves: the "real"
@@ -50,7 +50,7 @@ likelihood <- function(coi, processed_data,
 }
 
 #------------------------------------------------
-#' Compute COI using optimization
+#' Optimize the COI
 #'
 #' A function to compute the COI of inputted data.
 #' The function utilizes the [stats::optim()] function. In particular,
@@ -70,7 +70,7 @@ likelihood <- function(coi, processed_data,
 
 optimize <- function(data,
                      data_type,
-                     max_coi = 25,
+                     max_COI = 25,
                      seq_error = 0.01,
                      cut = seq(0, 0.5, 0.01),
                      dist_method = "squared",
@@ -90,7 +90,7 @@ optimize <- function(data,
 
   # Process data
   if (data_type == "sim"){
-    processed_data <- process_simulated_coi(data, seq_error, cut)
+    processed_data <- process_sim(data, seq_error, cut)
   } else if (data_type == "real"){
     processed_data <- process_real_data(data$wsaf, data$plaf, seq_error, cut)
   }
