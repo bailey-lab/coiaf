@@ -17,7 +17,7 @@
 theoretical_coi <- function(coi_range, plaf = seq(0, 0.5, l = 101),
                             method = "1"){
   # Check inputs
-  assert_pos_int(coi_range, zero_allowed = FALSE)
+  assert_pos(coi_range, zero_allowed = FALSE)
   assert_vector(plaf)
   assert_bounded(plaf, left = 0, right = 0.5)
   assert_increasing(plaf)
@@ -56,7 +56,7 @@ theoretical_coi <- function(coi_range, plaf = seq(0, 0.5, l = 101),
 single_theoretical_coi <- function(coi, plaf = seq(0, 0.5, l = 101),
                                    method = "1"){
   # Check inputs
-  assert_single_pos_int(coi)
+  assert_single_pos(coi)
   assert_vector(plaf)
   assert_bounded(plaf, left = 0, right = 0.5)
   assert_increasing(plaf)
