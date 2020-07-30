@@ -24,12 +24,12 @@ theoretical COIs from 2 till \code{max_coi}.}
 
 \item{cut}{A vector indicating how often the data is summarized.}
 
-\item{method}{The method to be employed. One of
-\code{"end", "ideal", "overall"}.}
+\item{method}{The method to be employed. One of \code{"end"}, \code{"ideal"},
+\code{"overall"}.}
 
 \item{dist_method}{The distance method used to determine the distance between
 the theoretical and simulated curves for the \code{"overall"} method. One of
-\code{"abs_sum", "sum_abs", "squared"}.}
+\code{"abs_sum"}, \code{"sum_abs"}, \code{"squared"}.}
 
 \item{weighted}{An indicator indicating whether to compute the weighted
 distance.}

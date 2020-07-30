@@ -2,7 +2,7 @@
 % Please edit documentation in R/coi_testing.R
 \name{run_coi_test}
 \alias{run_coi_test}
-\title{Run a single COI test}
+\title{Test a COI}
 \usage{
 run_coi_test(
   COI = 3,
@@ -35,8 +35,9 @@ proportions.}
 
 \item{overdispersion}{The extent to which counts are over-dispersed relative
 to the binomial distribution. Counts are Beta-binomially distributed, with
-the beta distribution having shape parameters \code{p/overdispersion} and
-\code{(1-p)/overdispersion}.}
+the beta distribution having shape parameters
+\mjseqn{\frac{p}{\text{overdispersion}}} and
+\mjseqn{\frac{1-p}{\text{overdispersion}}}.}
 
 \item{epsilon}{The probability of a single read being miscalled as the other
 allele. Applies in both directions.}
@@ -45,12 +46,12 @@ allele. Applies in both directions.}
 
 \item{cut}{A vector indicating how often the data is summarized.}
 
-\item{method}{The method to be employed. One of
-\code{"end", "ideal", "overall"}.}
+\item{method}{The method to be employed. One of \code{"end"}, \code{"ideal"},
+\code{"overall"}.}
 
 \item{dist_method}{The distance method used to determine the distance between
 the theoretical and simulated curves for the \code{"overall"} method. One of
-\code{"abs_sum", "sum_abs", "squared"}.}
+\code{"abs_sum"}, \code{"sum_abs"}, \code{"squared"}.}
 
 \item{weighted}{An indicator indicating whether to compute the weighted
 distance.}

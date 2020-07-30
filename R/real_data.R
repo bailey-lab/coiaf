@@ -69,7 +69,7 @@ run_real_data <- function(data,
                           cut = seq(0, 0.5, 0.01),
                           method = "overall",
                           dist_method = "squared",
-                          weighted = TRUE){
+                          weighted = TRUE) {
 
   # Check inputs
   assert_single_pos_int(max_coi)
@@ -85,7 +85,7 @@ run_real_data <- function(data,
 
   # Function to determine if pbapply is installed. If it is installed, it will
   # display a progress bar
-  list_apply <- function(x, fun, ...){
+  list_apply <- function(x, fun, ...) {
     if (requireNamespace("pbapply", quietly = TRUE)) {
       pbapply::pblapply(x, fun, ...)
     } else {
@@ -109,14 +109,12 @@ run_real_data <- function(data,
     # Compute the coi
     sample_coi <- compute_coi(processed_data, 1:max_coi, cut,
                               method, dist_method, weighted)
-
-    return(sample_coi)
   })
 
   # Add names to the output
   names(coi_pred) <- rownames(data)
 
   # Return predicted COIs and probabilities for each sample
-  return (coi_pred)
+  return(coi_pred)
 }
 

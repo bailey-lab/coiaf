@@ -1,30 +1,30 @@
 #------------------------------------------------
-#' @title Simulate biallelic data
+#' Simulate biallelic data
 #'
-#' @description Simulate biallelic data from a simple statistical model. Inputs
-#'   include the complexity of infection (COI), population-level allele
-#'   frequencies (PLAF) and some parameters dictating skew and error
-#'   distributions. Outputs include the phased haplotypes and the unphased read
-#'   count and coverage data.
+#' Simulate biallelic data from a simple statistical model. Inputs
+#' include the complexity of infection (COI), population-level allele
+#' frequencies (PLAF), and some parameters dictating skew and error
+#' distributions. Outputs include the phased haplotypes and the unphased read
+#' count and coverage data.
 #'
-#' @details Simulated data are drawn from a simple statistical model:
-#'   \enumerate{
-#'     \item Strain proportions are drawn from a symmetric Dirichlet
-#'     distribution with shape parameter \code{alpha}.
-#'     \item Phased haplotypes are drawn at every locus, one for each
-#'     \code{COI}. The allele at each locus is drawn from a Bernoulli
-#'     distribution with probability given by the \code{PLAF}.
-#'     \item The "true" within-sample allele frequency at every locus is
-#'     obtained by multiplying haplotypes by their strain proportions, and
-#'     summing over haplotypes. Errors are introduced through the equation
-#'     \deqn{wsaf_{error} = wsaf*(1-e) + (1-wsaf)*e}where \eqn{wsaf} is the WSAF
-#'     without error and \eqn{e} is the error parameter \code{epsilon}.
-#'     \item Final read counts are drawn from a beta-binomial distribution with
-#'     expectation \eqn{w_{error}}. The raw number of draws is given by the
-#'     \code{coverage}, and the skew of the distribution is given by the
-#'     \code{overdispersion} parameter. If the \code{overdispersion} is equal to
-#'     zero, then the distribution is binomial, rather than beta-binomial.
-#'   }
+#' \loadmathjax
+#' Simulated data are drawn from a simple statistical model:
+#' 1. Strain proportions are drawn from a symmetric Dirichlet
+#'    distribution with shape parameter `alpha`.
+#' 2. Phased haplotypes are drawn at every locus, one for each
+#'    `COI`. The allele at each locus is drawn from a Bernoulli
+#'    distribution with probability given by the `PLAF`.
+#' 3. The "true" within-sample allele frequency at every locus is
+#'    obtained by multiplying haplotypes by their strain proportions, and
+#'    summing over haplotypes. Errors are introduced through the equation
+#'    \mjsdeqn{\text{wsaf}_{\text{error}} = \text{wsaf}(1-e) + (1-\text{wsaf})e}
+#'    where \mjseqn{\text{wsaf}} is the WSAF without error and \mjseqn{e} is
+#'    the error parameter `epsilon`.
+#' 4. Final read counts are drawn from a beta-binomial distribution with
+#'    expectation \mjseqn{w_{error}}. The raw number of draws is given by the
+#'    `coverage`, and the skew of the distribution is given by the
+#'    `overdispersion` parameter. If the `overdispersion` is equal to
+#'    zero, then the distribution is binomial, rather than beta-binomial.
 #'
 #' @param COI Complexity of infection.
 #' @param PLAF Vector of population-level allele frequencies at each locus.
@@ -34,10 +34,21 @@
 #'   proportions.
 #' @param overdispersion The extent to which counts are over-dispersed relative
 #'   to the binomial distribution. Counts are Beta-binomially distributed, with
-#'   the beta distribution having shape parameters \code{p/overdispersion} and
-#'   \code{(1-p)/overdispersion}.
+#'   the beta distribution having shape parameters
+#'   \mjseqn{\frac{p}{\text{overdispersion}}} and
+#'   \mjseqn{\frac{1-p}{\text{overdispersion}}}.
 #' @param epsilon The probability of a single read being miscalled as the other
 #'   allele. Applies in both directions.
+#'
+#' @return A list of:
+#' * `COI`: The COI used to simulate the data.
+#' * `strain_proportions`: The strain proportion of each strain.
+#' * `phased`: The phased haplotype.
+#' * `data`: A dataframe of:
+#'   + `PLAF`: Population-level allele frequency.
+#'   + `coverage`: The coverage at each locus.
+#'   + `counts`: The count at each locus.
+#'   + `WSAF`: The within-sample allele frequency.
 #'
 #' @export
 
@@ -84,7 +95,7 @@ sim_biallelic <- function(COI = 3,
   p_levels[p_levels > 1] <- 1L
 
   # Add in genotyping error
-  p_error <- p_levels*(1-epsilon) + (1-p_levels)*epsilon
+  p_error <- p_levels * (1 - epsilon) + (1 - p_levels) *epsilon
 
   # Draw read counts, taking into account overdispersion
   if (overdispersion == 0) {
@@ -93,7 +104,7 @@ sim_biallelic <- function(COI = 3,
     counts <- rbetabinom(L,
                          k = coverage,
                          alpha = p_error/overdispersion,
-                         beta = (1-p_error)/overdispersion)
+                         beta = (1 - p_error)/overdispersion)
   }
 
   # Return list
@@ -104,21 +115,20 @@ sim_biallelic <- function(COI = 3,
                                 coverage = coverage,
                                 counts   = counts,
                                 WSAF     = counts/coverage))
-  return(ret)
 }
 
 #------------------------------------------------
-#' @title Generate Simulated COI Curve
+#' Process simulated data
 #'
-#' @description Generate the simulated COI curve. In order to do this, we
-#'  utilize the output of \code{\link{sim_biallelic}}, which created simulated
-#'  data. We keep the PLAF, and compute whether a SNP is a variant or not, based
-#'  on the simulated WSAF at that SNP -- accounting for potential sequencing
-#'  error. To check whether our simulated WSAF correctly indicated a variant
-#'  site or not, we determine whether a site should be variant or not using
-#'  the phased haplotype of the parasites.
+#' Generate the simulated COI curve. In order to do this, we
+#' utilize the output of [sim_biallelic()], which created simulated
+#' data. We keep the PLAF, and compute whether a SNP is a variant or not, based
+#' on the simulated WSAF at that SNP -- accounting for potential sequencing
+#' error. To check whether our simulated WSAF correctly indicated a variant
+#' site or not, we determine whether a site should be variant or not using
+#' the phased haplotype of the parasites.
 #'
-#' @param sim Output of \code{\link{sim_biallelic}}.
+#' @param sim Output of [sim_biallelic()].
 #' @param seq_error The level of sequencing error that is assumed.
 #' @param cut How often the data is summarized.
 #'
@@ -163,6 +173,4 @@ process_simulated_coi <- function(sim, seq_error = 0.01,
   # Include midpoints
   df_sim_grouped$midpoints <- cut[-length(cut)] + diff(cut)/2
   df_sim_grouped <- stats::na.omit(df_sim_grouped)
-
-  return(df_sim_grouped)
 }

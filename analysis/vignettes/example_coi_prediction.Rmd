@@ -1,6 +1,6 @@
 ---
 title: "Example COI Prediction"
-author: "Aris Paschalidis"
+author: "Oliver Watson, Aris Paschalidis"
 date: "`r format(Sys.time(), '%B %Y')`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -43,6 +43,7 @@ increasing PLAF to infer COI.
 ```{r method 1}
 # Loop over range of COIs 
 end_coi = list()
+opt_coi = list()
 par(mar=c(1,1,1,1))
 par(mfrow = c(3,2))
 for (k in 2:7){
@@ -59,11 +60,11 @@ for (k in 2:7){
   # Overlay analytical expectations for COI of 2:7
   p_vec <- seq(0, 0.5, l=101)
   theory_cois <- theoretical_coi(seq(1, 7), p_vec)
-  for (i in 2:7) {
+  for (i in 1:7) {
     lines(p_vec, theory_cois[[paste("coi_", i, sep = "")]], 
           col = "red", lwd = 2)
   }
-  text(x = rep(0.505, 6), y = 1 - 0.5^(1:6), labels = 2:7, 
+  text(x = rep(0.505, 6), y = 1 - 0.5^(1:6), labels = 1:7, 
        col = "red", cex = 0.6)
 
   # Compute windowed averages over WSAF and overlay in blue
@@ -76,16 +77,19 @@ for (k in 2:7){
   # Predict the COI and print the results
   calc_coi = compute_coi(df_grouped, seq(1, 7), cut, "overall", "squared", TRUE)
   end_coi = unlist(c(end_coi, calc_coi$coi))
+  
+  # COI using optimization
+  add = optimize(sim1, "sim", max_coi = 10, cut = cut)
+  opt_coi = unlist(c(opt_coi, add))
 }
 ```
 
-In this the intercept at `PLAF = 0.5` gives us an easy way to estimate COI, with 
-`COI = 1 + log_0.5(1-WSAF)`, or `WSAF = 1 - 0.5^(COI-1)`. However, the 
+In this, the intercept at `PLAF = 0.5` gives us an easy way to estimate COI, 
+with `COI = 1 + log_0.5(1-WSAF)`, or `WSAF = 1 - 0.5^(COI-1)`. However, the 
 differences between each COI at PLAF = 0.5 become geometrically smaller. Larger 
 gaps can be found at different COI, with smaller PLAF:
 
 ```{r ideal PLAF}
-## Best place to calculate COI:
 par(mar=c(1,1,1,1))
 par(mfrow = c(3,3))
 p_vec <- seq(0, 0.5, l=101)

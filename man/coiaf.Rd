@@ -15,6 +15,7 @@ Provides a direct method for estimating complexity of infection
 Useful links:
 \itemize{
   \item \url{https://ojwatson.github.io/coiaf/}
+  \item \url{https://github.com/ojwatson/coiaf/}
   \item Report bugs at \url{https://github.com/ojwatson/coiaf/issues}
 }
 

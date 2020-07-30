@@ -1,62 +1,60 @@
 #------------------------------------------------
-#' @title Predict the COI
+#' Predict the COI
 #'
-#' @description Predict the COI of the sample by comparing the within sample
-#' allele frequency (WSAF) and the population level allele frequency (PLAF) of
-#' the sample to what a theoretical WSAF and PLAF should look like. By examining
-#' the sample's WSAF and PLAF to the theoretical WSAF and PLAF, an estimation
-#' can be made about what the COI of the sample is. We refer to the sample's
-#' WSAF vs PLAF as the "sample curve" and refer to the theoretical WSAF vs
-#' PLAF as the "theoretical curve." To determine the predicted COI value, one of
-#' three different methods can be selected:
+#' Predict the COI of the sample.
+#'
+#' \loadmathjax
+#' Compare the within sample allele frequency (WSAF) and the population level
+#' allele frequency (PLAF) of the sample to what a theoretical WSAF and PLAF
+#' should look like. By examining the sample's WSAF and PLAF to the theoretical
+#' WSAF and PLAF, an estimation can be made about what the COI of the sample is.
+#' We refer to the sample's WSAF vs PLAF as the "sample curve" and refer to the
+#' theoretical WSAF vs PLAF as the "theoretical curve." To determine the
+#' predicted COI value, one of three different methods can be selected:
 #' \describe{
-#'   \item{\code{end}}{Determines the distance between the theoretical and
+#'   \item{`end`}{Determines the distance between the theoretical and
 #'   sample curve at a PLAF of 0.5. The COI is whichever theoretical COI
 #'   curve has the smallest distance to the simulated data.}
-#'   \item{\code{ideal}}{Determines the distance between the theoretical and
+#'   \item{`ideal`}{Determines the distance between the theoretical and
 #'   sample curve at the ideal PLAF. The ideal PLAF is calculated by looking
-#'   at the change between the COI of \eqn{i} and the COI of \eqn{i-1} and
+#'   at the change between the COI of \mjseqn{i} and the COI of \mjseqn{i-1} and
 #'   finding the PLAF for which this distance is maximized. The COI is whichever
 #'   theoretical COI curve has the smallest distance to the simulated data at
 #'   the ideal PLAF.}
-#'   \item{\code{overall}}{Determines the distance between the theoretical and
+#'   \item{`overall`}{Determines the distance between the theoretical and
 #'   simulated curve for all PLAFs. Computes the distance between the
 #'   theoretical curves and the simulated curve. The COI is whichever
 #'   theoretical curve has the smallest distance to the simulated curve.
 #'   There is an option to choose one of several distance metrics:
-#'   \itemize{
-#'     \item{\code{abs_sum}:}{ Absolute value of sum of difference.}
-#'     \item{\code{sum_abs}:}{ Sum of absolute difference.}
-#'     \item{\code{squared}:}{ Sum of squared difference.}
+#'   * `abs_sum`: Absolute value of sum of difference.
+#'   * `sum_abs`: Sum of absolute difference.
+#'   * `squared`: Sum of squared difference.
 #'   }}
-#'   }
 #'
 #' @param processed_data The processed COI data. This is the output of
-#' \link{process_simulated_coi} or \link{process_real_data}.
+#' [process_simulated_coi()] or [process_real_data()].
 #' @param theory_coi_range The range of COIs for which theoretical curves
 #' will be generated.
 #' @param cut A vector indicating how often the data is summarized.
-#' @param method The method to be employed. One of
-#' \code{"end", "ideal", "overall"}.
+#' @param method The method to be employed. One of `"end"`, `"ideal"`,
+#' `"overall"`.
 #' @param dist_method The distance method used to determine the distance between
-#' the theoretical and simulated curves for the \code{"overall"} method. One of
-#' \code{"abs_sum", "sum_abs", "squared"}.
+#' the theoretical and simulated curves for the `"overall"` method. One of
+#' `"abs_sum"`, `"sum_abs"`, `"squared"`.
 #' @param weighted An indicator indicating whether to compute the weighted
 #' distance.
 #'
 #' @return A list of the following:
-#' \describe{
-#'   \item{\code{coi}}{The predicted COI of the sample.}
-#'   \item{\code{probability}}{A probability density function representing the
-#'   probability of each COI.}
-#'   }
+#' * `coi`: The predicted COI of the sample.
+#' * `probability`: A probability density function representing the probability
+#'  of each COI.
 #'
 #' @export
 
 compute_coi <- function(processed_data, theory_coi_range, cut,
                         method = "overall",
                         dist_method = "squared",
-                        weighted = TRUE){
+                        weighted = TRUE) {
   ##Check inputs
   assert_pos_int(theory_coi_range, zero_allowed = FALSE)
   assert_vector(theory_coi_range)
@@ -71,7 +69,7 @@ compute_coi <- function(processed_data, theory_coi_range, cut,
   assert_single_logical(weighted)
 
   # Warnings
-  if (method != "overall"){
+  if (method != "overall") {
     message <- sprintf('The method selected ("%s") is not the recommended
                        method. Please use the "overall" method for the best
                        performance.', method) %>%
@@ -79,7 +77,7 @@ compute_coi <- function(processed_data, theory_coi_range, cut,
       stringr::str_wrap()
     warning(message, call. = FALSE)
     }
-  if (dist_method != "squared"){
+  if (dist_method != "squared") {
     message <- sprintf('The distance method metric ("%s") is not the
                        recommended distance metric. Please use the
                        "squared" metric for the best performance.',
@@ -100,7 +98,7 @@ compute_coi <- function(processed_data, theory_coi_range, cut,
   # Minus 1 because theory_cois now includes the PLAF at the end
   bound_coi = ncol(theory_cois) - 1
 
-  if (method == "end"){
+  if (method == "end") {
     ## Method 1: Compare last value
     # Get last row of theoretical COI curves and simulated data (PLAF of 0.5)
     # Last column is removed because it contains the PLAF
@@ -109,15 +107,15 @@ compute_coi <- function(processed_data, theory_coi_range, cut,
 
     # Find COI by looking at minimum distance
     dist <- abs(last_theory - last_sim)
-    coi <- unlist(stringr::str_split(names(which.min(dist)), "_"))[2]
+    coi  <- unlist(stringr::str_split(names(which.min(dist)), "_"))[2]
 
-  } else if (method == "ideal"){
+  } else if (method == "ideal") {
     ## Method 2: Compute ideal PLAF
     # For each COI, find best PLAF and get theoretical and simulated values at
     # that PLAF
     dist <- list()
-    for (i in 1:bound_coi){
-      if (i != 1){
+    for (i in 1:bound_coi) {
+      if (i != 1) {
         # Find difference between i and i-1 curve
         diff = theory_cois[i] - theory_cois[i - 1]
 
@@ -127,7 +125,7 @@ compute_coi <- function(processed_data, theory_coi_range, cut,
         # Get max value and determine the theory WSAF
         theory_WSAF <- theory_cois[which.max(diff[[1]]), i]
 
-      } else{
+      } else {
         # Determine ideal PLAF and WSAF
         ideal_PLAF  <- theory_cois$plaf[length(theory_cois$plaf)]
         theory_WSAF <- theory_cois[length(theory_cois$plaf), i]
@@ -146,7 +144,7 @@ compute_coi <- function(processed_data, theory_coi_range, cut,
     # Find coi by looking at minimum distance
     coi <- unlist(stringr::str_split(names(which.min(dist)), "_"))[2]
 
-  } else if (method == "overall"){
+  } else if (method == "overall") {
     ## Method 3: Find distance between curves
     # Utilize helper function to compute overall distance between two curves
     overall_res <- distance_curves(processed_data, theory_cois, dist_method,
@@ -163,16 +161,15 @@ compute_coi <- function(processed_data, theory_coi_range, cut,
   dist <- dist / sum(dist)
 
   # Prepare list to return
-  ret <- list(as.numeric(coi),
-              dist)
+  ret <- list(as.numeric(coi), dist)
   names(ret) <- c("coi", "probability")
   return(ret)
 }
 
 #------------------------------------------------
-#' @title Compute distance between two curves
+#' Compute distance between two curves
 #'
-#' @description Compute the distance between two curves using several methods.
+#' Compute the distance between two curves using several methods.
 #' \describe{
 #'   \item{\code{abs_sum}}{Absolute value of sum of difference.}
 #'   \item{\code{sum_abs}}{Sum of absolute difference.}
@@ -192,7 +189,7 @@ compute_coi <- function(processed_data, theory_coi_range, cut,
 #' @keywords internal
 
 distance_curves <- function(processed_data, theory_cois,
-                            dist_method = "squared", weighted = TRUE){
+                            dist_method = "squared", weighted = TRUE) {
   # Check inputs
   assert_single_string(dist_method)
   assert_in(dist_method, c("abs_sum", "sum_abs", "squared"))
@@ -208,19 +205,19 @@ distance_curves <- function(processed_data, theory_cois,
   # First find difference between theoretical and simulate curve. Weigh
   # difference if wanted
   gap <- match_theory_cois - processed_data$m_variant
-  if (weighted){
+  if (weighted) {
     gap <- (gap * processed_data$bucket_size) / sum(processed_data$bucket_size)
   }
 
-  if (dist_method == "abs_sum"){
+  if (dist_method == "abs_sum") {
     # Find sum of differences
     gap <- abs(colSums(gap))
 
-  } else if (dist_method == "sum_abs"){
+  } else if (dist_method == "sum_abs") {
     # Find absolute value of differences
     gap <- colSums(abs(gap))
 
-  } else if (dist_method == "squared"){
+  } else if (dist_method == "squared") {
     # Squared distance
     gap <- colSums(gap ^ 2)
   }
@@ -231,5 +228,4 @@ distance_curves <- function(processed_data, theory_cois,
   # Prepare list to return
   ret <- list(coi  = coi,
               dist = gap)
-  return(ret)
 }

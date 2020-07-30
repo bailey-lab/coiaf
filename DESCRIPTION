@@ -24,6 +24,7 @@ Imports:
     boot,
     dplyr,
     magrittr,
+    mathjaxr,
     rlang,
     stringr,
     tidyr,
@@ -40,7 +41,9 @@ Suggests:
     tibble,
     tidyselect
 License: MIT + file LICENSE
+Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
+RdMacros: mathjaxr
 VignetteBuilder: knitr
 Language: en-US
 Encoding: UTF-8

@@ -13,13 +13,13 @@ distance_curves(
 }
 \arguments{
 \item{processed_data}{The processed COI data. This is the output of
-\link{process_simulated_coi} or \link{process_real_data}.}
+\code{\link[=process_simulated_coi]{process_simulated_coi()}} or \code{\link[=process_real_data]{process_real_data()}}.}
 
 \item{theory_cois}{The theoretical COI curves.}
 
 \item{dist_method}{The distance method used to determine the distance between
 the theoretical and simulated curves for the \code{"overall"} method. One of
-\code{"abs_sum", "sum_abs", "squared"}.}
+\code{"abs_sum"}, \code{"sum_abs"}, \code{"squared"}.}
 
 \item{weighted}{An indicator indicating whether to compute the weighted
 distance.}
@@ -27,17 +27,17 @@ distance.}
 \value{
 A list of the following:
 \describe{
-  \item{\code{coi}}{The predicted COI for the simulation.}
-  \item{\code{dist}}{The distance between each theoretical COI and the
-  simulated COI curve.}
-  }
+\item{\code{coi}}{The predicted COI for the simulation.}
+\item{\code{dist}}{The distance between each theoretical COI and the
+simulated COI curve.}
+}
 }
 \description{
 Compute the distance between two curves using several methods.
 \describe{
-  \item{\code{abs_sum}}{Absolute value of sum of difference.}
-  \item{\code{sum_abs}}{Sum of absolute difference.}
-  \item{\code{squared}}{Sum of squared difference.}
-  }
+\item{\code{abs_sum}}{Absolute value of sum of difference.}
+\item{\code{sum_abs}}{Sum of absolute difference.}
+\item{\code{squared}}{Sum of squared difference.}
+}
 }
 \keyword{internal}

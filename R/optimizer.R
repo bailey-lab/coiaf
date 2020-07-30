@@ -1,7 +1,7 @@
 #------------------------------------------------
-#' @title Likelihood
+#' Likelihood
 #'
-#' @description A function to generate the likelihood of a specific COI value.
+#' A function to generate the likelihood of a specific COI value.
 #' The likelihood can be thought of the distance between two curves: the "real"
 #' COI curve, generated from the inputted data, and the "simulated" COI curve,
 #' which depends on the COI value specified.
@@ -46,35 +46,35 @@ likelihood <- function(coi, processed_data,
 
   # Gap is a named list with two entries: the coi and the PLAF. We want to
   # return only the coi
-  return(gap[1])
+  cio <- gap[1]
 }
 
 #------------------------------------------------
-#' @title Compute COI Using Optimization
+#' Compute COI using optimization
 #'
-#' @description A function to compute the COI of inputted data.
-#' The function utilizes the \code{\link[stats]{optim}} function. In particular,
+#' A function to compute the COI of inputted data.
+#' The function utilizes the [stats::optim()] function. In particular,
 #' the function utilizes a quasi-Newton method to compute gradients and build a
 #' picture of the surface to be optimized.
 #'
 #' @param data The data for which the COI will be computed.
 #' @param data_type The type of the data to be analyzed. One of
-#' \code{"sim} or \code{"real}.
+#' `"sim"` or `"real"`.
 #' @inheritParams coi_test
 #'
 #' @return The COI value.
 #'
-#' @seealso \code{\link[stats]{optim}}
+#' @seealso [stats::optim()]
 #'
 #' @export
 
-optimizer <- function(data,
-                      data_type,
-                      max_coi = 25,
-                      seq_error = 0.01,
-                      cut = seq(0, 0.5, 0.01),
-                      dist_method = "squared",
-                      weighted = TRUE){
+optimize <- function(data,
+                     data_type,
+                     max_coi = 25,
+                     seq_error = 0.01,
+                     cut = seq(0, 0.5, 0.01),
+                     dist_method = "squared",
+                     weighted = TRUE) {
 
   # Check inputs
   assert_in(data_type, c("sim", "real"))
@@ -120,5 +120,5 @@ optimizer <- function(data,
   }
 
   # Return COI
-  return(fit$par)
+  coi <- fit$par
 }

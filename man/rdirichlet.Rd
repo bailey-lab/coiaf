@@ -11,6 +11,6 @@ rdirichlet(shape = rep(1, 3))
 }
 \description{
 Draw from Dirichlet distribution given a vector of shape
-  parameters.
+parameters.
 }
 \keyword{internal}

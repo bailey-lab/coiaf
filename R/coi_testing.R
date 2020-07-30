@@ -1,7 +1,7 @@
 #------------------------------------------------
-#' @title Run a single COI test
+#' Test a COI
 #'
-#' @description Runs a single full COI test.
+#' Runs a single full COI test.
 #'
 #' @param max_COI A number indicating the maximum COI to compare the
 #' simulated data to.
@@ -55,38 +55,33 @@ run_coi_test <- function(COI = 3,
   # Compute COI
   calc_coi <- compute_coi(processed_sim, 1:max_COI, cut,
                           method, dist_method, weighted)
-
-  return(calc_coi)
 }
 
 
 #------------------------------------------------
-#' @title Test COIs
+#' Test COIs
 #'
-#' @description Runs several iterations of a full COI test with varying
-#' parameters
+#' Runs several iterations of a full COI test with varying parameters.
 #'
 #' @param repetitions The number of times each sample will be run.
 #' @inheritParams run_coi_test
 #'
 #' @return A list of the following dataframes:
-#' \describe{
-#'   \item{\code{predicted_coi}}{A dataframe of the predicted COIs. COIs are
-#'   predicted using \link{compute_coi}. Each column represents a separate set
+#' * `predicted_coi`: A dataframe of the predicted COIs. COIs are
+#'   predicted using [compute_coi()]. Each column represents a separate set
 #'   of parameters. Each row represents a predicted COI. Predictions are done
-#'   many times, depending on the value of \code{repetitions}.}
-#'   \item{\code{probability}}{A list of matrices containing the probability
+#'   many times, depending on the value of `repetitions`.
+#' * `probability`:A list of matrices containing the probability
 #'   that our model predicted each COI value. Each row contains the probability
 #'   for a different run. The first row contains the average probabilities over
-#'   all the runs.}
-#'   \item{\code{param_grid}}{The parameter grid. The parameter grid is all
+#'   all the runs.
+#' * `param_grid`: The parameter grid. The parameter grid is all
 #'   possible combinations of the parameters inputted. Each row represents a
-#'   unique combination.}
-#'   \item{\code{boot_error}}{A dataframe containing information about the error
+#'   unique combination.
+#' * `boot_error`: A dataframe containing information about the error
 #'   of the algorithm. The first column indicates the COI that was fed into the
 #'   simulation. The other columns indicate the mean absolute error (mae),
-#'   the lower and upper bounds of the 95\% confidence interval and the bias.}
-#' }
+#'   the lower and upper bounds of the 95\% confidence interval and the bias.
 #'
 #' @export
 
@@ -262,6 +257,5 @@ coi_test <- function(repetitions = 10,
               probability   = extracted_probs,
               param_grid    = param_grid,
               boot_error    = boot_error)
-  return(ret)
 }
 

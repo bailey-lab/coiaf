@@ -38,8 +38,9 @@ proportions.}
 
 \item{overdispersion}{The extent to which counts are over-dispersed relative
 to the binomial distribution. Counts are Beta-binomially distributed, with
-the beta distribution having shape parameters \code{p/overdispersion} and
-\code{(1-p)/overdispersion}.}
+the beta distribution having shape parameters
+\mjseqn{\frac{p}{\text{overdispersion}}} and
+\mjseqn{\frac{1-p}{\text{overdispersion}}}.}
 
 \item{epsilon}{The probability of a single read being miscalled as the other
 allele. Applies in both directions.}
@@ -48,37 +49,36 @@ allele. Applies in both directions.}
 
 \item{cut}{A vector indicating how often the data is summarized.}
 
-\item{method}{The method to be employed. One of
-\code{"end", "ideal", "overall"}.}
+\item{method}{The method to be employed. One of \code{"end"}, \code{"ideal"},
+\code{"overall"}.}
 
 \item{dist_method}{The distance method used to determine the distance between
 the theoretical and simulated curves for the \code{"overall"} method. One of
-\code{"abs_sum", "sum_abs", "squared"}.}
+\code{"abs_sum"}, \code{"sum_abs"}, \code{"squared"}.}
 
 \item{weighted}{An indicator indicating whether to compute the weighted
 distance.}
 }
 \value{
 A list of the following dataframes:
-\describe{
-  \item{\code{predicted_coi}}{A dataframe of the predicted COIs. COIs are
-  predicted using \link{compute_coi}. Each column represents a separate set
-  of parameters. Each row represents a predicted COI. Predictions are done
-  many times, depending on the value of \code{repetitions}.}
-  \item{\code{probability}}{A list of matrices containing the probability
-  that our model predicted each COI value. Each row contains the probability
-  for a different run. The first row contains the average probabilities over
-  all the runs.}
-  \item{\code{param_grid}}{The parameter grid. The parameter grid is all
-  possible combinations of the parameters inputted. Each row represents a
-  unique combination.}
-  \item{\code{boot_error}}{A dataframe containing information about the error
-  of the algorithm. The first column indicates the COI that was fed into the
-  simulation. The other columns indicate the mean absolute error (mae),
-  the lower and upper bounds of the 95\% confidence interval and the bias.}
+\itemize{
+\item \code{predicted_coi}: A dataframe of the predicted COIs. COIs are
+predicted using \code{\link[=compute_coi]{compute_coi()}}. Each column represents a separate set
+of parameters. Each row represents a predicted COI. Predictions are done
+many times, depending on the value of \code{repetitions}.
+\item \code{probability}:A list of matrices containing the probability
+that our model predicted each COI value. Each row contains the probability
+for a different run. The first row contains the average probabilities over
+all the runs.
+\item \code{param_grid}: The parameter grid. The parameter grid is all
+possible combinations of the parameters inputted. Each row represents a
+unique combination.
+\item \code{boot_error}: A dataframe containing information about the error
+of the algorithm. The first column indicates the COI that was fed into the
+simulation. The other columns indicate the mean absolute error (mae),
+the lower and upper bounds of the 95\\% confidence interval and the bias.
 }
 }
 \description{
-Runs several iterations of a full COI test with varying
-parameters
+Runs several iterations of a full COI test with varying parameters.
 }
