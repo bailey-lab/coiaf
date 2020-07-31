@@ -9,9 +9,10 @@ vignette: >
  %\VignetteEncoding{UTF-8}
 ---
 
-# Simulation
+## Simulation
 
 In this package, data are simulated using a simple statistical model:
+
 1. Strain proportions are drawn from a symmetric Dirichlet distribution with 
 shape parameter alpha.
 
@@ -22,8 +23,7 @@ PLAF.
 1. The "true" within-sample allele frequency at every locus is obtained by 
 multiplying haplotypes by their strain proportions, and summing over haplotypes.
 Errors are introduced through the equation,
-
-$$wsaf_{error} = wsaf*(1-e) + (1-wsaf)*e$$
+$$wsaf_{error} = wsaf(1-e) + (1-wsaf)e$$ 
 where $wsaf$ is the WSAF without error and $e$ is the error parameter epsilon.
 
 1. Final read counts are drawn from a beta-binomial distribution with 
@@ -32,7 +32,7 @@ the skew of the distribution is given by the overdispersion parameter. If the
 overdispersion is equal to zero, then the distribution is binomial, rather 
 than beta-binomial.
 
-# Example
+## Example
 
 ```{r setup, include = FALSE}
 # Here, we set default options for our markdown file

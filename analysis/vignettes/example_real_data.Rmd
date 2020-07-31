@@ -13,8 +13,8 @@ vignette: >
 # Here, we set default options for our markdown file
 knitr::opts_chunk$set(
   comment = "#>",
-  tidy = TRUE,
-  tidy.opts = list(width.cutoff = 80)
+  fig.width = 5, 
+  fig.height = 5
 )
 # Change the way tibble prints so only prints 5 extra columns
 options(tibble.max_extra_cols = 5)
@@ -23,24 +23,55 @@ library(ggplot2)
 library(coiaf)
 ```
 
-# Data Structure
+## Data Structure
 
-# Run The Algorithm
+## Run The Algorithm
 
 Running the algorithm is quite straightforward.
+
+```{r old, eval = F, include = F}
+# Old inside loop
+# Run predictions
+sample <- example_real_data[[x]]
+predicted <- run_real(sample)
+
+# Extract COI from the predictions
+extract_coi <- tibble::enframe(unlist(lapply(predicted, function(x){ x$coi })),
+                               value = "prediction") %>%
+  dplyr::mutate(file = names(example_real_data)[x])
+
+return(extract_coi)
+
+# Old graphing
+ggplot(coi_pred_tib, aes(factor(prediction), fill = factor(prediction))) + 
+  geom_bar(stat = "count") + 
+  facet_grid(. ~file) + 
+  ggsci::scale_fill_locuszoom() +
+  geom_text(aes(label = ..count..), stat = 'count', vjust = -0.3, color = "black", size = 3.5) +
+  theme_classic() +
+  theme(plot.title   = element_text(hjust = 0.5, size = 10),
+        axis.title   = element_text(size = 8)) +
+  guides(fill = FALSE) +
+  labs(x = "Predicted COI", y = "Count", title = "Bar Plot of Predicted COI")
+```
+
 
 ```{r predict coi}
 coi_pred <- lapply(seq_len(length(example_real_data)), function(x) {
   # Run predictions
   sample <- example_real_data[[x]]
-  predicted <- run_real(sample)
-
-  # Extract COI from the predictions
-  extract_coi <- tibble::enframe(unlist(lapply(predicted, function(x){ x$coi })),
-                                 value = "prediction") %>%
-    dplyr::mutate(file = names(example_real_data)[x])
-
-  return(extract_coi)
+  plaf   <- colMeans(sample, na.rm = T)
+  
+  # For each sample run the optimize_coi function
+  coi_region <- lapply(seq_len(nrow(sample)), function(i) {
+    wsaf  <- sample[i,]
+    input <- tibble::tibble(wsaf = wsaf, plaf = plaf) %>% tidyr::drop_na()
+    coi_region <- optimize_coi(input, "real") 
+  }) %>% unlist()
+  
+  coi_pred <- tibble::tibble(name = rownames(sample),
+                             prediction = coi_region,
+                             file = names(example_real_data)[x])
 })
 
 # Name the predictions so that it is easier to understand
@@ -78,15 +109,14 @@ coi_pred_tib <- tibble::as_tibble(do.call(rbind, coi_pred)) %>%
                                      "Region 1 VCF 1"))) 
 
 # Plot
-ggplot(coi_pred_tib, aes(factor(prediction), fill = factor(prediction))) + 
-  geom_bar(stat = "count") + 
-  facet_grid(. ~file) + 
+ggplot(coi_pred_tib, aes(prediction, fill = file)) + 
+  geom_density(alpha = 0.5) + 
+  facet_grid(. ~file) +
   ggsci::scale_fill_locuszoom() +
-  geom_text(aes(label = ..count..), stat = 'count', vjust = -0.3, color = "black", size = 3.5) +
   theme_classic() +
   theme(plot.title   = element_text(hjust = 0.5, size = 10),
         axis.title   = element_text(size = 8)) +
   guides(fill = FALSE) +
-  labs(x = "Predicted COI", y = "Count", title = "Bar Plot of Predicted COI")
+  labs(x = "Predicted COI", y = "Density", title = "Bar Plot of Predicted COI", fill = NULL)
 ```
 

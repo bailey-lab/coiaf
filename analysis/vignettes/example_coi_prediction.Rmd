@@ -12,8 +12,8 @@ vignette: >
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   comment = "#>",
-  tidy = TRUE,
-  tidy.opts = list(width.cutoff = 80)
+  fig.width = 7, 
+  fig.height = 7
 )
 
 library(coiaf)
@@ -34,7 +34,7 @@ p[p > 0.5] <- 1 - p[p > 0.5]
 ```
 
 
-# Method 1
+## Method 1
 
 The first approach in the manuscript document for estimating COI is shown below. 
 This works by using the mean number of variant sites, binned in groups of 
@@ -44,9 +44,9 @@ increasing PLAF to infer COI.
 # Loop over range of COIs 
 end_coi = list()
 opt_coi = list()
-par(mar=c(1,1,1,1))
-par(mfrow = c(3,2))
-for (k in 2:7){
+par(mar = c(4, 4, 4, 4))
+par(mfrow = c(3, 2))
+for (k in 2:7) {
 
   # Simulate data and subset to heterozygous sites only
   set.seed(1)
@@ -90,18 +90,18 @@ differences between each COI at PLAF = 0.5 become geometrically smaller. Larger
 gaps can be found at different COI, with smaller PLAF:
 
 ```{r ideal PLAF}
-par(mar=c(1,1,1,1))
-par(mfrow = c(3,3))
+par(mar = c(4, 4, 4, 4))
+par(mfrow = c(3, 3))
 p_vec <- seq(0, 0.5, l=101)
 y <- list()
 for (k in 1:10) {
   y[[k]] <- theoretical_coi(k, p_vec)[[1]]
 
-  if(k>1) {
+  if(k > 1) {
    new_y <- y[[k]]-y[[k-1]]
    plot(p_vec, new_y,
-        ylab = "Difference between Proportion Variant for k and k-1",
-        xlab = "Population MAF",
+        ylab = glue::glue("Difference between COI {k-1} and {k}"),
+        xlab = "PLAF",
         main = paste("COI = ", k))
    abline(v=p_vec[which.max(new_y)], lty = 2)
    text(x=p_vec[which.max(new_y)] - 0.02, y = 0.0, 
@@ -110,14 +110,14 @@ for (k in 1:10) {
 }
 ```
 
-# Method 2
+## Method 2
 
 In method 2, we plot WSAF against PLAF for only the sites that are 
 heterogeneous, i.e. not all REF or ALT calls. 
 
 ```{r method 2}
 # loop over range of COIs
-par(mar=c(1,1,1,1))
+par(mar = c(4, 4, 4, 4))
 par(mfrow = c(3,2))
 for (k in 2:7) {
 
