@@ -2,7 +2,7 @@
 % Please edit documentation in R/theoretical_coi.R
 \name{theoretical_coi}
 \alias{theoretical_coi}
-\title{Generate Theoretical COI Curves}
+\title{Theoretical COI}
 \usage{
 theoretical_coi(coi_range, plaf = seq(0, 0.5, l = 101), method = "1")
 }
@@ -18,7 +18,12 @@ The method is either "1" or "2". The default value is "1".}
 The theoretical COI curves for the specified COIs and PLAF.
 }
 \description{
-Generate theoretical COI curves. At each locus defined as:
-\eqn{1-p^{coi}-q^{coi}}. This expression is derived in the corresponding
-manuscript.
+Generate theoretical COI curves.
+}
+\details{
+\loadmathjax
+The theoretical curve can be visualized as the WSAF of an individual at
+various PLAFs. At each locus, the theoretical COI is defined as:
+\mjsdeqn{1-p^{coi}-q^{coi}} where \mjseqn{p} is the PLAF and \mjseqn{q} is
+1 - PLAF.
 }

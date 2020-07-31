@@ -1,9 +1,13 @@
 #------------------------------------------------
-#' @title Generate Theoretical COI Curves
+#' Theoretical COI
 #'
-#' @description Generate theoretical COI curves. At each locus defined as:
-#' \eqn{1-p^{coi}-q^{coi}}. This expression is derived in the corresponding
-#' manuscript.
+#' Generate theoretical COI curves.
+#'
+#' \loadmathjax
+#' The theoretical curve can be visualized as the WSAF of an individual at
+#' various PLAFs. At each locus, the theoretical COI is defined as:
+#' \mjsdeqn{1-p^{coi}-q^{coi}} where \mjseqn{p} is the PLAF and \mjseqn{q} is
+#' 1 - PLAF.
 #'
 #' @param coi_range The COIs for which the curve will be calculated.
 #' @param plaf The PLAF over which the curve will be calculated.
@@ -15,7 +19,7 @@
 #' @export
 
 theoretical_coi <- function(coi_range, plaf = seq(0, 0.5, l = 101),
-                            method = "1"){
+                            method = "1") {
   # Check inputs
   assert_pos(coi_range, zero_allowed = FALSE)
   assert_vector(plaf)
@@ -25,8 +29,8 @@ theoretical_coi <- function(coi_range, plaf = seq(0, 0.5, l = 101),
   assert_in(method, c("1", "2"))
 
   # Compute curve for the COIs
-  for (i in coi_range){
-    if (i == coi_range[1]){
+  for (i in coi_range) {
+    if (i == coi_range[1]) {
       curves <- data.frame(first = single_theoretical_coi(i, plaf, method))
       colnames(curves) <- paste0("coi_", i)
     } else {
@@ -40,11 +44,14 @@ theoretical_coi <- function(coi_range, plaf = seq(0, 0.5, l = 101),
 }
 
 #------------------------------------------------
-#' @title Generate Theoretical COI Curve
+#' Single Theoretical COI
 #'
-#' @description Generate theoretical COI curve. At each locus defined as:
-#' \eqn{1-p^coi-q^coi}. This expression is derived in the corresponding
-#' manuscript.
+#' Generate the theoretical COI curve for a particular COI value.
+#'
+#' \loadmathjax
+#' The theoretical curve can be visualized as the WSAF of an individual at
+#' various PLAFs. At each locus, the theoretical COI is defined as:
+#' \mjsdeqn{1-p^{coi}-q^{coi}}
 #'
 #' @param coi The COI for which the curve will be calculated.
 #' @inheritParams theoretical_coi
@@ -54,7 +61,7 @@ theoretical_coi <- function(coi_range, plaf = seq(0, 0.5, l = 101),
 #' @keywords internal
 
 single_theoretical_coi <- function(coi, plaf = seq(0, 0.5, l = 101),
-                                   method = "1"){
+                                   method = "1") {
   # Check inputs
   assert_single_pos(coi)
   assert_vector(plaf)
@@ -64,10 +71,9 @@ single_theoretical_coi <- function(coi, plaf = seq(0, 0.5, l = 101),
   assert_in(method, c("1", "2"))
 
   # Determine the curve
-  if (method == "1"){
+  if (method == "1") {
     curve <- 1 - plaf^coi - (1 - plaf)^coi
-  } else if (method == "2"){
+  } else if (method == "2") {
     curve <- (plaf - plaf^coi)/(1 - plaf^coi - (1 - plaf)^coi)
   }
-  return(curve)
 }
