@@ -77,3 +77,8 @@ expectation \mjseqn{w_{error}}. The raw number of draws is given by the
 zero, then the distribution is binomial, rather than beta-binomial.
 }
 }
+\seealso{
+Other simulated data functions: 
+\code{\link{process_sim}()}
+}
+\concept{simulated data functions}

@@ -49,7 +49,7 @@
 #'   + `coverage`: The coverage at each locus.
 #'   + `counts`: The count at each locus.
 #'   + `WSAF`: The within-sample allele frequency.
-#'
+#' @family simulated data functions
 #' @export
 
 sim_biallelic <- function(COI = 3,
@@ -120,20 +120,22 @@ sim_biallelic <- function(COI = 3,
 #------------------------------------------------
 #' Process simulated data
 #'
-#' Generate the simulated COI curve. In order to do this, we
-#' utilize the output of [sim_biallelic()], which created simulated
-#' data. We keep the PLAF, and compute whether a SNP is a variant or not, based
-#' on the simulated WSAF at that SNP -- accounting for potential sequencing
-#' error. To check whether our simulated WSAF correctly indicated a variant
-#' site or not, we determine whether a site should be variant or not using
-#' the phased haplotype of the parasites.
+#' Generate the simulated COI curve.
+#'
+#' Utilize the output of [sim_biallelic()], which creates simulated
+#' data. The PLAF is kept, and the function computes whether a SNP is a
+#' variant site or not, based on the simulated WSAF at that SNP. This process
+#' additionally accounts for potential sequencing error. To check whether the
+#' simulated WSAF correctly indicated a variant site or not, the phased
+#' haplotype of the parasites is computed.
 #'
 #' @param sim Output of [sim_biallelic()].
 #' @param seq_error The level of sequencing error that is assumed.
 #' @param cut How often the data is summarized.
 #'
 #' @return Simulated COI curve.
-#'
+#' @family simulated data functions
+#' @seealso [process_real()] to process real data.
 #' @export
 
 process_sim <- function(sim, seq_error = 0.01, cut = seq(0, 0.5, 0.01)) {

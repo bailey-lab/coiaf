@@ -17,11 +17,20 @@ process_sim(sim, seq_error = 0.01, cut = seq(0, 0.5, 0.01))
 Simulated COI curve.
 }
 \description{
-Generate the simulated COI curve. In order to do this, we
-utilize the output of \code{\link[=sim_biallelic]{sim_biallelic()}}, which created simulated
-data. We keep the PLAF, and compute whether a SNP is a variant or not, based
-on the simulated WSAF at that SNP -- accounting for potential sequencing
-error. To check whether our simulated WSAF correctly indicated a variant
-site or not, we determine whether a site should be variant or not using
-the phased haplotype of the parasites.
+Generate the simulated COI curve.
 }
+\details{
+Utilize the output of \code{\link[=sim_biallelic]{sim_biallelic()}}, which creates simulated
+data. The PLAF is kept, and the function computes whether a SNP is a
+variant site or not, based on the simulated WSAF at that SNP. This process
+additionally accounts for potential sequencing error. To check whether the
+simulated WSAF correctly indicated a variant site or not, the phased
+haplotype of the parasites is computed.
+}
+\seealso{
+\code{\link[=process_real]{process_real()}} to process real data.
+
+Other simulated data functions: 
+\code{\link{sim_biallelic}()}
+}
+\concept{simulated data functions}
