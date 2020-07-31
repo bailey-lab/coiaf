@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Single sensitivity plot — sensitivity_plot_element • coiaf</title>
+<title>Optimize the COI — optimize_coi • coiaf</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,9 +46,8 @@
 
 
 
-<meta property="og:title" content="Single sensitivity plot — sensitivity_plot_element" />
-<meta property="og:description" content="Creates a single plot of the sensitivity analysis. Used as a helper function
-to sensitivity_plot()." />
+<meta property="og:title" content="Optimize the COI — optimize_coi" />
+<meta property="og:description" content="A function to compute the COI of inputted data." />
 <meta property="og:image" content="https://ojwatson.github.io/coiaf/logo.png" />
 
 
@@ -117,36 +116,78 @@ to sensitivity_plot()." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Single sensitivity plot</h1>
-    <small class="dont-index">Source: <a href='https://github.com/ojwatson/coiaf/blob/master/R/plot_results.R'><code>R/plot_results.R</code></a></small>
-    <div class="hidden name"><code>sensitivity_plot_element.Rd</code></div>
+    <h1>Optimize the COI</h1>
+    <small class="dont-index">Source: <a href='https://github.com/ojwatson/coiaf/blob/master/R/optimize.R'><code>R/optimize.R</code></a></small>
+    <div class="hidden name"><code>optimize_coi.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Creates a single plot of the sensitivity analysis. Used as a helper function
-to <code><a href='sensitivity_plot.html'>sensitivity_plot()</a></code>.</p>
+    <p>A function to compute the COI of inputted data.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>sensitivity_plot_element</span>(<span class='no'>data</span>, <span class='no'>loop_num</span>, <span class='no'>sub_title</span>)</pre>
+    <pre class="usage"><span class='fu'>optimize_coi</span>(
+  <span class='no'>data</span>,
+  <span class='no'>data_type</span>,
+  <span class='kw'>max_COI</span> <span class='kw'>=</span> <span class='fl'>25</span>,
+  <span class='kw'>seq_error</span> <span class='kw'>=</span> <span class='fl'>0.01</span>,
+  <span class='kw'>cut</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>0</span>, <span class='fl'>0.5</span>, <span class='fl'>0.01</span>),
+  <span class='kw'>dist_method</span> <span class='kw'>=</span> <span class='st'>"squared"</span>,
+  <span class='kw'>weighted</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>data</th>
-      <td><p>The data to be plotted.</p></td>
+      <td><p>The data for which the COI will be computed.</p></td>
     </tr>
     <tr>
-      <th>loop_num</th>
-      <td><p>The loop number. Represents how many total panels will
-be plotted.</p></td>
+      <th>data_type</th>
+      <td><p>The type of the data to be analyzed. One of
+<code>"sim"</code> or <code>"real"</code>.</p></td>
     </tr>
     <tr>
-      <th>sub_title</th>
-      <td><p>A list of titles for each individual subplot.</p></td>
+      <th>max_COI</th>
+      <td><p>A number indicating the maximum COI to compare the
+simulated data to.</p></td>
+    </tr>
+    <tr>
+      <th>seq_error</th>
+      <td><p>The level of sequencing error that is assumed.</p></td>
+    </tr>
+    <tr>
+      <th>cut</th>
+      <td><p>A vector indicating how often the data is summarized.</p></td>
+    </tr>
+    <tr>
+      <th>dist_method</th>
+      <td><p>The distance method used to determine the distance between
+the theoretical and simulated curves for the <code>"overall"</code> method. One of
+<code>"abs_sum"</code>, <code>"sum_abs"</code>, <code>"squared"</code>.</p></td>
+    </tr>
+    <tr>
+      <th>weighted</th>
+      <td><p>An indicator indicating whether to compute the weighted
+distance.</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>The predicted COI value.</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>The function utilizes <code><a href='https://rdrr.io/r/stats/optim.html'>stats::optim()</a></code> In particular, the function utilizes
+a quasi-Newton method to compute gradients and build a picture of the
+surface to be optimized. The function uses a likelihood function as defined
+by <code><a href='likelihood.html'>likelihood()</a></code>.</p>
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p><code><a href='https://rdrr.io/r/stats/optim.html'>stats::optim()</a></code> for the complete documentation on the optimization
+function.</p>
+<p>Other optimization functions: 
+<code><a href='likelihood.html'>likelihood</a>()</code></p></div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

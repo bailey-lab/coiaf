@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Single sensitivity plot — sensitivity_plot_element • coiaf</title>
+<title>Single sensitivity analysis — single_sensitivity • coiaf</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,9 +46,8 @@
 
 
 
-<meta property="og:title" content="Single sensitivity plot — sensitivity_plot_element" />
-<meta property="og:description" content="Creates a single plot of the sensitivity analysis. Used as a helper function
-to sensitivity_plot()." />
+<meta property="og:title" content="Single sensitivity analysis — single_sensitivity" />
+<meta property="og:description" content="Runs a single full COI sensitivity analysis." />
 <meta property="og:image" content="https://ojwatson.github.io/coiaf/logo.png" />
 
 
@@ -117,36 +116,98 @@ to sensitivity_plot()." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Single sensitivity plot</h1>
-    <small class="dont-index">Source: <a href='https://github.com/ojwatson/coiaf/blob/master/R/plot_results.R'><code>R/plot_results.R</code></a></small>
-    <div class="hidden name"><code>sensitivity_plot_element.Rd</code></div>
+    <h1>Single sensitivity analysis</h1>
+    <small class="dont-index">Source: <a href='https://github.com/ojwatson/coiaf/blob/master/R/sensitivity.R'><code>R/sensitivity.R</code></a></small>
+    <div class="hidden name"><code>single_sensitivity.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Creates a single plot of the sensitivity analysis. Used as a helper function
-to <code><a href='sensitivity_plot.html'>sensitivity_plot()</a></code>.</p>
+    <p>Runs a single full COI sensitivity analysis.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>sensitivity_plot_element</span>(<span class='no'>data</span>, <span class='no'>loop_num</span>, <span class='no'>sub_title</span>)</pre>
+    <pre class="usage"><span class='fu'>single_sensitivity</span>(
+  <span class='kw'>COI</span> <span class='kw'>=</span> <span class='fl'>3</span>,
+  <span class='kw'>max_COI</span> <span class='kw'>=</span> <span class='fl'>25</span>,
+  <span class='kw'>PLAF</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span>(<span class='fl'>1000</span>, <span class='fl'>0</span>, <span class='fl'>0.5</span>),
+  <span class='kw'>coverage</span> <span class='kw'>=</span> <span class='fl'>200</span>,
+  <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>overdispersion</span> <span class='kw'>=</span> <span class='fl'>0</span>,
+  <span class='kw'>epsilon</span> <span class='kw'>=</span> <span class='fl'>0</span>,
+  <span class='kw'>seq_error</span> <span class='kw'>=</span> <span class='fl'>0.01</span>,
+  <span class='kw'>cut</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>0</span>, <span class='fl'>0.5</span>, <span class='fl'>0.01</span>),
+  <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"overall"</span>,
+  <span class='kw'>dist_method</span> <span class='kw'>=</span> <span class='st'>"squared"</span>,
+  <span class='kw'>weighted</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>data</th>
-      <td><p>The data to be plotted.</p></td>
+      <th>COI</th>
+      <td><p>Complexity of infection.</p></td>
     </tr>
     <tr>
-      <th>loop_num</th>
-      <td><p>The loop number. Represents how many total panels will
-be plotted.</p></td>
+      <th>max_COI</th>
+      <td><p>A number indicating the maximum COI to compare the
+simulated data to.</p></td>
     </tr>
     <tr>
-      <th>sub_title</th>
-      <td><p>A list of titles for each individual subplot.</p></td>
+      <th>PLAF</th>
+      <td><p>Vector of population-level allele frequencies at each locus.</p></td>
+    </tr>
+    <tr>
+      <th>coverage</th>
+      <td><p>Coverage at each locus. If a single value then the same
+coverage is applied over all loci.</p></td>
+    </tr>
+    <tr>
+      <th>alpha</th>
+      <td><p>Shape parameter of the symmetric Dirichlet prior on strain
+proportions.</p></td>
+    </tr>
+    <tr>
+      <th>overdispersion</th>
+      <td><p>The extent to which counts are over-dispersed relative
+to the binomial distribution. Counts are Beta-binomially distributed, with
+the beta distribution having shape parameters
+\(\frac{p}{overdispersion}\) and
+\(\frac{1-p}{overdispersion}\).</p></td>
+    </tr>
+    <tr>
+      <th>epsilon</th>
+      <td><p>The probability of a single read being miscalled as the other
+allele. Applies in both directions.</p></td>
+    </tr>
+    <tr>
+      <th>seq_error</th>
+      <td><p>The level of sequencing error that is assumed.</p></td>
+    </tr>
+    <tr>
+      <th>cut</th>
+      <td><p>A vector indicating how often the data is summarized.</p></td>
+    </tr>
+    <tr>
+      <th>method</th>
+      <td><p>The method to be employed. One of <code>"end"</code>, <code>"ideal"</code>,
+<code>"overall"</code>.</p></td>
+    </tr>
+    <tr>
+      <th>dist_method</th>
+      <td><p>The distance method used to determine the distance between
+the theoretical and simulated curves for the <code>"overall"</code> method. One of
+<code>"abs_sum"</code>, <code>"sum_abs"</code>, <code>"squared"</code>.</p></td>
+    </tr>
+    <tr>
+      <th>weighted</th>
+      <td><p>An indicator indicating whether to compute the weighted
+distance.</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>Predicted COI value.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

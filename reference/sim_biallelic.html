@@ -168,8 +168,8 @@ proportions.</p></td>
       <td><p>The extent to which counts are over-dispersed relative
 to the binomial distribution. Counts are Beta-binomially distributed, with
 the beta distribution having shape parameters
-\(\frac{p}{\text{overdispersion}}\) and
-\(\frac{1-p}{\text{overdispersion}}\).</p></td>
+\(\frac{p}{overdispersion}\) and
+\(\frac{1-p}{overdispersion}\).</p></td>
     </tr>
     <tr>
       <th>epsilon</th>
@@ -205,8 +205,8 @@ distribution with probability given by the <code>PLAF</code>.</p></li>
 <li><p>The "true" within-sample allele frequency at every locus is
 obtained by multiplying haplotypes by their strain proportions, and
 summing over haplotypes. Errors are introduced through the equation
-\[\text{wsaf}_{\text{error}} = \text{wsaf}(1-e) + (1-\text{wsaf})e\]
-where \(\text{wsaf}\) is the WSAF without error and \(e\) is
+\[wsaf_{error} = wsaf(1-e) + (1-wsaf)e\]
+where \(wsaf\) is the WSAF without error and \(e\) is
 the error parameter <code>epsilon</code>.</p></li>
 <li><p>Final read counts are drawn from a beta-binomial distribution with
 expectation \(w_{error}\). The raw number of draws is given by the
@@ -215,6 +215,10 @@ expectation \(w_{error}\). The raw number of draws is given by the
 zero, then the distribution is binomial, rather than beta-binomial.</p></li>
 </ol>
 
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p>Other simulated data functions: 
+<code><a href='process_sim.html'>process_sim</a>()</code></p></div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

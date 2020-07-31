@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Generate Real COI Curve — process_real • coiaf</title>
+<title>Process real data — process_real • coiaf</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,7 +46,7 @@
 
 
 
-<meta property="og:title" content="Generate Real COI Curve — process_real" />
+<meta property="og:title" content="Process real data — process_real" />
 <meta property="og:description" content="Generate the COI curve for real data." />
 <meta property="og:image" content="https://ojwatson.github.io/coiaf/logo.png" />
 
@@ -116,7 +116,7 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Generate Real COI Curve</h1>
+    <h1>Process real data</h1>
     <small class="dont-index">Source: <a href='https://github.com/ojwatson/coiaf/blob/master/R/real_data.R'><code>R/real_data.R</code></a></small>
     <div class="hidden name"><code>process_real.Rd</code></div>
     </div>
@@ -132,15 +132,15 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>wsaf</th>
-      <td><p>WSAF.</p></td>
+      <td><p>The within-sample allele frequency.</p></td>
     </tr>
     <tr>
       <th>plaf</th>
-      <td><p>PLAF.</p></td>
+      <td><p>The population-level allele frequency.</p></td>
     </tr>
     <tr>
       <th>seq_error</th>
-      <td><p>The sequencing error.</p></td>
+      <td><p>The suspected sequencing error.</p></td>
     </tr>
     <tr>
       <th>cut</th>
@@ -151,6 +151,16 @@
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>Real COI curve.</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>The function computes whether a SNP is a variant site or not, based on the
+simulated WSAF at that SNP. This process additionally accounts for potential
+sequencing error.</p>
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p><code><a href='process_sim.html'>process_sim()</a></code> to process simulated data.</p>
+<p>Other real data functions: 
+<code><a href='run_real.html'>run_real</a>()</code></p></div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

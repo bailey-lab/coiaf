@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot a world map showing the COI — world_map • coiaf</title>
+<title>World map plot — world_map • coiaf</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,9 +46,9 @@
 
 
 
-<meta property="og:title" content="Plot a world map showing the COI — world_map" />
-<meta property="og:description" content="Plot a world map showing the COI in each region where reads
-were sampled from." />
+<meta property="og:title" content="World map plot — world_map" />
+<meta property="og:description" content="Plot a world map showing the COI in each region where reads were sampled
+from." />
 <meta property="og:image" content="https://ojwatson.github.io/coiaf/logo.png" />
 
 
@@ -117,14 +117,14 @@ were sampled from." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Plot a world map showing the COI</h1>
+    <h1>World map plot</h1>
     <small class="dont-index">Source: <a href='https://github.com/ojwatson/coiaf/blob/master/R/plot_results.R'><code>R/plot_results.R</code></a></small>
     <div class="hidden name"><code>world_map.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Plot a world map showing the COI in each region where reads
-were sampled from.</p>
+    <p>Plot a world map showing the COI in each region where reads were sampled
+from.</p>
     </div>
 
     <pre class="usage"><span class='fu'>world_map</span>(<span class='no'>data</span>, <span class='no'>variable</span>, <span class='kw'>label</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>breaks</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>))</pre>
@@ -154,6 +154,17 @@ were sampled from.</p>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>Creates a world map and overlays the COI in each region. The magnitude of
+the COI is indicated by both the color and the size of the bubble.</p>
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p>This <a href='https://www.r-graph-gallery.com/bubble-map.html'>website</a> for
+more information on creating bubble graphs in R.</p>
+<p>Other plotting functions: 
+<code><a href='error_plot.html'>error_plot</a>()</code>,
+<code><a href='sensitivity_plot.html'>sensitivity_plot</a>()</code></p></div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

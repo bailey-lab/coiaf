@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot sensitivity analysis — sensitivity_plot • coiaf</title>
+<title>Sensitivity plot — sensitivity_plot • coiaf</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,10 +46,8 @@
 
 
 
-<meta property="og:title" content="Plot sensitivity analysis — sensitivity_plot" />
-<meta property="og:description" content="The function is used to plot any sensitivity analysis that is
-run. It takes in the output of coi_test and creates a grid of
-plots." />
+<meta property="og:title" content="Sensitivity plot — sensitivity_plot" />
+<meta property="og:description" content="Creates a plot of the sensitivity analysis." />
 <meta property="og:image" content="https://ojwatson.github.io/coiaf/logo.png" />
 
 
@@ -118,15 +116,13 @@ plots." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Plot sensitivity analysis</h1>
+    <h1>Sensitivity plot</h1>
     <small class="dont-index">Source: <a href='https://github.com/ojwatson/coiaf/blob/master/R/plot_results.R'><code>R/plot_results.R</code></a></small>
     <div class="hidden name"><code>sensitivity_plot.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>The function is used to plot any sensitivity analysis that is
-run. It takes in the output of <code><a href='coi_test.html'>coi_test</a></code> and creates a grid of
-plots.</p>
+    <p>Creates a plot of the sensitivity analysis.</p>
     </div>
 
     <pre class="usage"><span class='fu'>sensitivity_plot</span>(<span class='no'>data</span>, <span class='no'>dims</span>, <span class='kw'>sub_title</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>title</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>caption</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
@@ -157,6 +153,25 @@ will be split into.</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p><script id="MathJax-script" async src="../../mathjaxr/doc/mathjax/es5/tex-chtml-full.js"></script>
+
+The function takes in the output of <code><a href='sensitivity.html'>sensitivity()</a></code> and creates a grid of
+plots. Each plot is created using <code><a href='https://ggplot2.tidyverse.org/reference/geom_count.html'>ggplot2::geom_count()</a></code>. The number of
+observations at each location is counted and then the count is mapped to
+point area on the plot.</p>
+<p>The x-axis is the true COI, and the y-axis is the estimated COI. The counts
+are plotted in blue, and red line is drawn with the equation \(y = x\).
+This line indicates where the blue circles should be if the algorithm was
+100% correct.</p>
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p><code><a href='https://ggplot2.tidyverse.org/reference/geom_count.html'>ggplot2::geom_count()</a></code> for more information on count plots and the
+<a href='https://ggplot2.tidyverse.org/index.html'>ggplot2 website</a>.</p>
+<p>Other plotting functions: 
+<code><a href='error_plot.html'>error_plot</a>()</code>,
+<code><a href='world_map.html'>world_map</a>()</code></p></div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Generate Theoretical COI Curves — theoretical_coi • coiaf</title>
+<title>Theoretical COI — theoretical_coi • coiaf</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,10 +46,8 @@
 
 
 
-<meta property="og:title" content="Generate Theoretical COI Curves — theoretical_coi" />
-<meta property="og:description" content="Generate theoretical COI curves. At each locus defined as:
-\(1-p^{coi}-q^{coi}\). This expression is derived in the corresponding
-manuscript." />
+<meta property="og:title" content="Theoretical COI — theoretical_coi" />
+<meta property="og:description" content="Generate theoretical COI curves." />
 <meta property="og:image" content="https://ojwatson.github.io/coiaf/logo.png" />
 
 
@@ -118,15 +116,13 @@ manuscript." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Generate Theoretical COI Curves</h1>
+    <h1>Theoretical COI</h1>
     <small class="dont-index">Source: <a href='https://github.com/ojwatson/coiaf/blob/master/R/theoretical_coi.R'><code>R/theoretical_coi.R</code></a></small>
     <div class="hidden name"><code>theoretical_coi.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Generate theoretical COI curves. At each locus defined as:
-\(1-p^{coi}-q^{coi}\). This expression is derived in the corresponding
-manuscript.</p>
+    <p>Generate theoretical COI curves.</p>
     </div>
 
     <pre class="usage"><span class='fu'>theoretical_coi</span>(<span class='no'>coi_range</span>, <span class='kw'>plaf</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>0</span>, <span class='fl'>0.5</span>, <span class='kw'>l</span> <span class='kw'>=</span> <span class='fl'>101</span>), <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"1"</span>)</pre>
@@ -152,6 +148,14 @@ The method is either "1" or "2". The default value is "1".</p></td>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>The theoretical COI curves for the specified COIs and PLAF.</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p><script id="MathJax-script" async src="../../mathjaxr/doc/mathjax/es5/tex-chtml-full.js"></script>
+
+The theoretical curve can be visualized as the WSAF of an individual at
+various PLAFs. At each locus, the theoretical COI is defined as:
+\[1-p^{coi}-q^{coi}\] where \(p\) is the PLAF and \(q\) is
+1 - PLAF.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

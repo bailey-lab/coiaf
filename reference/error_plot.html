@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot the mean absolute errors for a test — error_plot • coiaf</title>
+<title>Error plot — error_plot • coiaf</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,8 @@
 
 
 
-<meta property="og:title" content="Plot the mean absolute errors for a test — error_plot" />
-<meta property="og:description" content="Plots the mean absolute error and the confidence interval." />
+<meta property="og:title" content="Error plot — error_plot" />
+<meta property="og:description" content="Creates a plot showing the error of the sensitivity analysis." />
 <meta property="og:image" content="https://ojwatson.github.io/coiaf/logo.png" />
 
 
@@ -116,13 +116,13 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Plot the mean absolute errors for a test</h1>
+    <h1>Error plot</h1>
     <small class="dont-index">Source: <a href='https://github.com/ojwatson/coiaf/blob/master/R/plot_results.R'><code>R/plot_results.R</code></a></small>
     <div class="hidden name"><code>error_plot.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Plots the mean absolute error and the confidence interval.</p>
+    <p>Creates a plot showing the error of the sensitivity analysis.</p>
     </div>
 
     <pre class="usage"><span class='fu'>error_plot</span>(
@@ -160,8 +160,8 @@
     </tr>
     <tr>
       <th>legend.position</th>
-      <td><p>The position of the legend. One of <code>"none",
-"left", "right", "bottom", "top"</code>.</p></td>
+      <td><p>The position of the legend. One of <code>"none"</code>,
+<code>"left"</code>, <code>"right"</code>, <code>"bottom"</code>, <code>"top"</code>.</p></td>
     </tr>
     <tr>
       <th>second_fill</th>
@@ -170,6 +170,20 @@ what it will be.</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>The function takes in the output of <code><a href='sensitivity.html'>sensitivity()</a></code>. Plots are created using
+<code><a href='https://ggplot2.tidyverse.org/reference/geom_bar.html'>ggplot2::geom_col()</a></code>, which creates a simple bar plot. The mean absolute
+error is plotted in various colors, according to what parameter is being
+tested. In addition the 95% confidence interval is shown as black vertical
+lines.</p>
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p><code><a href='https://ggplot2.tidyverse.org/reference/geom_bar.html'>ggplot2::geom_col()</a></code> for more information on bar plots and the
+<a href='https://ggplot2.tidyverse.org/index.html'>ggplot2 website</a>.</p>
+<p>Other plotting functions: 
+<code><a href='sensitivity_plot.html'>sensitivity_plot</a>()</code>,
+<code><a href='world_map.html'>world_map</a>()</code></p></div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
