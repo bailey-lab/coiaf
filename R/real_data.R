@@ -61,7 +61,7 @@ process_real <- function(wsaf, plaf,
 #' @param data The dataset.
 #' @param max_coi The maximum COI that the model will look at. Looks at the
 #' theoretical COIs from `1` till `max_coi`.
-#' @inheritParams coi_test
+#' @inheritParams sensitivity
 #'
 #' @return A list of samples. Each sample contains:
 #' * The predicted COI.

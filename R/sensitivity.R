@@ -1,7 +1,7 @@
 #------------------------------------------------
-#' Test a COI
+#' Single sensitivity analysis
 #'
-#' Runs a single full COI test.
+#' Runs a single full COI sensitivity analysis.
 #'
 #' @param max_COI A number indicating the maximum COI to compare the
 #' simulated data to.
@@ -14,18 +14,18 @@
 #'
 #' @keywords internal
 
-run_coi_test <- function(COI = 3,
-                         max_COI = 25,
-                         PLAF = runif(1000, 0, 0.5),
-                         coverage = 200,
-                         alpha = 1,
-                         overdispersion = 0,
-                         epsilon = 0,
-                         seq_error = 0.01,
-                         cut = seq(0, 0.5, 0.01),
-                         method = "overall",
-                         dist_method ="squared",
-                         weighted = TRUE){
+single_sensitivity <- function(COI = 3,
+                               max_COI = 25,
+                               PLAF = runif(1000, 0, 0.5),
+                               coverage = 200,
+                               alpha = 1,
+                               overdispersion = 0,
+                               epsilon = 0,
+                               seq_error = 0.01,
+                               cut = seq(0, 0.5, 0.01),
+                               method = "overall",
+                               dist_method ="squared",
+                               weighted = TRUE) {
 
   # Check inputs
   assert_single_pos_int(COI)
@@ -59,14 +59,15 @@ run_coi_test <- function(COI = 3,
 
 
 #------------------------------------------------
-#' Test COIs
+#' Sensitivity analysis
 #'
-#' Runs several iterations of a full COI test with varying parameters.
+#' Runs several iterations of a full COI sensitivity analysis with varying
+#' parameters.
 #'
 #' @param repetitions The number of times each sample will be run.
-#' @inheritParams run_coi_test
+#' @inheritParams single_sensitivity
 #'
-#' @return A list of the following dataframes:
+#' @return A list of the following:
 #' * `predicted_coi`: A dataframe of the predicted COIs. COIs are
 #'   predicted using [compute_coi()]. Each column represents a separate set
 #'   of parameters. Each row represents a predicted COI. Predictions are done
@@ -81,23 +82,23 @@ run_coi_test <- function(COI = 3,
 #' * `boot_error`: A dataframe containing information about the error
 #'   of the algorithm. The first column indicates the COI that was fed into the
 #'   simulation. The other columns indicate the mean absolute error (mae),
-#'   the lower and upper bounds of the 95\% confidence interval and the bias.
+#'   the lower and upper bounds of the 95% confidence interval and the bias.
 #'
 #' @export
 
-coi_test <- function(repetitions = 10,
-                     COI = 3,
-                     max_COI = 25,
-                     PLAF = runif(1000, 0, 0.5),
-                     coverage = 200,
-                     alpha = 1,
-                     overdispersion = 0,
-                     epsilon = 0,
-                     seq_error = 0.01,
-                     cut = seq(0, 0.5, 0.01),
-                     method = "overall",
-                     dist_method = "squared",
-                     weighted = TRUE){
+sensitivity <- function(repetitions = 10,
+                        COI = 3,
+                        max_COI = 25,
+                        PLAF = runif(1000, 0, 0.5),
+                        coverage = 200,
+                        alpha = 1,
+                        overdispersion = 0,
+                        epsilon = 0,
+                        seq_error = 0.01,
+                        cut = seq(0, 0.5, 0.01),
+                        method = "overall",
+                        dist_method = "squared",
+                        weighted = TRUE) {
 
   # Check inputs
   assert_pos_int(repetitions)
@@ -134,7 +135,7 @@ coi_test <- function(repetitions = 10,
 
   # Function to determine if pbapply is installed. If it is installed, it will
   # display a progress bar
-  list_apply <- function(x, fun, ...){
+  list_apply <- function(x, fun, ...) {
     if (requireNamespace("pbapply", quietly = TRUE)) {
       pbapply::pblapply(x, fun, ...)
     } else {
@@ -148,18 +149,18 @@ coi_test <- function(repetitions = 10,
     # Run each sample repetitions times
     repeats <- lapply(seq_len(repetitions), function(y) {
       test_result <-
-        run_coi_test(param_grid$COI[x],
-                     param_grid$max_COI[x],
-                     PLAF,
-                     param_grid$coverage[x],
-                     param_grid$alpha[x],
-                     param_grid$overdispersion[x],
-                     param_grid$epsilon[x],
-                     param_grid$seq_error[x],
-                     cut,
-                     param_grid$method[x],
-                     param_grid$dist_method[x],
-                     param_grid$weighted[x])
+        single_sensitivity(param_grid$COI[x],
+                           param_grid$max_COI[x],
+                           PLAF,
+                           param_grid$coverage[x],
+                           param_grid$alpha[x],
+                           param_grid$overdispersion[x],
+                           param_grid$epsilon[x],
+                           param_grid$seq_error[x],
+                           cut,
+                           param_grid$method[x],
+                           param_grid$dist_method[x],
+                           param_grid$weighted[x])
       return (test_result)
     })
 
@@ -167,12 +168,12 @@ coi_test <- function(repetitions = 10,
   })
 
   # Extract the COIs from the result list
-  extracted_cois <- lapply(coi_pred, function(x){
+  extracted_cois <- lapply(coi_pred, function(x) {
     unlist(lapply(x, function(i) { i$coi }))
   })
 
   # Extract the probabilities from the result list
-  extracted_probs <- lapply(coi_pred, function(x){
+  extracted_probs <- lapply(coi_pred, function(x) {
     # Get the probabilities
     matrix <- do.call(rbind, lapply(x, function(i) { i$probability }))
 
@@ -196,9 +197,9 @@ coi_test <- function(repetitions = 10,
 
   # Name the predicted COIs
   names(extracted_cois) <- paste("coi",
-                           param_grid$COI,
-                           rep(seq(num_repeat_cois), each = num_cois),
-                           sep="_")
+                                 param_grid$COI,
+                                 rep(seq(num_repeat_cois), each = num_cois),
+                                 sep="_")
   names(extracted_probs) <- names(extracted_cois)
 
   ## Calculations
@@ -210,7 +211,7 @@ coi_test <- function(repetitions = 10,
     boot_data <- as.data.frame(extracted_cois[x])
 
     # Create function to find mean absolute error for bootstrapping
-    mae <- function(data, true_coi, indices){
+    mae <- function(data, true_coi, indices) {
       # Sample from the data
       sampled <- data[indices, ]
 

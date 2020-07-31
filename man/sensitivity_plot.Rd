@@ -23,7 +23,7 @@ Creates a plot of the sensitivity analysis.
 }
 \details{
 \loadmathjax
-The function takes in the output of \code{\link[=coi_test]{coi_test()}} and creates a grid of
+The function takes in the output of \code{\link[=sensitivity]{sensitivity()}} and creates a grid of
 plots. Each plot is created using \code{\link[ggplot2:geom_count]{ggplot2::geom_count()}}. The number of
 observations at each location is counted and then the count is mapped to
 point area on the plot.

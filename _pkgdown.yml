@@ -5,9 +5,9 @@ template:
     bootswatch: flatly
 
 reference:
-  - title: COI
+  - title: Complexity of Infection
     desc: >
-      Determine the COI of the sample
+      Determine the complexity of infection (COI) of a sample
     contents:
     - optimize_coi
     - likelihood
@@ -15,17 +15,18 @@ reference:
     - theoretical_coi
   - title: Real Data
     desc: >
-      Process real data and run algorithm
+      Process and run real data
     contents:
-    - run_real_data
+    - run_real
     - process_real
+    - example_real_data
   - title: Simulation
     desc: >
-      Simulate data and run algorithm on the simulated data
+      Simulate data and run algorithm
     contents:
     - sim_biallelic
     - process_sim
-    - coi_test
+    - sensitivity
   - title: Visualize
     contents:
     - matches("plot")

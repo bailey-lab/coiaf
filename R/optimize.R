@@ -67,7 +67,7 @@ likelihood <- function(coi, processed_data,
 #' @param data The data for which the COI will be computed.
 #' @param data_type The type of the data to be analyzed. One of
 #' `"sim"` or `"real"`.
-#' @inheritParams coi_test
+#' @inheritParams sensitivity
 #'
 #' @return The predicted COI value.
 #' @seealso [stats::optim()] for the complete documentation on the optimization

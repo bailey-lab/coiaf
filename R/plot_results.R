@@ -4,7 +4,7 @@
 #' Creates a plot of the sensitivity analysis.
 #'
 #' \loadmathjax
-#' The function takes in the output of [coi_test()] and creates a grid of
+#' The function takes in the output of [sensitivity()] and creates a grid of
 #' plots. Each plot is created using [ggplot2::geom_count()]. The number of
 #' observations at each location is counted and then the count is mapped to
 #' point area on the plot.
@@ -154,7 +154,7 @@ sensitivity_plot_element <- function(data, loop_num, sub_title) {
 #'
 #' Creates a plot showing the error of the sensitivity analysis.
 #'
-#' The function takes in the output of [coi_test()]. Plots are created using
+#' The function takes in the output of [sensitivity()]. Plots are created using
 #' [ggplot2::geom_col()], which creates a simple bar plot. The mean absolute
 #' error is plotted in various colors, according to what parameter is being
 #' tested. In addition the 95% confidence interval is shown as black vertical

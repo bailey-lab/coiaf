@@ -87,7 +87,7 @@ p[p > 0.5] <- 1 - p[p > 0.5]
 
 ## Overall Performance
 ```{r overall, eval = eval_tests}
-toverall <- coi_test(COI = 1:25, max_COI = 30, repetitions = 100, PLAF = p,
+toverall <- sensitivity(COI = 1:25, max_COI = 30, repetitions = 100, PLAF = p,
                  coverage = 200, seq_error = 0)
 
 toverall_image <- sensitivity_plot(data = toverall, plot_dims = c(1, 1), title = "Overall")
@@ -109,7 +109,7 @@ We first want to understand for what range our model can accurately predict
 the COI.
 
 ```{r coi, eval = eval_tests}
-tcoi <- coi_test(COI = 2:40, max_COI = 40, repetitions = 100, PLAF = p)
+tcoi <- sensitivity(COI = 2:40, max_COI = 40, repetitions = 100, PLAF = p)
 
 tcoi_image <- sensitivity_plot(data = tcoi, dims = c(1, 1), title = "COI")
 tcoi_image 
@@ -138,7 +138,7 @@ COIs of 2 till 20.
 
 ## Method
 ```{r method, eval = eval_tests}
-tmethod <- coi_test(COI = 2:20, PLAF = p, method = c("end", "ideal", "overall"),
+tmethod <- sensitivity(COI = 2:20, PLAF = p, method = c("end", "ideal", "overall"),
                     dist_method = "squared", repetitions = 100)
 
 tmethod_image <- 
@@ -177,7 +177,7 @@ document, we will use the `overall` method.
 
 ## Distance Method
 ```{r distance, eval = eval_tests}
-tdistance <- coi_test(COI = 2:20, PLAF = p, method = "overall",
+tdistance <- sensitivity(COI = 2:20, PLAF = p, method = "overall",
                       dist_method = c("abs_sum", "sum_abs", "squared"),
                       repetitions = 100)
 
@@ -204,7 +204,7 @@ knitr::include_graphics('figures/error_images/tdistance_error.png')
 
 ## Weighted
 ```{r weight, eval = eval_tests}
-tweight <- coi_test(COI = 2:20, weighted = c(FALSE, TRUE),
+tweight <- sensitivity(COI = 2:20, weighted = c(FALSE, TRUE),
                     dist_method = c("abs_sum", "sum_abs", "squared"),
                     PLAF = p, repetitions = 100)
 
@@ -237,7 +237,7 @@ often, but the difference is very small.
 
 ## Coverage
 ```{r coverage, eval = eval_tests}
-tcoverage <- coi_test(COI = 2:20, coverage = c(25, 50, 100, 200, 400, 800), 
+tcoverage <- sensitivity(COI = 2:20, coverage = c(25, 50, 100, 200, 400, 800), 
                  repetitions = 100, PLAF = p)
 
 tcoverage_image <- 
@@ -272,7 +272,7 @@ bloci <- lapply(loci, function(new_L){
   new_p <- rbeta(new_L, 1, 5)
   new_p[new_p > 0.5] <- 1 - new_p[new_p > 0.5]
   
-  inner_tloci <- coi_test(COI = 2:20, repetitions = 100, PLAF = new_p)
+  inner_tloci <- sensitivity(COI = 2:20, repetitions = 100, PLAF = new_p)
   inner_tloci$param_grid$loci <- new_L
   return(inner_tloci)
 })
@@ -320,7 +320,7 @@ knitr::include_graphics('figures/error_images/tloci_error.png')
 
 ## Alpha
 ```{r alpha, eval = eval_tests}
-talpha <- coi_test(COI = 2:20, alpha = seq(0.01, 5.51, 0.5), 
+talpha <- sensitivity(COI = 2:20, alpha = seq(0.01, 5.51, 0.5), 
                  repetitions = 100, PLAF = p)
 
 talpha_image <- 
@@ -346,7 +346,7 @@ the model will underpredict the true COI.
 
 ## Overdispersion
 ```{r overdispersion, eval = eval_tests}
-tover <- coi_test(COI = 2:20, overdispersion = seq(0, 0.2, 0.05), 
+tover <- sensitivity(COI = 2:20, overdispersion = seq(0, 0.2, 0.05), 
                  repetitions = 100, PLAF = p)
 
 tover_image <- 
@@ -372,7 +372,7 @@ consistently underpredicting the COI by a large amount.
 
 ## Epsilon
 ```{r epsilon, eval = eval_tests}
-tepsilon <- coi_test(COI = 2:20, epsilon = seq(0, 0.008, 0.001), 
+tepsilon <- sensitivity(COI = 2:20, epsilon = seq(0, 0.008, 0.001), 
                  repetitions = 100, PLAF = p)
 
 tepsilon_image <- 
@@ -399,7 +399,7 @@ COI for these tests.
 
 ## Sequencing Error
 ```{r seq error, eval = eval_tests}
-tseq <- coi_test(COI = 2:20, epsilon = seq(0, 0.008, 0.004), 
+tseq <- sensitivity(COI = 2:20, epsilon = seq(0, 0.008, 0.004), 
                  seq_error = seq(0, 0.04, 0.01)[-1], 
                  repetitions = 100, PLAF = p)
 
@@ -476,5 +476,3 @@ for (i in seq_len(length(update_errors))){
   suppressMessages(update_errors[i] %>% ggpubr::ggexport(filename = filename))
 }
 ```
-
-

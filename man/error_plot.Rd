@@ -35,7 +35,7 @@ what it will be.}
 Creates a plot showing the error of the sensitivity analysis.
 }
 \details{
-The function takes in the output of \code{\link[=coi_test]{coi_test()}}. Plots are created using
+The function takes in the output of \code{\link[=sensitivity]{sensitivity()}}. Plots are created using
 \code{\link[ggplot2:geom_bar]{ggplot2::geom_col()}}, which creates a simple bar plot. The mean absolute
 error is plotted in various colors, according to what parameter is being
 tested. In addition the 95\% confidence interval is shown as black vertical
