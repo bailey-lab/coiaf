@@ -1,19 +1,25 @@
 #------------------------------------------------
-#' @title Generate Real COI Curve
+#' Process real data
 #'
-#' @description Generate the COI curve for real data.
+#' Generate the COI curve for real data.
 #'
-#' @param wsaf WSAF.
-#' @param plaf PLAF.
-#' @param seq_error The sequencing error.
+#' The function computes whether a SNP is a variant site or not, based on the
+#' simulated WSAF at that SNP. This process additionally accounts for potential
+#' sequencing error.
+#'
+#' @param wsaf The within-sample allele frequency.
+#' @param plaf The population-level allele frequency.
+#' @param seq_error The suspected sequencing error.
 #' @param cut How often the data is summarized.
 #'
 #' @return Real COI curve.
-#'
+#' @family real data functions
+#' @seealso [process_sim()] to process simulated data.
 #' @export
 
-process_real <- function(wsaf, plaf, seq_error = 0.01,
-                              cut = seq(0, 0.5, 0.01)){
+process_real <- function(wsaf, plaf,
+                         seq_error = 0.01,
+                         cut = seq(0, 0.5, 0.01)) {
   # Check inputs
   assert_vector(wsaf)
   assert_bounded(wsaf)
@@ -29,9 +35,10 @@ process_real <- function(wsaf, plaf, seq_error = 0.01,
   assert_bounded(plaf, left = 0, right = 0.5)
 
   # Isolate PLAF, determine the PLAF cuts, and whether a site is a variant
-  df <- data.frame(
-    plaf_cut = cut(plaf, cut, include.lowest = TRUE),
-    variant  = ifelse(wsaf <= seq_error | wsaf >= (1 - seq_error), 0, 1))
+  df <- data.frame(plaf_cut = cut(plaf, cut, include.lowest = TRUE),
+                   variant = ifelse(wsaf <= seq_error | wsaf >= (1 - seq_error),
+                                    0,
+                                    1))
 
   # Average over intervals of PLAF
   df_grouped <- df %>%
@@ -43,24 +50,23 @@ process_real <- function(wsaf, plaf, seq_error = 0.01,
   # Include midpoints and remove missing data
   df_grouped$midpoints <- cut[-length(cut)] + diff(cut)/2
   df_grouped <- stats::na.omit(df_grouped)
-
-  return(df_grouped)
 }
 
 
 #------------------------------------------------
-#' @title Run Real Data COIs
+#' Run Real Data
 #'
-#' @description Run the algorithm on real data
+#' Run the algorithm on real data.
 #'
 #' @param data The dataset.
 #' @param max_coi The maximum COI that the model will look at. Looks at the
-#' theoretical COIs from 2 till \code{max_coi}.
+#' theoretical COIs from `1` till `max_coi`.
 #' @inheritParams coi_test
 #'
-#' @return A list of the predicted COIs and the probability distribution for the
-#' predictions.
-#'
+#' @return A list of samples. Each sample contains:
+#' * The predicted COI.
+#' * The probability distribution for the predictions.
+#' @family real data functions
 #' @export
 
 run_real_data <- function(data,

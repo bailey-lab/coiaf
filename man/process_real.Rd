@@ -2,16 +2,16 @@
 % Please edit documentation in R/real_data.R
 \name{process_real}
 \alias{process_real}
-\title{Generate Real COI Curve}
+\title{Process real data}
 \usage{
 process_real(wsaf, plaf, seq_error = 0.01, cut = seq(0, 0.5, 0.01))
 }
 \arguments{
-\item{wsaf}{WSAF.}
+\item{wsaf}{The within-sample allele frequency.}
 
-\item{plaf}{PLAF.}
+\item{plaf}{The population-level allele frequency.}
 
-\item{seq_error}{The sequencing error.}
+\item{seq_error}{The suspected sequencing error.}
 
 \item{cut}{How often the data is summarized.}
 }
@@ -21,3 +21,15 @@ Real COI curve.
 \description{
 Generate the COI curve for real data.
 }
+\details{
+The function computes whether a SNP is a variant site or not, based on the
+simulated WSAF at that SNP. This process additionally accounts for potential
+sequencing error.
+}
+\seealso{
+\code{\link[=process_sim]{process_sim()}} to process simulated data.
+
+Other real data functions: 
+\code{\link{run_real_data}()}
+}
+\concept{real data functions}

@@ -3,14 +3,18 @@
 \docType{data}
 \name{example_real_data}
 \alias{example_real_data}
-\title{Example Real Data}
+\title{Example real data}
 \format{
 A list of matrices. The list indicates the region of the genome and
 the VCF file where the samples came from. The two matrices have the same
 structure. The rows of the matrix indicate the patient and the columns of
 the matrix indicate the WSAF at each locus.
 }
+\source{
+ftp://ngs.sanger.ac.uk/production/malaria/pfcommunityproject/Pf6/
+}
 \description{
-A small example dataset that contains WSAF from a sample of individuals.
+A small example dataset that contains within-sample allele frequencies
+(WSAFs) from a sample of individuals.
 }
 \keyword{datasets}

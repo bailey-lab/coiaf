@@ -18,7 +18,7 @@ run_real_data(
 \item{data}{The dataset.}
 
 \item{max_coi}{The maximum COI that the model will look at. Looks at the
-theoretical COIs from 2 till \code{max_coi}.}
+theoretical COIs from \code{1} till \code{max_coi}.}
 
 \item{seq_error}{The level of sequencing error that is assumed.}
 
@@ -35,9 +35,17 @@ the theoretical and simulated curves for the \code{"overall"} method. One of
 distance.}
 }
 \value{
-A list of the predicted COIs and the probability distribution for the
-predictions.
+A list of samples. Each sample contains:
+\itemize{
+\item The predicted COI.
+\item The probability distribution for the predictions.
+}
 }
 \description{
-Run the algorithm on real data
+Run the algorithm on real data.
 }
+\seealso{
+Other real data functions: 
+\code{\link{process_real}()}
+}
+\concept{real data functions}
