@@ -2,15 +2,20 @@
 #' Likelihood of a COI
 #'
 #' A function to generate the likelihood of a specific COI value.
+#'
 #' The likelihood can be thought of the distance between two curves: the "real"
 #' COI curve, generated from the inputted data, and the "simulated" COI curve,
-#' which depends on the COI value specified.
+#' which depends on the COI value specified. There are three different methods
+#' implemented to compute the distance between two curves:
+#' * `abs_sum`: Absolute value of sum of difference.
+#' * `sum_abs`: Sum of absolute difference.
+#' * `squared`: Sum of squared difference.
 #'
 #' @param coi The COI for which the likelihood will be generated.
 #' @inheritParams compute_coi
 #'
 #' @return The likelihood for a specific COI value.
-#'
+#' @family optimization functions
 #' @export
 
 likelihood <- function(coi, processed_data,
@@ -53,28 +58,30 @@ likelihood <- function(coi, processed_data,
 #' Optimize the COI
 #'
 #' A function to compute the COI of inputted data.
-#' The function utilizes the [stats::optim()] function. In particular,
-#' the function utilizes a quasi-Newton method to compute gradients and build a
-#' picture of the surface to be optimized.
+#'
+#' The function utilizes [stats::optim()] In particular, the function utilizes
+#' a quasi-Newton method to compute gradients and build a picture of the
+#' surface to be optimized. The function uses a likelihood function as defined
+#' by [likelihood()].
 #'
 #' @param data The data for which the COI will be computed.
 #' @param data_type The type of the data to be analyzed. One of
 #' `"sim"` or `"real"`.
 #' @inheritParams coi_test
 #'
-#' @return The COI value.
-#'
-#' @seealso [stats::optim()]
-#'
+#' @return The predicted COI value.
+#' @seealso [stats::optim()] for the complete documentation on the optimization
+#' function.
+#' @family optimization functions
 #' @export
 
-optimize <- function(data,
-                     data_type,
-                     max_COI = 25,
-                     seq_error = 0.01,
-                     cut = seq(0, 0.5, 0.01),
-                     dist_method = "squared",
-                     weighted = TRUE) {
+optimize_coi <- function(data,
+                         data_type,
+                         max_COI = 25,
+                         seq_error = 0.01,
+                         cut = seq(0, 0.5, 0.01),
+                         dist_method = "squared",
+                         weighted = TRUE) {
 
   # Check inputs
   assert_in(data_type, c("sim", "real"))

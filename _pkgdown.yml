@@ -9,7 +9,7 @@ reference:
     desc: >
       Determine the COI of the sample
     contents:
-    - optimize
+    - optimize_coi
     - likelihood
     - compute_coi
     - theoretical_coi

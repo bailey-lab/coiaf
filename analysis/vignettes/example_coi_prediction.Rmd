@@ -79,7 +79,7 @@ for (k in 2:7){
   end_coi = unlist(c(end_coi, calc_coi$coi))
   
   # COI using optimization
-  add = optimize(sim1, "sim", max_coi = 10, cut = cut)
+  add = optimize_coi(sim1, "sim", max_COI = 10, cut = cut)
   opt_coi = unlist(c(opt_coi, add))
 }
 ```

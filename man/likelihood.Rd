@@ -24,7 +24,20 @@ The likelihood for a specific COI value.
 }
 \description{
 A function to generate the likelihood of a specific COI value.
+}
+\details{
 The likelihood can be thought of the distance between two curves: the "real"
 COI curve, generated from the inputted data, and the "simulated" COI curve,
-which depends on the COI value specified.
+which depends on the COI value specified. There are three different methods
+implemented to compute the distance between two curves:
+\itemize{
+\item \code{abs_sum}: Absolute value of sum of difference.
+\item \code{sum_abs}: Sum of absolute difference.
+\item \code{squared}: Sum of squared difference.
 }
+}
+\seealso{
+Other optimization functions: 
+\code{\link{optimize_coi}()}
+}
+\concept{optimization functions}
