@@ -69,7 +69,7 @@ Run our data, set it up in an ideal format and save the data sets as .rds files
 raw_predictions <- list_apply(seq_len(length(rmcl_wsafs)), function(x) {
   # Run predictions
   sample <- rmcl_wsafs[[x]]
-  predicted <- run_real_data(sample)
+  predicted <- run_real(sample)
 
   # Extract coi from the predictions
   extract_coi <- tibble::enframe(unlist(lapply(predicted, function(x){ x$coi })),

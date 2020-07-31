@@ -30,6 +30,6 @@ sequencing error.
 \code{\link[=process_sim]{process_sim()}} to process simulated data.
 
 Other real data functions: 
-\code{\link{run_real_data}()}
+\code{\link{run_real}()}
 }
 \concept{real data functions}

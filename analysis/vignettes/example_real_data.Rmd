@@ -33,7 +33,7 @@ Running the algorithm is quite straightforward.
 coi_pred <- lapply(seq_len(length(example_real_data)), function(x) {
   # Run predictions
   sample <- example_real_data[[x]]
-  predicted <- run_real_data(sample)
+  predicted <- run_real(sample)
 
   # Extract COI from the predictions
   extract_coi <- tibble::enframe(unlist(lapply(predicted, function(x){ x$coi })),

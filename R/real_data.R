@@ -54,7 +54,7 @@ process_real <- function(wsaf, plaf,
 
 
 #------------------------------------------------
-#' Run Real Data
+#' Run real data
 #'
 #' Run the algorithm on real data.
 #'
@@ -69,13 +69,13 @@ process_real <- function(wsaf, plaf,
 #' @family real data functions
 #' @export
 
-run_real_data <- function(data,
-                          max_coi = 25,
-                          seq_error = 0.01,
-                          cut = seq(0, 0.5, 0.01),
-                          method = "overall",
-                          dist_method = "squared",
-                          weighted = TRUE) {
+run_real <- function(data,
+                     max_coi = 25,
+                     seq_error = 0.01,
+                     cut = seq(0, 0.5, 0.01),
+                     method = "overall",
+                     dist_method = "squared",
+                     weighted = TRUE) {
 
   # Check inputs
   assert_single_pos_int(max_coi)
