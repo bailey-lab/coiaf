@@ -227,11 +227,11 @@ coi_test <- function(repetitions = 10,
     invisible(utils::capture.output(
       CI <- boot::boot.ci(results, type = "norm")$norm)
       )
-    if (is.null(CI)){
-      message(strwrap(sprintf('All values of the calculated statistic are the
-      same. Could not calculate the bootstrapped confidence interval for a COI
-                              of %s.', param_grid$COI[x])))
-    }
+    # if (is.null(CI)) {
+    #   message(strwrap(sprintf('All values of the calculated statistic are the
+    #   same. Could not calculate the bootstrapped confidence interval for a COI
+    #                           of %s.', param_grid$COI[x])))
+    # }
 
     # Store the mean absolute error and confidence interval bounds
     extract <- list(mae = results$t0, lower = CI[2], upper = CI[3])
@@ -251,6 +251,30 @@ coi_test <- function(repetitions = 10,
     dplyr::select_if(function(x) dplyr::n_distinct(x) > 1)
   boot_error <- dplyr::bind_cols(boot_error, boot_mae)
   boot_error$bias  <- unlist(coi_bias)
+
+  # Warnings for when could not compute CI. We want to show at most 5 cases
+  # where there is an issue. Anymore, and the warning message becomes to
+  # confusing.
+  warn_tibble <- boot_error %>%
+    tidyr::unnest(cols = tidyr::everything()) %>%
+    dplyr::filter(is.na(.data$lower) | is.na(.data$upper))
+  if (nrow(warn_tibble) >= 1) {
+    bullet <- ""
+    if (nrow(warn_tibble) < 5) {
+      for (i in seq(nrow(warn_tibble))) {
+        bullet <- glue::glue("{bullet}\n\u2716 COI of {warn_tibble$COI[i]} failed.")
+      }
+    } else if (nrow(warn_tibble) >= 5) {
+      for (i in seq(5)) {
+        bullet <- glue::glue("{bullet}\n\u2716 COI of {warn_tibble$COI[i]} failed.")
+      }
+      bullet <- glue::glue("{bullet}\n... and {nrow(warn_tibble) - 5} more failed")
+    }
+
+    message <- glue::glue("Can't calculate bootstrapped confidence interval:",
+                          "{bullet}")
+    warning(message, call. = FALSE)
+  }
 
   # Return predicted COIs and param_grid
   ret <- list(predicted_coi = as.data.frame(extracted_cois),

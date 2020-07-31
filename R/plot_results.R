@@ -60,11 +60,9 @@ sensitivity_plot <- function(data, dims, sub_title = NULL, title = NULL,
   user_dims = dims[1] * dims[2]
   needed_dims    = length(num_loops)
   if (!all(user_dims >= needed_dims)) {
-    message <- sprintf("Not enough panels have been specified. User input %s
-                       panel(s), but %s panel(s) needed.", user_dims,
-                       needed_dims) %>%
-      stringr::str_squish() %>%
-      stringr::str_wrap()
+    message <- glue::glue("Must specify enough plotting panels:",
+                          "\n\u2139 {needed_dims} panels are required.",
+                          "\n\u2716 User specified {user_dims} panels.")
     stop(message, call. = FALSE)
   }
 
@@ -200,13 +198,10 @@ error_plot <- function(data, fill = "COI", fill_levels = NULL, title = NULL,
   if (!is.null(fill_levels)){
     # Ensure that the number of levels input (fill_levels) are the same as the
     # number of levels for the fill variable
-    if (length(fill_levels) != nlevels(plot_data[[fill]])){
-      message <- sprintf("The length of the \"fill_levels\" variable (%s) does
-                         not match with the number of levels of the fill
-                         variable (%s)", length(fill_levels),
-                         nlevels(plot_data[[fill]])) %>%
-        stringr::str_squish() %>%
-        stringr::str_wrap()
+    if (length(fill_levels) != nlevels(plot_data[[fill]])) {
+      message <- glue::glue("Number of levels must match:",
+                            "\n\u2139 Variable has {nlevels(plot_data[[fill]])} levels.",
+                            "\n\u2716 User specified {length(fill_levels)} levels.")
       stop(message, call. = FALSE)
     }
     else {

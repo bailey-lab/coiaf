@@ -70,22 +70,17 @@ compute_coi <- function(processed_data, theory_coi_range, cut,
 
   # Warnings
   if (method != "overall") {
-    message <- sprintf('The method selected ("%s") is not the recommended
-                       method. Please use the "overall" method for the best
-                       performance.', method) %>%
-      stringr::str_squish() %>%
-      stringr::str_wrap()
+    message <- glue::glue("Please use the recommended method:",
+                          '\n\u2139 The recommended method is "overall".',
+                          '\n\u2716 User specified the "{method}" method.')
     warning(message, call. = FALSE)
-    }
+  }
   if (dist_method != "squared") {
-    message <- sprintf('The distance method metric ("%s") is not the
-                       recommended distance metric. Please use the
-                       "squared" metric for the best performance.',
-                       dist_method) %>%
-      stringr::str_squish() %>%
-      stringr::str_wrap()
+    message <- glue::glue("Please use the recommended distance metric:",
+                          '\n\u2139 The recommended distance metric is "squared".',
+                          '\n\u2716 User specified the "{dist_method}" metric.')
     warning(message, call. = FALSE)
-    }
+  }
 
   # Calculate theoretical COI curves for the interval specified. Since we want
   # the theoretical curves and the simulated curves to have the PLAF values, we

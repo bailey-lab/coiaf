@@ -88,6 +88,14 @@ optimize <- function(data,
   assert_in(dist_method, c("abs_sum", "sum_abs", "squared"))
   assert_logical(weighted)
 
+  # Warnings
+  if (dist_method != "squared") {
+    message <- glue::glue("Please use the recommended distance metric:",
+                          '\n\u2139 The recommended distance metric is "squared".',
+                          '\n\u2716 User specified the "{dist_method}" metric.')
+    warning(message, call. = FALSE)
+}
+
   # Process data
   if (data_type == "sim"){
     processed_data <- process_sim(data, seq_error, cut)
@@ -113,12 +121,21 @@ optimize <- function(data,
 
   # Output warning if the model does not converge
   if (fit$convergence != 0){
-    message <- sprintf('The model did not converge. "%s"', fit$message) %>%
-      stringr::str_squish() %>%
-      stringr::str_wrap()
+    if (fit$convergence == 1) {
+      bullet = "Iteration limit maxit has been reached."
+    } else if (fit$convergence == 10) {
+      bullet = "Nelder-Mead simplex degeneracy."
+    } else if (fit$convergence == 51) {
+      bullet = '"L-BFGS-B" method warning.'
+    } else if (fit$convergence == 52) {
+      bullet = '"L-BFGS-B" method error'
+    }
+    message <- glue::glue("The model did not converge:",
+                          "\n\u2716 {bullet}",
+                          "\n\u2716 Output of optim: {fit$message}.")
     warning(message, call. = FALSE)
   }
 
   # Return COI
-  coi <- fit$par
+  coi <- round(fit$par, 4)
 }
