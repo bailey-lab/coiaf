@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_results.R
 \name{world_map}
 \alias{world_map}
-\title{Plot a world map showing the COI}
+\title{World map plot}
 \usage{
 world_map(data, variable, label = NULL, alpha = 0.1, breaks = c(1, 2))
 }
@@ -18,6 +18,19 @@ world_map(data, variable, label = NULL, alpha = 0.1, breaks = c(1, 2))
 \item{breaks}{The breaks for the color scale.}
 }
 \description{
-Plot a world map showing the COI in each region where reads
-were sampled from.
+Plot a world map showing the COI in each region where reads were sampled
+from.
 }
+\details{
+Creates a world map and overlays the COI in each region. The magnitude of
+the COI is indicated by both the color and the size of the bubble.
+}
+\seealso{
+This \href{https://www.r-graph-gallery.com/bubble-map.html}{website} for
+more information on creating bubble graphs in R.
+
+Other plotting functions: 
+\code{\link{error_plot}()},
+\code{\link{sensitivity_plot}()}
+}
+\concept{plotting functions}

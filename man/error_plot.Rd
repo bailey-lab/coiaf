@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_results.R
 \name{error_plot}
 \alias{error_plot}
-\title{Plot the mean absolute errors for a test}
+\title{Error plot}
 \usage{
 error_plot(
   data,
@@ -25,12 +25,28 @@ error_plot(
 
 \item{legend_title}{The text for the legend. Default to \code{NULL}.}
 
-\item{legend.position}{The position of the legend. One of \code{"none",
-"left", "right", "bottom", "top"}.}
+\item{legend.position}{The position of the legend. One of \code{"none"},
+\code{"left"}, \code{"right"}, \code{"bottom"}, \code{"top"}.}
 
 \item{second_fill}{Indicates if there will be a second fill variable and
 what it will be.}
 }
 \description{
-Plots the mean absolute error and the confidence interval.
+Creates a plot showing the error of the sensitivity analysis.
 }
+\details{
+The function takes in the output of \code{\link[=coi_test]{coi_test()}}. Plots are created using
+\code{\link[ggplot2:geom_bar]{ggplot2::geom_col()}}, which creates a simple bar plot. The mean absolute
+error is plotted in various colors, according to what parameter is being
+tested. In addition the 95\% confidence interval is shown as black vertical
+lines.
+}
+\seealso{
+\code{\link[ggplot2:geom_bar]{ggplot2::geom_col()}} for more information on bar plots and the
+\href{https://ggplot2.tidyverse.org/index.html}{ggplot2 website}.
+
+Other plotting functions: 
+\code{\link{sensitivity_plot}()},
+\code{\link{world_map}()}
+}
+\concept{plotting functions}

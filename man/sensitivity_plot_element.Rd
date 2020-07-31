@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_results.R
 \name{sensitivity_plot_element}
 \alias{sensitivity_plot_element}
-\title{Plot a single panel of the sensitivity analysis}
+\title{Single sensitivity plot}
 \usage{
 sensitivity_plot_element(data, loop_num, sub_title)
 }
@@ -15,7 +15,7 @@ be plotted.}
 \item{sub_title}{A list of titles for each individual subplot.}
 }
 \description{
-Plots a single panel of the sensitivity analysis. Used as a
-helper function to \code{\link{sensitivity_plot}}.
+Creates a single plot of the sensitivity analysis. Used as a helper function
+to \code{\link[=sensitivity_plot]{sensitivity_plot()}}.
 }
 \keyword{internal}

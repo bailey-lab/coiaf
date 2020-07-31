@@ -1,9 +1,18 @@
 #------------------------------------------------
-#' @title Plot sensitivity analysis
+#' Sensitivity plot
 #'
-#' @description The function is used to plot any sensitivity analysis that is
-#' run. It takes in the output of \code{\link{coi_test}} and creates a grid of
-#' plots.
+#' Creates a plot of the sensitivity analysis.
+#'
+#' \loadmathjax
+#' The function takes in the output of [coi_test()] and creates a grid of
+#' plots. Each plot is created using [ggplot2::geom_count()]. The number of
+#' observations at each location is counted and then the count is mapped to
+#' point area on the plot.
+#'
+#' The x-axis is the true COI, and the y-axis is the estimated COI. The counts
+#' are plotted in blue, and red line is drawn with the equation \mjseqn{y = x}.
+#' This line indicates where the blue circles should be if the algorithm was
+#' 100% correct.
 #'
 #' @param data The data to be plotted.
 #' @param dims A list representing the number of rows and columns our plots
@@ -12,10 +21,16 @@
 #' @param title The title of the overall figure.
 #' @param caption The caption of the overall figure.
 #'
+#' @seealso [ggplot2::geom_count()] for more information on count plots and the
+#' [ggplot2 website](https://ggplot2.tidyverse.org/index.html).
+#' @family plotting functions
 #' @export
 
-sensitivity_plot <- function(data, dims, sub_title = NULL, title = NULL,
-                             caption = NULL){
+sensitivity_plot <- function(data,
+                             dims,
+                             sub_title = NULL,
+                             title = NULL,
+                             caption = NULL) {
 
   # Ensure that ggplot2 and ggpubr are installed
   if (!requireNamespace("ggplot2", quietly = TRUE) &
@@ -35,9 +50,9 @@ sensitivity_plot <- function(data, dims, sub_title = NULL, title = NULL,
             c("predicted_coi", "probability", "param_grid", "boot_error"))
   assert_pos_int(dims, zero_allowed = FALSE)
   assert_length(dims, 2)
-  if (!is.null(sub_title)) {assert_vector(sub_title)}
-  if (!is.null(title)) {assert_single_string(title)}
-  if (!is.null(caption)) {assert_single_string(caption)}
+  if (!is.null(sub_title)) assert_vector(sub_title)
+  if (!is.null(title)) assert_single_string(title)
+  if (!is.null(caption)) assert_single_string(caption)
 
   # Convert the predicted_coi dataframe into a long format. More specifically,
   # establish a column for the true coi and a column for the estimated coi
@@ -74,7 +89,7 @@ sensitivity_plot <- function(data, dims, sub_title = NULL, title = NULL,
                     sub_title = sub_title)
 
   # Arrange the plots
-  if (dims[1] * dims[2] == 1){
+  if (dims[1] * dims[2] == 1) {
     # Do not include a panel label if there is only one plot
     arranged_plots <- ggpubr::ggarrange(plotlist = myplots,
                                         nrow = dims[1],
@@ -88,7 +103,6 @@ sensitivity_plot <- function(data, dims, sub_title = NULL, title = NULL,
                                         ncol = dims[2])
   }
 
-
   arranged_plots <-
     ggpubr::annotate_figure(arranged_plots,
                             top = ggpubr::text_grob(title, size = 13),
@@ -96,16 +110,13 @@ sensitivity_plot <- function(data, dims, sub_title = NULL, title = NULL,
                                                        hjust = 0,
                                                        x = 0.01,
                                                        size = 10))
-
-  # Lastly, we return the arranged plots
-  return(arranged_plots)
 }
 
 #------------------------------------------------
-#' @title Plot a single panel of the sensitivity analysis
+#' Single sensitivity plot
 #'
-#' @description Plots a single panel of the sensitivity analysis. Used as a
-#' helper function to \code{\link{sensitivity_plot}}.
+#' Creates a single plot of the sensitivity analysis. Used as a helper function
+#' to [sensitivity_plot()].
 #'
 #' @param loop_num The loop number. Represents how many total panels will
 #' be plotted.
@@ -113,9 +124,7 @@ sensitivity_plot <- function(data, dims, sub_title = NULL, title = NULL,
 #'
 #' @keywords internal
 
-sensitivity_plot_element <- function(data,
-                                     loop_num,
-                                     sub_title){
+sensitivity_plot_element <- function(data, loop_num, sub_title) {
 
   # Ensure that ggplot2 is installed
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
@@ -135,31 +144,44 @@ sensitivity_plot_element <- function(data,
                    axis.title   = ggplot2::element_text(size = 7),
                    legend.title = ggplot2::element_text(size = 7),
                    legend.text  = ggplot2::element_text(size = 7)) +
-    ggplot2::labs(x = "True COI", y = "Estimated COI", title = sub_title[loop_num])
-
-  return(single_plot)
+    ggplot2::labs(x = "True COI",
+                  y = "Estimated COI",
+                  title = sub_title[loop_num])
 }
 
 #------------------------------------------------
-#' @title Plot the mean absolute errors for a test
+#' Error plot
 #'
-#' @description Plots the mean absolute error and the confidence interval.
+#' Creates a plot showing the error of the sensitivity analysis.
+#'
+#' The function takes in the output of [coi_test()]. Plots are created using
+#' [ggplot2::geom_col()], which creates a simple bar plot. The mean absolute
+#' error is plotted in various colors, according to what parameter is being
+#' tested. In addition the 95% confidence interval is shown as black vertical
+#' lines.
 #'
 #' @param data The data to be plotted.
 #' @param fill The variable the data will be separated by.
 #' @param fill_levels The levels for the fill variable.
-#' @param title The title of the plot. Default to \code{NULL}.
-#' @param legend_title The text for the legend. Default to \code{NULL}.
-#' @param legend.position The position of the legend. One of \code{"none",
-#' "left", "right", "bottom", "top"}.
+#' @param title The title of the plot. Default to `NULL`.
+#' @param legend_title The text for the legend. Default to `NULL`.
+#' @param legend.position The position of the legend. One of `"none"`,
+#' `"left"`, `"right"`, `"bottom"`, `"top"`.
 #' @param second_fill Indicates if there will be a second fill variable and
 #' what it will be.
 #'
+#' @seealso [ggplot2::geom_col()] for more information on bar plots and the
+#' [ggplot2 website](https://ggplot2.tidyverse.org/index.html).
+#' @family plotting functions
 #' @export
 
-error_plot <- function(data, fill = "COI", fill_levels = NULL, title = NULL,
-                       legend_title = fill, legend.position = "bottom",
-                       second_fill = NULL){
+error_plot <- function(data,
+                       fill = "COI",
+                       fill_levels = NULL,
+                       title = NULL,
+                       legend_title = fill,
+                       legend.position = "bottom",
+                       second_fill = NULL) {
 
   # Ensure that ggplot2 is installed
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
@@ -171,11 +193,11 @@ error_plot <- function(data, fill = "COI", fill_levels = NULL, title = NULL,
   assert_eq(names(data),
             c("predicted_coi", "probability", "param_grid", "boot_error"))
   assert_single_string(fill)
-  if (!is.null(fill_levels)) {assert_string(fill_levels)}
-  if (!is.null(title)) {assert_single_string(title)}
+  if (!is.null(fill_levels)) assert_string(fill_levels)
+  if (!is.null(title)) assert_single_string(title)
   assert_single_string(legend_title)
   assert_single_string(legend.position)
-  if (!is.null(second_fill)) {assert_single_string(second_fill)}
+  if (!is.null(second_fill)) assert_single_string(second_fill)
 
   # Convert data to a tibble
   plot_data <- data$boot_error %>% tidyr::unnest(cols = names(data$boot_error))
@@ -195,7 +217,7 @@ error_plot <- function(data, fill = "COI", fill_levels = NULL, title = NULL,
     dplyr::mutate(upper = dplyr::na_if(.data$upper, 0))
 
   # Customize the levels of the fill variable
-  if (!is.null(fill_levels)){
+  if (!is.null(fill_levels)) {
     # Ensure that the number of levels input (fill_levels) are the same as the
     # number of levels for the fill variable
     if (length(fill_levels) != nlevels(plot_data[[fill]])) {
@@ -203,8 +225,7 @@ error_plot <- function(data, fill = "COI", fill_levels = NULL, title = NULL,
                             "\n\u2139 Variable has {nlevels(plot_data[[fill]])} levels.",
                             "\n\u2716 User specified {length(fill_levels)} levels.")
       stop(message, call. = FALSE)
-    }
-    else {
+    } else {
       # Customize labels
       levels(plot_data[[fill]]) <- fill_levels
     }
@@ -225,20 +246,22 @@ error_plot <- function(data, fill = "COI", fill_levels = NULL, title = NULL,
                    legend.text  = ggplot2::element_text(size = 8)) +
     ggplot2::labs(y = "Mean Absolute Error", title = title, fill = legend_title)
 
-  if (!is.null(second_fill)){
-    error_plot <- error_plot + ggplot2::facet_wrap(~ plot_data[[second_fill]],
-                                                   nrow = 2)
+  if (!is.null(second_fill)) {
+    error_plot <- error_plot +
+      ggplot2::facet_wrap(~ plot_data[[second_fill]], nrow = 2)
   }
 
   return(error_plot)
-
 }
 
 #------------------------------------------------
-#' @title Plot a world map showing the COI
+#' World map plot
 #'
-#' @description Plot a world map showing the COI in each region where reads
-#' were sampled from.
+#' Plot a world map showing the COI in each region where reads were sampled
+#' from.
+#'
+#' Creates a world map and overlays the COI in each region. The magnitude of
+#' the COI is indicated by both the color and the size of the bubble.
 #'
 #' @param data The data to be plotted.
 #' @param variable The variable the data will plot.
@@ -246,10 +269,16 @@ error_plot <- function(data, fill = "COI", fill_levels = NULL, title = NULL,
 #' @param alpha The alpha value for the plotted data.
 #' @param breaks The breaks for the color scale.
 #'
+#' @seealso This [website](https://www.r-graph-gallery.com/bubble-map.html) for
+#' more information on creating bubble graphs in R.
+#' @family plotting functions
 #' @export
-#'
-world_map <- function(data, variable, label = NULL, alpha = 0.1,
-                      breaks = c(1,2)){
+
+world_map <- function(data,
+                      variable,
+                      label = NULL,
+                      alpha = 0.1,
+                      breaks = c(1,2)) {
 
   # Access world map data from ggplot2
   world <- ggplot2::map_data("world")
@@ -273,6 +302,4 @@ world_map <- function(data, variable, label = NULL, alpha = 0.1,
     ggplot2::scale_size(guide = "none") +
     ggplot2::labs(color = label) +
     ggplot2::coord_quickmap(xlim = c(-75, 150), ylim = c(-20, 20))
-
-  return(map)
 }

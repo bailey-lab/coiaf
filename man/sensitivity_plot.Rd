@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_results.R
 \name{sensitivity_plot}
 \alias{sensitivity_plot}
-\title{Plot sensitivity analysis}
+\title{Sensitivity plot}
 \usage{
 sensitivity_plot(data, dims, sub_title = NULL, title = NULL, caption = NULL)
 }
@@ -19,7 +19,26 @@ will be split into.}
 \item{caption}{The caption of the overall figure.}
 }
 \description{
-The function is used to plot any sensitivity analysis that is
-run. It takes in the output of \code{\link{coi_test}} and creates a grid of
-plots.
+Creates a plot of the sensitivity analysis.
 }
+\details{
+\loadmathjax
+The function takes in the output of \code{\link[=coi_test]{coi_test()}} and creates a grid of
+plots. Each plot is created using \code{\link[ggplot2:geom_count]{ggplot2::geom_count()}}. The number of
+observations at each location is counted and then the count is mapped to
+point area on the plot.
+
+The x-axis is the true COI, and the y-axis is the estimated COI. The counts
+are plotted in blue, and red line is drawn with the equation \mjseqn{y = x}.
+This line indicates where the blue circles should be if the algorithm was
+100\% correct.
+}
+\seealso{
+\code{\link[ggplot2:geom_count]{ggplot2::geom_count()}} for more information on count plots and the
+\href{https://ggplot2.tidyverse.org/index.html}{ggplot2 website}.
+
+Other plotting functions: 
+\code{\link{error_plot}()},
+\code{\link{world_map}()}
+}
+\concept{plotting functions}
