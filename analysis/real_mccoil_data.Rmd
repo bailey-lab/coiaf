@@ -7,11 +7,6 @@ output:
     highlight: pygments
     toc: true
     toc_float: true
-    number_sections: true
-  pdf_document:
-    toc: true
-    toc_depth: 2
-    number_sections: true
 editor_options:
   chunk_output_type: console
 ---
@@ -47,9 +42,9 @@ obtained from the Pf3k Malaria project. Additionally, we compare the results of
 our algorithm with the current state of the art model for predicting COI -- REAL
 McCOIL.
 
-# Run Real Data
+## Run Real Data
 
-```{r read data, eval = run_real}
+```{r read data}
 # Path to data
 path = "~/Desktop/Malaria/COI data/"
 
@@ -63,45 +58,53 @@ rmcl_coi_out <- readRDS(paste0(path, "RMCL_coi_out.rds")) %>%
   dplyr::rename(rmcl_975 = COI_975)
 ```
 
-Run our data, set it up in an ideal format and save the data sets as .rds files
+Run our data, set it up in an ideal format and save the data sets as .rds files.
 
 ```{r run data, eval = run_real}
 raw_predictions <- list_apply(seq_len(length(rmcl_wsafs)), function(x) {
   # Run predictions
   sample <- rmcl_wsafs[[x]]
-  predicted <- run_real(sample)
-
-  # Extract coi from the predictions
-  extract_coi <- tibble::enframe(unlist(lapply(predicted, function(x){ x$coi })),
-                                 value = "prediction") %>%
-    dplyr::mutate(file = names(rmcl_wsafs)[x])
+  plaf   <- colMeans(sample, na.rm = T)
+  
+  # For each sample run the optimize_coi function
+  coi_region <- lapply(seq_len(nrow(sample)), function(i) {
+    wsaf  <- sample[i,]
+    input <- tibble::tibble(wsaf = wsaf, plaf = plaf) %>% tidyr::drop_na()
+    coi_region <- optimize_coi(input, "real") 
+  }) %>% unlist()
+  
+  coi_pred <- tibble::tibble(name = rownames(sample),
+                             pred = coi_region,
+                             file = names(rmcl_wsafs)[x])
 
   # Summarize over the 5 rmcl runs
   rmcl_outputs <- rmcl_coi_out %>%
     dplyr::filter(stringr::str_detect(file, names(rmcl_wsafs)[x])) %>%
     dplyr::group_by(name) %>%
-    dplyr::summarise(rmcl = mean(rmcl),
-                     rmcl_median = median(rmcl),
-                     rmcl_025 = mean(rmcl_025),
-                     rmcl_975 = mean(rmcl_975),
-                     .groups = "drop")
+    dplyr::summarise(rmcl_med     = median(rmcl),
+                     rmcl_025_med = median(rmcl_025),
+                     rmcl_975_med = median(rmcl_975),
+                     .groups = "drop") 
 
   # Join the tibbles and find difference
-  res <- dplyr::full_join(extract_coi, rmcl_outputs, by = "name")
-  return(res)
+  combined <- dplyr::full_join(coi_pred, rmcl_outputs, by = "name") %>% 
+    dplyr::mutate(Region = as.numeric(stringr::str_extract(file, "(?<=region_)[:digit:]*"))) %>% 
+    dplyr::mutate(VCF = as.numeric(stringr::str_extract(file, "(?<=vcf_)[:digit:]*"))) %>% 
+    dplyr::relocate(file, .after = dplyr::last_col())
+
 })
 names(raw_predictions) <- names(rmcl_wsafs)
 
 # Set up a tibble with all the information from the runs
 complete_predictions <- raw_predictions %>%
   dplyr::bind_rows() %>% 
-  dplyr::mutate(difference_mean = prediction - rmcl) %>% 
-  dplyr::mutate(difference_median = prediction - rmcl_median) %>%
-  dplyr::mutate(in_CI = ifelse(prediction >= rmcl_025 & 
-                                 prediction <= rmcl_975, 1, 0)) %>%
-  dplyr::mutate(Region = as.numeric(stringr::str_extract(file, "(?<=region_)[:digit:]*"))) %>% 
-  dplyr::mutate(VCF = as.numeric(stringr::str_extract(file, "(?<=vcf_)[:digit:]*"))) %>% 
-  dplyr::relocate(file, .after = tidyselect::last_col())
+  dplyr::group_by(name, Region) %>% 
+  dplyr::summarise(pred_med = median(pred),
+                   rmcl_med = median(rmcl_med),
+                   rmcl_025_med = median(rmcl_025_med),
+                   rmcl_975_med = median(rmcl_975_med),
+                   .groups = "drop") %>% 
+  dplyr::relocate(Region, .after = dplyr::last_col())
 
 # Save data
 saveRDS(raw_predictions, file = "analysis/rmcl_raw_predictions.rds")
@@ -113,42 +116,66 @@ raw_predictions <- readRDS("rmcl_raw_predictions.rds")
 complete_predictions <- readRDS("rmcl_complete_predictions.rds")
 ```
 
-# Evaluate Our Predictions
+We want to make sure that we have tested all the patients, so we can look at
+our three data structures and ensure that the number of patients is the same
+for all.
+```{r number of patients}
+# According to our predictions
+length(unique(complete_predictions$name))
+
+# According to rmcl output
+length(unique(rmcl_coi_out$name))
+
+# According to WSAFs
+wsafs_patients <- lapply(seq_len(length(rmcl_wsafs)), function(x) {
+  rownames(rmcl_wsafs[[x]])
+})
+wsafs_patients %>% unlist() %>% unique() %>% length()
+```
+Looking at these values, we can see that for our WSAF matrices and our 
+predictions the number of patients match. However, our rmcl output has fewer
+total patients. We need to be sure to exclude these whenw we are comparing our
+two methods.
+
+## Evaluate Our Predictions
+
+We want to be sure to exclude all samples for which we do not have a rmcl
+estimate.
+```{r exclude patients}
+exclude <- setdiff(unique(complete_predictions$name), unique(rmcl_coi_out$name))
+compare_data <- complete_predictions %>% 
+  dplyr::filter(! name %in% exclude) %>% 
+  dplyr::mutate(diff_med = pred_med - rmcl_med) %>% 
+  dplyr::mutate(in_CI = ifelse(pred_med >= rmcl_025_med & 
+                                 pred_med <= rmcl_975_med, 1, 0)) %>% 
+  dplyr::relocate(Region, .after = dplyr::last_col())
+```
 
 Plot the results looking at COI and comparison to REAL McCOIL.
 
 ```{r predicted COI plot}
-ggplot(complete_predictions, aes(factor(prediction), 
-                                 fill = factor(prediction))) +
-  geom_bar(stat = "count") + 
-  facet_wrap(. ~ Region, nrow = 4, scales = "free", labeller = "label_both") + 
-  ggsci::scale_fill_d3() +
+num_breaks <- function(x) floor(seq(0, max(x), length.out = 5))
+
+ggplot(compare_data, aes(pred_med)) +
+  geom_density(fill = "gray", alpha = 0.3) + 
+  facet_wrap(. ~ Region, nrow = 4, scales = "free", labeller = "label_both") +
+  scale_x_continuous(breaks = num_breaks) +
   theme_classic() +
   theme(plot.title = element_text(hjust = 0.5, size = 13),
         axis.title = element_text(size = 10)) +
   guides(fill = FALSE) +
-  labs(x = "Predicted COI", y = "Count", title = "Predicted COI in Each Region")
-```
-
-```{r mean coiaf vs REAL McCOIL}
-ggplot(na.omit(complete_predictions), aes(factor(difference_mean), 
-                                          fill = factor(difference_mean))) +
-  geom_bar(stat = "count") + 
-  facet_wrap(. ~ Region, nrow = 4, scales = "free", labeller = "label_both") + 
-  theme_classic() +
-  theme(plot.title  = element_text(hjust = 0.5, size = 13),
-        axis.title = element_text(size = 10)) +
-  guides(fill = FALSE) +
-  labs(x = "Difference Between coiaf And REAL McCOIL Mean", y = "Count", 
-       title = "Difference Between coiaf And REAL McCOIL Mean By Region")
+  labs(x = "Predicted COI", y = "Density", 
+       title = "Predicted COI in Each Region")
 ```
 
 ```{r median coiaf vs REAL McCOIL}
-ggplot(na.omit(complete_predictions), aes(factor(difference_median), 
-                                          fill = factor(difference_median))) +
-  geom_bar(stat = "count") + 
+num_breaks_v2 <- function(x) round(seq(min(x), max(x), length.out = 5))
+
+ggplot(compare_data, aes(diff_med)) +
+  geom_density(fill = "gray", alpha = 0.3) +
   facet_wrap(. ~ Region, nrow = 4, scales = "free", labeller = "label_both") + 
   theme_classic() +
+  scale_x_continuous(breaks = num_breaks_v2) +
   theme(plot.title  = element_text(hjust = 0.5, size = 13),
         axis.title = element_text(size = 10)) +
   guides(fill = FALSE) +
@@ -156,7 +183,7 @@ ggplot(na.omit(complete_predictions), aes(factor(difference_median),
        title = "Difference Between coiaf And REAL McCOIL Median By Region")
 ```
 
-## Incorrect Trends
+### Incorrect Trends
 Why does our model get samples wrong?
 
 ```{r, eval = FALSE}
@@ -230,9 +257,9 @@ for (i in 1:nrow(minoff)){
 ```
 
 
-# World Maps
+## World Maps
 
-## Pf3k Data
+### Pf3k Data
 
 We need to access the Pf3k data in order to create a world map. 
 
@@ -262,6 +289,7 @@ for(k in sis) {
   sis[k - 1] <- mean(si[, 3])
 }
 
+par(mfrow = c(1,1))
 plot(sis)
 abline(v = which(diff(sign(diff(sis))) == -2) + 1)
 text(which(diff(sign(diff(sis))) == -2) + 2, 0.1, 
@@ -281,7 +309,7 @@ patient_lat_long <- dplyr::left_join(complete_predictions, meta,
                                      by = c("name" = "Sample")) 
 ```
 
-## Plotting
+### Plotting
 
 World map with average COI
 
@@ -291,18 +319,17 @@ map_average <- patient_lat_long %>%
   dplyr::group_by(color) %>% 
   dplyr::summarise(lat = mean(Lat),
                    long = mean(Long), 
-                   coi_mean = mean(prediction),
-                   coi_med = median(prediction), .groups = "drop")
+                   coi_mean = mean(pred_med),
+                   coi_med = median(pred_med), 
+                   .groups = "drop")
 
-# Plot the mean COI (theme is added so that there is less whitespace)
-world_map(map_average, map_average$coi_mean, label = "Mean COI", 
-          alpha = 1, breaks = c(1.0, 1.5, 2.0, 2.5, 3.0)) + 
-  theme(plot.margin = unit(c(-1, 0, -1, 0), "null"))
+# Plot the mean COI
+print(world_map(map_average, map_average$coi_mean, label = "Mean COI", 
+                alpha = 1, breaks = c(1.0, 1.5, 2.0, 2.5)))
 
-# Plot the median COI (theme is added so that there is less whitespace)
-world_map(map_average, map_average$coi_med, label = "Median COI", 
-          alpha = 1, breaks = c(1.0, 1.5, 2.0)) + 
-  theme(plot.margin = unit(c(-0.9, 0, -0.9, 0), "null"))
+# Plot the median COI
+print(world_map(map_average, map_average$coi_med, label = "Median COI", 
+                alpha = 1, breaks = c(1.0, 1.5, 2.0)))
 ```
 
 World map with all data
@@ -310,15 +337,16 @@ World map with all data
 ```{r all patients map, fig.height = 2}
 # Get data that has a COI of less than 10. This is done for now as we suspect
 # there are some samples that are wrong! Regions that predict 25! 
+# The two patients are: "PN0075-C" and "PT0069-C"
 # We also set up data to be descending so that smaller COIs stay on top.
 all_world_map <- patient_lat_long %>% 
-  dplyr::filter(prediction <= 10) %>% 
-  dplyr::arrange(desc(prediction)) %>% 
+  dplyr::filter(pred_med <= 10) %>% 
+  dplyr::arrange(desc(pred_med)) %>% 
   dplyr::rename(lat = Lat) %>% 
   dplyr::rename(long = Long)
 
 # Plot all patient COIs (theme is added so that there is less whitespace)
-world_map(all_world_map, all_world_map$prediction, "COI", 
-          breaks = c(1, 2, 4, 6, 8, 10))
+print(world_map(all_world_map, all_world_map$pred_med, "COI", 
+                breaks = c(1, 2, 4, 6, 8, 10)))
 ```
 
