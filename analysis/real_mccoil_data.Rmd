@@ -179,7 +179,7 @@ ggplot(compare_data, aes(diff_med)) +
   theme(plot.title  = element_text(hjust = 0.5, size = 13),
         axis.title = element_text(size = 10)) +
   guides(fill = FALSE) +
-  labs(x = "Difference Between coiaf And REAL McCOIL Median", y = "Count", 
+  labs(x = "Difference Between coiaf And REAL McCOIL Median", y = "Density", 
        title = "Difference Between coiaf And REAL McCOIL Median By Region")
 ```
 
