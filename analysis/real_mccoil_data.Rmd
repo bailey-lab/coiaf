@@ -187,73 +187,23 @@ ggplot(compare_data, aes(diff_med)) +
 Why does our model get samples wrong?
 
 ```{r, eval = FALSE}
-incorrect <- complete_predictions %>% 
-  dplyr::filter(prediction != rmcl) %>% 
-  dplyr::distinct(name, .keep_all = TRUE)
+# Convert continuous result to discrete result
+enhanced <- compare_data %>% 
+  dplyr::mutate(round = ifelse(pred_med - floor(pred_med) >= 0.2, 
+                             ceiling(pred_med),
+                             floor(pred_med))) %>% 
+  dplyr::relocate(round, .after = pred_med)
 
-# Diff <= -3
-minoff <- incorrect %>% 
-  dplyr::filter(difference_median <= -3) %>% 
-  dplyr::arrange(prediction)
-par(mfrow = c(5,4))
-for (i in 1:nrow(minoff)){
-  file = minoff$file[i]
-  name = minoff$name[i]
-  plot(rmcl_wsafs[[file]][name,], pch = 20, cex = 0.5, 
-      ylim = c(0,1), ylab = "WSAF", 
-      main = paste0(name, ", coiaf = ", minoff[i,]$prediction, ", rmcl = ", minoff[i,]$rmcl))
-}
+incorrect <- enhanced %>% 
+  dplyr::filter(round != rmcl_med) %>% 
+  dplyr::arrange(pred_med)
 
-# Diff -2
-minoff <- incorrect %>% 
-  dplyr::filter(difference_median == -2) %>% 
-  dplyr::arrange(prediction)
-for (i in 1:nrow(minoff)){
-  if (i %% 36 == 1){ 
-    png(paste0("~/Desktop/Images for OJ-Jeff/diff-2/diff2set", i, ".png"), 
-        width = 1500, height = 1500)
-    par(mfrow = c(6,6)) }
-  file = minoff$file[i]
-  name = minoff$name[i]
-  plot(rmcl_wsafs[[file]][name,], pch = 20, cex = 0.5, 
-      ylim = c(0,1), ylab = "WSAF", 
-      main = paste0(name, ", coiaf = ", minoff[i,]$prediction, ", rmcl = ", minoff[i,]$rmcl))
-  if (i %% 36 == 0) { dev.off() }
-}
-
-# Diff -1
-minoff <- incorrect %>% 
-  dplyr::filter(difference_median == -1) %>% 
-  dplyr::arrange(prediction)
-for (i in 1:nrow(minoff)){
-  if (i %% 49 == 1){ 
-    png(paste0("~/Desktop/Images for OJ-Jeff/diff-1/diff1set", i, ".png"), 
-        width = 1500, height = 1500)
-    par(mfrow = c(7,7)) }
-  file = minoff$file[i]
-  name = minoff$name[i]
-  plot(rmcl_wsafs[[file]][name,], pch = 20, cex = 0.5, 
-      ylim = c(0,1), ylab = "WSAF", 
-      main = paste0(name, ", coiaf = ", minoff[i,]$prediction, ", rmcl = ", minoff[i,]$rmcl))
-  if (i %% 49 == 0) { dev.off() }
-}
-
-# Diff > -1
-minoff <- incorrect %>% 
-  dplyr::filter(difference_median > -1) %>% 
-  dplyr::arrange(prediction)
-for (i in 1:nrow(minoff)){
-  if (i %% 49 == 1){ 
-    png(paste0("~/Desktop/Images for OJ-Jeff/diffg-1/diffg1set", i, ".png"), 
-        width = 1500, height = 1500)
-    par(mfrow = c(7,7)) }
-  file = minoff$file[i]
-  name = minoff$name[i]
-  plot(rmcl_wsafs[[file]][name,], pch = 20, cex = 0.5, 
-      ylim = c(0,1), ylab = "WSAF", 
-      main = paste0(name, ", coiaf = ", minoff[i,]$prediction, ", rmcl = ", minoff[i,]$rmcl))
-  if (i %% 49 == 0) { dev.off() }
-}
+# Make sure PLAF is less than 0.5. This is done in process real. Plot a specific
+# sample
+plot(colMeans(rmcl_wsafs$cat_region_21_vcf_0, na.rm = T) %>% 
+  ifelse(. > 0.5, 1 - ., .),
+     rmcl_wsafs$cat_region_21_vcf_0["PV0091-C",],
+  main = "Opt = 1.20035, RMCL = 1")
 ```
 
 
