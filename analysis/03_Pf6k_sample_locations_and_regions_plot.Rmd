@@ -56,6 +56,37 @@ For the RMCL analysis, 24 locations were chosen:
 ks <- cluster::pam(meta[,c("Lat","Long")], k = 24)
 meta$color <- as.factor(ks$clustering)
 
-fig2 <- roxer::map_plot(unique(meta[,c("Lat", "Long")]),"Lat","Long")
+fig2 <- roxer::map_plot(unique(meta[,c("Lat", "Long", "color")]),"Lat","Long")
 fig2
+```
+
+To assign the prevelance to these points:
+
+```{r}
+
+# get rasters
+zip <- "https://malariaatlas.org/trends/content/images/region-images/2018_Cube/Pf/PfPR/global_PfPR_2000-17.png.zip"
+file <- tf()
+download.file(zip, file)
+contents <- unzip(file, list = TRUE)
+
+# get the lat longs
+coords <- data.frame(meta$Long, meta$Lat)
+names(coords) <- c("x","y")
+
+# make column for 2-10 year old prevalence
+meta$prev_2_10 <- as.numeric(meta$Year)
+for(i in sort(unique(meta$prev_2_10))){
+  tf <- tempfile()
+  raster <- unzip(zipfile = file, 
+                  files = grep(paste0("rmean/2019_Global_PfPR_",i,".tif$"), contents$Name, value = TRUE),
+                  exdir = tf)
+  raster <- raster::raster(raster)
+  pos <- which(meta$Year == i)
+  i_coords <- coords[pos,]
+  prev <- raster::extract(raster, i_coords)
+  meta$prev_2_10[pos] <- prev
+}
+
+
 ```
