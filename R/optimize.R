@@ -118,7 +118,7 @@ optimize_coi <- function(data,
   #   control:
   #     fnscale: Indicates that we want to minimize
   #     ndeps: The step sizes in the optimizer
-  fit <- stats::optim(par = 1,
+  fit <- stats::optim(par = 2,
                       fn = likelihood,
                       processed_data = processed_data,
                       dist_method = "squared",
