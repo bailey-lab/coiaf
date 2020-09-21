@@ -67,10 +67,10 @@ process_sim <- function(sim, seq_error = 0.01, cut = seq(0, 0.5, 0.01)) {
   assert_increasing(cut)
 
   # Run helper to process
-  processed_sim <- process(wsaf = sim$data$WSAF,
-                           plaf = sim$data$PLAF,
-                           seq_error = 0.01,
-                           cut = seq(0, 0.5, 0.01))
+  processed_sim <- process(wsaf      = sim$data$WSAF,
+                           plaf      = sim$data$PLAF,
+                           seq_error = seq_error,
+                           cut       = cut)
 }
 
 #------------------------------------------------
@@ -110,8 +110,8 @@ process_real <- function(wsaf, plaf,
   assert_bounded(plaf, left = 0, right = 0.5)
 
   # Run helper to process
-  processed_real <- process(wsaf = wsaf,
-                            plaf = plaf,
-                            seq_error = 0.01,
-                            cut = seq(0, 0.5, 0.01))
+  processed_real <- process(wsaf      = wsaf,
+                            plaf      = plaf,
+                            seq_error = seq_error,
+                            cut       = cut)
 }
