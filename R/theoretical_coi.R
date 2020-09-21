@@ -11,7 +11,7 @@
 #'
 #' @param coi_range The COIs for which the curve will be calculated.
 #' @param plaf The PLAF over which the curve will be calculated.
-#' @param method The method we will use to calculate the theoretical COI.
+#' @param coi_method The method we will use to calculate the theoretical COI.
 #' The method is either "1" or "2". The default value is "1".
 #'
 #' @return The theoretical COI curves for the specified COIs and PLAF.
@@ -19,22 +19,22 @@
 #' @export
 
 theoretical_coi <- function(coi_range, plaf = seq(0, 0.5, l = 101),
-                            method = "1") {
+                            coi_method = "1") {
   # Check inputs
   assert_pos(coi_range, zero_allowed = FALSE)
   assert_vector(plaf)
   assert_bounded(plaf, left = 0, right = 0.5)
   assert_increasing(plaf)
-  assert_single_string(method)
-  assert_in(method, c("1", "2"))
+  assert_single_string(coi_method)
+  assert_in(coi_method, c("1", "2"))
 
   # Compute curve for the COIs
   for (i in coi_range) {
     if (i == coi_range[1]) {
-      curves <- data.frame(first = single_theoretical_coi(i, plaf, method))
+      curves <- data.frame(first = single_theoretical_coi(i, plaf, coi_method))
       colnames(curves) <- paste0("coi_", i)
     } else {
-      curves[[paste0("coi_", i)]] = single_theoretical_coi(i, plaf, method)
+      curves[[paste0("coi_", i)]] = single_theoretical_coi(i, plaf, coi_method)
     }
   }
 
@@ -61,19 +61,19 @@ theoretical_coi <- function(coi_range, plaf = seq(0, 0.5, l = 101),
 #' @keywords internal
 
 single_theoretical_coi <- function(coi, plaf = seq(0, 0.5, l = 101),
-                                   method = "1") {
+                                   coi_method = "1") {
   # Check inputs
   assert_single_pos(coi)
   assert_vector(plaf)
   assert_bounded(plaf, left = 0, right = 0.5)
   assert_increasing(plaf)
-  assert_single_string(method)
-  assert_in(method, c("1", "2"))
+  assert_single_string(coi_method)
+  assert_in(coi_method, c("1", "2"))
 
   # Determine the curve
-  if (method == "1") {
+  if (coi_method == "1") {
     curve <- 1 - plaf^coi - (1 - plaf)^coi
-  } else if (method == "2") {
+  } else if (coi_method == "2") {
     curve <- (plaf - plaf^coi)/(1 - plaf^coi - (1 - plaf)^coi)
   }
 }
