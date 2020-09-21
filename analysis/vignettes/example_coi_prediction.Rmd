@@ -71,7 +71,7 @@ for (k in 2:7) {
   cut <- seq(0,0.5,0.01)
   df_grouped <- process_sim(sim1, 0.01, cut)
 
-  lines(df_grouped$midpoints, df_grouped$m_true_variant, 
+  lines(df_grouped$midpoints, df_grouped$m_variant, 
         col = "blue", lwd = 2, type = "o", pch = 20)
   
   # Predict the COI and print the results
@@ -122,7 +122,7 @@ par(mfrow = c(3,2))
 for (k in 2:7) {
 
   # simulate data and subset to heterozygous sites only
-  # set.seed(1)
+  set.seed(1)
   sim1 <- sim_biallelic(COI = k, PLAF = p, overdispersion = 0.01)
   sim1$data <- subset(sim1$data, WSAF > 0 & WSAF < 1)
 
@@ -132,7 +132,7 @@ for (k in 2:7) {
 
   # overlay analytical expectations for COI=2:7
   p_vec <- seq(0, 0.5, l=101)
-  theory_cois <- theoretical_coi(seq(1, 7), p_vec, method = "2")
+  theory_cois <- theoretical_coi(seq(1, 7), p_vec, coi_method = "2")
   for (i in 2:7) {
     lines(p_vec, theory_cois[[paste("coi_", i, sep = "")]], col = 2, lwd = 2)
   }
@@ -140,10 +140,10 @@ for (k in 2:7) {
 
   # compute sliding-window averages over WSAF and overlay in blue
   cut_breaks <- seq(0, 0.5, 0.025)
-  cut_mids <- cut_breaks[-1]-diff(cut_breaks)/2
-  c <- cut(sim1$data$PLAF, breaks = cut_breaks)
-  x2 <- mapply(mean, split(sim1$data$WSAF, f = c))
-  lines(cut_mids, x2, col = "blue", lwd = 2, type = "o", pch = 20)
+  df_grouped <- process_sim(sim1, 0.01, cut_breaks, coi_method = "2")
+
+  lines(df_grouped$midpoints, df_grouped$m_variant,
+        col = "blue", lwd = 2, type = "o", pch = 20)
 }
 ```
 

@@ -4,16 +4,25 @@
 \alias{process}
 \title{Process data}
 \usage{
-process(wsaf, plaf, seq_error = 0.01, cut = seq(0, 0.5, 0.01))
+process(
+  wsaf,
+  plaf,
+  seq_error = 0.01,
+  cut = seq(0, 0.5, 0.01),
+  coi_method = "1"
+)
 }
 \arguments{
 \item{wsaf}{The within-sample allele frequency.}
 
 \item{plaf}{The population-level allele frequency.}
 
-\item{seq_error}{The suspected sequencing error.}
+\item{seq_error}{The level of sequencing error that is assumed.}
 
 \item{cut}{How often the data is summarized.}
+
+\item{coi_method}{The method we will use to calculate the theoretical COI.
+The method is either "1" or "2". The default value is "1".}
 }
 \value{
 Real COI curve.

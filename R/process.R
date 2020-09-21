@@ -7,10 +7,7 @@
 #' simulated WSAF at that SNP. This process additionally accounts for potential
 #' sequencing error.
 #'
-#' @param wsaf The within-sample allele frequency.
-#' @param plaf The population-level allele frequency.
-#' @param seq_error The suspected sequencing error.
-#' @param cut How often the data is summarized.
+#' @inheritParams process_real
 #'
 #' @return Real COI curve.
 #' @keywords internal
@@ -18,13 +15,24 @@
 process <- function(wsaf,
                     plaf,
                     seq_error = 0.01,
-                    cut = seq(0, 0.5, 0.01)) {
-  # Isolate PLAF, determine the PLAF cuts, and whether a site is a variant,
-  # accounting for sequence error
-  df <- data.frame(
-    plaf_cut = cut(plaf, cut, include.lowest = TRUE),
-    variant = ifelse(wsaf <= seq_error | wsaf >= (1 - seq_error), 0, 1)
+                    cut = seq(0, 0.5, 0.01),
+                    coi_method = "1") {
+
+  if (coi_method == "1") {
+    # Isolate PLAF, determine the PLAF cuts, and whether a site is a variant,
+    # accounting for sequence error
+    df <- data.frame(
+      plaf_cut = cut(plaf, cut, include.lowest = TRUE),
+      variant = ifelse(wsaf <= seq_error | wsaf >= (1 - seq_error), 0, 1)
+      )
+
+  } else if (coi_method == "2") {
+    # Isolate PLAF, and keep WSAF as is
+    df <- data.frame(
+      plaf_cut = cut(plaf, cut, include.lowest = TRUE),
+      variant = wsaf
     )
+  }
 
   # Average over intervals of PLAF
   df_grouped <- df %>%
@@ -53,13 +61,17 @@ process <- function(wsaf,
 #' @param sim Output of [sim_biallelic()].
 #' @param seq_error The level of sequencing error that is assumed.
 #' @param cut How often the data is summarized.
+#' @inheritParams theoretical_coi
 #'
 #' @return Simulated COI curve.
 #' @family simulated data functions
 #' @seealso [process_real()] to process real data.
 #' @export
 
-process_sim <- function(sim, seq_error = 0.01, cut = seq(0, 0.5, 0.01)) {
+process_sim <- function(sim,
+                        seq_error = 0.01,
+                        cut = seq(0, 0.5, 0.01),
+                        coi_method = "1") {
   # Check inputs
   assert_single_bounded(seq_error)
   assert_bounded(cut, left = 0, right = 0.5)
@@ -67,10 +79,11 @@ process_sim <- function(sim, seq_error = 0.01, cut = seq(0, 0.5, 0.01)) {
   assert_increasing(cut)
 
   # Run helper to process
-  processed_sim <- process(wsaf      = sim$data$WSAF,
-                           plaf      = sim$data$PLAF,
-                           seq_error = seq_error,
-                           cut       = cut)
+  processed_sim <- process(wsaf       = sim$data$WSAF,
+                           plaf       = sim$data$PLAF,
+                           seq_error  = seq_error,
+                           cut        = cut,
+                           coi_method = coi_method)
 }
 
 #------------------------------------------------
@@ -84,8 +97,7 @@ process_sim <- function(sim, seq_error = 0.01, cut = seq(0, 0.5, 0.01)) {
 #'
 #' @param wsaf The within-sample allele frequency.
 #' @param plaf The population-level allele frequency.
-#' @param seq_error The suspected sequencing error.
-#' @param cut How often the data is summarized.
+#' @inheritParams process_sim
 #'
 #' @return Real COI curve.
 #' @family real data functions
@@ -94,7 +106,8 @@ process_sim <- function(sim, seq_error = 0.01, cut = seq(0, 0.5, 0.01)) {
 
 process_real <- function(wsaf, plaf,
                          seq_error = 0.01,
-                         cut = seq(0, 0.5, 0.01)) {
+                         cut = seq(0, 0.5, 0.01),
+                         coi_method = "1") {
   # Check inputs
   assert_vector(wsaf)
   assert_bounded(wsaf)
@@ -110,8 +123,9 @@ process_real <- function(wsaf, plaf,
   assert_bounded(plaf, left = 0, right = 0.5)
 
   # Run helper to process
-  processed_real <- process(wsaf      = wsaf,
-                            plaf      = plaf,
-                            seq_error = seq_error,
-                            cut       = cut)
+  processed_real <- process(wsaf       = wsaf,
+                            plaf       = plaf,
+                            seq_error  = seq_error,
+                            cut        = cut,
+                            coi_method = coi_method)
 }

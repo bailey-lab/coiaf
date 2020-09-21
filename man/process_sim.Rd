@@ -4,7 +4,7 @@
 \alias{process_sim}
 \title{Process simulated data}
 \usage{
-process_sim(sim, seq_error = 0.01, cut = seq(0, 0.5, 0.01))
+process_sim(sim, seq_error = 0.01, cut = seq(0, 0.5, 0.01), coi_method = "1")
 }
 \arguments{
 \item{sim}{Output of \code{\link[=sim_biallelic]{sim_biallelic()}}.}
@@ -12,6 +12,9 @@ process_sim(sim, seq_error = 0.01, cut = seq(0, 0.5, 0.01))
 \item{seq_error}{The level of sequencing error that is assumed.}
 
 \item{cut}{How often the data is summarized.}
+
+\item{coi_method}{The method we will use to calculate the theoretical COI.
+The method is either "1" or "2". The default value is "1".}
 }
 \value{
 Simulated COI curve.
