@@ -167,7 +167,6 @@ process_sim <- function(sim, seq_error = 0.01, cut = seq(0, 0.5, 0.01)) {
   df_sim_grouped <- df_sim %>%
     dplyr::group_by(.data$plaf_cut, .drop = FALSE) %>%
     dplyr::summarise(m_variant      = mean(.data$variant),
-                     m_true_variant = mean(.data$true_variant),
                      bucket_size    = dplyr::n()) %>%
     as.data.frame()
 
