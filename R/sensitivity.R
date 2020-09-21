@@ -248,7 +248,7 @@ sensitivity <- function(repetitions = 10,
   boot_error$bias  <- unlist(coi_bias)
 
   # Warnings for when could not compute CI. We want to show at most 5 cases
-  # where there is an issue. Anymore, and the warning message becomes to
+  # where there is an issue. Anymore, and the warning message becomes too
   # confusing.
   warn_tibble <- boot_error %>%
     tidyr::unnest(cols = tidyr::everything()) %>%
