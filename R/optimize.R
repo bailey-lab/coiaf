@@ -12,23 +12,31 @@
 #' * `squared`: Sum of squared difference.
 #'
 #' @param coi The COI for which the likelihood will be generated.
+#' @param coi_method The method we will use to calculate the theoretical COI.
+#' The method is either "1" or "2". The default value is "1".
 #' @inheritParams compute_coi
 #'
 #' @return The likelihood for a specific COI value.
 #' @family optimization functions
 #' @export
 
-likelihood <- function(coi, processed_data,
+likelihood <- function(coi, processed_data, coi_method = "1",
                        dist_method = "squared", weighted = TRUE){
 
   # Check inputs
   assert_single_pos(coi)
+  assert_single_string(coi_method)
+  assert_in(coi_method, c("1", "2"))
   assert_single_string(dist_method)
   assert_in(dist_method, c("abs_sum", "sum_abs", "squared"))
   assert_single_logical(weighted)
 
   # Compute theoretical curve
-  theory_coi <- theoretical_coi(coi, processed_data$midpoints, method = "1")
+  if (coi_method == "1") {
+    theory_coi <- theoretical_coi(coi, processed_data$midpoints, coi_method = "1")
+  } else {
+    theory_coi <- theoretical_coi(coi, processed_data$midpoints, coi_method = "2")
+  }
 
   # Distance
   gap <- theory_coi - processed_data$m_variant
