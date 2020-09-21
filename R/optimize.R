@@ -51,7 +51,7 @@ likelihood <- function(coi, processed_data,
 
   # Gap is a named list with two entries: the coi and the PLAF. We want to
   # return only the coi
-  cio <- gap[1]
+  coi <- gap[1]
 }
 
 #------------------------------------------------
