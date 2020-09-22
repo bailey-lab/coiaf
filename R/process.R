@@ -78,6 +78,9 @@ process_sim <- function(sim,
   assert_vector(cut)
   assert_increasing(cut)
 
+  # Subset data to focus only on heterozygous sites
+  sim$data <- subset(sim$data, WSAF > 0 & WSAF < 1)
+
   # Run helper to process
   processed_sim <- process(wsaf       = sim$data$WSAF,
                            plaf       = sim$data$PLAF,
