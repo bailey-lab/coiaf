@@ -148,8 +148,8 @@ compute_coi <- function(processed_data, theory_coi_range, cut,
   } else if (method == "overall") {
     ## Method 3: Find distance between curves
     # Utilize helper function to compute overall distance between two curves
-    overall_res <- distance_curves(processed_data, theory_cois, dist_method,
-                                   weighted)
+    overall_res <- distance_curves(processed_data, theory_cois,
+                                   dist_method, weighted)
 
     # Extract information from the helper function
     coi  <- overall_res$coi

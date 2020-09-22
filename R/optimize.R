@@ -19,8 +19,10 @@
 #' @family optimization functions
 #' @export
 
-likelihood <- function(coi, processed_data, coi_method = "1",
-                       dist_method = "squared", weighted = TRUE){
+likelihood <- function(coi, processed_data,
+                       dist_method = "squared",
+                       weighted = TRUE,
+                       coi_method = "1"){
 
   # Check inputs
   assert_single_pos(coi)
@@ -29,6 +31,8 @@ likelihood <- function(coi, processed_data, coi_method = "1",
   assert_single_string(dist_method)
   assert_in(dist_method, c("abs_sum", "sum_abs", "squared"))
   assert_single_logical(weighted)
+  assert_single_string(coi_method)
+  assert_in(coi_method, c("1", "2"))
 
   # Compute theoretical curve
   if (coi_method == "1") {
@@ -92,9 +96,9 @@ optimize_coi <- function(data,
                          max_COI = 25,
                          seq_error = 0.01,
                          cut = seq(0, 0.5, 0.01),
-                         coi_method = "1",
                          dist_method = "squared",
-                         weighted = TRUE) {
+                         weighted = TRUE,
+                         coi_method = "1") {
 
   # Check inputs
   assert_in(data_type, c("sim", "real"))
@@ -104,11 +108,11 @@ optimize_coi <- function(data,
   assert_bounded(cut, left = 0, right = 0.5)
   assert_vector(cut)
   assert_increasing(cut)
-  assert_single_string(coi_method)
-  assert_in(coi_method, c("1", "2"))
   assert_single_string(dist_method)
   assert_in(dist_method, c("abs_sum", "sum_abs", "squared"))
   assert_logical(weighted)
+  assert_single_string(coi_method)
+  assert_in(coi_method, c("1", "2"))
 
   # Warnings
   if (dist_method != "squared") {
@@ -137,9 +141,9 @@ optimize_coi <- function(data,
   fit <- stats::optim(par = 2,
                       fn = likelihood,
                       processed_data = processed_data,
-                      coi_method = coi_method,
                       dist_method = dist_method,
                       weighted = TRUE,
+                      coi_method = coi_method,
                       method = "L-BFGS-B", lower = 1, upper = max_COI,
                       control = list(fnscale = 1, ndeps = 1e-5))
 
