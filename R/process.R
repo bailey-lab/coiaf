@@ -79,7 +79,7 @@ process_sim <- function(sim,
   assert_increasing(cut)
 
   # Subset data to focus only on heterozygous sites
-  sim$data <- subset(sim$data, WSAF > 0 & WSAF < 1)
+  if (coi_method == "2") sim$data <- subset(sim$data, WSAF > 0 & WSAF < 1)
 
   # Run helper to process
   processed_sim <- process(wsaf       = sim$data$WSAF,
