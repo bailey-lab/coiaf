@@ -90,7 +90,7 @@ p[p > 0.5] <- 1 - p[p > 0.5]
 toverall <- sensitivity(COI = 1:25, max_COI = 30, repetitions = 100, PLAF = p,
                  coverage = 200, seq_error = 0)
 
-toverall_image <- sensitivity_plot(data = toverall, plot_dims = c(1, 1), title = "Overall")
+toverall_image <- sensitivity_plot(data = toverall, dims = c(1, 1), title = "Overall")
 toverall_image
 
 toverall_error <- error_plot(toverall, legend.position = "none")
@@ -280,7 +280,7 @@ bloci <- lapply(loci, function(new_L){
 # Extract the relevant information for each output: predicted_coi, probability, 
 # param_grid, and boot_error
 pc = do.call(cbind, lapply(bloci, function(test){ return(test$predicted_coi) }))
-pb = do.call(c, lapply(bloci, function(test){ return(test$probability) }))
+pb = do.call(cbind, lapply(bloci, function(test){ return(test$probability) }))
 pg = do.call(rbind, lapply(bloci, function(test){ return(test$param_grid) }))
 be = do.call(rbind, lapply(bloci, function(test){ return(test$boot_error) }))
 
