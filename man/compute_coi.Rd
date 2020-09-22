@@ -8,6 +8,7 @@ compute_coi(
   processed_data,
   theory_coi_range,
   cut,
+  coi_method = "1",
   method = "overall",
   dist_method = "squared",
   weighted = TRUE
@@ -21,6 +22,9 @@ compute_coi(
 will be generated.}
 
 \item{cut}{A vector indicating how often the data is summarized.}
+
+\item{coi_method}{The method we will use to calculate the theoretical COI.
+The method is either "1" or "2". The default value is "1".}
 
 \item{method}{The method to be employed. One of \code{"end"}, \code{"ideal"},
 \code{"overall"}.}

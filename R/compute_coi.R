@@ -43,6 +43,7 @@
 #' `"abs_sum"`, `"sum_abs"`, `"squared"`.
 #' @param weighted An indicator indicating whether to compute the weighted
 #' distance.
+#' @inheritParams theoretical_coi
 #'
 #' @return A list of the following:
 #' * `coi`: The predicted COI of the sample.
@@ -54,7 +55,8 @@
 compute_coi <- function(processed_data, theory_coi_range, cut,
                         method = "overall",
                         dist_method = "squared",
-                        weighted = TRUE) {
+                        weighted = TRUE,
+                        coi_method = "1") {
   ##Check inputs
   assert_pos_int(theory_coi_range, zero_allowed = FALSE)
   assert_vector(theory_coi_range)
@@ -67,6 +69,8 @@ compute_coi <- function(processed_data, theory_coi_range, cut,
   assert_single_string(dist_method)
   assert_in(dist_method, c("abs_sum", "sum_abs", "squared"))
   assert_single_logical(weighted)
+  assert_single_string(coi_method)
+  assert_in(coi_method, c("1", "2"))
 
   # Warnings
   if (method != "overall") {
@@ -85,7 +89,9 @@ compute_coi <- function(processed_data, theory_coi_range, cut,
   # Calculate theoretical COI curves for the interval specified. Since we want
   # the theoretical curves and the simulated curves to have the PLAF values, we
   # compute the theoretical COI curves at processed_data$midpoints
-  theory_cois <- theoretical_coi(theory_coi_range, processed_data$midpoints)
+  theory_cois <- theoretical_coi(theory_coi_range,
+                                 processed_data$midpoints,
+                                 coi_method)
 
   # To check that PLAFs are the same
   assert_eq(theory_cois$plaf, processed_data$midpoints)
