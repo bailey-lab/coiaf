@@ -25,7 +25,8 @@ single_sensitivity <- function(COI = 3,
                                cut = seq(0, 0.5, 0.01),
                                method = "overall",
                                dist_method ="squared",
-                               weighted = TRUE) {
+                               weighted = TRUE,
+                               coi_method = "1") {
 
   # Check inputs
   assert_single_pos_int(COI)
@@ -45,16 +46,18 @@ single_sensitivity <- function(COI = 3,
   assert_single_string(dist_method)
   assert_in(dist_method, c("abs_sum", "sum_abs", "squared"))
   assert_single_logical(weighted)
+  assert_single_string(coi_method)
+  assert_in(coi_method, c("1", "2"))
 
   # Simulate data
   sim_data <- sim_biallelic(COI, PLAF, coverage, alpha, overdispersion, epsilon)
 
   # Simulated data results
-  processed_sim <- process_sim(sim_data, seq_error, cut)
+  processed_sim <- process_sim(sim_data, seq_error, cut, coi_method)
 
   # Compute COI
   calc_coi <- compute_coi(processed_sim, 1:max_COI, cut,
-                          method, dist_method, weighted)
+                          method, dist_method, weighted, coi_method)
 }
 
 
@@ -98,7 +101,8 @@ sensitivity <- function(repetitions = 10,
                         cut = seq(0, 0.5, 0.01),
                         method = "overall",
                         dist_method = "squared",
-                        weighted = TRUE) {
+                        weighted = TRUE,
+                        coi_method = "1") {
 
   # Check inputs
   assert_pos_int(repetitions)
@@ -119,6 +123,8 @@ sensitivity <- function(repetitions = 10,
   assert_string(dist_method)
   assert_in(dist_method, c("abs_sum", "sum_abs", "squared"))
   assert_logical(weighted)
+  assert_string(coi_method)
+  assert_in(coi_method, c("1", "2"))
 
   # Create parameter grid
   param_grid <- expand.grid(COI = COI,
@@ -131,6 +137,7 @@ sensitivity <- function(repetitions = 10,
                             method = method,
                             dist_method = dist_method,
                             weighted = weighted,
+                            coi_method = coi_method,
                             stringsAsFactors = FALSE)
 
   # Function to determine if pbapply is installed. If it is installed, it will
@@ -160,7 +167,8 @@ sensitivity <- function(repetitions = 10,
                            cut,
                            param_grid$method[x],
                            param_grid$dist_method[x],
-                           param_grid$weighted[x])
+                           param_grid$weighted[x],
+                           param_grid$coi_method[x])
       return (test_result)
     })
 
