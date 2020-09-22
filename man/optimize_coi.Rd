@@ -10,6 +10,7 @@ optimize_coi(
   max_COI = 25,
   seq_error = 0.01,
   cut = seq(0, 0.5, 0.01),
+  coi_method = "1",
   dist_method = "squared",
   weighted = TRUE
 )
@@ -26,6 +27,9 @@ simulated data to.}
 \item{seq_error}{The level of sequencing error that is assumed.}
 
 \item{cut}{A vector indicating how often the data is summarized.}
+
+\item{coi_method}{The method we will use to calculate the theoretical COI.
+The method is either "1" or "2". The default value is "1".}
 
 \item{dist_method}{The distance method used to determine the distance between
 the theoretical and simulated curves for the \code{"overall"} method. One of

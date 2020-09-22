@@ -117,6 +117,8 @@ heterogeneous, i.e. not all REF or ALT calls.
 
 ```{r method 2}
 # loop over range of COIs
+disc_coi = list()
+cont_coi = list()
 par(mar = c(4, 4, 4, 4))
 par(mfrow = c(3,2))
 for (k in 2:7) {
@@ -144,6 +146,14 @@ for (k in 2:7) {
 
   lines(df_grouped$midpoints, df_grouped$m_variant,
         col = "blue", lwd = 2, type = "o", pch = 20)
+  
+  # Predict the COI and print the results
+  disc = compute_coi(df_grouped, seq(1, 7), cut, "overall", "squared", TRUE)
+  disc_coi = unlist(c(disc_coi, disc$coi))
+  
+  # COI using optimization
+  cont = optimize_coi(sim1, "sim", max_COI = 10, cut = cut, coi_method = "2")
+  cont_coi = unlist(c(cont_coi, cont))
 }
 ```
 

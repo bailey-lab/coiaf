@@ -12,8 +12,7 @@
 #' * `squared`: Sum of squared difference.
 #'
 #' @param coi The COI for which the likelihood will be generated.
-#' @param coi_method The method we will use to calculate the theoretical COI.
-#' The method is either "1" or "2". The default value is "1".
+#' @inheritParams theoretical_coi
 #' @inheritParams compute_coi
 #'
 #' @return The likelihood for a specific COI value.
@@ -33,9 +32,13 @@ likelihood <- function(coi, processed_data, coi_method = "1",
 
   # Compute theoretical curve
   if (coi_method == "1") {
-    theory_coi <- theoretical_coi(coi, processed_data$midpoints, coi_method = "1")
+    theory_coi <- theoretical_coi(coi,
+                                  processed_data$midpoints,
+                                  coi_method = "1")
   } else {
-    theory_coi <- theoretical_coi(coi, processed_data$midpoints, coi_method = "2")
+    theory_coi <- theoretical_coi(coi,
+                                  processed_data$midpoints,
+                                  coi_method = "2")
   }
 
   # Distance
@@ -76,6 +79,7 @@ likelihood <- function(coi, processed_data, coi_method = "1",
 #' @param data_type The type of the data to be analyzed. One of
 #' `"sim"` or `"real"`.
 #' @inheritParams sensitivity
+#' @inheritParams likelihood
 #'
 #' @return The predicted COI value.
 #' @seealso [stats::optim()] for the complete documentation on the optimization
@@ -88,6 +92,7 @@ optimize_coi <- function(data,
                          max_COI = 25,
                          seq_error = 0.01,
                          cut = seq(0, 0.5, 0.01),
+                         coi_method = "1",
                          dist_method = "squared",
                          weighted = TRUE) {
 
@@ -99,6 +104,8 @@ optimize_coi <- function(data,
   assert_bounded(cut, left = 0, right = 0.5)
   assert_vector(cut)
   assert_increasing(cut)
+  assert_single_string(coi_method)
+  assert_in(coi_method, c("1", "2"))
   assert_single_string(dist_method)
   assert_in(dist_method, c("abs_sum", "sum_abs", "squared"))
   assert_logical(weighted)
@@ -113,9 +120,10 @@ optimize_coi <- function(data,
 
   # Process data
   if (data_type == "sim"){
-    processed_data <- process_sim(data, seq_error, cut)
+    processed_data <- process_sim(data, seq_error, cut, coi_method)
   } else if (data_type == "real"){
-    processed_data <- process_real(data$wsaf, data$plaf, seq_error, cut)
+    processed_data <- process_real(data$wsaf, data$plaf,
+                                   seq_error, cut, coi_method)
   }
 
   # Compute COI
@@ -129,7 +137,8 @@ optimize_coi <- function(data,
   fit <- stats::optim(par = 2,
                       fn = likelihood,
                       processed_data = processed_data,
-                      dist_method = "squared",
+                      coi_method = coi_method,
+                      dist_method = dist_method,
                       weighted = TRUE,
                       method = "L-BFGS-B", lower = 1, upper = max_COI,
                       control = list(fnscale = 1, ndeps = 1e-5))
