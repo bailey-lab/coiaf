@@ -16,7 +16,8 @@ single_sensitivity(
   cut = seq(0, 0.5, 0.01),
   method = "overall",
   dist_method = "squared",
-  weighted = TRUE
+  weighted = TRUE,
+  coi_method = "1"
 )
 }
 \arguments{
@@ -55,6 +56,9 @@ the theoretical and simulated curves for the \code{"overall"} method. One of
 
 \item{weighted}{An indicator indicating whether to compute the weighted
 distance.}
+
+\item{coi_method}{The method we will use to calculate the theoretical COI.
+The method is either "1" or "2". The default value is "1".}
 }
 \value{
 Predicted COI value.
