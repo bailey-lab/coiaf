@@ -60,7 +60,8 @@ theoretical_coi <- function(coi_range, plaf = seq(0, 0.5, l = 101),
 #'
 #' @keywords internal
 
-single_theoretical_coi <- function(coi, plaf = seq(0, 0.5, l = 101),
+single_theoretical_coi <- function(coi,
+                                   plaf = seq(0, 0.5, l = 101),
                                    coi_method = "1") {
   # Check inputs
   assert_single_pos(coi)

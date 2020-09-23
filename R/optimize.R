@@ -22,8 +22,7 @@
 likelihood <- function(coi, processed_data,
                        dist_method = "squared",
                        weighted = TRUE,
-                       coi_method = "1"){
-
+                       coi_method = "1") {
   # Check inputs
   assert_single_pos(coi)
   assert_single_string(coi_method)
