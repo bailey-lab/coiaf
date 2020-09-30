@@ -80,7 +80,7 @@ process_sim <- function(sim,
 
   # Subset data to focus only on heterozygous sites
   if (coi_method == "2") {
-    sim$data <- subset(sim$data, .data$WSAF > 0 & .data$WSAF < 1)
+    sim$data <- dplyr::filter(sim$data, .data$WSAF > 0 & .data$WSAF < 1)
   }
 
   # Run helper to process
@@ -129,7 +129,10 @@ process_real <- function(wsaf, plaf,
 
   # Subset data to focus only on heterozygous sites
   if (coi_method == "2") {
-    wsaf <- subset(wsaf, wsaf > 0 & wsaf < 1)
+    data <- data.frame(wsaf = wsaf, plaf = plaf) %>%
+      dplyr::filter(wsaf > 0 & wsaf < 1)
+    wsaf <- data$wsaf
+    plaf <- data$plaf
   }
 
   # Run helper to process
