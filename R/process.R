@@ -127,6 +127,11 @@ process_real <- function(wsaf, plaf,
   plaf[plaf > 0.5] <- 1 - plaf[plaf > 0.5]
   assert_bounded(plaf, left = 0, right = 0.5)
 
+  # Subset data to focus only on heterozygous sites
+  if (coi_method == "2") {
+    wsaf <- subset(wsaf, wsaf > 0 & wsaf < 1)
+  }
+
   # Run helper to process
   processed_real <- process(wsaf       = wsaf,
                             plaf       = plaf,
