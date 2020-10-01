@@ -74,37 +74,57 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-
 <div id="coiaf-" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#coiaf-" class="anchor"></a>coiaf <a href="https://ojwatson.github.io/coiaf/"><img src="reference/figures/logo.png" align="right" height="139"></a>
 </h1></div>
 <!-- badges: start -->
 
-</div>
-<div id="introduction" class="section level1">
-<h1 class="hasAnchor">
-<a href="#introduction" class="anchor"></a>Introduction</h1>
-<p>In malaria infections, individuals can often be infected by multiple parasites due to repeated mosquito bites or mosquitoes harboring multiple parasites. Such mixed infections may represent unrelated strains or parasites that are related. The number of strains found in an individual is known as the Complexity Of Infection (COI). Previous methods have utilized statistics to determine the relative COI based on the assumption that parasites are unrelated. While such assumptions often do not hold, these methods provide insight into the force of infection and the parasite population. Prior methods have been proposed to measure COI, including probabilistic likelihood models and Bayesian models. However, a rapid direct measure such as heterozygosity or FwS has not yet been developed. Here we present two measures that show equivalent power to other methods, but are directly calculable from allele observed proportions based on the knowledge of overall population allele frequencies.</p>
-</div>
-<div id="installation" class="section level1">
-<h1 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h1>
-<p>To install the package, please follow the code below. In order to install, <code>devtools</code> must be installed.</p>
-<div class="sourceCode" id="cb1"><pre class="r"><span class="co"># install.packages("devtools")</span>
-<span class="kw pkg">devtools</span><span class="kw ns">::</span><span class="fu">install_github</span>(<span class="st">"https://github.com/OJWatson/coiaf"</span>)</pre></div>
-</div>
-<div id="usage" class="section level1">
-<h1 class="hasAnchor">
-<a href="#usage" class="anchor"></a>Usage</h1>
-<p>In order to run real data, please refer to the Articles drop down menu. Several articles are provided which detail how the algorithm works, how data was simulated to test the algorithm, and importantly how to run real data. A short example on running real data is included and outlines the necessary data structure as well as the commands to run.</p>
-<div id="development" class="section level2">
+<div id="introduction" class="section level2">
 <h2 class="hasAnchor">
-<a href="#development" class="anchor"></a>Development</h2>
+<a href="#introduction" class="anchor"></a>Introduction</h2>
+<p>In malaria infections, individuals can often be infected by multiple parasites due to repeated mosquito bites or mosquitoes harboring multiple parasites. Such mixed infections may represent unrelated strains or parasites that are related. The number of strains found in an individual is known as the Complexity of Infection (COI). These methods provide insight into the force of infection and the parasite population, two measures that are becoming increasingly more important as they provide indirect measures of the effectiveness of malaria control efforts. Prior methods have been proposed to measure COI, including probabilistic likelihood models and Bayesian models. However, a rapid direct measure has not yet been developed that truly represents COI. The goal of this project is to develop two rapid, direct measures that show equivalent power to other well-established methods. In addition, previous methods have utilized statistics to determine the relative COI based on the assumption that parasites are unrelated, and the second aim will be to incorporate relatedness to provide a more unbiased measure in field situations.</p>
+</div>
+<div id="installation" class="section level2">
+<h2 class="hasAnchor">
+<a href="#installation" class="anchor"></a>Installation</h2>
+<p>To install the package, please follow the code below. In order to install, <code>devtools</code> must be installed.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit">
+<span class="co"># install.packages("devtools")</span>
+<span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"https://github.com/OJWatson/coiaf"</span><span class="op">)</span></pre></div>
+</div>
+<div id="usage" class="section level2">
+<h2 class="hasAnchor">
+<a href="#usage" class="anchor"></a>Usage</h2>
+<p>In order to run real data, please refer to the Articles drop down menu. Several articles are provided which detail how the algorithm works, how data was simulated to test the algorithm, and importantly how to run real data. A short example on running real data is included and outlines the necessary data structure as well as the commands to run.</p>
+<div id="development" class="section level3">
+<h3 class="hasAnchor">
+<a href="#development" class="anchor"></a>Development</h3>
 <p>Please note that this package is still under development and may be missing features. This <code>README</code> will be updated as the package is developed accordingly.</p>
+<p>Features in development:</p>
+<ul>
+<li>
+<input type="checkbox" disabled checked>
+Method 2</li>
+<li>
+<input type="checkbox" disabled>
+Run the full SNP dataset</li>
+<li>
+<input type="checkbox" disabled>
+Statistics for the world map plots (will most likely do bootstrapping)</li>
+<li>
+<input type="checkbox" disabled>
+Find a way to convert continuous predictions to discrete predictions</li>
+<li>
+<input type="checkbox" disabled>
+Do another round of sensitivity analysis using the continuous method<ul>
+<li>Will need to add a relatedness parameter to the simulated data</li>
+</ul>
+</li>
+</ul>
 </div>
 </div>
-
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -150,7 +170,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Pipe operator — %&gt;% • coiaf</title>
+<title>Process data — process • coiaf</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,8 @@
 
 
 
-<meta property="og:title" content="Pipe operator — %&gt;%" />
-<meta property="og:description" content="See magrittr::%&amp;gt;% for details." />
+<meta property="og:title" content="Process data — process" />
+<meta property="og:description" content="Helper function to process data" />
 <meta property="og:image" content="https://ojwatson.github.io/coiaf/logo.png" />
 
 
@@ -116,18 +116,57 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Pipe operator</h1>
-    <small class="dont-index">Source: <a href='https://github.com/ojwatson/coiaf/blob/master/R/utils-pipe.R'><code>R/utils-pipe.R</code></a></small>
-    <div class="hidden name"><code>pipe.Rd</code></div>
+    <h1>Process data</h1>
+    <small class="dont-index">Source: <a href='https://github.com/ojwatson/coiaf/blob/master/R/process.R'><code>R/process.R</code></a></small>
+    <div class="hidden name"><code>process.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>See <code>magrittr::%&gt;%</code> for details.</p>
+    <p>Helper function to process data</p>
     </div>
 
-    <pre class="usage"><span class='va'>lhs</span> <span class='op'>%&gt;%</span> <span class='va'>rhs</span></pre>
+    <pre class="usage"><span class='fu'>process</span><span class='op'>(</span>
+  <span class='va'>wsaf</span>,
+  <span class='va'>plaf</span>,
+  seq_error <span class='op'>=</span> <span class='fl'>0.01</span>,
+  cut <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>0.5</span>, <span class='fl'>0.01</span><span class='op'>)</span>,
+  coi_method <span class='op'>=</span> <span class='st'>"1"</span>
+<span class='op'>)</span></pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>wsaf</th>
+      <td><p>The within-sample allele frequency.</p></td>
+    </tr>
+    <tr>
+      <th>plaf</th>
+      <td><p>The population-level allele frequency.</p></td>
+    </tr>
+    <tr>
+      <th>seq_error</th>
+      <td><p>The level of sequencing error that is assumed.</p></td>
+    </tr>
+    <tr>
+      <th>cut</th>
+      <td><p>How often the data is summarized.</p></td>
+    </tr>
+    <tr>
+      <th>coi_method</th>
+      <td><p>The method we will use to calculate the theoretical COI.
+The method is either "1" or "2". The default value is "1".</p></td>
+    </tr>
+    </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>Real COI curve.</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>The function computes whether a SNP is a variant site or not, based on the
+simulated WSAF at that SNP. This process additionally accounts for potential
+sequencing error.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
