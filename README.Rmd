@@ -66,3 +66,12 @@ data structure as well as the commands to run.
 ### Development
 Please note that this package is still under development and may be missing 
 features. This `README` will be updated as the package is developed accordingly.
+
+Features in development:
+
+- [x] Method 2
+- [ ] Run the full SNP dataset
+- [ ] Statistics for the world map plots (will most likely do bootstrapping)
+- [ ] Find a way to convert continuous predictions to discrete predictions
+- [ ] Do another round of sensitivity analysis using the continuous method
+  - Will need to add a relatedness parameter to the simulated data
