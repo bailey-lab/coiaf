@@ -148,11 +148,11 @@ for (k in 2:7) {
         col = "blue", lwd = 2, type = "o", pch = 20)
   
   # Predict the COI and print the results
-  disc = compute_coi(df_grouped, seq(1, 7), cut, "overall", "squared", TRUE, "2")
+  disc = compute_coi(df_grouped, seq(1, 7), cut_breaks, "overall", "squared", TRUE, "2")
   disc_coi = unlist(c(disc_coi, disc$coi))
   
   # COI using optimization
-  cont = optimize_coi(sim1, "sim", max_COI = 10, cut = cut, coi_method = "2")
+  cont = optimize_coi(sim1, "sim", max_COI = 10, cut = cut_breaks, coi_method = "2")
   cont_coi = unlist(c(cont_coi, cont))
 }
 ```

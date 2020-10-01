@@ -88,12 +88,16 @@ p[p > 0.5] <- 1 - p[p > 0.5]
 ### Overall Performance
 ```{r overall, eval = eval_tests}
 toverall <- sensitivity(COI = 1:25, max_COI = 30, repetitions = 100, PLAF = p,
-                 coverage = 200, seq_error = 0)
+                        coverage = 200, seq_error = 0, coi_method = c("1", "2"))
 
-toverall_image <- sensitivity_plot(data = toverall, dims = c(1, 1), title = "Overall")
+toverall_image <- sensitivity_plot(data = toverall, dims = c(2, 1), 
+                                   title = "Overall", 
+                                   sub_title = c("Method 1", "Method 2"))
 toverall_image
 
-toverall_error <- error_plot(toverall, legend.position = "none")
+toverall_error <- error_plot(toverall, fill = "coi_method", 
+                             legend_title = "COI Method", 
+                             fill_levels = c("Method 1", "Method 2"))
 toverall_error
 ```
 
@@ -109,12 +113,17 @@ We first want to understand for what range our model can accurately predict
 the COI.
 
 ```{r coi, eval = eval_tests}
-tcoi <- sensitivity(COI = 2:40, max_COI = 40, repetitions = 100, PLAF = p)
+tcoi <- sensitivity(COI = 2:40, max_COI = 40, repetitions = 100, PLAF = p,
+                    coi_method = c("1", "2"))
 
-tcoi_image <- sensitivity_plot(data = tcoi, dims = c(1, 1), title = "COI")
+tcoi_image <- sensitivity_plot(data = tcoi, dims = c(2, 1), 
+                               title = "COI",
+                               sub_title = c("Method 1", "Method 2"))
 tcoi_image 
 
-tcoi_error <- error_plot(tcoi, legend.position = "none")
+tcoi_error <- error_plot(tcoi, fill = "coi_method", 
+                         legend_title = "COI Method", 
+                         fill_levels = c("Method 1", "Method 2"))
 tcoi_error
 ```
 
@@ -138,13 +147,16 @@ COIs of 2 till 20.
 
 ### Method
 ```{r method, eval = eval_tests}
-tmethod <- sensitivity(COI = 2:20, PLAF = p, method = c("end", "ideal", "overall"),
-                    dist_method = "squared", repetitions = 100)
+tmethod <- sensitivity(COI = 2:20, PLAF = p, 
+                       method = c("end", "ideal", "overall"),
+                       dist_method = "squared", repetitions = 100)
 
 tmethod_image <- 
   sensitivity_plot(data = tmethod,
                    dims = c(3, 1),
-                   sub_title = paste0("Method = ", c("End", "Ideal", "Overall")))
+                   sub_title = paste0("Method = ", c("End", 
+                                                     "Ideal", 
+                                                     "Overall")))
 tmethod_image
 
 tmethod_error <- error_plot(tmethod, fill = "method", legend_title = "Method", 
@@ -179,21 +191,21 @@ document, we will use the `overall` method.
 ```{r distance, eval = eval_tests}
 tdistance <- sensitivity(COI = 2:20, PLAF = p, method = "overall",
                       dist_method = c("abs_sum", "sum_abs", "squared"),
-                      repetitions = 100)
+                      repetitions = 100, coi_method = c("1", "2"))
 
 tdistance_image <- 
   sensitivity_plot(data = tdistance,
-                   dims = c(3, 1),
-                   sub_title = paste0("Distance Method = ", 
-                                      c("Absolute Sum", "Sum of Absolute",
-                                        "Squared Error")))
+                   dims = c(3, 2),
+                   sub_title = paste(rep(c("Absolute Sum", "Sum of Absolute", "Squared Error"), 2),
+                                     rep(c("Method 1", "Method 2"), each = 3), sep = ", "))
 tdistance_image
 
 tdistance_error <- error_plot(tdistance, fill = "dist_method", 
                               legend_title = "Distance Method", 
                               fill_levels = c("Absolute Sum", "Squared Error", 
                                               "Sum of Absolute"),
-                              title = "Error Plot for Distance Method")
+                              title = "Error Plot for Distance Method",
+                              second_fill = "coi_method")
 tdistance_error
 ```
 
@@ -205,21 +217,20 @@ knitr::include_graphics('figures/error_images/tdistance_error.png')
 ### Weighted
 ```{r weight, eval = eval_tests}
 tweight <- sensitivity(COI = 2:20, weighted = c(FALSE, TRUE),
-                    dist_method = c("abs_sum", "sum_abs", "squared"),
-                    PLAF = p, repetitions = 100)
+                    dist_method = "squared", PLAF = p, repetitions = 100,
+                    coi_method = c("1", "2"))
 
 tweight_image <- 
   sensitivity_plot(data = tweight,
-                   dims = c(2, 3),
+                   dims = c(2, 2),
                    sub_title = 
-                   paste(rep(c("Abs Sum", "Sum Abs", "Squared"), 2),
-                         rep(c("Not Weighted", "Weighted"), each = 4)))
+                   paste(rep(c("Not Weighted", "Weighted"), 2),
+                         rep(c("Method 1", "Method 2"), each = 2), sep = ", "))
 tweight_image
 
-tweight_error <- error_plot(tweight, fill = "dist_method", 
-                            fill_levels = c("Absolute Sum", "Squared Error", 
-                                            "Sum of Absolute"),
-                            legend_title = "Distance Method", 
+tweight_error <- error_plot(tweight, fill = "coi_method", 
+                            fill_levels = c("1", "2"),
+                            legend_title = "COI Method", 
                             title = "Error Plot for Weight",
                             second_fill = "weighted")
 tweight_error
@@ -238,18 +249,20 @@ often, but the difference is very small.
 ### Coverage
 ```{r coverage, eval = eval_tests}
 tcoverage <- sensitivity(COI = 2:20, coverage = c(25, 50, 100, 200, 400, 800), 
-                 repetitions = 100, PLAF = p)
+                 repetitions = 100, PLAF = p, coi_method = c("1", "2"))
 
 tcoverage_image <- 
   sensitivity_plot(data = tcoverage,
-                   dims = c(2, 3),
-                   sub_title = paste0("Coverage = ", 
-                                      c(25, 50, 100, 200, 400, 800)))
+                   dims = c(4, 3),
+                   sub_title = paste(paste0("Coverage ", c(25, 50, 100, 200, 400, 800)),
+                                     rep(c("Method 1", "Method 2"), each = 6),
+                                     sep = ", "))
 tcoverage_image
 
 tcoverage_error <- error_plot(tcoverage, fill = "coverage", 
                               legend_title = "Coverage", 
-                              title = "Error Plot for Coverage")
+                              title = "Error Plot for Coverage",
+                              second_fill = "coi_method")
 tcoverage_error
 ```
 
@@ -347,17 +360,20 @@ the model will underpredict the true COI.
 ### Overdispersion
 ```{r overdispersion, eval = eval_tests}
 tover <- sensitivity(COI = 2:20, overdispersion = seq(0, 0.2, 0.05), 
-                 repetitions = 100, PLAF = p)
+                     repetitions = 100, PLAF = p, coi_method = c("1", "2"))
 
 tover_image <- 
   sensitivity_plot(data = tover,
-                   dims = c(3, 2),
-                   sub_title = paste0("Overdispersion = ", seq(0, 0.2, 0.05)))
+                   dims = c(4, 3),
+                   sub_title = paste(paste0("Over ", seq(0, 0.2, 0.05)),
+                                     rep(c("Method 1", "Method 2"), each = 5),
+                                     sep = ", "))
 tover_image
 
 tover_error <- error_plot(tover, fill = "overdispersion", 
                           legend_title = "Overdispersion", 
-                          title = "Error Plot for Overdispersion")
+                          title = "Error Plot for Overdispersion",
+                          second_fill = "coi_method")
 tover_error
 ```
 
