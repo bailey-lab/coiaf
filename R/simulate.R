@@ -40,7 +40,12 @@
 #' @param epsilon The probability of a single read being miscalled as the other
 #'   allele. Applies in both directions.
 #' @param relatedness The probability that a strain in mixed infections is
-#'   related to another. Default = 0 (unrelated).
+#'   related to another. Default = 0 (unrelated). The implementation is similar
+#'   to relatedness as defined in THE REAL McCOIL simulations. In the original
+#'   paper (https://doi.org/10.1371/journal.pcbi.1005348) this is defined as:
+#'   "... simulated relatedness (r) among lineages within the same host by
+#'   sampling alleles either from an existing lineage within the same host
+#'   (with probability r) or from the population (with probability (1-r))."
 #'
 #' @return A list of:
 #' * `COI`: The COI used to simulate the data.
