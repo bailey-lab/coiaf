@@ -50,6 +50,14 @@ A list of:
 \item \code{counts}: The count at each locus.
 \item \code{WSAF}: The within-sample allele frequency.
 }
+\item \code{inputs}: A dataframe of function input arguments:
+\itemize{
+\item \code{alpha}: Shape parameters of Dirichlet controlling strain proportions.
+\item \code{overdispersion}: Overdispersion in count data.
+\item \code{relatedness}: Within sample relatedness between strains.
+\item \code{epsilon}: Probability of a single read being miscalled.
+}
+\item 
 }
 }
 \description{

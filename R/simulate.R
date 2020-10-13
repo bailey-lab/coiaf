@@ -51,6 +51,12 @@
 #'   + `coverage`: The coverage at each locus.
 #'   + `counts`: The count at each locus.
 #'   + `WSAF`: The within-sample allele frequency.
+#' * `inputs`: A dataframe of function input arguments:
+#'   + `alpha`: Shape parameters of Dirichlet controlling strain proportions.
+#'   + `overdispersion`: Overdispersion in count data.
+#'   + `relatedness`: Within sample relatedness between strains.
+#'   + `epsilon`: Probability of a single read being miscalled.
+#' *
 #' @family simulated data functions
 #' @export
 
