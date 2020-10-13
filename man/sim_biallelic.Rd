@@ -10,6 +10,7 @@ sim_biallelic(
   coverage = 200,
   alpha = 1,
   overdispersion = 0,
+  relatedness = 0,
   epsilon = 0
 )
 }
@@ -29,6 +30,9 @@ to the binomial distribution. Counts are Beta-binomially distributed, with
 the beta distribution having shape parameters
 \mjseqn{\frac{p}{overdispersion}} and
 \mjseqn{\frac{1-p}{overdispersion}}.}
+
+\item{relatedness}{The probability that a strain in mixed infections is
+related to another. Default = 0 (unrelated).}
 
 \item{epsilon}{The probability of a single read being miscalled as the other
 allele. Applies in both directions.}
