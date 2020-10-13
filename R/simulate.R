@@ -39,6 +39,8 @@
 #'   \mjseqn{\frac{1-p}{overdispersion}}.
 #' @param epsilon The probability of a single read being miscalled as the other
 #'   allele. Applies in both directions.
+#' @param relatedness The probability that a strain in mixed infections is
+#'   related to another. Default = 0 (unrelated).
 #'
 #' @return A list of:
 #' * `COI`: The COI used to simulate the data.
@@ -57,6 +59,7 @@ sim_biallelic <- function(COI = 3,
                           coverage = 200,
                           alpha = 1,
                           overdispersion = 0,
+                          relatedness = 0,
                           epsilon = 0) {
 
   # Check inputs
@@ -78,13 +81,35 @@ sim_biallelic <- function(COI = 3,
   assert_single_pos(alpha, zero_allowed = FALSE)
   assert_single_pos(overdispersion, zero_allowed = TRUE)
   assert_single_pos(epsilon, zero_allowed = TRUE)
+  assert_single_pos(relatedness, zero_allowed = TRUE)
   assert_bounded(epsilon)
+  assert_bounded(relatedness)
 
   # Generate strain proportions
   w <- rdirichlet(rep(alpha, COI))
 
   # Generate true WSAF levels by summing binomial draws over strain proportions
   m <- mapply(function(x) rbinom(COI, 1, x), x = PLAF)
+
+  # Handle relatedness
+  if (relatedness > 0 && COI > 1) {
+
+    # If there is relatedness we iteratively step through each lineage
+    for (i in seq_len(COI - 1)) {
+
+      # For each loci we assume that it is related with probability relatedness
+      rel_i <- as.logical(rbinom(L, size = 1, prob = relatedness))
+
+      # And for those sites that related, we draw the other lineages
+      if (any(rel_i)) {
+        m[i+1, rel_i] <- apply(m[seq_len(i), rel_i, drop = FALSE], 2, sample, size = 1)
+      }
+
+    }
+
+  }
+
+  # Draw with the within sample allele frequencies (p_levels) are
   if (COI == 1){
     p_levels = m*w
   } else{
@@ -114,5 +139,9 @@ sim_biallelic <- function(COI = 3,
               data = data.frame(PLAF     = PLAF,
                                 coverage = coverage,
                                 counts   = counts,
-                                WSAF     = counts/coverage))
+                                WSAF     = counts/coverage),
+              inputs = data.frame(alpha = alpha,
+                                  overdispersion = overdispersion,
+                                  relatedness = relatedness,
+                                  epsilon = epsilon))
 }
