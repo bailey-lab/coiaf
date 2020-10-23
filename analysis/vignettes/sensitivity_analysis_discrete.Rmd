@@ -53,8 +53,10 @@ $(1-p) / \text{overdispersion}$.
 Applies in both directions.
 * seq_error: The level of sequencing error that is assumed.
 
-A note of caution, in order to visualize the following tests, `ggplot2` and
-`ggpubr` must be installed.
+In addition, we will compare two different methods of determining the COI.
+The first method uses the mean number of variant sites, binned in groups of 
+increasing PLAF to infer COI. The second method compares the WSAF to the PLAF 
+for only the sites that are heterogeneous.
 
 ### Default Parameters
 
@@ -91,19 +93,21 @@ toverall <- sensitivity(COI = 1:25, max_COI = 30, repetitions = 100, PLAF = p,
                         coverage = 200, seq_error = 0, coi_method = c("1", "2"))
 
 toverall_image <- sensitivity_plot(data = toverall, dims = c(2, 1), 
-                                   title = "Overall", 
+                                   title = "Predicted COI", 
                                    sub_title = c("Method 1", "Method 2"))
-toverall_image
 
 toverall_error <- error_plot(toverall, fill = "coi_method", 
                              legend_title = "COI Method", 
+                             title = "Error",
                              fill_levels = c("Method 1", "Method 2"))
-toverall_error
+
+toverall_fig <- ggpubr::ggarrange(toverall_image, toverall_error, 
+                                  labels = "AUTO")
+toverall_fig
 ```
 
 ```{r overall image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/sensitivity_plots/toverall_image.png')
-knitr::include_graphics('figures/error_images/toverall_error.png')
+knitr::include_graphics('figures/toverall.png')
 ```
 
 ## Sensitivity Analysis
@@ -117,19 +121,20 @@ tcoi <- sensitivity(COI = 2:40, max_COI = 40, repetitions = 100, PLAF = p,
                     coi_method = c("1", "2"))
 
 tcoi_image <- sensitivity_plot(data = tcoi, dims = c(2, 1), 
-                               title = "COI",
+                               title = "Predicted COI", 
                                sub_title = c("Method 1", "Method 2"))
-tcoi_image 
 
 tcoi_error <- error_plot(tcoi, fill = "coi_method", 
                          legend_title = "COI Method", 
+                         title = "Error",
                          fill_levels = c("Method 1", "Method 2"))
-tcoi_error
+
+tcoi_fig <- ggpubr::ggarrange(tcoi_image, tcoi_error, labels = "AUTO") 
+tcoi_fig
 ```
 
 ```{r coi image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/sensitivity_plots/tcoi_image.png')
-knitr::include_graphics('figures/error_images/tcoi_error.png')
+knitr::include_graphics('figures/tcoi.png')
 ```
 
 Based on the above set of runs, it appears that the algorithm performs well for
@@ -153,21 +158,22 @@ tmethod <- sensitivity(COI = 2:20, PLAF = p,
 
 tmethod_image <- 
   sensitivity_plot(data = tmethod,
+                   title = "Predicted COI",
                    dims = c(3, 1),
                    sub_title = paste0("Method = ", c("End", 
                                                      "Ideal", 
                                                      "Overall")))
-tmethod_image
 
 tmethod_error <- error_plot(tmethod, fill = "method", legend_title = "Method", 
                             fill_levels = c("End", "Ideal", "Overall"),
-                            title = "Error Plot for Method")
-tmethod_error
+                            title = "Error")
+
+tmethod_fig <- ggpubr::ggarrange(tmethod_image, tmethod_error, labels = "AUTO") 
+tmethod_fig
 ```
 
 ```{r method image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/sensitivity_plots/tmethod_image.png')
-knitr::include_graphics('figures/error_images/tmethod_error.png')
+knitr::include_graphics('figures/tmethod.png')
 ```
 
 Looking at the images for the three methods: `end`, `ideal`, `overall`, it is
@@ -195,23 +201,30 @@ tdistance <- sensitivity(COI = 2:20, PLAF = p, method = "overall",
 
 tdistance_image <- 
   sensitivity_plot(data = tdistance,
+                   title = "Predicted COI",
                    dims = c(3, 2),
-                   sub_title = paste(rep(c("Absolute Sum", "Sum of Absolute", "Squared Error"), 2),
-                                     rep(c("Method 1", "Method 2"), each = 3), sep = ", "))
-tdistance_image
+                   sub_title = paste(rep(c("Absolute Sum", 
+                                           "Sum of Absolute", 
+                                           "Squared Error"), 
+                                         2),
+                                     rep(c("Method 1", "Method 2"), each = 3), 
+                                     sep = ", "))
 
 tdistance_error <- error_plot(tdistance, fill = "dist_method", 
                               legend_title = "Distance Method", 
-                              fill_levels = c("Absolute Sum", "Squared Error", 
+                              fill_levels = c("Absolute Sum", 
+                                              "Squared Error", 
                                               "Sum of Absolute"),
-                              title = "Error Plot for Distance Method",
+                              title = "Error",
                               second_fill = "coi_method")
-tdistance_error
+
+tdistance_fig <- ggpubr::ggarrange(tdistance_image, tdistance_error, 
+                                   labels = "AUTO")
+tdistance_fig
 ```
 
 ```{r distance image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/sensitivity_plots/tdistance_image.png')
-knitr::include_graphics('figures/error_images/tdistance_error.png')
+knitr::include_graphics('figures/tdistance.png')
 ```
 
 ### Weighted
@@ -222,23 +235,24 @@ tweight <- sensitivity(COI = 2:20, weighted = c(FALSE, TRUE),
 
 tweight_image <- 
   sensitivity_plot(data = tweight,
+                   title = "Predicted COI",
                    dims = c(2, 2),
                    sub_title = 
                    paste(rep(c("Not Weighted", "Weighted"), 2),
                          rep(c("Method 1", "Method 2"), each = 2), sep = ", "))
-tweight_image
 
 tweight_error <- error_plot(tweight, fill = "coi_method", 
                             fill_levels = c("1", "2"),
                             legend_title = "COI Method", 
-                            title = "Error Plot for Weight",
+                            title = "Error",
                             second_fill = "weighted")
-tweight_error
+
+tweight_fig <- ggpubr::ggarrange(tweight_image, tweight_error, labels = "AUTO") 
+tweight_fig
 ```
 
 ```{r weight image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/sensitivity_plots/tweight_image.png')
-knitr::include_graphics('figures/error_images/tweight_error.png')
+knitr::include_graphics('figures/tweight.png')
 ```
 
 Comparing weighted to non-weighted distance metrics, it appears that there is
@@ -253,22 +267,24 @@ tcoverage <- sensitivity(COI = 2:20, coverage = c(25, 50, 100, 200, 400, 800),
 
 tcoverage_image <- 
   sensitivity_plot(data = tcoverage,
+                   title = "Predicted COI",
                    dims = c(4, 3),
                    sub_title = paste(paste0("Coverage ", c(25, 50, 100, 200, 400, 800)),
                                      rep(c("Method 1", "Method 2"), each = 6),
                                      sep = ", "))
-tcoverage_image
 
 tcoverage_error <- error_plot(tcoverage, fill = "coverage", 
                               legend_title = "Coverage", 
-                              title = "Error Plot for Coverage",
+                              title = "Error",
                               second_fill = "coi_method")
-tcoverage_error
+
+tcoverage_fig <- ggpubr::ggarrange(tcoverage_image, tcoverage_error, 
+                                   labels = "AUTO")
+tcoverage_fig
 ```
 
 ```{r coverage image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/sensitivity_plots/tcoverage_image.png')
-knitr::include_graphics('figures/error_images/tcoverage_error.png')
+knitr::include_graphics('figures/tcoverage.png')
 ```
 
 It can be seen, based on the figures, that the lower the coverage is, the worse
@@ -276,7 +292,7 @@ our algorithm does. With a coverage greater than 100, however, there is not a
 noticeable difference in performance.
 
 ### Loci
-```{r loci, eval = eval_tests}
+```{r loci method 1, eval = eval_tests}
 # Set the range over which we will iterate
 loci = c(1e3, 1e4)
 
@@ -285,7 +301,8 @@ bloci <- lapply(loci, function(new_L){
   new_p <- rbeta(new_L, 1, 5)
   new_p[new_p > 0.5] <- 1 - new_p[new_p > 0.5]
   
-  inner_tloci <- sensitivity(COI = 2:20, repetitions = 100, PLAF = new_p)
+  inner_tloci <- sensitivity(COI = 2:20, repetitions = 100, PLAF = new_p,
+                             coi_method = "1")
   inner_tloci$param_grid$loci <- new_L
   return(inner_tloci)
 })
@@ -303,7 +320,7 @@ num_repeat_cois = length(pg$COI) / num_cois
 names(pc) = paste("coi", pg$COI, rep(seq(num_repeat_cois), each = num_cois), sep="_")
 
 # Create the output
-tloci <- list(
+tloci_1 <- list(
   predicted_coi = pc,
   probability   = pb,
   param_grid    = pg,
@@ -311,51 +328,130 @@ tloci <- list(
 )
 
 # Plot
-tloci_image <- 
-  sensitivity_plot(data = tloci,
+tloci_image_1 <- 
+  sensitivity_plot(data = tloci_1,
+                   title = "Predicted COI",
                    dims = c(2, 1),
                    sub_title = paste0("Loci = ", c(1e3, 1e4)))
-tloci_image
 
 # Add a loci column
-tloci$boot_error$loci <- rep(c(1e3, 1e4), 
-                             each = length(unique(tloci$boot_error$COI)))
-tloci_error <- error_plot(tloci, fill = "loci", 
-                          legend_title = "Loci", 
-                          title = "Error Plot for Loci")
-tloci_error
+tloci_1$boot_error$loci <- rep(c(1e3, 1e4), 
+                             each = length(unique(tloci_1$boot_error$COI)))
+tloci_error_1 <- error_plot(tloci_1, fill = "loci", 
+                            legend_title = "Loci", 
+                            title = "Error")
+
+tloci_fig_1 <- ggpubr::ggarrange(tloci_image_1, tloci_error_1, labels = "AUTO")
+tloci_fig_1
 ```
 
-```{r loci image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/sensitivity_plots/tloci_image.png')
-knitr::include_graphics('figures/error_images/tloci_error.png')
+```{r loci image method 1, eval = eval_images, echo = F, out.width = "75%"}
+knitr::include_graphics('figures/tloci_1.png')
+```
+
+```{r loci method 2, eval = eval_tests}
+# Set the range over which we will iterate
+loci = c(1e3, 1e4)
+
+# For each loci, reset the PLAF and then run
+bloci <- lapply(loci, function(new_L){
+  new_p <- rbeta(new_L, 1, 5)
+  new_p[new_p > 0.5] <- 1 - new_p[new_p > 0.5]
+  
+  inner_tloci <- sensitivity(COI = 2:20, repetitions = 100, PLAF = new_p, 
+                             coi_method = "2")
+  inner_tloci$param_grid$loci <- new_L
+  return(inner_tloci)
+})
+
+# Extract the relevant information for each output: predicted_coi, probability, 
+# param_grid, and boot_error
+pc = do.call(cbind, lapply(bloci, function(test){ return(test$predicted_coi) }))
+pb = do.call(cbind, lapply(bloci, function(test){ return(test$probability) }))
+pg = do.call(rbind, lapply(bloci, function(test){ return(test$param_grid) }))
+be = do.call(rbind, lapply(bloci, function(test){ return(test$boot_error) }))
+
+# Fix the naming for predicted_coi
+num_cois = length(unique(pg$COI))
+num_repeat_cois = length(pg$COI) / num_cois
+names(pc) = paste("coi", pg$COI, rep(seq(num_repeat_cois), each = num_cois), sep="_")
+
+# Create the output
+tloci_2 <- list(
+  predicted_coi = pc,
+  probability   = pb,
+  param_grid    = pg,
+  boot_error    = be
+)
+
+# Plot
+tloci_image_2 <- 
+  sensitivity_plot(data = tloci_2,
+                   title = "Predicted COI",
+                   dims = c(2, 1),
+                   sub_title = paste0("Loci = ", c(1e3, 1e4)))
+
+# Add a loci column
+tloci_2$boot_error$loci <- rep(c(1e3, 1e4), 
+                             each = length(unique(tloci_2$boot_error$COI)))
+tloci_error_2 <- error_plot(tloci_2, fill = "loci", 
+                            legend_title = "Loci", 
+                            title = "Error")
+
+tloci_fig_2 <- ggpubr::ggarrange(tloci_image_2, tloci_error_2, labels = "AUTO")
+tloci_fig_2
+```
+
+```{r loci image method 2, eval = eval_images, echo = F, out.width = "75%"}
+knitr::include_graphics('figures/tloci_2.png')
 ```
 
 ### Alpha
-```{r alpha, eval = eval_tests}
-talpha <- sensitivity(COI = 2:20, alpha = seq(0.01, 5.51, 0.5), 
+```{r alpha method 1, eval = eval_tests}
+talpha_1 <- sensitivity(COI = 2:20, alpha = seq(0.01, 5.51, 0.5), 
                  repetitions = 100, PLAF = p)
 
-talpha_image <- 
-  sensitivity_plot(data = talpha,
+talpha_image_1 <- 
+  sensitivity_plot(data = talpha_1,
+                   title = "Predicted COI",
                    dims = c(4, 3),
                    sub_title = paste0("Alpha = ", seq(0.01, 5.51, 0.5)))
-talpha_image
 
-talpha_error <- error_plot(talpha, fill = "alpha", 
-                           legend_title = "Alpha", 
-                           title = "Error Plot for Alpha")
-talpha_error
+talpha_error_1 <- error_plot(talpha_1, fill = "alpha", 
+                             legend_title = "Alpha", 
+                             title = "Error")
+
+talpha_fig_1 <- ggpubr::ggarrange(talpha_image_1, talpha_error_1, 
+                                  labels = "AUTO")
+talpha_fig_1
 ```
 
-```{r alpha image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/sensitivity_plots/talpha_image.png')
-knitr::include_graphics('figures/error_images/talpha_error.png')
+```{r alpha image method 1, eval = eval_images, echo = F, out.width = "75%"}
+knitr::include_graphics('figures/talpha_1.png')
 ```
 
-The larger the value of alpha is, the better our model performs. Greater than an
-alpha of 1.6, however, there is very little difference. When the alpha is low, 
-the model will underpredict the true COI.
+```{r alpha method 2, eval = eval_tests}
+talpha_2 <- sensitivity(COI = 2:20, alpha = seq(0.01, 5.51, 0.5), 
+                 repetitions = 100, PLAF = p)
+
+talpha_image_2 <- 
+  sensitivity_plot(data = talpha_2,
+                   title = "Predicted COI",
+                   dims = c(4, 3),
+                   sub_title = paste0("Alpha = ", seq(0.01, 5.51, 0.5)))
+
+talpha_error_2 <- error_plot(talpha_2, fill = "alpha", 
+                             legend_title = "Alpha", 
+                             title = "Error")
+
+talpha_fig_2 <- ggpubr::ggarrange(talpha_image_2, talpha_error_2, 
+                                  labels = "AUTO")
+talpha_fig_2
+```
+
+```{r alpha image method 2, eval = eval_images, echo = F, out.width = "75%"}
+knitr::include_graphics('figures/talpha_2.png')
+```
 
 ### Overdispersion
 ```{r overdispersion, eval = eval_tests}
@@ -364,22 +460,23 @@ tover <- sensitivity(COI = 2:20, overdispersion = seq(0, 0.2, 0.05),
 
 tover_image <- 
   sensitivity_plot(data = tover,
+                   title = "Predicted COI",
                    dims = c(4, 3),
                    sub_title = paste(paste0("Over ", seq(0, 0.2, 0.05)),
                                      rep(c("Method 1", "Method 2"), each = 5),
                                      sep = ", "))
-tover_image
 
 tover_error <- error_plot(tover, fill = "overdispersion", 
                           legend_title = "Overdispersion", 
-                          title = "Error Plot for Overdispersion",
+                          title = "Error",
                           second_fill = "coi_method")
-tover_error
+
+tover_fig <- ggpubr::ggarrange(tover_image, tover_error, labels = "AUTO")
+tover_fig
 ```
 
 ```{r overdispersion image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/sensitivity_plots/tover_image.png')
-knitr::include_graphics('figures/error_images/tover_error.png')
+knitr::include_graphics('figures/tover.png')
 ```
 
 When you introduce overdispersion, models perform poorly. Any overdispersion 
@@ -393,19 +490,21 @@ tepsilon <- sensitivity(COI = 2:20, epsilon = seq(0, 0.008, 0.001),
 
 tepsilon_image <- 
   sensitivity_plot(data = tepsilon,
+                   title = "Predicted COI",
                    dims = c(3, 3),
                    sub_title = paste0("Epsilon = ", seq(0, 0.008, 0.001)))
-tepsilon_image
 
 tepsilon_error <- error_plot(tepsilon, fill = "epsilon", 
                              legend_title = "Epsilon", 
-                             title = "Error Plot for Epsilon")
-tepsilon_error
+                             title = "Error")
+
+tepsilon_fig <- ggpubr::ggarrange(tepsilon_image, tepsilon_error, 
+                                  labels = "AUTO")
+tepsilon_fig
 ```
 
 ```{r epsilon image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/sensitivity_plots/tepsilon_image.png')
-knitr::include_graphics('figures/error_images/tepsilon_error.png')
+knitr::include_graphics('figures/tepsilon.png')
 ```
 
 The algorithm performs best at an epsilon value of 0. As epsilon becomes larger,
@@ -424,24 +523,25 @@ seq_title <- rep(paste0("Sequence Error = ", seq(0, 0.04, 0.01)[-1]), each = 3)
 
 tseq_image <- 
   sensitivity_plot(data = tseq,
+                   title = "Predicted COI",
                    dims = c(4, 3),
                    sub_title = seq_title,
                    caption = stringr::str_wrap("The first, second, and third 
                                                columns correspond to an epsilon
                                                of 0, 0.004, and 0.008, 
                                                respectively."))
-tseq_image
 
 tseq_error <- error_plot(tseq, fill = "seq_error", 
                          legend_title = "Sequence Error", 
-                         title = "Error Plot for Sequence Error",
+                         title = "Error",
                          second_fill = "epsilon")
-tseq_error
+
+tseq_fig <- ggpubr::ggarrange(tseq_image, tseq_error, labels = "AUTO")
+tseq_fig
 ```
 
 ```{r seq error image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/sensitivity_plots/tseq_image.png')
-knitr::include_graphics('figures/error_images/tseq_error.png')
+knitr::include_graphics('figures/tseq.png')
 ```
 
 Interestingly, having no sequence error causes problems in the algorithm. Based
@@ -451,44 +551,34 @@ large, the model starts to underpredict the COI.
 
 ```{r save results, eval = eval_tests, echo = FALSE}
 # Below, we save the runs we performed for future use
-saved_analysis <- list(tcoi, tmethod, tdistance, tweight, tcoverage, tloci,
-                       talpha, tover, tepsilon, tseq)
+saved_analysis <- list(toverall, tcoi, tmethod, tdistance, tweight, tcoverage, 
+                       tloci_1, tloci_2, talpha_1, talpha_2,  tover, tepsilon, 
+                       tseq)
 
-names(saved_analysis) <- list("tcoi", "tmethod", "tdistance", "tweight", 
-                              "tcoverage", "tloci", "talpha", "tover", 
-                              "tepsilon", "tseq")
+names(saved_analysis) <- list("toverall", "tcoi", "tmethod", "tdistance", 
+                              "tweight", "tcoverage", "tloci_1", "tloci_2", 
+                              "talpha_1", "talpha_1", "tover", "tepsilon", 
+                              "tseq")
 
 saveRDS(saved_analysis, file = "saved_analysis.rds")
 
 # Here, we update all the stored images
-update_images <- list(tcoi_image, tmethod_image, tdistance_image, tweight_image,
-                      tcoverage_image, tloci_image, talpha_image, tover_image, 
-                      tepsilon_image, tseq_image)
-names(update_images) <- list("tcoi_image", "tmethod_image", "tdistance_image",
-                             "tweight_image", "tcoverage_image", "tloci_image", 
-                             "talpha_image", "tover_image", "tepsilon_image", 
-                             "tseq_image")
+update_images <- list(toverall_fig, tcoi_fig, tmethod_fig, tdistance_fig, 
+                      tweight_fig, tcoverage_fig, tloci_fig_1, tloci_fig_2, 
+                      talpha_fig_1, talpha_fig_2, tover_fig, tepsilon_fig, 
+                      tseq_fig)
+names(update_images) <- list("toverall", "tcoi", "tmethod", "tdistance", 
+                             "tweight", "tcoverage", "tloci_1", "tloci_2", 
+                             "talpha_1", "talpha_2", "tover", "tepsilon", 
+                             "tseq")
 
 for (i in seq_len(length(update_images))){
-  filename = paste0("figures/sensitivity_plots/", 
+  filename = paste0("analysis/vignettes/figures/", 
                     names(update_images)[i], 
                     ".png")
   suppressMessages(update_images[i] %>% ggpubr::ggexport(filename = filename))
 }
-
-# Here, we update all the stored error_images
-update_errors <- list(tcoi_error, tmethod_error, tdistance_error, tweight_error,
-                      tcoverage_error, tloci_error, talpha_error, tover_error, 
-                      tepsilon_error, tseq_error)
-names(update_errors) <- list("tcoi_error", "tmethod_error", "tdistance_error",
-                             "tweight_error", "tcoverage_error", "tloci_error", 
-                             "talpha_error", "tover_error", "tepsilon_error", 
-                             "tseq_error")
-
-for (i in seq_len(length(update_errors))){
-  filename = paste0("figures/error_images/", 
-                    names(update_errors)[i], 
-                    ".png")
-  suppressMessages(update_errors[i] %>% ggpubr::ggexport(filename = filename))
-}
 ```
+
+
+

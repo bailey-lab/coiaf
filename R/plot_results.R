@@ -97,7 +97,7 @@ sensitivity_plot <- function(data,
   } else {
     # Include panel labels if there are more than one plots
     arranged_plots <- ggpubr::ggarrange(plotlist = myplots,
-                                        labels = "AUTO",
+                                        labels = "auto",
                                         font.label = list(size = 10),
                                         nrow = dims[1],
                                         ncol = dims[2])
