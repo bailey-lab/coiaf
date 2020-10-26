@@ -2,6 +2,7 @@
 
 export("%>%")
 export(compute_coi)
+export(cont_sensitivity)
 export(error_plot)
 export(likelihood)
 export(optimize_coi)
