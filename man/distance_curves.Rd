@@ -12,9 +12,6 @@ distance_curves(
 )
 }
 \arguments{
-\item{processed_data}{The processed COI data. This is the output of
-\code{\link[=process_sim]{process_sim()}} or \code{\link[=process_real]{process_real()}}.}
-
 \item{theory_cois}{The theoretical COI curves.}
 
 \item{distance}{The distance method used to determine the distance between

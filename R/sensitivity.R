@@ -52,11 +52,8 @@ single_sensitivity <- function(coi = 3,
   # Simulate data
   sim_data <- sim_biallelic(coi, plaf, coverage, alpha, overdispersion, epsilon)
 
-  # Simulated data results
-  processed_sim <- process_sim(sim_data, seq_error, cut, coi_method)
-
   # Compute COI
-  calc_coi <- compute_coi(processed_sim, 1:max_coi, cut,
+  calc_coi <- compute_coi(sim_data, "sim", max_coi, seq_error, cut,
                           comparison, distance, weighted, coi_method)
 }
 

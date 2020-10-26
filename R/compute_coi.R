@@ -31,10 +31,7 @@
 #'   * `squared`: Sum of squared difference.
 #'   }}
 #'
-#' @param processed_data The processed COI data. This is the output of
-#' [process_sim()] or [process_real()].
-#' @param theory_coi_range The range of COIs for which theoretical curves
-#' will be generated.
+#' @inheritParams optimize_coi
 #' @param cut A vector indicating how often the data is summarized.
 #' @param comparison The method to be employed. One of `"end"`, `"ideal"`,
 #' `"overall"`.
@@ -52,15 +49,20 @@
 #'
 #' @export
 
-compute_coi <- function(processed_data, theory_coi_range, cut,
+compute_coi <- function(data,
+                        data_type,
+                        max_coi = 25,
+                        seq_error = 0.01,
+                        cut = seq(0, 0.5, 0.01),
                         comparison = "overall",
                         distance = "squared",
                         weighted = TRUE,
                         coi_method = "1") {
   ##Check inputs
-  assert_pos_int(theory_coi_range, zero_allowed = FALSE)
-  assert_vector(theory_coi_range)
-  assert_increasing(theory_coi_range)
+  assert_in(data_type, c("sim", "real"))
+  assert_single_string(data_type)
+  assert_single_pos_int(max_coi)
+  assert_single_bounded(seq_error)
   assert_bounded(cut, left = 0, right = 0.5)
   assert_vector(cut)
   assert_increasing(cut)
@@ -86,10 +88,20 @@ compute_coi <- function(processed_data, theory_coi_range, cut,
     warning(message, call. = FALSE)
   }
 
+  # Process data
+  if (data_type == "sim") {
+    processed_data <- process_sim(data, seq_error, cut, coi_method)
+  } else if (data_type == "real") {
+    processed_data <- process_real(data$wsaf, data$plaf,
+                                   seq_error,
+                                   cut,
+                                   coi_method)
+  }
+
   # Calculate theoretical COI curves for the interval specified. Since we want
   # the theoretical curves and the simulated curves to have the PLAF values, we
   # compute the theoretical COI curves at processed_data$midpoints
-  theory_cois <- theoretical_coi(theory_coi_range,
+  theory_cois <- theoretical_coi(1:max_coi,
                                  processed_data$midpoints,
                                  coi_method)
 
