@@ -9,8 +9,8 @@ run_real(
   max_coi = 25,
   seq_error = 0.01,
   cut = seq(0, 0.5, 0.01),
-  method = "overall",
-  dist_method = "squared",
+  comparison = "overall",
+  distance = "squared",
   weighted = TRUE
 )
 }
@@ -24,10 +24,10 @@ theoretical COIs from \code{1} till \code{max_coi}.}
 
 \item{cut}{A vector indicating how often the data is summarized.}
 
-\item{method}{The method to be employed. One of \code{"end"}, \code{"ideal"},
+\item{comparison}{The method to be employed. One of \code{"end"}, \code{"ideal"},
 \code{"overall"}.}
 
-\item{dist_method}{The distance method used to determine the distance between
+\item{distance}{The distance method used to determine the distance between
 the theoretical and simulated curves for the \code{"overall"} method. One of
 \code{"abs_sum"}, \code{"sum_abs"}, \code{"squared"}.}
 

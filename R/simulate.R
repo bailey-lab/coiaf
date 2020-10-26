@@ -12,8 +12,8 @@
 #' 1. Strain proportions are drawn from a symmetric Dirichlet
 #'    distribution with shape parameter `alpha`.
 #' 2. Phased haplotypes are drawn at every locus, one for each
-#'    `COI`. The allele at each locus is drawn from a Bernoulli
-#'    distribution with probability given by the `PLAF`.
+#'    `coi`. The allele at each locus is drawn from a Bernoulli
+#'    distribution with probability given by the `plaf`.
 #' 3. The "true" within-sample allele frequency at every locus is
 #'    obtained by multiplying haplotypes by their strain proportions, and
 #'    summing over haplotypes. Errors are introduced through the equation
@@ -26,8 +26,8 @@
 #'    `overdispersion` parameter. If the `overdispersion` is equal to
 #'    zero, then the distribution is binomial, rather than beta-binomial.
 #'
-#' @param COI Complexity of infection.
-#' @param PLAF Vector of population-level allele frequencies at each locus.
+#' @param coi Complexity of infection.
+#' @param plaf Vector of population-level allele frequencies at each locus.
 #' @param coverage Coverage at each locus. If a single value then the same
 #'   coverage is applied over all loci.
 #' @param alpha Shape parameter of the symmetric Dirichlet prior on strain
@@ -41,32 +41,32 @@
 #'   allele. Applies in both directions.
 #'
 #' @return A list of:
-#' * `COI`: The COI used to simulate the data.
+#' * `coi`: The COI used to simulate the data.
 #' * `strain_proportions`: The strain proportion of each strain.
 #' * `phased`: The phased haplotype.
 #' * `data`: A dataframe of:
-#'   + `PLAF`: Population-level allele frequency.
+#'   + `plaf`: The population-level allele frequency.
 #'   + `coverage`: The coverage at each locus.
 #'   + `counts`: The count at each locus.
-#'   + `WSAF`: The within-sample allele frequency.
+#'   + `wsaf`: The within-sample allele frequency.
 #' @family simulated data functions
 #' @export
 
-sim_biallelic <- function(COI = 3,
-                          PLAF = runif(10, 0, 0.5),
+sim_biallelic <- function(coi = 3,
+                          plaf = runif(10, 0, 0.5),
                           coverage = 200,
                           alpha = 1,
                           overdispersion = 0,
                           epsilon = 0) {
 
   # Check inputs
-  assert_single_pos_int(COI)
-  assert_vector(PLAF)
-  assert_bounded(PLAF)
+  assert_single_pos_int(coi)
+  assert_vector(plaf)
+  assert_bounded(plaf)
 
   # If a single value was input, then repeat coverage so that coverage is
   # applied over all loci.
-  L <- length(PLAF)
+  L <- length(plaf)
   if (length(coverage) == 1) {
     coverage <- rep(coverage, L)
   }
@@ -74,18 +74,18 @@ sim_biallelic <- function(COI = 3,
   # Continue to check inputs
   assert_vector(coverage)
   assert_pos_int(coverage)
-  assert_same_length(PLAF, coverage)
+  assert_same_length(plaf, coverage)
   assert_single_pos(alpha, zero_allowed = FALSE)
   assert_single_pos(overdispersion, zero_allowed = TRUE)
   assert_single_pos(epsilon, zero_allowed = TRUE)
   assert_bounded(epsilon)
 
   # Generate strain proportions
-  w <- rdirichlet(rep(alpha, COI))
+  w <- rdirichlet(rep(alpha, coi))
 
   # Generate true WSAF levels by summing binomial draws over strain proportions
-  m <- mapply(function(x) rbinom(COI, 1, x), x = PLAF)
-  if (COI == 1){
+  m <- mapply(function(x) rbinom(coi, 1, x), x = plaf)
+  if (coi == 1){
     p_levels = m*w
   } else{
     p_levels <- colSums(sweep(m, 1, w, "*"))
@@ -108,11 +108,11 @@ sim_biallelic <- function(COI = 3,
   }
 
   # Return list
-  ret <- list(COI = COI,
+  ret <- list(coi = coi,
               strain_proportions = w,
               phased = m,
-              data = data.frame(PLAF     = PLAF,
+              data = data.frame(plaf     = plaf,
                                 coverage = coverage,
                                 counts   = counts,
-                                WSAF     = counts/coverage))
+                                wsaf     = counts/coverage))
 }

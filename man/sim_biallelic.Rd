@@ -5,8 +5,8 @@
 \title{Simulate biallelic data}
 \usage{
 sim_biallelic(
-  COI = 3,
-  PLAF = runif(10, 0, 0.5),
+  coi = 3,
+  plaf = runif(10, 0, 0.5),
   coverage = 200,
   alpha = 1,
   overdispersion = 0,
@@ -14,9 +14,9 @@ sim_biallelic(
 )
 }
 \arguments{
-\item{COI}{Complexity of infection.}
+\item{coi}{Complexity of infection.}
 
-\item{PLAF}{Vector of population-level allele frequencies at each locus.}
+\item{plaf}{Vector of population-level allele frequencies at each locus.}
 
 \item{coverage}{Coverage at each locus. If a single value then the same
 coverage is applied over all loci.}
@@ -36,15 +36,15 @@ allele. Applies in both directions.}
 \value{
 A list of:
 \itemize{
-\item \code{COI}: The COI used to simulate the data.
+\item \code{coi}: The COI used to simulate the data.
 \item \code{strain_proportions}: The strain proportion of each strain.
 \item \code{phased}: The phased haplotype.
 \item \code{data}: A dataframe of:
 \itemize{
-\item \code{PLAF}: Population-level allele frequency.
+\item \code{plaf}: The population-level allele frequency.
 \item \code{coverage}: The coverage at each locus.
 \item \code{counts}: The count at each locus.
-\item \code{WSAF}: The within-sample allele frequency.
+\item \code{wsaf}: The within-sample allele frequency.
 }
 }
 }
@@ -62,8 +62,8 @@ Simulated data are drawn from a simple statistical model:
 \item Strain proportions are drawn from a symmetric Dirichlet
 distribution with shape parameter \code{alpha}.
 \item Phased haplotypes are drawn at every locus, one for each
-\code{COI}. The allele at each locus is drawn from a Bernoulli
-distribution with probability given by the \code{PLAF}.
+\code{coi}. The allele at each locus is drawn from a Bernoulli
+distribution with probability given by the \code{plaf}.
 \item The "true" within-sample allele frequency at every locus is
 obtained by multiplying haplotypes by their strain proportions, and
 summing over haplotypes. Errors are introduced through the equation

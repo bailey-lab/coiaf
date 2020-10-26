@@ -36,9 +36,9 @@
 #' @param theory_coi_range The range of COIs for which theoretical curves
 #' will be generated.
 #' @param cut A vector indicating how often the data is summarized.
-#' @param method The method to be employed. One of `"end"`, `"ideal"`,
+#' @param comparison The method to be employed. One of `"end"`, `"ideal"`,
 #' `"overall"`.
-#' @param dist_method The distance method used to determine the distance between
+#' @param distance The distance method used to determine the distance between
 #' the theoretical and simulated curves for the `"overall"` method. One of
 #' `"abs_sum"`, `"sum_abs"`, `"squared"`.
 #' @param weighted An indicator indicating whether to compute the weighted
@@ -53,8 +53,8 @@
 #' @export
 
 compute_coi <- function(processed_data, theory_coi_range, cut,
-                        method = "overall",
-                        dist_method = "squared",
+                        comparison = "overall",
+                        distance = "squared",
                         weighted = TRUE,
                         coi_method = "1") {
   ##Check inputs
@@ -64,25 +64,25 @@ compute_coi <- function(processed_data, theory_coi_range, cut,
   assert_bounded(cut, left = 0, right = 0.5)
   assert_vector(cut)
   assert_increasing(cut)
-  assert_single_string(method)
-  assert_in(method, c("end", "ideal", "overall"))
-  assert_single_string(dist_method)
-  assert_in(dist_method, c("abs_sum", "sum_abs", "squared"))
+  assert_single_string(comparison)
+  assert_in(comparison, c("end", "ideal", "overall"))
+  assert_single_string(distance)
+  assert_in(distance, c("abs_sum", "sum_abs", "squared"))
   assert_single_logical(weighted)
   assert_single_string(coi_method)
   assert_in(coi_method, c("1", "2"))
 
   # Warnings
-  if (method != "overall") {
+  if (comparison != "overall") {
     message <- glue::glue("Please use the recommended method:",
                           '\n\u2139 The recommended method is "overall".',
-                          '\n\u2716 User specified the "{method}" method.')
+                          '\n\u2716 User specified the "{comparison}" method.')
     warning(message, call. = FALSE)
   }
-  if (dist_method != "squared") {
+  if (distance != "squared") {
     message <- glue::glue("Please use the recommended distance metric:",
                           '\n\u2139 The recommended distance metric is "squared".',
-                          '\n\u2716 User specified the "{dist_method}" metric.')
+                          '\n\u2716 User specified the "{distance}" metric.')
     warning(message, call. = FALSE)
   }
 
@@ -99,7 +99,7 @@ compute_coi <- function(processed_data, theory_coi_range, cut,
   # Minus 1 because theory_cois now includes the PLAF at the end
   bound_coi = ncol(theory_cois) - 1
 
-  if (method == "end") {
+  if (comparison == "end") {
     ## Method 1: Compare last value
     # Get last row of theoretical COI curves and simulated data (PLAF of 0.5)
     # Last column is removed because it contains the PLAF
@@ -110,7 +110,7 @@ compute_coi <- function(processed_data, theory_coi_range, cut,
     dist <- abs(last_theory - last_sim)
     coi  <- unlist(stringr::str_split(names(which.min(dist)), "_"))[2]
 
-  } else if (method == "ideal") {
+  } else if (comparison == "ideal") {
     ## Method 2: Compute ideal PLAF
     # For each COI, find best PLAF and get theoretical and simulated values at
     # that PLAF
@@ -121,23 +121,23 @@ compute_coi <- function(processed_data, theory_coi_range, cut,
         diff = theory_cois[i] - theory_cois[i - 1]
 
         # Get max value and determine the PLAF
-        ideal_PLAF <- theory_cois$plaf[which.max(diff[[1]])]
+        ideal_plaf <- theory_cois$plaf[which.max(diff[[1]])]
 
         # Get max value and determine the theory WSAF
-        theory_WSAF <- theory_cois[which.max(diff[[1]]), i]
+        theory_wsaf <- theory_cois[which.max(diff[[1]]), i]
 
       } else {
         # Determine ideal PLAF and WSAF
-        ideal_PLAF  <- theory_cois$plaf[length(theory_cois$plaf)]
-        theory_WSAF <- theory_cois[length(theory_cois$plaf), i]
+        ideal_plaf  <- theory_cois$plaf[length(theory_cois$plaf)]
+        theory_wsaf <- theory_cois[length(theory_cois$plaf), i]
       }
 
       # Using ideal PLAF, determine which cut it would be part of
       # and then figure out m_variant value at this cut
-      m_var <- processed_data$m_variant[cut(ideal_PLAF, cut)]
+      m_var <- processed_data$m_variant[cut(ideal_plaf, cut)]
 
       # Find distance between theoretical and simulated curves
-      dist[i] <- abs(theory_WSAF - m_var)
+      dist[i] <- abs(theory_wsaf - m_var)
     }
     # Name the distance vector so can extract COI information
     names(dist) <- colnames(theory_cois)[1:bound_coi]
@@ -145,11 +145,11 @@ compute_coi <- function(processed_data, theory_coi_range, cut,
     # Find coi by looking at minimum distance
     coi <- unlist(stringr::str_split(names(which.min(dist)), "_"))[2]
 
-  } else if (method == "overall") {
+  } else if (comparison == "overall") {
     ## Method 3: Find distance between curves
     # Utilize helper function to compute overall distance between two curves
     overall_res <- distance_curves(processed_data, theory_cois,
-                                   dist_method, weighted)
+                                   distance, weighted)
 
     # Extract information from the helper function
     coi  <- overall_res$coi
@@ -190,10 +190,10 @@ compute_coi <- function(processed_data, theory_coi_range, cut,
 #' @keywords internal
 
 distance_curves <- function(processed_data, theory_cois,
-                            dist_method = "squared", weighted = TRUE) {
+                            distance = "squared", weighted = TRUE) {
   # Check inputs
-  assert_single_string(dist_method)
-  assert_in(dist_method, c("abs_sum", "sum_abs", "squared"))
+  assert_single_string(distance)
+  assert_in(distance, c("abs_sum", "sum_abs", "squared"))
   assert_single_logical(weighted)
 
   # Find bound of COIs. Subtract 1 because theory_cois includes the PLAF at
@@ -210,15 +210,15 @@ distance_curves <- function(processed_data, theory_cois,
     gap <- (gap * processed_data$bucket_size) / sum(processed_data$bucket_size)
   }
 
-  if (dist_method == "abs_sum") {
+  if (distance == "abs_sum") {
     # Find sum of differences
     gap <- abs(colSums(gap))
 
-  } else if (dist_method == "sum_abs") {
+  } else if (distance == "sum_abs") {
     # Find absolute value of differences
     gap <- colSums(abs(gap))
 
-  } else if (dist_method == "squared") {
+  } else if (distance == "squared") {
     # Squared distance
     gap <- colSums(gap ^ 2)
   }

@@ -3,7 +3,7 @@
 #'
 #' Runs a single full COI sensitivity analysis.
 #'
-#' @param max_COI A number indicating the maximum COI to compare the
+#' @param max_coi A number indicating the maximum COI to compare the
 #' simulated data to.
 #' @inheritParams sim_biallelic
 #' @inheritParams process_sim
@@ -14,25 +14,25 @@
 #'
 #' @keywords internal
 
-single_sensitivity <- function(COI = 3,
-                               max_COI = 25,
-                               PLAF = runif(1000, 0, 0.5),
+single_sensitivity <- function(coi = 3,
+                               max_coi = 25,
+                               plaf = runif(1000, 0, 0.5),
                                coverage = 200,
                                alpha = 1,
                                overdispersion = 0,
                                epsilon = 0,
                                seq_error = 0.01,
                                cut = seq(0, 0.5, 0.01),
-                               method = "overall",
-                               dist_method ="squared",
+                               comparison = "overall",
+                               distance ="squared",
                                weighted = TRUE,
                                coi_method = "1") {
 
   # Check inputs
-  assert_single_pos_int(COI)
-  assert_single_pos_int(max_COI)
-  assert_vector(PLAF)
-  assert_bounded(PLAF, left = 0, right = 0.5)
+  assert_single_pos_int(coi)
+  assert_single_pos_int(max_coi)
+  assert_vector(plaf)
+  assert_bounded(plaf, left = 0, right = 0.5)
   assert_single_pos_int(coverage)
   assert_single_pos(alpha, zero_allowed = FALSE)
   assert_single_pos(overdispersion)
@@ -41,23 +41,23 @@ single_sensitivity <- function(COI = 3,
   assert_bounded(cut, left = 0, right = 0.5)
   assert_vector(cut)
   assert_increasing(cut)
-  assert_single_string(method)
-  assert_in(method, c("end", "ideal", "overall"))
-  assert_single_string(dist_method)
-  assert_in(dist_method, c("abs_sum", "sum_abs", "squared"))
+  assert_single_string(comparison)
+  assert_in(comparison, c("end", "ideal", "overall"))
+  assert_single_string(distance)
+  assert_in(distance, c("abs_sum", "sum_abs", "squared"))
   assert_single_logical(weighted)
   assert_single_string(coi_method)
   assert_in(coi_method, c("1", "2"))
 
   # Simulate data
-  sim_data <- sim_biallelic(COI, PLAF, coverage, alpha, overdispersion, epsilon)
+  sim_data <- sim_biallelic(coi, plaf, coverage, alpha, overdispersion, epsilon)
 
   # Simulated data results
   processed_sim <- process_sim(sim_data, seq_error, cut, coi_method)
 
   # Compute COI
-  calc_coi <- compute_coi(processed_sim, 1:max_COI, cut,
-                          method, dist_method, weighted, coi_method)
+  calc_coi <- compute_coi(processed_sim, 1:max_coi, cut,
+                          comparison, distance, weighted, coi_method)
 }
 
 
@@ -90,26 +90,26 @@ single_sensitivity <- function(COI = 3,
 #' @export
 
 sensitivity <- function(repetitions = 10,
-                        COI = 3,
-                        max_COI = 25,
-                        PLAF = runif(1000, 0, 0.5),
+                        coi = 3,
+                        max_coi = 25,
+                        plaf = runif(1000, 0, 0.5),
                         coverage = 200,
                         alpha = 1,
                         overdispersion = 0,
                         epsilon = 0,
                         seq_error = 0.01,
                         cut = seq(0, 0.5, 0.01),
-                        method = "overall",
-                        dist_method = "squared",
+                        comparison = "overall",
+                        distance = "squared",
                         weighted = TRUE,
                         coi_method = "1") {
 
   # Check inputs
   assert_pos_int(repetitions)
-  assert_pos_int(COI)
-  assert_single_pos_int(max_COI)
-  assert_vector(PLAF)
-  assert_bounded(PLAF, left = 0, right = 0.5)
+  assert_pos_int(coi)
+  assert_single_pos_int(max_coi)
+  assert_vector(plaf)
+  assert_bounded(plaf, left = 0, right = 0.5)
   assert_pos_int(coverage)
   assert_pos(alpha, zero_allowed = FALSE)
   assert_pos(overdispersion)
@@ -118,24 +118,24 @@ sensitivity <- function(repetitions = 10,
   assert_bounded(cut, left = 0, right = 0.5)
   assert_vector(cut)
   assert_increasing(cut)
-  assert_string(method)
-  assert_in(method, c("end", "ideal", "overall"))
-  assert_string(dist_method)
-  assert_in(dist_method, c("abs_sum", "sum_abs", "squared"))
+  assert_string(comparison)
+  assert_in(comparison, c("end", "ideal", "overall"))
+  assert_string(distance)
+  assert_in(distance, c("abs_sum", "sum_abs", "squared"))
   assert_logical(weighted)
   assert_string(coi_method)
   assert_in(coi_method, c("1", "2"))
 
   # Create parameter grid
-  param_grid <- expand.grid(COI = COI,
-                            max_COI = max_COI,
+  param_grid <- expand.grid(coi = coi,
+                            max_coi = max_coi,
                             coverage = coverage,
                             alpha = alpha,
                             overdispersion = overdispersion,
                             epsilon = epsilon,
                             seq_error = seq_error,
-                            method = method,
-                            dist_method = dist_method,
+                            comparison = comparison,
+                            distance = distance,
                             weighted = weighted,
                             coi_method = coi_method,
                             stringsAsFactors = FALSE)
@@ -156,17 +156,17 @@ sensitivity <- function(repetitions = 10,
     # Run each sample repetitions times
     repeats <- lapply(seq_len(repetitions), function(y) {
       test_result <-
-        single_sensitivity(param_grid$COI[x],
-                           param_grid$max_COI[x],
-                           PLAF,
+        single_sensitivity(param_grid$coi[x],
+                           param_grid$max_coi[x],
+                           plaf,
                            param_grid$coverage[x],
                            param_grid$alpha[x],
                            param_grid$overdispersion[x],
                            param_grid$epsilon[x],
                            param_grid$seq_error[x],
                            cut,
-                           param_grid$method[x],
-                           param_grid$dist_method[x],
+                           param_grid$comparison[x],
+                           param_grid$distance[x],
                            param_grid$weighted[x],
                            param_grid$coi_method[x])
       return (test_result)
@@ -186,7 +186,7 @@ sensitivity <- function(repetitions = 10,
     matrix <- do.call(rbind, lapply(x, function(i) { i$probability }))
 
     # Name the matrix and return
-    colnames(matrix) <- paste("coi", 1:max_COI, sep = "_")
+    colnames(matrix) <- paste("coi", 1:max_coi, sep = "_")
     rownames(matrix) <- paste("rep", seq(repetitions), sep = "_")
 
     # Add a average row to the matrix
@@ -198,14 +198,14 @@ sensitivity <- function(repetitions = 10,
 
   ## Naming
   # Determine how many unique COIs there are
-  num_cois = length(COI)
+  num_cois = length(coi)
 
   # Calculate the number of times each COI is repeated in param_grid
-  num_repeat_cois = length(param_grid$COI) / num_cois
+  num_repeat_cois = length(param_grid$coi) / num_cois
 
   # Name the predicted COIs
   names(extracted_cois) <- paste("coi",
-                                 param_grid$COI,
+                                 param_grid$coi,
                                  rep(seq(num_repeat_cois), each = num_cois),
                                  sep="_")
   names(extracted_probs) <- names(extracted_cois)
@@ -229,7 +229,7 @@ sensitivity <- function(repetitions = 10,
     }
 
     # Bootstrapping
-    results <- boot::boot(data = boot_data, true_coi = param_grid$COI[x],
+    results <- boot::boot(data = boot_data, true_coi = param_grid$coi[x],
                           statistic = mae, R = 1000)
 
     # Get the normal confidence interval
@@ -246,7 +246,7 @@ sensitivity <- function(repetitions = 10,
 
   # Calculate bias (mean error)
   coi_bias <- lapply(seq_len(len), function(x) {
-    sum(extracted_cois[[x]] - param_grid$COI[x]) / length(extracted_cois[[x]])
+    sum(extracted_cois[[x]] - param_grid$coi[x]) / length(extracted_cois[[x]])
   })
 
   # Save changing parameters with bootstrapping
@@ -265,11 +265,11 @@ sensitivity <- function(repetitions = 10,
     bullet <- ""
     if (nrow(warn_tibble) < 5) {
       for (i in seq(nrow(warn_tibble))) {
-        bullet <- glue::glue("{bullet}\n\u2716 COI of {warn_tibble$COI[i]} failed.")
+        bullet <- glue::glue("{bullet}\n\u2716 COI of {warn_tibble$coi[i]} failed.")
       }
     } else if (nrow(warn_tibble) >= 5) {
       for (i in seq(5)) {
-        bullet <- glue::glue("{bullet}\n\u2716 COI of {warn_tibble$COI[i]} failed.")
+        bullet <- glue::glue("{bullet}\n\u2716 COI of {warn_tibble$coi[i]} failed.")
       }
       bullet <- glue::glue("{bullet}\n... and {nrow(warn_tibble) - 5} more failed")
     }
@@ -314,26 +314,26 @@ sensitivity <- function(repetitions = 10,
 #'
 #' @export
 cont_sensitivity <- function(repetitions = 10,
-                             COI = 3,
-                             max_COI = 25,
-                             PLAF = runif(1000, 0, 0.5),
+                             coi = 3,
+                             max_coi = 25,
+                             plaf = runif(1000, 0, 0.5),
                              coverage = 200,
                              alpha = 1,
                              overdispersion = 0,
                              epsilon = 0,
                              seq_error = 0.01,
                              cut = seq(0, 0.5, 0.01),
-                             method = "overall",
-                             dist_method = "squared",
+                             comparison = "overall",
+                             distance = "squared",
                              weighted = TRUE,
                              coi_method = "1") {
 
   # Check inputs
   assert_pos_int(repetitions)
-  assert_pos_int(COI)
-  assert_single_pos_int(max_COI)
-  assert_vector(PLAF)
-  assert_bounded(PLAF, left = 0, right = 0.5)
+  assert_pos_int(coi)
+  assert_single_pos_int(max_coi)
+  assert_vector(plaf)
+  assert_bounded(plaf, left = 0, right = 0.5)
   assert_pos_int(coverage)
   assert_pos(alpha, zero_allowed = FALSE)
   assert_pos(overdispersion)
@@ -342,24 +342,24 @@ cont_sensitivity <- function(repetitions = 10,
   assert_bounded(cut, left = 0, right = 0.5)
   assert_vector(cut)
   assert_increasing(cut)
-  assert_string(method)
-  assert_in(method, c("end", "ideal", "overall"))
-  assert_string(dist_method)
-  assert_in(dist_method, c("abs_sum", "sum_abs", "squared"))
+  assert_string(comparison)
+  assert_in(comparison, c("end", "ideal", "overall"))
+  assert_string(distance)
+  assert_in(distance, c("abs_sum", "sum_abs", "squared"))
   assert_logical(weighted)
   assert_string(coi_method)
   assert_in(coi_method, c("1", "2"))
 
   # Create parameter grid
-  param_grid <- expand.grid(COI = COI,
-                            max_COI = max_COI,
+  param_grid <- expand.grid(coi = coi,
+                            max_coi = max_coi,
                             coverage = coverage,
                             alpha = alpha,
                             overdispersion = overdispersion,
                             epsilon = epsilon,
                             seq_error = seq_error,
-                            method = method,
-                            dist_method = dist_method,
+                            comparison = comparison,
+                            distance = distance,
                             weighted = weighted,
                             coi_method = coi_method,
                             stringsAsFactors = FALSE)
@@ -379,8 +379,8 @@ cont_sensitivity <- function(repetitions = 10,
 
     # Run each sample repetitions times
     repeats <- lapply(seq_len(repetitions), function(y) {
-      test_sim <- sim_biallelic(param_grid$COI[x],
-                                PLAF,
+      test_sim <- sim_biallelic(param_grid$coi[x],
+                                plaf,
                                 param_grid$coverage[x],
                                 param_grid$alpha[x],
                                 param_grid$overdispersion[x],
@@ -388,10 +388,10 @@ cont_sensitivity <- function(repetitions = 10,
 
       test_result <- optimize_coi(test_sim,
                                   "sim",
-                                  param_grid$max_COI[x],
+                                  param_grid$max_coi[x],
                                   param_grid$seq_error[x],
                                   cut,
-                                  param_grid$dist_method[x],
+                                  param_grid$distance[x],
                                   param_grid$weighted[x],
                                   param_grid$coi_method[x])
       return (test_result)
@@ -407,14 +407,14 @@ cont_sensitivity <- function(repetitions = 10,
 
   ## Naming
   # Determine how many unique COIs there are
-  num_cois = length(COI)
+  num_cois = length(coi)
 
   # Calculate the number of times each COI is repeated in param_grid
-  num_repeat_cois = length(param_grid$COI) / num_cois
+  num_repeat_cois = length(param_grid$coi) / num_cois
 
   # Name the predicted COIs
   names(extracted_cois) <- paste("coi",
-                                 param_grid$COI,
+                                 param_grid$coi,
                                  rep(seq(num_repeat_cois), each = num_cois),
                                  sep="_")
 
@@ -437,7 +437,7 @@ cont_sensitivity <- function(repetitions = 10,
     }
 
     # Bootstrapping
-    results <- boot::boot(data = boot_data, true_coi = param_grid$COI[x],
+    results <- boot::boot(data = boot_data, true_coi = param_grid$coi[x],
                           statistic = mae, R = 1000)
 
     # Get the normal confidence interval
@@ -454,7 +454,7 @@ cont_sensitivity <- function(repetitions = 10,
 
   # Calculate bias (mean error)
   coi_bias <- lapply(seq_len(len), function(x) {
-    sum(extracted_cois[[x]] - param_grid$COI[x]) / length(extracted_cois[[x]])
+    sum(extracted_cois[[x]] - param_grid$coi[x]) / length(extracted_cois[[x]])
   })
 
   # Save changing parameters with bootstrapping
@@ -473,11 +473,11 @@ cont_sensitivity <- function(repetitions = 10,
     bullet <- ""
     if (nrow(warn_tibble) < 5) {
       for (i in seq(nrow(warn_tibble))) {
-        bullet <- glue::glue("{bullet}\n\u2716 COI of {warn_tibble$COI[i]} failed.")
+        bullet <- glue::glue("{bullet}\n\u2716 COI of {warn_tibble$coi[i]} failed.")
       }
     } else if (nrow(warn_tibble) >= 5) {
       for (i in seq(5)) {
-        bullet <- glue::glue("{bullet}\n\u2716 COI of {warn_tibble$COI[i]} failed.")
+        bullet <- glue::glue("{bullet}\n\u2716 COI of {warn_tibble$coi[i]} failed.")
       }
       bullet <- glue::glue("{bullet}\n... and {nrow(warn_tibble) - 5} more failed")
     }

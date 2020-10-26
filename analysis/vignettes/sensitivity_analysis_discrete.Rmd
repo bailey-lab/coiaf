@@ -62,17 +62,17 @@ for only the sites that are heterogeneous.
 
 | Parameter       | Default Value         |
 |:---------------:|:---------------------:|
-| COI             | `3`                   |
-| Max COI         | `25`                  |
-| PLAF            | `runif(1000, 0, 0.5)` |
+| Coi             | `3`                   |
+| Max Coi         | `25`                  |
+| Plaf            | `runif(1000, 0, 0.5)` |
 | Coverage        | `200`                 |
 | Alpha           | `1`                   |
 | Overdispersion  | `0`                   |
 | Epsilon         | `0`                   |
 | Sequence Error  | `0.01`                |
 | Cut             | `seq(0, 0.5, 0.01)`   |
-| Method          | `"overall"`           |
-| Distance Method | `"squared"`           |
+| Comparison      | `"overall"`           |
+| Distance        | `"squared"`           |
 | Weighted        | `TRUE`                |
 
 
@@ -89,7 +89,7 @@ p[p > 0.5] <- 1 - p[p > 0.5]
 
 ### Overall Performance
 ```{r overall, eval = eval_tests}
-toverall <- cont_sensitivity(COI = 1:25, max_COI = 30, repetitions = 100, PLAF = p,
+toverall <- sensitivity(coi = 1:25, max_coi = 30, repetitions = 10, plaf = p,
                         coverage = 200, seq_error = 0, coi_method = c("1", "2"))
 
 toverall_image <- sensitivity_plot(data = toverall, dims = c(2, 1), 
@@ -117,7 +117,7 @@ We first want to understand for what range our model can accurately predict
 the COI.
 
 ```{r coi, eval = eval_tests}
-tcoi <- sensitivity(COI = 2:40, max_COI = 40, repetitions = 100, PLAF = p,
+tcoi <- sensitivity(coi = 2:40, max_coi = 40, repetitions = 1, plaf = p,
                     coi_method = c("1", "2"))
 
 tcoi_image <- sensitivity_plot(data = tcoi, dims = c(2, 1), 
@@ -150,30 +150,32 @@ that the algorithm performs this well at COIs that large, COIs of greater than
 20 are somewhat unrealistic. For the rest of this document, we only consider 
 COIs of 2 till 20.
 
-### Method
+### Comparison
 ```{r method, eval = eval_tests}
-tmethod <- sensitivity(COI = 2:20, PLAF = p, 
-                       method = c("end", "ideal", "overall"),
-                       dist_method = "squared", repetitions = 100)
+tcomparison <- sensitivity(coi = 2:20, plaf = p, 
+                           comparison = c("end", "ideal", "overall"),
+                           distance = "squared", repetitions = 1)
 
-tmethod_image <- 
+tcomparison_image <- 
   sensitivity_plot(data = tmethod,
                    title = "Predicted COI",
                    dims = c(3, 1),
-                   sub_title = paste0("Method = ", c("End", 
-                                                     "Ideal", 
-                                                     "Overall")))
+                   sub_title = paste0("Comparison = ", c("End", 
+                                                         "Ideal", 
+                                                         "Overall")))
 
-tmethod_error <- error_plot(tmethod, fill = "method", legend_title = "Method", 
-                            fill_levels = c("End", "Ideal", "Overall"),
-                            title = "Error")
+tcomparison_error <- error_plot(tmethod, fill = "comparison", 
+                                legend_title = "Method", 
+                                fill_levels = c("End", "Ideal", "Overall"),
+                                title = "Error")
 
-tmethod_fig <- ggpubr::ggarrange(tmethod_image, tmethod_error, labels = "AUTO") 
-tmethod_fig
+tcomparison_fig <- ggpubr::ggarrange(tcomparison_image, tcomparison_error, 
+                                     labels = "AUTO") 
+tcomparison_fig
 ```
 
 ```{r method image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/tmethod.png')
+knitr::include_graphics('figures/tcomparison.png')
 ```
 
 Looking at the images for the three methods: `end`, `ideal`, `overall`, it is
@@ -193,11 +195,11 @@ Based on these results, it seem that the `ideal` method and the `overall` method
 are the best. Which one is better is debatable, but for the rest of this 
 document, we will use the `overall` method.
 
-### Distance Method
+### Distance
 ```{r distance, eval = eval_tests}
-tdistance <- sensitivity(COI = 2:20, PLAF = p, method = "overall",
-                      dist_method = c("abs_sum", "sum_abs", "squared"),
-                      repetitions = 100, coi_method = c("1", "2"))
+tdistance <- sensitivity(coi = 2:20, plaf = p, comparison = "overall",
+                         distance = c("abs_sum", "sum_abs", "squared"),
+                         repetitions = 1, coi_method = c("1", "2"))
 
 tdistance_image <- 
   sensitivity_plot(data = tdistance,
@@ -210,7 +212,7 @@ tdistance_image <-
                                      rep(c("Method 1", "Method 2"), each = 3), 
                                      sep = ", "))
 
-tdistance_error <- error_plot(tdistance, fill = "dist_method", 
+tdistance_error <- error_plot(tdistance, fill = "distance", 
                               legend_title = "Distance Method", 
                               fill_levels = c("Absolute Sum", 
                                               "Squared Error", 
@@ -229,9 +231,9 @@ knitr::include_graphics('figures/tdistance.png')
 
 ### Weighted
 ```{r weight, eval = eval_tests}
-tweight <- sensitivity(COI = 2:20, weighted = c(FALSE, TRUE),
-                    dist_method = "squared", PLAF = p, repetitions = 100,
-                    coi_method = c("1", "2"))
+tweight <- sensitivity(coi = 2:20, weighted = c(FALSE, TRUE),
+                       distance = "squared", plaf = p, repetitions = 1,
+                       coi_method = c("1", "2"))
 
 tweight_image <- 
   sensitivity_plot(data = tweight,
@@ -262,8 +264,8 @@ often, but the difference is very small.
 
 ### Coverage
 ```{r coverage, eval = eval_tests}
-tcoverage <- sensitivity(COI = 2:20, coverage = c(25, 50, 100, 200, 400, 800), 
-                 repetitions = 100, PLAF = p, coi_method = c("1", "2"))
+tcoverage <- sensitivity(coi = 2:20, coverage = c(25, 50, 100, 200, 400, 800), 
+                         repetitions = 1, plaf = p, coi_method = c("1", "2"))
 
 tcoverage_image <- 
   sensitivity_plot(data = tcoverage,
@@ -301,7 +303,7 @@ bloci <- lapply(loci, function(new_L){
   new_p <- rbeta(new_L, 1, 5)
   new_p[new_p > 0.5] <- 1 - new_p[new_p > 0.5]
   
-  inner_tloci <- sensitivity(COI = 2:20, repetitions = 100, PLAF = new_p,
+  inner_tloci <- sensitivity(coi = 2:20, repetitions = 1, plaf = new_p,
                              coi_method = "1")
   inner_tloci$param_grid$loci <- new_L
   return(inner_tloci)
@@ -315,9 +317,9 @@ pg = do.call(rbind, lapply(bloci, function(test){ return(test$param_grid) }))
 be = do.call(rbind, lapply(bloci, function(test){ return(test$boot_error) }))
 
 # Fix the naming for predicted_coi
-num_cois = length(unique(pg$COI))
-num_repeat_cois = length(pg$COI) / num_cois
-names(pc) = paste("coi", pg$COI, rep(seq(num_repeat_cois), each = num_cois), sep="_")
+num_cois = length(unique(pg$coi))
+num_repeat_cois = length(pg$coi) / num_cois
+names(pc) = paste("coi", pg$coi, rep(seq(num_repeat_cois), each = num_cois), sep="_")
 
 # Create the output
 tloci_1 <- list(
@@ -336,7 +338,7 @@ tloci_image_1 <-
 
 # Add a loci column
 tloci_1$boot_error$loci <- rep(c(1e3, 1e4), 
-                             each = length(unique(tloci_1$boot_error$COI)))
+                             each = length(unique(tloci_1$boot_error$coi)))
 tloci_error_1 <- error_plot(tloci_1, fill = "loci", 
                             legend_title = "Loci", 
                             title = "Error")
@@ -358,7 +360,7 @@ bloci <- lapply(loci, function(new_L){
   new_p <- rbeta(new_L, 1, 5)
   new_p[new_p > 0.5] <- 1 - new_p[new_p > 0.5]
   
-  inner_tloci <- sensitivity(COI = 2:20, repetitions = 100, PLAF = new_p, 
+  inner_tloci <- sensitivity(coi = 2:20, repetitions = 1, plaf = new_p, 
                              coi_method = "2")
   inner_tloci$param_grid$loci <- new_L
   return(inner_tloci)
@@ -372,9 +374,9 @@ pg = do.call(rbind, lapply(bloci, function(test){ return(test$param_grid) }))
 be = do.call(rbind, lapply(bloci, function(test){ return(test$boot_error) }))
 
 # Fix the naming for predicted_coi
-num_cois = length(unique(pg$COI))
-num_repeat_cois = length(pg$COI) / num_cois
-names(pc) = paste("coi", pg$COI, rep(seq(num_repeat_cois), each = num_cois), sep="_")
+num_cois = length(unique(pg$coi))
+num_repeat_cois = length(pg$coi) / num_cois
+names(pc) = paste("coi", pg$coi, rep(seq(num_repeat_cois), each = num_cois), sep="_")
 
 # Create the output
 tloci_2 <- list(
@@ -393,7 +395,7 @@ tloci_image_2 <-
 
 # Add a loci column
 tloci_2$boot_error$loci <- rep(c(1e3, 1e4), 
-                             each = length(unique(tloci_2$boot_error$COI)))
+                             each = length(unique(tloci_2$boot_error$coi)))
 tloci_error_2 <- error_plot(tloci_2, fill = "loci", 
                             legend_title = "Loci", 
                             title = "Error")
@@ -408,8 +410,8 @@ knitr::include_graphics('figures/tloci_2.png')
 
 ### Alpha
 ```{r alpha method 1, eval = eval_tests}
-talpha_1 <- sensitivity(COI = 2:20, alpha = seq(0.01, 5.51, 0.5), 
-                 repetitions = 100, PLAF = p)
+talpha_1 <- sensitivity(coi = 2:20, alpha = seq(0.01, 5.51, 0.5), 
+                        repetitions = 1, plaf = p)
 
 talpha_image_1 <- 
   sensitivity_plot(data = talpha_1,
@@ -431,8 +433,8 @@ knitr::include_graphics('figures/talpha_1.png')
 ```
 
 ```{r alpha method 2, eval = eval_tests}
-talpha_2 <- sensitivity(COI = 2:20, alpha = seq(0.01, 5.51, 0.5), 
-                 repetitions = 100, PLAF = p)
+talpha_2 <- sensitivity(coi = 2:20, alpha = seq(0.01, 5.51, 0.5), 
+                        repetitions = 1, plaf = p)
 
 talpha_image_2 <- 
   sensitivity_plot(data = talpha_2,
@@ -455,8 +457,8 @@ knitr::include_graphics('figures/talpha_2.png')
 
 ### Overdispersion
 ```{r overdispersion, eval = eval_tests}
-tover <- sensitivity(COI = 2:20, overdispersion = seq(0, 0.2, 0.05), 
-                     repetitions = 100, PLAF = p, coi_method = c("1", "2"))
+tover <- sensitivity(coi = 2:20, overdispersion = seq(0, 0.2, 0.05), 
+                     repetitions = 1, plaf = p, coi_method = c("1", "2"))
 
 tover_image <- 
   sensitivity_plot(data = tover,
@@ -485,8 +487,8 @@ consistently underpredicting the COI by a large amount.
 
 ### Epsilon
 ```{r epsilon, eval = eval_tests}
-tepsilon <- sensitivity(COI = 2:20, epsilon = seq(0, 0.008, 0.001), 
-                 repetitions = 100, PLAF = p)
+tepsilon <- sensitivity(coi = 2:20, epsilon = seq(0, 0.008, 0.001), 
+                        repetitions = 1, plaf = p)
 
 tepsilon_image <- 
   sensitivity_plot(data = tepsilon,
@@ -514,9 +516,9 @@ COI for these tests.
 
 ### Sequencing Error
 ```{r seq error, eval = eval_tests}
-tseq <- sensitivity(COI = 2:20, epsilon = seq(0, 0.008, 0.004), 
-                 seq_error = seq(0, 0.04, 0.01)[-1], 
-                 repetitions = 100, PLAF = p)
+tseq <- sensitivity(coi = 2:20, epsilon = seq(0, 0.008, 0.004), 
+                    seq_error = seq(0, 0.04, 0.01)[-1], 
+                    repetitions = 1, plaf = p)
 
 ep_title <- rep(paste0("Epsilon=", seq(0, 0.008, 0.004)), 2) 
 seq_title <- rep(paste0("Sequence Error = ", seq(0, 0.04, 0.01)[-1]), each = 3)
@@ -551,11 +553,11 @@ large, the model starts to underpredict the COI.
 
 ```{r save results, eval = eval_tests, echo = FALSE}
 # Below, we save the runs we performed for future use
-saved_analysis <- list(toverall, tcoi, tmethod, tdistance, tweight, tcoverage, 
-                       tloci_1, tloci_2, talpha_1, talpha_2,  tover, tepsilon, 
-                       tseq)
+saved_analysis <- list(toverall, tcoi, tcomparison, tdistance, tweight, 
+                       tcoverage, tloci_1, tloci_2, talpha_1, talpha_2,  tover,
+                       tepsilon, tseq)
 
-names(saved_analysis) <- list("toverall", "tcoi", "tmethod", "tdistance", 
+names(saved_analysis) <- list("toverall", "tcoi", "tcomparison", "tdistance", 
                               "tweight", "tcoverage", "tloci_1", "tloci_2", 
                               "talpha_1", "talpha_1", "tover", "tepsilon", 
                               "tseq")
@@ -563,11 +565,11 @@ names(saved_analysis) <- list("toverall", "tcoi", "tmethod", "tdistance",
 saveRDS(saved_analysis, file = "saved_analysis.rds")
 
 # Here, we update all the stored images
-update_images <- list(toverall_fig, tcoi_fig, tmethod_fig, tdistance_fig, 
+update_images <- list(toverall_fig, tcoi_fig, tcomparison_fig, tdistance_fig, 
                       tweight_fig, tcoverage_fig, tloci_fig_1, tloci_fig_2, 
                       talpha_fig_1, talpha_fig_2, tover_fig, tepsilon_fig, 
                       tseq_fig)
-names(update_images) <- list("toverall", "tcoi", "tmethod", "tdistance", 
+names(update_images) <- list("toverall", "tcoi", "tcomparison", "tdistance", 
                              "tweight", "tcoverage", "tloci_1", "tloci_2", 
                              "talpha_1", "talpha_2", "tover", "tepsilon", 
                              "tseq")
@@ -579,6 +581,4 @@ for (i in seq_len(length(update_images))){
   suppressMessages(update_images[i] %>% ggpubr::ggexport(filename = filename))
 }
 ```
-
-
 

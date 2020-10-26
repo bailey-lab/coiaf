@@ -7,7 +7,7 @@
 distance_curves(
   processed_data,
   theory_cois,
-  dist_method = "squared",
+  distance = "squared",
   weighted = TRUE
 )
 }
@@ -17,7 +17,7 @@ distance_curves(
 
 \item{theory_cois}{The theoretical COI curves.}
 
-\item{dist_method}{The distance method used to determine the distance between
+\item{distance}{The distance method used to determine the distance between
 the theoretical and simulated curves for the \code{"overall"} method. One of
 \code{"abs_sum"}, \code{"sum_abs"}, \code{"squared"}.}
 

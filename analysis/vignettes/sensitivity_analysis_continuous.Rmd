@@ -86,14 +86,20 @@ p[p > 0.5] <- 1 - p[p > 0.5]
 
 ### Overall Performance
 ```{r overall, eval = eval_tests}
-toverall <- sensitivity(COI = 1:25, max_COI = 30, repetitions = 100, PLAF = p,
-                 coverage = 200, seq_error = 0)
+toverall <- cont_sensitivity(coi = 1:25, max_coi = 30, repetitions = 1, 
+                             plaf = p, coverage = 200, seq_error = 0)
 
-toverall_image <- sensitivity_plot(data = toverall, plot_dims = c(1, 1), title = "Overall")
-toverall_image
+toverall_image <- sensitivity_plot(data = toverall, dims = c(2, 1), 
+                                   title = "Predicted COI", 
+                                   sub_title = c("Method 1", "Method 2"))
 
-toverall_error <- error_plot(toverall, legend.position = "none")
-toverall_error
+toverall_error <- error_plot(toverall, 
+                             legend_title = "COI Method", 
+                             title = "Error")
+
+toverall_fig <- ggpubr::ggarrange(toverall_image, toverall_error, 
+                                  labels = "AUTO")
+toverall_fig
 ```
 
 ```{r overall image, eval = eval_images, echo = F, out.width = "75%"}

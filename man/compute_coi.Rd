@@ -8,8 +8,8 @@ compute_coi(
   processed_data,
   theory_coi_range,
   cut,
-  method = "overall",
-  dist_method = "squared",
+  comparison = "overall",
+  distance = "squared",
   weighted = TRUE,
   coi_method = "1"
 )
@@ -23,10 +23,10 @@ will be generated.}
 
 \item{cut}{A vector indicating how often the data is summarized.}
 
-\item{method}{The method to be employed. One of \code{"end"}, \code{"ideal"},
+\item{comparison}{The method to be employed. One of \code{"end"}, \code{"ideal"},
 \code{"overall"}.}
 
-\item{dist_method}{The distance method used to determine the distance between
+\item{distance}{The distance method used to determine the distance between
 the theoretical and simulated curves for the \code{"overall"} method. One of
 \code{"abs_sum"}, \code{"sum_abs"}, \code{"squared"}.}
 

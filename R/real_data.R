@@ -18,8 +18,8 @@ run_real <- function(data,
                      max_coi = 25,
                      seq_error = 0.01,
                      cut = seq(0, 0.5, 0.01),
-                     method = "overall",
-                     dist_method = "squared",
+                     comparison = "overall",
+                     distance = "squared",
                      weighted = TRUE) {
 
   # Check inputs
@@ -28,10 +28,10 @@ run_real <- function(data,
   assert_bounded(cut, left = 0, right = 0.5)
   assert_vector(cut)
   assert_increasing(cut)
-  assert_single_string(method)
-  assert_in(method, c("end", "ideal", "overall"))
-  assert_single_string(dist_method)
-  assert_in(dist_method, c("abs_sum", "sum_abs", "squared"))
+  assert_single_string(comparison)
+  assert_in(comparison, c("end", "ideal", "overall"))
+  assert_single_string(distance)
+  assert_in(distance, c("abs_sum", "sum_abs", "squared"))
   assert_logical(weighted)
 
   # Function to determine if pbapply is installed. If it is installed, it will
@@ -59,7 +59,7 @@ run_real <- function(data,
 
     # Compute the coi
     sample_coi <- compute_coi(processed_data, 1:max_coi, cut,
-                              method, dist_method, weighted)
+                              comparison, distance, weighted)
   })
 
   # Add names to the output
