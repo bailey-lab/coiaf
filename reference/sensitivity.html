@@ -129,17 +129,17 @@ parameters.</p>
 
     <pre class="usage"><span class='fu'>sensitivity</span><span class='op'>(</span>
   repetitions <span class='op'>=</span> <span class='fl'>10</span>,
-  COI <span class='op'>=</span> <span class='fl'>3</span>,
-  max_COI <span class='op'>=</span> <span class='fl'>25</span>,
-  PLAF <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='fl'>1000</span>, <span class='fl'>0</span>, <span class='fl'>0.5</span><span class='op'>)</span>,
+  coi <span class='op'>=</span> <span class='fl'>3</span>,
+  max_coi <span class='op'>=</span> <span class='fl'>25</span>,
+  plaf <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='fl'>1000</span>, <span class='fl'>0</span>, <span class='fl'>0.5</span><span class='op'>)</span>,
   coverage <span class='op'>=</span> <span class='fl'>200</span>,
   alpha <span class='op'>=</span> <span class='fl'>1</span>,
   overdispersion <span class='op'>=</span> <span class='fl'>0</span>,
   epsilon <span class='op'>=</span> <span class='fl'>0</span>,
   seq_error <span class='op'>=</span> <span class='fl'>0.01</span>,
   cut <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>0.5</span>, <span class='fl'>0.01</span><span class='op'>)</span>,
-  method <span class='op'>=</span> <span class='st'>"overall"</span>,
-  dist_method <span class='op'>=</span> <span class='st'>"squared"</span>,
+  comparison <span class='op'>=</span> <span class='st'>"overall"</span>,
+  distance <span class='op'>=</span> <span class='st'>"squared"</span>,
   weighted <span class='op'>=</span> <span class='cn'>TRUE</span>,
   coi_method <span class='op'>=</span> <span class='st'>"1"</span>
 <span class='op'>)</span></pre>
@@ -152,16 +152,16 @@ parameters.</p>
       <td><p>The number of times each sample will be run.</p></td>
     </tr>
     <tr>
-      <th>COI</th>
+      <th>coi</th>
       <td><p>Complexity of infection.</p></td>
     </tr>
     <tr>
-      <th>max_COI</th>
+      <th>max_coi</th>
       <td><p>A number indicating the maximum COI to compare the
 simulated data to.</p></td>
     </tr>
     <tr>
-      <th>PLAF</th>
+      <th>plaf</th>
       <td><p>Vector of population-level allele frequencies at each locus.</p></td>
     </tr>
     <tr>
@@ -196,12 +196,12 @@ allele. Applies in both directions.</p></td>
       <td><p>A vector indicating how often the data is summarized.</p></td>
     </tr>
     <tr>
-      <th>method</th>
+      <th>comparison</th>
       <td><p>The method to be employed. One of <code>"end"</code>, <code>"ideal"</code>,
 <code>"overall"</code>.</p></td>
     </tr>
     <tr>
-      <th>dist_method</th>
+      <th>distance</th>
       <td><p>The distance method used to determine the distance between
 the theoretical and simulated curves for the <code>"overall"</code> method. One of
 <code>"abs_sum"</code>, <code>"sum_abs"</code>, <code>"squared"</code>.</p></td>

@@ -134,8 +134,8 @@ count and coverage data.</p>
     </div>
 
     <pre class="usage"><span class='fu'>sim_biallelic</span><span class='op'>(</span>
-  COI <span class='op'>=</span> <span class='fl'>3</span>,
-  PLAF <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='fl'>10</span>, <span class='fl'>0</span>, <span class='fl'>0.5</span><span class='op'>)</span>,
+  coi <span class='op'>=</span> <span class='fl'>3</span>,
+  plaf <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='fl'>10</span>, <span class='fl'>0</span>, <span class='fl'>0.5</span><span class='op'>)</span>,
   coverage <span class='op'>=</span> <span class='fl'>200</span>,
   alpha <span class='op'>=</span> <span class='fl'>1</span>,
   overdispersion <span class='op'>=</span> <span class='fl'>0</span>,
@@ -146,11 +146,11 @@ count and coverage data.</p>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>COI</th>
+      <th>coi</th>
       <td><p>Complexity of infection.</p></td>
     </tr>
     <tr>
-      <th>PLAF</th>
+      <th>plaf</th>
       <td><p>Vector of population-level allele frequencies at each locus.</p></td>
     </tr>
     <tr>
@@ -181,14 +181,14 @@ allele. Applies in both directions.</p></td>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A list of:</p><ul>
-<li><p><code>COI</code>: The COI used to simulate the data.</p></li>
+<li><p><code>coi</code>: The COI used to simulate the data.</p></li>
 <li><p><code>strain_proportions</code>: The strain proportion of each strain.</p></li>
 <li><p><code>phased</code>: The phased haplotype.</p></li>
 <li><p><code>data</code>: A dataframe of:</p><ul>
-<li><p><code>PLAF</code>: Population-level allele frequency.</p></li>
+<li><p><code>plaf</code>: The population-level allele frequency.</p></li>
 <li><p><code>coverage</code>: The coverage at each locus.</p></li>
 <li><p><code>counts</code>: The count at each locus.</p></li>
-<li><p><code>WSAF</code>: The within-sample allele frequency.</p></li>
+<li><p><code>wsaf</code>: The within-sample allele frequency.</p></li>
 </ul></li>
 </ul>
 
@@ -200,8 +200,8 @@ Simulated data are drawn from a simple statistical model:</p><ol>
 <li><p>Strain proportions are drawn from a symmetric Dirichlet
 distribution with shape parameter <code>alpha</code>.</p></li>
 <li><p>Phased haplotypes are drawn at every locus, one for each
-<code>COI</code>. The allele at each locus is drawn from a Bernoulli
-distribution with probability given by the <code>PLAF</code>.</p></li>
+<code>coi</code>. The allele at each locus is drawn from a Bernoulli
+distribution with probability given by the <code>plaf</code>.</p></li>
 <li><p>The "true" within-sample allele frequency at every locus is
 obtained by multiplying haplotypes by their strain proportions, and
 summing over haplotypes. Errors are introduced through the equation
