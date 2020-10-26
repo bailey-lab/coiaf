@@ -75,10 +75,6 @@ single_theoretical_coi <- function(coi,
   if (coi_method == "1") {
     curve <- 1 - plaf^coi - (1 - plaf)^coi
   } else if (coi_method == "2") {
-    if (coi == 1) {
-      curve <- rep(0, length(plaf))
-    } else {
       curve <- (plaf - plaf^coi)/(1 - plaf^coi - (1 - plaf)^coi)
-    }
   }
 }

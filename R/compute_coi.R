@@ -108,6 +108,39 @@ compute_coi <- function(data,
   # To check that PLAFs are the same
   assert_eq(theory_cois$plaf, processed_data$midpoints)
 
+  ## Special cases for Method 2 where COI = 1
+  # If there is no heterozygous data, it means that the COI = 1. Otherwise, we
+  # can compare the expected number of loci and the number of loci our
+  # simulation gives us.
+  if (coi_method == "2") {
+    # No heterozygous data present
+    if (dim(processed_data)[1] == 0) {
+      ret <- list(coi = 1, probability = NULL)
+      return(ret)
+    }
+
+    # Breaks is the mean PLAF of each bucket
+    breaks <- processed_data$midpoints
+
+    # Size is the number of loci per bucket
+    size <- data.frame(plaf_cut = cut(data$data$plaf, cut, include.lowest = TRUE),
+                       variant = data$data$wsaf) %>%
+      dplyr::group_by(.data$plaf_cut, .drop = FALSE) %>%
+      dplyr::summarise(bucket_size = dplyr::n())
+    size <- size$bucket_size
+
+    # 95% CI for how many heterozygous loci we expect per bucket
+    CI <- Hmisc::binconf((2 * breaks * (1 - breaks)) * size, size) * size
+    lower <- unname(CI[, 2])
+
+    # If the number of loci in our simulated data is less than the expected
+    # value, we predict that our COI will be 1
+    if (sum(lower - processed_data$bucket_size) >= 0) {
+      ret <- list(coi = 1, probability = NULL)
+      return(ret)
+    }
+  }
+
   # Minus 1 because theory_cois now includes the PLAF at the end
   bound_coi = ncol(theory_cois) - 1
 
@@ -171,7 +204,8 @@ compute_coi <- function(data,
   # Distance to probability
   dist <- as.numeric(dist)
   dist <- 1 / (dist + 1e-5)
-  dist <- dist / sum(dist)
+  dist <- dist / sum(dist, na.rm = T)
+  dist[is.nan(dist)] <- 1e-5
 
   # Prepare list to return
   ret <- list(as.numeric(coi), dist)

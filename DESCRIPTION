@@ -24,6 +24,7 @@ Imports:
     boot,
     dplyr,
     glue,
+    Hmisc,
     magrittr,
     mathjaxr,
     rlang,

@@ -12,6 +12,8 @@
 #' * `squared`: Sum of squared difference.
 #'
 #' @param coi The COI for which the likelihood will be generated.
+#' @param processed_data The processed COI data. This is the output of
+#' [process_sim()] or [process_real()].
 #' @inheritParams theoretical_coi
 #' @inheritParams compute_coi
 #'
@@ -123,9 +125,9 @@ optimize_coi <- function(data,
 }
 
   # Process data
-  if (data_type == "sim"){
+  if (data_type == "sim") {
     processed_data <- process_sim(data, seq_error, cut, coi_method)
-  } else if (data_type == "real"){
+  } else if (data_type == "real") {
     processed_data <- process_real(data$wsaf, data$plaf,
                                    seq_error,
                                    cut,
