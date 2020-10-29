@@ -253,7 +253,7 @@ distance_curves <- function(processed_data, theory_cois,
   # difference if wanted
   gap <- match_theory_cois - processed_data$m_variant
   if (weighted) {
-    gap <- (gap * processed_data$bucket_size) / sum(processed_data$bucket_size)
+    gap <- gap * processed_data$bucket_size
   }
 
   if (distance == "abs_sum") {

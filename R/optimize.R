@@ -50,7 +50,7 @@ likelihood <- function(coi,
   # Distance
   gap <- theory_coi - processed_data$m_variant
   if (weighted){
-    gap <- (gap * processed_data$bucket_size) / sum(processed_data$bucket_size)
+    gap <- gap * processed_data$bucket_size
   }
 
   if (distance == "abs_sum"){
