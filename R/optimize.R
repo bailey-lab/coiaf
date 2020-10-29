@@ -134,6 +134,9 @@ optimize_coi <- function(data,
                                    coi_method)
   }
 
+  # Special case where there are no heterozygous sites
+  if (nrow(processed_data) == 0) return (coi <- 1)
+
   # Compute COI
   # Details:
   #   par: The starting value of our parameter to be optimized
@@ -148,7 +151,7 @@ optimize_coi <- function(data,
                       distance = distance,
                       weighted = TRUE,
                       coi_method = coi_method,
-                      method = "L-BFGS-B", lower = 1, upper = max_coi,
+                      method = "L-BFGS-B", lower = 1+1e-5, upper = max_coi,
                       control = list(fnscale = 1, ndeps = 1e-5))
 
   # Output warning if the model does not converge
