@@ -205,7 +205,7 @@ compute_coi <- function(data,
   dist <- as.numeric(dist)
   dist <- 1 / (dist + 1e-5)
   dist <- dist / sum(dist, na.rm = T)
-  dist[is.nan(dist)] <- 1e-5
+  dist[is.nan(dist)] <- 0
 
   # Prepare list to return
   ret <- list(as.numeric(coi), dist)
