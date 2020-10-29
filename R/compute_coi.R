@@ -140,7 +140,7 @@ compute_coi <- function(data,
                                  suffix = c("_expect", "_data")) %>%
       tidyr::replace_na(list(bucket_size_data = 0))
 
-    if (sum(combined$bucket_size_expect - combined$bucket_size_data) >= 0) {
+    if (sum(combined$Lower - combined$bucket_size_data) >= 0) {
       ret <- list(coi = 1, probability = c(1, rep(0, max_coi - 1)))
       return(ret)
     }
