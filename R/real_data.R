@@ -55,9 +55,9 @@ run_real <- function(data,
     input <- data.frame(wsaf = wsaf, plaf = plaf) %>% tidyr::drop_na()
 
     # Compute the coi
-    sample_coi <- compute_coi(df(input$wsaf, input$plaf), "real", max_coi,
-                              seq_error, cut, comparison, distance, weighted,
-                              coi_method)
+    sample_coi <- compute_coi(data.frame(input$wsaf, input$plaf), "real",
+                              max_coi, seq_error, cut, comparison, distance,
+                              weighted)
   })
 
   # Add names to the output

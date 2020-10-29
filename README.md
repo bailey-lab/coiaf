@@ -60,7 +60,7 @@ developed accordingly.
 Features in development:
 
   - [x] Method 2
-  - [ ] For Method 2, how do we tell when COI = 1
+  - [x] For Method 2, how do we tell when COI = 1
   - [ ] Add a relatedness parameter to the simulated data
   - [ ] Do another round of sensitivity analysis using the continuous
     method
