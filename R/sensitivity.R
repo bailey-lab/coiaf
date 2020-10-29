@@ -256,7 +256,7 @@ sensitivity <- function(repetitions = 10,
   # where there is an issue. Anymore, and the warning message becomes too
   # confusing.
   warn_tibble <- boot_error %>%
-    tidyr::unnest(cols = tidyr::everything()) %>%
+    tidyr::unchop(cols = tidyr::everything()) %>%
     dplyr::filter(is.na(.data$lower) | is.na(.data$upper))
   if (nrow(warn_tibble) >= 1) {
     bullet <- ""
@@ -464,7 +464,7 @@ cont_sensitivity <- function(repetitions = 10,
   # where there is an issue. Anymore, and the warning message becomes too
   # confusing.
   warn_tibble <- boot_error %>%
-    tidyr::unnest(cols = tidyr::everything()) %>%
+    tidyr::unchop(cols = tidyr::everything()) %>%
     dplyr::filter(is.na(.data$lower) | is.na(.data$upper))
   if (nrow(warn_tibble) >= 1) {
     bullet <- ""

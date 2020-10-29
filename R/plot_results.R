@@ -200,7 +200,7 @@ error_plot <- function(data,
   if (!is.null(second_fill)) assert_single_string(second_fill)
 
   # Convert data to a tibble
-  plot_data <- data$boot_error %>% tidyr::unnest(cols = names(data$boot_error))
+  plot_data <- data$boot_error %>% tidyr::unchop(cols = names(data$boot_error))
 
   # Make several changes to the data frame. For columns that have more than 1
   # unique value and are not one of c("mae", "lower", "upper", "bias"), convert
