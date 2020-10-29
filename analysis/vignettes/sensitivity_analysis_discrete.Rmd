@@ -1,10 +1,10 @@
 ---
-title: "Sensitivity Analysis"
+title: "Discrete Sensitivity Analysis"
 author: "Aris Paschalidis"
 date: "`r format(Sys.time(), '%B %Y')`"
 output: rmarkdown::html_vignette
 vignette: >
- %\VignetteIndexEntry{Sensitivity Analysis}
+ %\VignetteIndexEntry{Discrete Sensitivity Analysis}
  %\VignetteEngine{knitr::rmarkdown}
  %\VignetteEncoding{UTF-8}
 ---
@@ -14,7 +14,10 @@ vignette: >
 knitr::opts_chunk$set(
   comment = "#>",
   tidy = TRUE,
-  tidy.opts = list(width.cutoff = 80)
+  tidy.opts = list(width.cutoff = 80),
+  warning = FALSE,
+  fig.width = 7, 
+  fig.height = 7
 )
 
 # The following two variables control which chunks are run. Either the tests are
@@ -26,8 +29,8 @@ eval_images = !eval_tests
 
 # N.B. to save the plots, we can use the following code. Write this after the
 # call to sensitivity_plot().
-# %>% ggpubr::ggexport(filename = "analysis/vignettes/figures/sensitivity_plots/toverall_image.png")
-# %>% ggpubr::ggexport(filename = "analysis/vignettes/figures/error_images/toverall_error.png")
+# %>% ggpubr::ggexport(filename = "analysis/vignettes/figures/discrete/sensitivity_plots/toverall_image.png")
+# %>% ggpubr::ggexport(filename = "analysis/vignettes/figures/discrete/error_images/toverall_error.png")
 
 library(coiaf)
 ```
@@ -37,21 +40,21 @@ library(coiaf)
 In this analysis file, we aim to understand the effect of varying parameters on
 our COI framework. The parameters that we will examine are:
 
-* method: The method to be employed. One of `"end"`, `"ideal"`, `"overall"`.
-* dist_method: The distance method used to determine the distance between the 
+* `comparison`: The method to be employed. One of `"end"`, `"ideal"`, `"overall"`.
+* `distance`: The distance method used to determine the distance between the 
 theoretical and simulated curves for the `"overall"` method. One of `"abs_sum"`, 
 `"sum_abs"`, `"squared"`.
-* weighted: An indicator indicating whether to compute weighted distance.
-* coverage: Coverage at each locus.
-* loci: The number of loci.
-* alpha: Shape parameter of the symmetric Dirichlet prior on strain proportions.
-* overdispersion: The extent to which counts are over-dispersed relative to the 
+* `weighted`: An indicator indicating whether to compute weighted distance.
+* `coverage`: Coverage at each locus.
+* `loci`: The number of loci.
+* `alpha`: Shape parameter of the symmetric Dirichlet prior on strain proportions.
+* `overdispersion`: The extent to which counts are over-dispersed relative to the 
 binomial distribution. Counts are Beta-binomially distributed, with the beta 
 distribution having shape parameters $p/\text{overdispersion}$ and 
 $(1-p) / \text{overdispersion}$.
-* epsilon: The probability of a single read being miscalled as the other allele.
+* `epsilon`: The probability of a single read being miscalled as the other allele.
 Applies in both directions.
-* seq_error: The level of sequencing error that is assumed.
+* `seq_error`: The level of sequencing error that is assumed.
 
 In addition, we will compare two different methods of determining the COI.
 The first method uses the mean number of variant sites, binned in groups of 
@@ -62,9 +65,9 @@ for only the sites that are heterogeneous.
 
 | Parameter       | Default Value         |
 |:---------------:|:---------------------:|
-| Coi             | `3`                   |
-| Max Coi         | `25`                  |
-| Plaf            | `runif(1000, 0, 0.5)` |
+| COI             | `3`                   |
+| Max COI         | `25`                  |
+| PLAF            | `runif(1000, 0, 0.5)` |
 | Coverage        | `200`                 |
 | Alpha           | `1`                   |
 | Overdispersion  | `0`                   |
@@ -107,7 +110,7 @@ toverall_fig
 ```
 
 ```{r overall image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/toverall.png')
+knitr::include_graphics('figures/discrete/toverall.png')
 ```
 
 ## Sensitivity Analysis
@@ -117,7 +120,7 @@ We first want to understand for what range our model can accurately predict
 the COI.
 
 ```{r coi, eval = eval_tests}
-tcoi <- sensitivity(coi = 2:40, max_coi = 40, repetitions = 1, plaf = p,
+tcoi <- sensitivity(coi = 2:40, max_coi = 40, repetitions = 10, plaf = p,
                     coi_method = c("1", "2"))
 
 tcoi_image <- sensitivity_plot(data = tcoi, dims = c(2, 1), 
@@ -134,7 +137,7 @@ tcoi_fig
 ```
 
 ```{r coi image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/tcoi.png')
+knitr::include_graphics('figures/discrete/tcoi.png')
 ```
 
 Based on the above set of runs, it appears that the algorithm performs well for
@@ -151,20 +154,20 @@ that the algorithm performs this well at COIs that large, COIs of greater than
 COIs of 2 till 20.
 
 ### Comparison
-```{r method, eval = eval_tests}
+```{r comparison, eval = eval_tests}
 tcomparison <- sensitivity(coi = 2:20, plaf = p, 
                            comparison = c("end", "ideal", "overall"),
-                           distance = "squared", repetitions = 1)
+                           distance = "squared", repetitions = 10)
 
 tcomparison_image <- 
-  sensitivity_plot(data = tmethod,
+  sensitivity_plot(data = tcomparison,
                    title = "Predicted COI",
                    dims = c(3, 1),
                    sub_title = paste0("Comparison = ", c("End", 
                                                          "Ideal", 
                                                          "Overall")))
 
-tcomparison_error <- error_plot(tmethod, fill = "comparison", 
+tcomparison_error <- error_plot(tcomparison, fill = "comparison", 
                                 legend_title = "Method", 
                                 fill_levels = c("End", "Ideal", "Overall"),
                                 title = "Error")
@@ -175,7 +178,7 @@ tcomparison_fig
 ```
 
 ```{r method image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/tcomparison.png')
+knitr::include_graphics('figures/discrete/tcomparison.png')
 ```
 
 Looking at the images for the three methods: `end`, `ideal`, `overall`, it is
@@ -199,7 +202,7 @@ document, we will use the `overall` method.
 ```{r distance, eval = eval_tests}
 tdistance <- sensitivity(coi = 2:20, plaf = p, comparison = "overall",
                          distance = c("abs_sum", "sum_abs", "squared"),
-                         repetitions = 1, coi_method = c("1", "2"))
+                         repetitions = 10, coi_method = c("1", "2"))
 
 tdistance_image <- 
   sensitivity_plot(data = tdistance,
@@ -226,13 +229,13 @@ tdistance_fig
 ```
 
 ```{r distance image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/tdistance.png')
+knitr::include_graphics('figures/discrete/tdistance.png')
 ```
 
 ### Weighted
 ```{r weight, eval = eval_tests}
 tweight <- sensitivity(coi = 2:20, weighted = c(FALSE, TRUE),
-                       distance = "squared", plaf = p, repetitions = 1,
+                       distance = "squared", plaf = p, repetitions = 10,
                        coi_method = c("1", "2"))
 
 tweight_image <- 
@@ -254,7 +257,7 @@ tweight_fig
 ```
 
 ```{r weight image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/tweight.png')
+knitr::include_graphics('figures/discrete/tweight.png')
 ```
 
 Comparing weighted to non-weighted distance metrics, it appears that there is
@@ -265,7 +268,7 @@ often, but the difference is very small.
 ### Coverage
 ```{r coverage, eval = eval_tests}
 tcoverage <- sensitivity(coi = 2:20, coverage = c(25, 50, 100, 200, 400, 800), 
-                         repetitions = 1, plaf = p, coi_method = c("1", "2"))
+                         repetitions = 10, plaf = p, coi_method = c("1", "2"))
 
 tcoverage_image <- 
   sensitivity_plot(data = tcoverage,
@@ -286,7 +289,7 @@ tcoverage_fig
 ```
 
 ```{r coverage image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/tcoverage.png')
+knitr::include_graphics('figures/discrete/tcoverage.png')
 ```
 
 It can be seen, based on the figures, that the lower the coverage is, the worse
@@ -303,7 +306,7 @@ bloci <- lapply(loci, function(new_L){
   new_p <- rbeta(new_L, 1, 5)
   new_p[new_p > 0.5] <- 1 - new_p[new_p > 0.5]
   
-  inner_tloci <- sensitivity(coi = 2:20, repetitions = 1, plaf = new_p,
+  inner_tloci <- sensitivity(coi = 2:20, repetitions = 10, plaf = new_p,
                              coi_method = "1")
   inner_tloci$param_grid$loci <- new_L
   return(inner_tloci)
@@ -348,7 +351,7 @@ tloci_fig_1
 ```
 
 ```{r loci image method 1, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/tloci_1.png')
+knitr::include_graphics('figures/discrete/tloci_1.png')
 ```
 
 ```{r loci method 2, eval = eval_tests}
@@ -360,7 +363,7 @@ bloci <- lapply(loci, function(new_L){
   new_p <- rbeta(new_L, 1, 5)
   new_p[new_p > 0.5] <- 1 - new_p[new_p > 0.5]
   
-  inner_tloci <- sensitivity(coi = 2:20, repetitions = 1, plaf = new_p, 
+  inner_tloci <- sensitivity(coi = 2:20, repetitions = 10, plaf = new_p, 
                              coi_method = "2")
   inner_tloci$param_grid$loci <- new_L
   return(inner_tloci)
@@ -405,13 +408,13 @@ tloci_fig_2
 ```
 
 ```{r loci image method 2, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/tloci_2.png')
+knitr::include_graphics('figures/discrete/tloci_2.png')
 ```
 
 ### Alpha
 ```{r alpha method 1, eval = eval_tests}
 talpha_1 <- sensitivity(coi = 2:20, alpha = seq(0.01, 5.51, 0.5), 
-                        repetitions = 1, plaf = p)
+                        repetitions = 10, plaf = p)
 
 talpha_image_1 <- 
   sensitivity_plot(data = talpha_1,
@@ -429,12 +432,12 @@ talpha_fig_1
 ```
 
 ```{r alpha image method 1, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/talpha_1.png')
+knitr::include_graphics('figures/discrete/talpha_1.png')
 ```
 
 ```{r alpha method 2, eval = eval_tests}
 talpha_2 <- sensitivity(coi = 2:20, alpha = seq(0.01, 5.51, 0.5), 
-                        repetitions = 1, plaf = p)
+                        repetitions = 10, plaf = p)
 
 talpha_image_2 <- 
   sensitivity_plot(data = talpha_2,
@@ -452,13 +455,13 @@ talpha_fig_2
 ```
 
 ```{r alpha image method 2, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/talpha_2.png')
+knitr::include_graphics('figures/discrete/talpha_2.png')
 ```
 
 ### Overdispersion
 ```{r overdispersion, eval = eval_tests}
 tover <- sensitivity(coi = 2:20, overdispersion = seq(0, 0.2, 0.05), 
-                     repetitions = 1, plaf = p, coi_method = c("1", "2"))
+                     repetitions = 10, plaf = p, coi_method = c("1", "2"))
 
 tover_image <- 
   sensitivity_plot(data = tover,
@@ -478,7 +481,7 @@ tover_fig
 ```
 
 ```{r overdispersion image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/tover.png')
+knitr::include_graphics('figures/discrete/tover.png')
 ```
 
 When you introduce overdispersion, models perform poorly. Any overdispersion 
@@ -488,7 +491,7 @@ consistently underpredicting the COI by a large amount.
 ### Epsilon
 ```{r epsilon, eval = eval_tests}
 tepsilon <- sensitivity(coi = 2:20, epsilon = seq(0, 0.008, 0.001), 
-                        repetitions = 1, plaf = p)
+                        repetitions = 10, plaf = p)
 
 tepsilon_image <- 
   sensitivity_plot(data = tepsilon,
@@ -506,7 +509,7 @@ tepsilon_fig
 ```
 
 ```{r epsilon image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/tepsilon.png')
+knitr::include_graphics('figures/discrete/tepsilon.png')
 ```
 
 The algorithm performs best at an epsilon value of 0. As epsilon becomes larger,
@@ -518,7 +521,7 @@ COI for these tests.
 ```{r seq error, eval = eval_tests}
 tseq <- sensitivity(coi = 2:20, epsilon = seq(0, 0.008, 0.004), 
                     seq_error = seq(0, 0.04, 0.01)[-1], 
-                    repetitions = 1, plaf = p)
+                    repetitions = 10, plaf = p)
 
 ep_title <- rep(paste0("Epsilon=", seq(0, 0.008, 0.004)), 2) 
 seq_title <- rep(paste0("Sequence Error = ", seq(0, 0.04, 0.01)[-1]), each = 3)
@@ -543,7 +546,7 @@ tseq_fig
 ```
 
 ```{r seq error image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/tseq.png')
+knitr::include_graphics('figures/discrete/tseq.png')
 ```
 
 Interestingly, having no sequence error causes problems in the algorithm. Based
@@ -559,10 +562,10 @@ saved_analysis <- list(toverall, tcoi, tcomparison, tdistance, tweight,
 
 names(saved_analysis) <- list("toverall", "tcoi", "tcomparison", "tdistance", 
                               "tweight", "tcoverage", "tloci_1", "tloci_2", 
-                              "talpha_1", "talpha_1", "tover", "tepsilon", 
+                              "talpha_1", "talpha_2", "tover", "tepsilon", 
                               "tseq")
 
-saveRDS(saved_analysis, file = "saved_analysis.rds")
+saveRDS(saved_analysis, file = "saved_analysis_discrete.rds")
 
 # Here, we update all the stored images
 update_images <- list(toverall_fig, tcoi_fig, tcomparison_fig, tdistance_fig, 
@@ -575,7 +578,7 @@ names(update_images) <- list("toverall", "tcoi", "tcomparison", "tdistance",
                              "tseq")
 
 for (i in seq_len(length(update_images))){
-  filename = paste0("analysis/vignettes/figures/", 
+  filename = paste0("figures/discrete/", 
                     names(update_images)[i], 
                     ".png")
   suppressMessages(update_images[i] %>% ggpubr::ggexport(filename = filename))
