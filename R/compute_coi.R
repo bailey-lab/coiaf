@@ -119,23 +119,28 @@ compute_coi <- function(data,
       return(ret)
     }
 
-    # Breaks is the mean PLAF of each bucket
-    breaks <- processed_data$midpoints
-
     # Size is the number of loci per bucket
     size <- data.frame(plaf_cut = cut(data$data$plaf, cut, include.lowest = TRUE),
                        variant = data$data$wsaf) %>%
       dplyr::group_by(.data$plaf_cut, .drop = FALSE) %>%
       dplyr::summarise(bucket_size = dplyr::n())
-    size <- size$bucket_size
+    size$midpoints <- cut[-length(cut)] + diff(cut)/2
+
+    breaks = size$midpoints
+    nloci  = size$bucket_size
 
     # 95% CI for how many heterozygous loci we expect per bucket
-    CI <- Hmisc::binconf((2 * breaks * (1 - breaks)) * size, size) * size
-    lower <- unname(CI[, 2])
+    CI <- Hmisc::binconf((2 * breaks * (1 - breaks)) * nloci, nloci) * nloci
+    expectation <- tibble::tibble(cbind(size, CI))
 
     # If the number of loci in our simulated data is less than the expected
     # value, we predict that our COI will be 1
-    if (sum(lower - processed_data$bucket_size) >= 0) {
+    combined <- dplyr::left_join(expectation, processed_data,
+                                 by = c("plaf_cut", "midpoints"),
+                                 suffix = c("_expect", "_data")) %>%
+      tidyr::replace_na(list(bucket_size_data = 0))
+
+    if (sum(combined$bucket_size_expect - combined$bucket_size_data) >= 0) {
       ret <- list(coi = 1, probability = c(1, rep(0, max_coi - 1)))
       return(ret)
     }
