@@ -115,7 +115,7 @@ compute_coi <- function(data,
   if (coi_method == "2") {
     # No heterozygous data present
     if (dim(processed_data)[1] == 0) {
-      ret <- list(coi = 1, probability = NULL)
+      ret <- list(coi = 1, probability = c(1, rep(0, max_coi - 1)))
       return(ret)
     }
 
@@ -136,7 +136,7 @@ compute_coi <- function(data,
     # If the number of loci in our simulated data is less than the expected
     # value, we predict that our COI will be 1
     if (sum(lower - processed_data$bucket_size) >= 0) {
-      ret <- list(coi = 1, probability = NULL)
+      ret <- list(coi = 1, probability = c(1, rep(0, max_coi - 1)))
       return(ret)
     }
   }
