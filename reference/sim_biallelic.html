@@ -139,6 +139,7 @@ count and coverage data.</p>
   coverage <span class='op'>=</span> <span class='fl'>200</span>,
   alpha <span class='op'>=</span> <span class='fl'>1</span>,
   overdispersion <span class='op'>=</span> <span class='fl'>0</span>,
+  relatedness <span class='op'>=</span> <span class='fl'>0</span>,
   epsilon <span class='op'>=</span> <span class='fl'>0</span>
 <span class='op'>)</span></pre>
 
@@ -172,6 +173,16 @@ the beta distribution having shape parameters
 \(\frac{1-p}{overdispersion}\).</p></td>
     </tr>
     <tr>
+      <th>relatedness</th>
+      <td><p>The probability that a strain in mixed infections is
+related to another. Default = 0 (unrelated). The implementation is similar
+to relatedness as defined in THE REAL McCOIL simulations. In the original
+paper (https://doi.org/10.1371/journal.pcbi.1005348) this is defined as:
+"... simulated relatedness (r) among lineages within the same host by
+sampling alleles either from an existing lineage within the same host
+(with probability r) or from the population (with probability (1-r))."</p></td>
+    </tr>
+    <tr>
       <th>epsilon</th>
       <td><p>The probability of a single read being miscalled as the other
 allele. Applies in both directions.</p></td>
@@ -190,6 +201,13 @@ allele. Applies in both directions.</p></td>
 <li><p><code>counts</code>: The count at each locus.</p></li>
 <li><p><code>wsaf</code>: The within-sample allele frequency.</p></li>
 </ul></li>
+<li><p><code>inputs</code>: A dataframe of function input arguments:</p><ul>
+<li><p><code>alpha</code>: Shape parameters of Dirichlet controlling strain proportions.</p></li>
+<li><p><code>overdispersion</code>: Overdispersion in count data.</p></li>
+<li><p><code>relatedness</code>: Within sample relatedness between strains.</p></li>
+<li><p><code>epsilon</code>: Probability of a single read being miscalled.</p></li>
+</ul></li>
+<li><p></p></li>
 </ul>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
