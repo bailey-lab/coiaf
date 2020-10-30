@@ -39,6 +39,13 @@
 #'   \mjseqn{\frac{1-p}{overdispersion}}.
 #' @param epsilon The probability of a single read being miscalled as the other
 #'   allele. Applies in both directions.
+#' @param relatedness The probability that a strain in mixed infections is
+#'   related to another. Default = 0 (unrelated). The implementation is similar
+#'   to relatedness as defined in THE REAL McCOIL simulations. In the original
+#'   paper (https://doi.org/10.1371/journal.pcbi.1005348) this is defined as:
+#'   "... simulated relatedness (r) among lineages within the same host by
+#'   sampling alleles either from an existing lineage within the same host
+#'   (with probability r) or from the population (with probability (1-r))."
 #'
 #' @return A list of:
 #' * `coi`: The COI used to simulate the data.
@@ -49,6 +56,12 @@
 #'   + `coverage`: The coverage at each locus.
 #'   + `counts`: The count at each locus.
 #'   + `wsaf`: The within-sample allele frequency.
+#' * `inputs`: A dataframe of function input arguments:
+#'   + `alpha`: Shape parameters of Dirichlet controlling strain proportions.
+#'   + `overdispersion`: Overdispersion in count data.
+#'   + `relatedness`: Within sample relatedness between strains.
+#'   + `epsilon`: Probability of a single read being miscalled.
+#'
 #' @family simulated data functions
 #' @export
 
@@ -57,6 +70,7 @@ sim_biallelic <- function(coi = 3,
                           coverage = 200,
                           alpha = 1,
                           overdispersion = 0,
+                          relatedness = 0,
                           epsilon = 0) {
 
   # Check inputs
@@ -78,14 +92,36 @@ sim_biallelic <- function(coi = 3,
   assert_single_pos(alpha, zero_allowed = FALSE)
   assert_single_pos(overdispersion, zero_allowed = TRUE)
   assert_single_pos(epsilon, zero_allowed = TRUE)
+  assert_single_pos(relatedness, zero_allowed = TRUE)
   assert_bounded(epsilon)
+  assert_bounded(relatedness)
 
   # Generate strain proportions
   w <- rdirichlet(rep(alpha, coi))
 
   # Generate true WSAF levels by summing binomial draws over strain proportions
-  m <- mapply(function(x) rbinom(coi, 1, x), x = plaf)
-  if (coi == 1){
+  m <- mapply(function(x) rbinom(COI, 1, x), x = PLAF)
+
+  # Handle relatedness
+  if (relatedness > 0 && COI > 1) {
+
+    # If there is relatedness we iteratively step through each lineage
+    for (i in seq_len(COI - 1)) {
+
+      # For each loci we assume that it is related with probability relatedness
+      rel_i <- as.logical(rbinom(L, size = 1, prob = relatedness))
+
+      # And for those sites that related, we draw the other lineages
+      if (any(rel_i)) {
+        m[i+1, rel_i] <- apply(m[seq_len(i), rel_i, drop = FALSE], 2, sample, size = 1)
+      }
+
+    }
+
+  }
+
+  # Draw with the within sample allele frequencies (p_levels) are
+  if (coi == 1) {
     p_levels = m*w
   } else{
     p_levels <- colSums(sweep(m, 1, w, "*"))
@@ -114,5 +150,9 @@ sim_biallelic <- function(coi = 3,
               data = data.frame(plaf     = plaf,
                                 coverage = coverage,
                                 counts   = counts,
-                                wsaf     = counts/coverage))
+                                wsaf     = counts/coverage),
+              inputs = data.frame(alpha          = alpha,
+                                  overdispersion = overdispersion,
+                                  relatedness    = relatedness,
+                                  epsilon        = epsilon))
 }
