@@ -126,9 +126,11 @@
     </div>
 
     <pre class="usage"><span class='fu'>compute_coi</span><span class='op'>(</span>
-  <span class='va'>processed_data</span>,
-  <span class='va'>theory_coi_range</span>,
-  <span class='va'>cut</span>,
+  <span class='va'>data</span>,
+  <span class='va'>data_type</span>,
+  max_coi <span class='op'>=</span> <span class='fl'>25</span>,
+  seq_error <span class='op'>=</span> <span class='fl'>0.01</span>,
+  cut <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>0.5</span>, <span class='fl'>0.01</span><span class='op'>)</span>,
   comparison <span class='op'>=</span> <span class='st'>"overall"</span>,
   distance <span class='op'>=</span> <span class='st'>"squared"</span>,
   weighted <span class='op'>=</span> <span class='cn'>TRUE</span>,
@@ -139,14 +141,22 @@
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>processed_data</th>
-      <td><p>The processed COI data. This is the output of
-<code><a href='process_sim.html'>process_sim()</a></code> or <code><a href='process_real.html'>process_real()</a></code>.</p></td>
+      <th>data</th>
+      <td><p>The data for which the COI will be computed.</p></td>
     </tr>
     <tr>
-      <th>theory_coi_range</th>
-      <td><p>The range of COIs for which theoretical curves
-will be generated.</p></td>
+      <th>data_type</th>
+      <td><p>The type of the data to be analyzed. One of
+<code>"sim"</code> or <code>"real"</code>.</p></td>
+    </tr>
+    <tr>
+      <th>max_coi</th>
+      <td><p>A number indicating the maximum COI to compare the
+simulated data to.</p></td>
+    </tr>
+    <tr>
+      <th>seq_error</th>
+      <td><p>The level of sequencing error that is assumed.</p></td>
     </tr>
     <tr>
       <th>cut</th>
