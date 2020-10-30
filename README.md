@@ -62,7 +62,7 @@ Features in development:
   - [x] Method 2
   - [ ] For Method 2, how do we tell when COI = 1
   - [ ] Add a relatedness parameter to the simulated data
-  - [ ] Do another round of sensitivity analysis using the continuous
+  - [x] Do another round of sensitivity analysis using the continuous
     method
   - [ ] Find a way to convert continuous predictions to discrete
     predictions
