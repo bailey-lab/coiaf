@@ -12,6 +12,8 @@
 #' * `squared`: Sum of squared difference.
 #'
 #' @param coi The COI for which the likelihood will be generated.
+#' @param processed_data The processed COI data. This is the output of
+#' [process_sim()] or [process_real()].
 #' @inheritParams theoretical_coi
 #' @inheritParams compute_coi
 #'
@@ -48,7 +50,7 @@ likelihood <- function(coi,
   # Distance
   gap <- theory_coi - processed_data$m_variant
   if (weighted){
-    gap <- (gap * processed_data$bucket_size) / sum(processed_data$bucket_size)
+    gap <- gap * processed_data$bucket_size
   }
 
   if (distance == "abs_sum"){
@@ -123,14 +125,17 @@ optimize_coi <- function(data,
 }
 
   # Process data
-  if (data_type == "sim"){
+  if (data_type == "sim") {
     processed_data <- process_sim(data, seq_error, cut, coi_method)
-  } else if (data_type == "real"){
+  } else if (data_type == "real") {
     processed_data <- process_real(data$wsaf, data$plaf,
                                    seq_error,
                                    cut,
                                    coi_method)
   }
+
+  # Special case where there are no heterozygous sites
+  if (nrow(processed_data) == 0) return (coi <- 1)
 
   # Compute COI
   # Details:
@@ -146,7 +151,7 @@ optimize_coi <- function(data,
                       distance = distance,
                       weighted = TRUE,
                       coi_method = coi_method,
-                      method = "L-BFGS-B", lower = 1, upper = max_coi,
+                      method = "L-BFGS-B", lower = 1+1e-5, upper = max_coi,
                       control = list(fnscale = 1, ndeps = 1e-5))
 
   # Output warning if the model does not converge
