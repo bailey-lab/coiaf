@@ -100,24 +100,25 @@ sim_biallelic <- function(coi = 3,
   w <- rdirichlet(rep(alpha, coi))
 
   # Generate true WSAF levels by summing binomial draws over strain proportions
-  m <- mapply(function(x) rbinom(COI, 1, x), x = PLAF)
+  m <- mapply(function(x) rbinom(coi, 1, x), x = plaf)
 
-  # Handle relatedness
-  if (relatedness > 0 && COI > 1) {
+  ## Handle relatedness
+  if (relatedness > 0 && coi > 1) {
 
-    # If there is relatedness we iteratively step through each lineage
-    for (i in seq_len(COI - 1)) {
+    # If there is relatedness, we iteratively step through each lineage
+    for (i in seq_len(coi - 1)) {
 
-      # For each loci we assume that it is related with probability relatedness
+      # For each loci, we assume that it is related with probability relatedness
       rel_i <- as.logical(rbinom(L, size = 1, prob = relatedness))
 
-      # And for those sites that related, we draw the other lineages
+      # And for those sites that are related, we draw from the other lineages
       if (any(rel_i)) {
-        m[i+1, rel_i] <- apply(m[seq_len(i), rel_i, drop = FALSE], 2, sample, size = 1)
+        m[i+1, rel_i] <- apply(m[seq_len(i), rel_i, drop = FALSE],
+                               2,
+                               sample,
+                               size = 1)
       }
-
     }
-
   }
 
   # Draw with the within sample allele frequencies (p_levels) are

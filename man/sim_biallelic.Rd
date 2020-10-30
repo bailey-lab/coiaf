@@ -62,7 +62,6 @@ A list of:
 \item \code{relatedness}: Within sample relatedness between strains.
 \item \code{epsilon}: Probability of a single read being miscalled.
 }
-\item 
 }
 }
 \description{
