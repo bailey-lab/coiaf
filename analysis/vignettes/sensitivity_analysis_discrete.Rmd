@@ -488,6 +488,33 @@ When you introduce overdispersion, models perform poorly. Any overdispersion
 causes a large drop in accuracy. This drop in accuracy is caused by the model
 consistently underpredicting the COI by a large amount.
 
+### Relatedness
+```{r relatedness, eval = eval_tests}
+trelated <- sensitivity(coi = 2:20, relatedness = seq(0, 0.5, 0.1), 
+                        repetitions = 10, plaf = p, coi_method = c("1", "2"))
+
+trelated_image <- sensitivity_plot(data = trelated,
+                                   title = "Predicted COI",
+                                   dims = c(4, 3),
+                                   sub_title = paste(paste0("Related =  ", seq(0, 0.5, 0.1)),
+                                     rep(c("Method 1", "Method 2"), each = 6),
+                                     sep = ", "))
+
+trelated_error <- error_plot(trelated, fill = "relatedness", 
+                          legend_title = "Related", 
+                          title = "Error",
+                          second_fill = "coi_method")
+
+trelated_fig <- ggpubr::ggarrange(trelated_image, trelated_error, 
+                                  nrow = 2, heights = c(2, 1),
+                                  labels = "AUTO")
+trelated_fig
+```
+
+```{r overdispersion image, eval = eval_images, echo = F, out.width = "75%"}
+knitr::include_graphics('figures/discrete/trelated.png')
+```
+
 ### Epsilon
 ```{r epsilon, eval = eval_tests}
 tepsilon <- sensitivity(coi = 2:20, epsilon = seq(0, 0.008, 0.001), 
@@ -558,24 +585,25 @@ large, the model starts to underpredict the COI.
 # Below, we save the runs we performed for future use
 saved_analysis <- list(toverall, tcoi, tcomparison, tdistance, tweight, 
                        tcoverage, tloci_1, tloci_2, talpha_1, talpha_2,  tover,
-                       tepsilon, tseq)
+                       trelated, tepsilon, tseq)
 
 names(saved_analysis) <- list("toverall", "tcoi", "tcomparison", "tdistance", 
                               "tweight", "tcoverage", "tloci_1", "tloci_2", 
-                              "talpha_1", "talpha_2", "tover", "tepsilon", 
-                              "tseq")
+                              "talpha_1", "talpha_2", "tover", "trelated", 
+                              "tepsilon", "tseq")
 
 saveRDS(saved_analysis, file = "saved_analysis_discrete.rds")
 
 # Here, we update all the stored images
 update_images <- list(toverall_fig, tcoi_fig, tcomparison_fig, tdistance_fig, 
                       tweight_fig, tcoverage_fig, tloci_fig_1, tloci_fig_2, 
-                      talpha_fig_1, talpha_fig_2, tover_fig, tepsilon_fig, 
+                      talpha_fig_1, talpha_fig_2, tover_fig, trelated_fig, 
+                      tepsilon_fig, 
                       tseq_fig)
 names(update_images) <- list("toverall", "tcoi", "tcomparison", "tdistance", 
                              "tweight", "tcoverage", "tloci_1", "tloci_2", 
-                             "talpha_1", "talpha_2", "tover", "tepsilon", 
-                             "tseq")
+                             "talpha_1", "talpha_2", "tover", "trelated", 
+                             "tepsilon", "tseq")
 
 for (i in seq_len(length(update_images))){
   filename = paste0("figures/discrete/", 

@@ -156,7 +156,7 @@ COIs of 2 till 20.
 
 ### Comparison
 ```{r comparison, eval = eval_tests}
-tcomparison <- sensitivity(coi = 2:20, plaf = p, 
+tcomparison <- cont_sensitivity(coi = 2:20, plaf = p, 
                            comparison = c("end", "ideal", "overall"),
                            distance = "squared", repetitions = 10)
 
@@ -201,7 +201,7 @@ document, we will use the `overall` method.
 
 ### Distance
 ```{r distance, eval = eval_tests}
-tdistance <- sensitivity(coi = 2:20, plaf = p, comparison = "overall",
+tdistance <- cont_sensitivity(coi = 2:20, plaf = p, comparison = "overall",
                          distance = c("abs_sum", "sum_abs", "squared"),
                          repetitions = 10, coi_method = c("1", "2"))
 
@@ -235,7 +235,7 @@ knitr::include_graphics('figures/continuous/tdistance.png')
 
 ### Weighted
 ```{r weight, eval = eval_tests}
-tweight <- sensitivity(coi = 2:20, weighted = c(FALSE, TRUE),
+tweight <- cont_sensitivity(coi = 2:20, weighted = c(FALSE, TRUE),
                        distance = "squared", plaf = p, repetitions = 10,
                        coi_method = c("1", "2"))
 
@@ -268,7 +268,7 @@ often, but the difference is very small.
 
 ### Coverage
 ```{r coverage, eval = eval_tests}
-tcoverage <- sensitivity(coi = 2:20, coverage = c(25, 50, 100, 200, 400, 800), 
+tcoverage <- cont_sensitivity(coi = 2:20, coverage = c(25, 50, 100, 200, 400, 800), 
                          repetitions = 10, plaf = p, coi_method = c("1", "2"))
 
 tcoverage_image <- 
@@ -307,7 +307,7 @@ bloci <- lapply(loci, function(new_L){
   new_p <- rbeta(new_L, 1, 5)
   new_p[new_p > 0.5] <- 1 - new_p[new_p > 0.5]
   
-  inner_tloci <- sensitivity(coi = 2:20, repetitions = 10, plaf = new_p,
+  inner_tloci <- cont_sensitivity(coi = 2:20, repetitions = 10, plaf = new_p,
                              coi_method = "1")
   inner_tloci$param_grid$loci <- new_L
   return(inner_tloci)
@@ -364,7 +364,7 @@ bloci <- lapply(loci, function(new_L){
   new_p <- rbeta(new_L, 1, 5)
   new_p[new_p > 0.5] <- 1 - new_p[new_p > 0.5]
   
-  inner_tloci <- sensitivity(coi = 2:20, repetitions = 10, plaf = new_p, 
+  inner_tloci <- cont_sensitivity(coi = 2:20, repetitions = 10, plaf = new_p, 
                              coi_method = "2")
   inner_tloci$param_grid$loci <- new_L
   return(inner_tloci)
@@ -414,7 +414,7 @@ knitr::include_graphics('figures/continuous/tloci_2.png')
 
 ### Alpha
 ```{r alpha method 1, eval = eval_tests}
-talpha_1 <- sensitivity(coi = 2:20, alpha = seq(0.01, 5.51, 0.5), 
+talpha_1 <- cont_sensitivity(coi = 2:20, alpha = seq(0.01, 5.51, 0.5), 
                         repetitions = 10, plaf = p)
 
 talpha_image_1 <- 
@@ -437,7 +437,7 @@ knitr::include_graphics('figures/continuous/talpha_1.png')
 ```
 
 ```{r alpha method 2, eval = eval_tests}
-talpha_2 <- sensitivity(coi = 2:20, alpha = seq(0.01, 5.51, 0.5), 
+talpha_2 <- cont_sensitivity(coi = 2:20, alpha = seq(0.01, 5.51, 0.5), 
                         repetitions = 10, plaf = p)
 
 talpha_image_2 <- 
@@ -461,7 +461,7 @@ knitr::include_graphics('figures/continuous/talpha_2.png')
 
 ### Overdispersion
 ```{r overdispersion, eval = eval_tests}
-tover <- sensitivity(coi = 2:20, overdispersion = seq(0, 0.2, 0.05), 
+tover <- cont_sensitivity(coi = 2:20, overdispersion = seq(0, 0.2, 0.05), 
                      repetitions = 10, plaf = p, coi_method = c("1", "2"))
 
 tover_image <- 
@@ -489,9 +489,36 @@ When you introduce overdispersion, models perform poorly. Any overdispersion
 causes a large drop in accuracy. This drop in accuracy is caused by the model
 consistently underpredicting the COI by a large amount.
 
+### Relatedness
+```{r relatedness, eval = eval_tests}
+trelated <- cont_sensitivity(coi = 2:20, relatedness = seq(0, 0.5, 0.1), 
+                        repetitions = 10, plaf = p, coi_method = c("1", "2"))
+
+trelated_image <- sensitivity_plot(data = trelated,
+                                   title = "Predicted COI",
+                                   dims = c(4, 3),
+                                   sub_title = paste(paste0("Related =  ", seq(0, 0.5, 0.1)),
+                                     rep(c("Method 1", "Method 2"), each = 6),
+                                     sep = ", "))
+
+trelated_error <- error_plot(trelated, fill = "relatedness", 
+                          legend_title = "Related", 
+                          title = "Error",
+                          second_fill = "coi_method")
+
+trelated_fig <- ggpubr::ggarrange(trelated_image, trelated_error, 
+                                  nrow = 2, heights = c(2, 1),
+                                  labels = "AUTO")
+trelated_fig
+```
+
+```{r overdispersion image, eval = eval_images, echo = F, out.width = "75%"}
+knitr::include_graphics('figures/discrete/trelated.png')
+```
+
 ### Epsilon
 ```{r epsilon, eval = eval_tests}
-tepsilon <- sensitivity(coi = 2:20, epsilon = seq(0, 0.008, 0.001), 
+tepsilon <- cont_sensitivity(coi = 2:20, epsilon = seq(0, 0.008, 0.001), 
                         repetitions = 10, plaf = p)
 
 tepsilon_image <- 
@@ -520,7 +547,7 @@ COI for these tests.
 
 ### Sequencing Error
 ```{r seq error, eval = eval_tests}
-tseq <- sensitivity(coi = 2:20, epsilon = seq(0, 0.008, 0.004), 
+tseq <- cont_sensitivity(coi = 2:20, epsilon = seq(0, 0.008, 0.004), 
                     seq_error = seq(0, 0.04, 0.01)[-1], 
                     repetitions = 10, plaf = p)
 
@@ -559,24 +586,25 @@ large, the model starts to underpredict the COI.
 # Below, we save the runs we performed for future use
 saved_analysis <- list(toverall, tcoi, tcomparison, tdistance, tweight, 
                        tcoverage, tloci_1, tloci_2, talpha_1, talpha_2,  tover,
-                       tepsilon, tseq)
+                       trelated, tepsilon, tseq)
 
 names(saved_analysis) <- list("toverall", "tcoi", "tcomparison", "tdistance", 
                               "tweight", "tcoverage", "tloci_1", "tloci_2", 
-                              "talpha_1", "talpha_2", "tover", "tepsilon", 
-                              "tseq")
+                              "talpha_1", "talpha_2", "tover", "trelated", 
+                              "tepsilon", "tseq")
 
-saveRDS(saved_analysis, file = "saved_analysis_continuous.rds")
+saveRDS(saved_analysis, file = "saved_analysis_discrete.rds")
 
 # Here, we update all the stored images
 update_images <- list(toverall_fig, tcoi_fig, tcomparison_fig, tdistance_fig, 
                       tweight_fig, tcoverage_fig, tloci_fig_1, tloci_fig_2, 
-                      talpha_fig_1, talpha_fig_2, tover_fig, tepsilon_fig, 
+                      talpha_fig_1, talpha_fig_2, tover_fig, trelated_fig, 
+                      tepsilon_fig, 
                       tseq_fig)
 names(update_images) <- list("toverall", "tcoi", "tcomparison", "tdistance", 
                              "tweight", "tcoverage", "tloci_1", "tloci_2", 
-                             "talpha_1", "talpha_2", "tover", "tepsilon", 
-                             "tseq")
+                             "talpha_1", "talpha_2", "tover", "trelated", 
+                             "tepsilon", "tseq")
 
 for (i in seq_len(length(update_images))){
   filename = paste0("figures/continuous/", 
