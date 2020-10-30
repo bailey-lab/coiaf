@@ -60,11 +60,11 @@ developed accordingly.
 Features in development:
 
   - [x] Method 2
-  - [ ] Run the full SNP dataset
-  - [ ] Statistics for the world map plots (will most likely do
-    bootstrapping)
-  - [ ] Find a way to convert continuous predictions to discrete
-    predictions
+  - [x] For Method 2, how do we tell when COI = 1
+  - [ ] Add a relatedness parameter to the simulated data
   - [ ] Do another round of sensitivity analysis using the continuous
     method
-      - Will need to add a relatedness parameter to the simulated data
+  - [ ] Find a way to convert continuous predictions to discrete
+    predictions
+  - [ ] Run the full SNP dataset
+  - [ ] Statistics for the world map plots (ex: bootstrapping)

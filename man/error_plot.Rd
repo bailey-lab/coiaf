@@ -6,7 +6,7 @@
 \usage{
 error_plot(
   data,
-  fill = "COI",
+  fill = "coi",
   fill_levels = NULL,
   title = NULL,
   legend_title = fill,

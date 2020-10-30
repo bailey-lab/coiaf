@@ -7,10 +7,10 @@
 optimize_coi(
   data,
   data_type,
-  max_COI = 25,
+  max_coi = 25,
   seq_error = 0.01,
   cut = seq(0, 0.5, 0.01),
-  dist_method = "squared",
+  distance = "squared",
   weighted = TRUE,
   coi_method = "1"
 )
@@ -21,14 +21,14 @@ optimize_coi(
 \item{data_type}{The type of the data to be analyzed. One of
 \code{"sim"} or \code{"real"}.}
 
-\item{max_COI}{A number indicating the maximum COI to compare the
+\item{max_coi}{A number indicating the maximum COI to compare the
 simulated data to.}
 
 \item{seq_error}{The level of sequencing error that is assumed.}
 
 \item{cut}{A vector indicating how often the data is summarized.}
 
-\item{dist_method}{The distance method used to determine the distance between
+\item{distance}{The distance method used to determine the distance between
 the theoretical and simulated curves for the \code{"overall"} method. One of
 \code{"abs_sum"}, \code{"sum_abs"}, \code{"squared"}.}
 

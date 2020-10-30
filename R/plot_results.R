@@ -46,7 +46,7 @@ sensitivity_plot <- function(data,
   }
 
   # Check inputs
-  assert_eq(names(data),
+  assert_in(names(data),
             c("predicted_coi", "probability", "param_grid", "boot_error"))
   assert_pos_int(dims, zero_allowed = FALSE)
   assert_length(dims, 2)
@@ -60,10 +60,10 @@ sensitivity_plot <- function(data,
   # the case, we want to make multiple plots and see the effect of the changing
   # parameter. Thus, we establish another column: loop number, that tells us
   # how often the other parameter is changing. In the end, there will be three
-  # columns: true_COI, estimated_COI, and loop_number.
+  # columns: true_coi, estimated_coi, and loop_number.
   plot_df <- data$predicted_coi %>%
-    tidyr::gather("true_COI", "estimated_COI") %>%
-    tidyr::extract(.data$true_COI, c("true_COI", "loop_number"),
+    tidyr::gather("true_coi", "estimated_coi") %>%
+    tidyr::extract(.data$true_coi, c("true_coi", "loop_number"),
                    "coi_(.+)_(.+)") %>%
     dplyr::mutate_all(as.numeric)
 
@@ -97,7 +97,7 @@ sensitivity_plot <- function(data,
   } else {
     # Include panel labels if there are more than one plots
     arranged_plots <- ggpubr::ggarrange(plotlist = myplots,
-                                        labels = "AUTO",
+                                        labels = "auto",
                                         font.label = list(size = 10),
                                         nrow = dims[1],
                                         ncol = dims[2])
@@ -135,7 +135,7 @@ sensitivity_plot_element <- function(data, loop_num, sub_title) {
   # Plot the figure
   single_plot <-
     ggplot2::ggplot(dplyr::filter(data, .data$loop_number == loop_num),
-                    ggplot2::aes(x = .data$true_COI, y = .data$estimated_COI)) +
+                    ggplot2::aes(x = .data$true_coi, y = .data$estimated_coi)) +
     ggplot2::geom_count(color = "blue", alpha = 0.7, show.legend = FALSE) +
     ggplot2::scale_size_area() +
     ggplot2::geom_abline(color = "red", size = 1) +
@@ -176,7 +176,7 @@ sensitivity_plot_element <- function(data, loop_num, sub_title) {
 #' @export
 
 error_plot <- function(data,
-                       fill = "COI",
+                       fill = "coi",
                        fill_levels = NULL,
                        title = NULL,
                        legend_title = fill,
@@ -190,7 +190,7 @@ error_plot <- function(data,
   }
 
   # Check inputs
-  assert_eq(names(data),
+  assert_in(names(data),
             c("predicted_coi", "probability", "param_grid", "boot_error"))
   assert_single_string(fill)
   if (!is.null(fill_levels)) assert_string(fill_levels)
@@ -200,7 +200,7 @@ error_plot <- function(data,
   if (!is.null(second_fill)) assert_single_string(second_fill)
 
   # Convert data to a tibble
-  plot_data <- data$boot_error %>% tidyr::unnest(cols = names(data$boot_error))
+  plot_data <- data$boot_error %>% tidyr::unchop(cols = names(data$boot_error))
 
   # Make several changes to the data frame. For columns that have more than 1
   # unique value and are not one of c("mae", "lower", "upper", "bias"), convert
@@ -233,7 +233,7 @@ error_plot <- function(data,
 
   # Plot the data and return
   error_plot <- ggplot2::ggplot(plot_data,
-                                ggplot2::aes(x = .data$COI, y = .data$mae,
+                                ggplot2::aes(x = .data$coi, y = .data$mae,
                                              fill = eval(parse(text = fill)))) +
     ggplot2::geom_col(position = "dodge", na.rm = T) +
     ggplot2::geom_errorbar(ggplot2::aes(ymin = .data$lower, ymax = .data$upper),

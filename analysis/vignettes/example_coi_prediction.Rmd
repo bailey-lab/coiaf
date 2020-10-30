@@ -50,10 +50,10 @@ for (k in 2:7) {
 
   # Simulate data and subset to heterozygous sites only
   set.seed(1)
-  sim1 <- sim_biallelic(COI = k, PLAF = p)
+  sim1 <- sim_biallelic(coi = k, plaf = p)
 
   # Plot raw WSAF as gray dots
-  plot(sim1$data$PLAF, sim1$data$WSAF, 
+  plot(sim1$data$plaf, sim1$data$wsaf, 
        pch = 20, cex = 0.5, col = "gray", ylim = c(0,1),
        xlab = "PLAF", ylab = "WSAF", main = paste("COI =", k))
 
@@ -75,11 +75,11 @@ for (k in 2:7) {
         col = "blue", lwd = 2, type = "o", pch = 20)
   
   # Predict the COI and print the results
-  calc_coi = compute_coi(df_grouped, seq(1, 7), cut, "overall", "squared", TRUE)
+  calc_coi = compute_coi(sim1, "sim", max_coi = 10, cut = cut)
   end_coi = unlist(c(end_coi, calc_coi$coi))
   
   # COI using optimization
-  add = optimize_coi(sim1, "sim", max_COI = 10, cut = cut)
+  add = optimize_coi(sim1, "sim", max_coi = 10, cut = cut)
   opt_coi = unlist(c(opt_coi, add))
 }
 ```
@@ -124,12 +124,12 @@ par(mfrow = c(3,2))
 for (k in 2:7) {
 
   # simulate data and subset to heterozygous sites only
-  set.seed(1)
-  sim1 <- sim_biallelic(COI = k, PLAF = p, overdispersion = 0.01)
-  sim1$data <- subset(sim1$data, WSAF > 0 & WSAF < 1)
+  set.seed(10)
+  sim1 <- sim_biallelic(coi = k, plaf = p)
+  sim1$data <- subset(sim1$data, wsaf > 0 & wsaf < 1)
 
   # plot raw WSAF as grey dots
-  plot(sim1$data$PLAF, sim1$data$WSAF, pch = 20, cex = 0.5, col = "gray", 
+  plot(sim1$data$plaf, sim1$data$wsaf, pch = 20, cex = 0.5, col = "gray", 
        ylim = c(0,1), xlab = "PLAF", ylab = "WSAF", main = paste("COI =", k))
 
   # overlay analytical expectations for COI=2:7
@@ -148,13 +148,18 @@ for (k in 2:7) {
         col = "blue", lwd = 2, type = "o", pch = 20)
   
   # Predict the COI and print the results
-  disc = compute_coi(df_grouped, seq(1, 7), cut_breaks, "overall", "squared", TRUE, "2")
+  disc = compute_coi(sim1, "sim", max_coi = 10, cut = cut_breaks, coi_method = "2")
   disc_coi = unlist(c(disc_coi, disc$coi))
   
   # COI using optimization
-  cont = optimize_coi(sim1, "sim", max_COI = 10, cut = cut_breaks, coi_method = "2")
+  cont = optimize_coi(sim1, "sim", max_coi = 10, cut = cut_breaks, coi_method = "2", seq_error = 0.01)
   cont_coi = unlist(c(cont_coi, cont))
 }
 ```
 
 In this case, COI is found as 1/WSAF when PLAF = 0 (i.e. the y-axis intercept).
+
+```{r}
+sim <- sim_biallelic(coi = 2, plaf = p)
+```
+

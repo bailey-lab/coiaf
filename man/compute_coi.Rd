@@ -5,28 +5,34 @@
 \title{Predict the COI}
 \usage{
 compute_coi(
-  processed_data,
-  theory_coi_range,
-  cut,
-  method = "overall",
-  dist_method = "squared",
+  data,
+  data_type,
+  max_coi = 25,
+  seq_error = 0.01,
+  cut = seq(0, 0.5, 0.01),
+  comparison = "overall",
+  distance = "squared",
   weighted = TRUE,
   coi_method = "1"
 )
 }
 \arguments{
-\item{processed_data}{The processed COI data. This is the output of
-\code{\link[=process_sim]{process_sim()}} or \code{\link[=process_real]{process_real()}}.}
+\item{data}{The data for which the COI will be computed.}
 
-\item{theory_coi_range}{The range of COIs for which theoretical curves
-will be generated.}
+\item{data_type}{The type of the data to be analyzed. One of
+\code{"sim"} or \code{"real"}.}
+
+\item{max_coi}{A number indicating the maximum COI to compare the
+simulated data to.}
+
+\item{seq_error}{The level of sequencing error that is assumed.}
 
 \item{cut}{A vector indicating how often the data is summarized.}
 
-\item{method}{The method to be employed. One of \code{"end"}, \code{"ideal"},
+\item{comparison}{The method to be employed. One of \code{"end"}, \code{"ideal"},
 \code{"overall"}.}
 
-\item{dist_method}{The distance method used to determine the distance between
+\item{distance}{The distance method used to determine the distance between
 the theoretical and simulated curves for the \code{"overall"} method. One of
 \code{"abs_sum"}, \code{"sum_abs"}, \code{"squared"}.}
 

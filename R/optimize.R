@@ -12,6 +12,8 @@
 #' * `squared`: Sum of squared difference.
 #'
 #' @param coi The COI for which the likelihood will be generated.
+#' @param processed_data The processed COI data. This is the output of
+#' [process_sim()] or [process_real()].
 #' @inheritParams theoretical_coi
 #' @inheritParams compute_coi
 #'
@@ -19,16 +21,17 @@
 #' @family optimization functions
 #' @export
 
-likelihood <- function(coi, processed_data,
-                       dist_method = "squared",
+likelihood <- function(coi,
+                       processed_data,
+                       distance = "squared",
                        weighted = TRUE,
                        coi_method = "1") {
   # Check inputs
   assert_single_pos(coi)
   assert_single_string(coi_method)
   assert_in(coi_method, c("1", "2"))
-  assert_single_string(dist_method)
-  assert_in(dist_method, c("abs_sum", "sum_abs", "squared"))
+  assert_single_string(distance)
+  assert_in(distance, c("abs_sum", "sum_abs", "squared"))
   assert_single_logical(weighted)
   assert_single_string(coi_method)
   assert_in(coi_method, c("1", "2"))
@@ -47,18 +50,18 @@ likelihood <- function(coi, processed_data,
   # Distance
   gap <- theory_coi - processed_data$m_variant
   if (weighted){
-    gap <- (gap * processed_data$bucket_size) / sum(processed_data$bucket_size)
+    gap <- gap * processed_data$bucket_size
   }
 
-  if (dist_method == "abs_sum"){
+  if (distance == "abs_sum"){
     # Find sum of differences
     gap <- abs(colSums(gap))
 
-  } else if (dist_method == "sum_abs"){
+  } else if (distance == "sum_abs"){
     # Find absolute value of differences
     gap <- colSums(abs(gap))
 
-  } else if (dist_method == "squared"){
+  } else if (distance == "squared"){
     # Squared distance
     gap <- colSums(gap ^ 2)
   }
@@ -92,42 +95,47 @@ likelihood <- function(coi, processed_data,
 
 optimize_coi <- function(data,
                          data_type,
-                         max_COI = 25,
+                         max_coi = 25,
                          seq_error = 0.01,
                          cut = seq(0, 0.5, 0.01),
-                         dist_method = "squared",
+                         distance = "squared",
                          weighted = TRUE,
                          coi_method = "1") {
 
   # Check inputs
   assert_in(data_type, c("sim", "real"))
   assert_single_string(data_type)
-  assert_single_pos_int(max_COI)
+  assert_single_pos_int(max_coi)
   assert_single_bounded(seq_error)
   assert_bounded(cut, left = 0, right = 0.5)
   assert_vector(cut)
   assert_increasing(cut)
-  assert_single_string(dist_method)
-  assert_in(dist_method, c("abs_sum", "sum_abs", "squared"))
+  assert_single_string(distance)
+  assert_in(distance, c("abs_sum", "sum_abs", "squared"))
   assert_logical(weighted)
   assert_single_string(coi_method)
   assert_in(coi_method, c("1", "2"))
 
   # Warnings
-  if (dist_method != "squared") {
+  if (distance != "squared") {
     message <- glue::glue("Please use the recommended distance metric:",
                           '\n\u2139 The recommended distance metric is "squared".',
-                          '\n\u2716 User specified the "{dist_method}" metric.')
+                          '\n\u2716 User specified the "{distance}" metric.')
     warning(message, call. = FALSE)
 }
 
   # Process data
-  if (data_type == "sim"){
+  if (data_type == "sim") {
     processed_data <- process_sim(data, seq_error, cut, coi_method)
-  } else if (data_type == "real"){
+  } else if (data_type == "real") {
     processed_data <- process_real(data$wsaf, data$plaf,
-                                   seq_error, cut, coi_method)
+                                   seq_error,
+                                   cut,
+                                   coi_method)
   }
+
+  # Special case where there are no heterozygous sites
+  if (nrow(processed_data) == 0) return (coi <- 1)
 
   # Compute COI
   # Details:
@@ -140,10 +148,10 @@ optimize_coi <- function(data,
   fit <- stats::optim(par = 2,
                       fn = likelihood,
                       processed_data = processed_data,
-                      dist_method = dist_method,
+                      distance = distance,
                       weighted = TRUE,
                       coi_method = coi_method,
-                      method = "L-BFGS-B", lower = 1, upper = max_COI,
+                      method = "L-BFGS-B", lower = 1+1e-5, upper = max_coi,
                       control = list(fnscale = 1, ndeps = 1e-5))
 
   # Output warning if the model does not converge

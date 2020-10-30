@@ -6,17 +6,17 @@
 \usage{
 sensitivity(
   repetitions = 10,
-  COI = 3,
-  max_COI = 25,
-  PLAF = runif(1000, 0, 0.5),
+  coi = 3,
+  max_coi = 25,
+  plaf = runif(1000, 0, 0.5),
   coverage = 200,
   alpha = 1,
   overdispersion = 0,
   epsilon = 0,
   seq_error = 0.01,
   cut = seq(0, 0.5, 0.01),
-  method = "overall",
-  dist_method = "squared",
+  comparison = "overall",
+  distance = "squared",
   weighted = TRUE,
   coi_method = "1"
 )
@@ -24,12 +24,12 @@ sensitivity(
 \arguments{
 \item{repetitions}{The number of times each sample will be run.}
 
-\item{COI}{Complexity of infection.}
+\item{coi}{Complexity of infection.}
 
-\item{max_COI}{A number indicating the maximum COI to compare the
+\item{max_coi}{A number indicating the maximum COI to compare the
 simulated data to.}
 
-\item{PLAF}{Vector of population-level allele frequencies at each locus.}
+\item{plaf}{Vector of population-level allele frequencies at each locus.}
 
 \item{coverage}{Coverage at each locus. If a single value then the same
 coverage is applied over all loci.}
@@ -50,10 +50,10 @@ allele. Applies in both directions.}
 
 \item{cut}{A vector indicating how often the data is summarized.}
 
-\item{method}{The method to be employed. One of \code{"end"}, \code{"ideal"},
+\item{comparison}{The method to be employed. One of \code{"end"}, \code{"ideal"},
 \code{"overall"}.}
 
-\item{dist_method}{The distance method used to determine the distance between
+\item{distance}{The distance method used to determine the distance between
 the theoretical and simulated curves for the \code{"overall"} method. One of
 \code{"abs_sum"}, \code{"sum_abs"}, \code{"squared"}.}
 
