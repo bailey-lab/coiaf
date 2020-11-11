@@ -113,10 +113,15 @@ sim_biallelic <- function(coi = 3,
 
       # And for those sites that are related, we draw from the other lineages
       if (any(rel_i)) {
-        m[i+1, rel_i] <- apply(m[seq_len(i), rel_i, drop = FALSE],
-                               2,
-                               sample,
-                               size = 1)
+
+        if (i == 1) {
+          m[i+1, rel_i] <- m[seq_len(i), rel_i]
+        } else {
+          m[i+1, rel_i] <- apply(m[seq_len(i), rel_i, drop = FALSE],
+                                 2,
+                                 sample,
+                                 size = 1)
+        }
       }
     }
   }
