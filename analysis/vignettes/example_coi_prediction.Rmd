@@ -160,6 +160,28 @@ for (k in 2:7) {
 In this case, COI is found as 1/WSAF when PLAF = 0 (i.e. the y-axis intercept).
 
 ```{r}
-sim <- sim_biallelic(coi = 2, plaf = p)
+# Method 1 Example
+sim <- sim_biallelic(coi = 3, plaf = p, relatedness = 0.5)
+plot(sim$data$plaf, sim$data$wsaf, pch = 20, cex = 0.5, col = "black", 
+     ylim = c(0,1), xlab = "PLAF", ylab = "WSAF", main = paste("COI =", 3))
+p_vec <- seq(0, 0.5, l=101)
+theory_cois <- theoretical_coi(seq(1, 7), p_vec, coi_method = "1")
+for (i in c(2, 7)) {
+    lines(p_vec, theory_cois[[paste("coi_", i, sep = "")]], 
+          col = "red", lty = 1, lwd = 2)
+}
+text(x = rep(0.505, 1), y = 1 - 0.5^(1), labels = 2, col = "red", cex = 0.6)
+text(x = rep(0.505, 1), y = 1 - 0.5^(6), labels = 7, col = "red", cex = 0.6)
+
+# Method 2
+sim$data <- subset(sim$data, wsaf > 0 & wsaf < 1)
+plot(sim$data$plaf, sim$data$wsaf, pch = 20, cex = 0.5, col = "black", 
+     ylim = c(0,1), xlab = "PLAF", ylab = "WSAF at Heterozygous Sites", main = paste("COI =", 3))
+theory_cois <- theoretical_coi(seq(1, 7), p_vec, coi_method = "2")
+for (i in 2:7) {
+    lines(p_vec, theory_cois[[paste("coi_", i, sep = "")]], 
+          col = "red", lty = 1, lwd = 2)
+}
+text(x = rep(-0.005, 6), y = 1/2:7, labels = 2:7, col = "red", cex = 0.6)
 ```
 

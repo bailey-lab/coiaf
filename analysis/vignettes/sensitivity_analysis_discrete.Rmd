@@ -86,14 +86,14 @@ set.seed(1)
 
 # Define number of loci, and distribution of minor allele frequencies
 L <- 1e3
-p <- rbeta(L, 1, 5)
+p <- stats::rbeta(L, 1, 5)
 p[p > 0.5] <- 1 - p[p > 0.5]
 ```
 
 ### Overall Performance
 ```{r overall, eval = eval_tests}
-toverall <- sensitivity(coi = 1:25, max_coi = 30, repetitions = 10, plaf = p,
-                        coverage = 200, seq_error = 0, coi_method = c("1", "2"))
+toverall <- sensitivity(coi = 1:25, max_coi = 30, repetitions = 100, plaf = p,
+                        coverage = 400, seq_error = 0, coi_method = c("1", "2"))
 
 toverall_image <- sensitivity_plot(data = toverall, dims = c(2, 1), 
                                    title = "Predicted COI", 
@@ -120,7 +120,7 @@ We first want to understand for what range our model can accurately predict
 the COI.
 
 ```{r coi, eval = eval_tests}
-tcoi <- sensitivity(coi = 2:40, max_coi = 40, repetitions = 10, plaf = p,
+tcoi <- sensitivity(coi = 2:40, max_coi = 40, repetitions = 100, plaf = p,
                     coi_method = c("1", "2"))
 
 tcoi_image <- sensitivity_plot(data = tcoi, dims = c(2, 1), 
@@ -157,7 +157,7 @@ COIs of 2 till 20.
 ```{r comparison, eval = eval_tests}
 tcomparison <- sensitivity(coi = 2:20, plaf = p, 
                            comparison = c("end", "ideal", "overall"),
-                           distance = "squared", repetitions = 10)
+                           distance = "squared", repetitions = 100)
 
 tcomparison_image <- 
   sensitivity_plot(data = tcomparison,
@@ -202,7 +202,7 @@ document, we will use the `overall` method.
 ```{r distance, eval = eval_tests}
 tdistance <- sensitivity(coi = 2:20, plaf = p, comparison = "overall",
                          distance = c("abs_sum", "sum_abs", "squared"),
-                         repetitions = 10, coi_method = c("1", "2"))
+                         repetitions = 100, coi_method = c("1", "2"))
 
 tdistance_image <- 
   sensitivity_plot(data = tdistance,
@@ -235,7 +235,7 @@ knitr::include_graphics('figures/discrete/tdistance.png')
 ### Weighted
 ```{r weight, eval = eval_tests}
 tweight <- sensitivity(coi = 2:20, weighted = c(FALSE, TRUE),
-                       distance = "squared", plaf = p, repetitions = 10,
+                       distance = "squared", plaf = p, repetitions = 100,
                        coi_method = c("1", "2"))
 
 tweight_image <- 
@@ -268,7 +268,7 @@ often, but the difference is very small.
 ### Coverage
 ```{r coverage, eval = eval_tests}
 tcoverage <- sensitivity(coi = 2:20, coverage = c(25, 50, 100, 200, 400, 800), 
-                         repetitions = 10, plaf = p, coi_method = c("1", "2"))
+                         repetitions = 100, plaf = p, coi_method = c("1", "2"))
 
 tcoverage_image <- 
   sensitivity_plot(data = tcoverage,
@@ -306,7 +306,7 @@ bloci <- lapply(loci, function(new_L){
   new_p <- rbeta(new_L, 1, 5)
   new_p[new_p > 0.5] <- 1 - new_p[new_p > 0.5]
   
-  inner_tloci <- sensitivity(coi = 2:20, repetitions = 10, plaf = new_p,
+  inner_tloci <- sensitivity(coi = 2:20, repetitions = 100, plaf = new_p,
                              coi_method = "1")
   inner_tloci$param_grid$loci <- new_L
   return(inner_tloci)
@@ -363,7 +363,7 @@ bloci <- lapply(loci, function(new_L){
   new_p <- rbeta(new_L, 1, 5)
   new_p[new_p > 0.5] <- 1 - new_p[new_p > 0.5]
   
-  inner_tloci <- sensitivity(coi = 2:20, repetitions = 10, plaf = new_p, 
+  inner_tloci <- sensitivity(coi = 2:20, repetitions = 100, plaf = new_p, 
                              coi_method = "2")
   inner_tloci$param_grid$loci <- new_L
   return(inner_tloci)
@@ -414,7 +414,7 @@ knitr::include_graphics('figures/discrete/tloci_2.png')
 ### Alpha
 ```{r alpha method 1, eval = eval_tests}
 talpha_1 <- sensitivity(coi = 2:20, alpha = seq(0.01, 5.51, 0.5), 
-                        repetitions = 10, plaf = p)
+                        repetitions = 100, plaf = p)
 
 talpha_image_1 <- 
   sensitivity_plot(data = talpha_1,
@@ -437,7 +437,7 @@ knitr::include_graphics('figures/discrete/talpha_1.png')
 
 ```{r alpha method 2, eval = eval_tests}
 talpha_2 <- sensitivity(coi = 2:20, alpha = seq(0.01, 5.51, 0.5), 
-                        repetitions = 10, plaf = p)
+                        repetitions = 100, plaf = p)
 
 talpha_image_2 <- 
   sensitivity_plot(data = talpha_2,
@@ -461,7 +461,7 @@ knitr::include_graphics('figures/discrete/talpha_2.png')
 ### Overdispersion
 ```{r overdispersion, eval = eval_tests}
 tover <- sensitivity(coi = 2:20, overdispersion = seq(0, 0.2, 0.05), 
-                     repetitions = 10, plaf = p, coi_method = c("1", "2"))
+                     repetitions = 100, plaf = p, coi_method = c("1", "2"))
 
 tover_image <- 
   sensitivity_plot(data = tover,
@@ -491,7 +491,7 @@ consistently underpredicting the COI by a large amount.
 ### Relatedness
 ```{r relatedness, eval = eval_tests}
 trelated <- sensitivity(coi = 2:20, relatedness = seq(0, 0.5, 0.1), 
-                        repetitions = 10, plaf = p, coi_method = c("1", "2"))
+                        repetitions = 100, plaf = p, coi_method = c("1", "2"))
 
 trelated_image <- sensitivity_plot(data = trelated,
                                    title = "Predicted COI",
@@ -518,7 +518,7 @@ knitr::include_graphics('figures/discrete/trelated.png')
 ### Epsilon
 ```{r epsilon, eval = eval_tests}
 tepsilon <- sensitivity(coi = 2:20, epsilon = seq(0, 0.008, 0.001), 
-                        repetitions = 10, plaf = p)
+                        repetitions = 100, plaf = p)
 
 tepsilon_image <- 
   sensitivity_plot(data = tepsilon,
@@ -548,7 +548,7 @@ COI for these tests.
 ```{r seq error, eval = eval_tests}
 tseq <- sensitivity(coi = 2:20, epsilon = seq(0, 0.008, 0.004), 
                     seq_error = seq(0, 0.04, 0.01)[-1], 
-                    repetitions = 10, plaf = p)
+                    repetitions = 100, plaf = p)
 
 ep_title <- rep(paste0("Epsilon=", seq(0, 0.008, 0.004)), 2) 
 seq_title <- rep(paste0("Sequence Error = ", seq(0, 0.04, 0.01)[-1]), each = 3)

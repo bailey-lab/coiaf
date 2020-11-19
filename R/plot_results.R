@@ -180,7 +180,7 @@ error_plot <- function(data,
                        fill_levels = NULL,
                        title = NULL,
                        legend_title = fill,
-                       legend.position = "bottom",
+                       legend.position = "right",
                        second_fill = NULL) {
 
   # Ensure that ggplot2 is installed
@@ -248,7 +248,7 @@ error_plot <- function(data,
 
   if (!is.null(second_fill)) {
     error_plot <- error_plot +
-      ggplot2::facet_wrap(~ plot_data[[second_fill]], nrow = 2)
+      ggplot2::facet_wrap(~ plot_data[[second_fill]], ncol = 2)
   }
 
   return(error_plot)
