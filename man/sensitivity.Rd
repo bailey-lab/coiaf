@@ -12,6 +12,7 @@ sensitivity(
   coverage = 200,
   alpha = 1,
   overdispersion = 0,
+  relatedness = 0,
   epsilon = 0,
   seq_error = 0.01,
   cut = seq(0, 0.5, 0.01),
@@ -42,6 +43,14 @@ to the binomial distribution. Counts are Beta-binomially distributed, with
 the beta distribution having shape parameters
 \mjseqn{\frac{p}{overdispersion}} and
 \mjseqn{\frac{1-p}{overdispersion}}.}
+
+\item{relatedness}{The probability that a strain in mixed infections is
+related to another. Default = 0 (unrelated). The implementation is similar
+to relatedness as defined in THE REAL McCOIL simulations. In the original
+paper (https://doi.org/10.1371/journal.pcbi.1005348) this is defined as:
+"... simulated relatedness (r) among lineages within the same host by
+sampling alleles either from an existing lineage within the same host
+(with probability r) or from the population (with probability (1-r))."}
 
 \item{epsilon}{The probability of a single read being miscalled as the other
 allele. Applies in both directions.}

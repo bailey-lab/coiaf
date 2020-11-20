@@ -131,7 +131,7 @@ compute_coi <- function(data,
                        variant = size_wsaf) %>%
       dplyr::group_by(.data$plaf_cut, .drop = FALSE) %>%
       dplyr::summarise(bucket_size = dplyr::n()) %>%
-      na.omit()
+      stats::na.omit()
     size$midpoints <- cut[-length(cut)] + diff(cut) / 2
 
     breaks = size$midpoints
