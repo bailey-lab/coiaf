@@ -120,8 +120,15 @@ compute_coi <- function(data,
     }
 
     # Size is the number of loci per bucket
-    size <- data.frame(plaf_cut = cut(data$data$plaf, cut, include.lowest = TRUE),
-                       variant = data$data$wsaf) %>%
+    if (data_type == "sim") {
+      size_plaf <- data$data$plaf
+      size_wsaf <- data$data$wsaf
+    } else if (data_type == "real") {
+      size_plaf <- data$plaf
+      size_wsaf <- data$wsaf
+    }
+    size <- data.frame(plaf_cut = cut(size_plaf, cut, include.lowest = TRUE),
+                       variant = size_wsaf) %>%
       dplyr::group_by(.data$plaf_cut, .drop = FALSE) %>%
       dplyr::summarise(bucket_size = dplyr::n())
     size$midpoints <- cut[-length(cut)] + diff(cut)/2
