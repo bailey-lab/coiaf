@@ -131,7 +131,7 @@ process_real <- function(wsaf, plaf,
   # Subset data to focus only on heterozygous sites
   if (coi_method == "2") {
     data <- data.frame(wsaf = wsaf, plaf = plaf) %>%
-      dplyr::filter(wsaf > 0 & wsaf < 1)
+      dplyr::filter(wsaf > seq_error & wsaf < (1 - seq_error))
     wsaf <- data$wsaf
     plaf <- data$plaf
   }
