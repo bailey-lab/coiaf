@@ -130,8 +130,9 @@ compute_coi <- function(data,
     size <- data.frame(plaf_cut = cut(size_plaf, cut, include.lowest = TRUE),
                        variant = size_wsaf) %>%
       dplyr::group_by(.data$plaf_cut, .drop = FALSE) %>%
-      dplyr::summarise(bucket_size = dplyr::n())
-    size$midpoints <- cut[-length(cut)] + diff(cut)/2
+      dplyr::summarise(bucket_size = dplyr::n()) %>%
+      na.omit()
+    size$midpoints <- cut[-length(cut)] + diff(cut) / 2
 
     breaks = size$midpoints
     nloci  = size$bucket_size
