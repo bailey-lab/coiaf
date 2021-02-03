@@ -45,7 +45,9 @@
 #'   paper (https://doi.org/10.1371/journal.pcbi.1005348) this is defined as:
 #'   "... simulated relatedness (r) among lineages within the same host by
 #'   sampling alleles either from an existing lineage within the same host
-#'   (with probability r) or from the population (with probability (1-r))."
+#'   (with probability r) or from the population (with probability (1-r))." Note
+#'   this is not the most reflective of malaria within sample relatedness
+#'   patterns. For this please see \code{\link(sim_magenta_biallelic)}
 #'
 #' @return A list of:
 #' * `coi`: The COI used to simulate the data.
