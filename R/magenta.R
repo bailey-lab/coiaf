@@ -46,7 +46,7 @@
 #'
 #'  sims <- magenta_sim_format(out)
 #'
-#'  sims_with_data <- sim_biallelic_magenta(sims)
+#'  sims_with_data <- sim_biallelic_magenta(sims[[1]])
 #'
 #' }
 #'

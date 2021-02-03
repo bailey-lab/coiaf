@@ -37,7 +37,9 @@ to relatedness as defined in THE REAL McCOIL simulations. In the original
 paper (https://doi.org/10.1371/journal.pcbi.1005348) this is defined as:
 "... simulated relatedness (r) among lineages within the same host by
 sampling alleles either from an existing lineage within the same host
-(with probability r) or from the population (with probability (1-r))."}
+(with probability r) or from the population (with probability (1-r))." Note
+this is not the most reflective of malaria within sample relatedness
+patterns. For this please see \code{\link(sim_magenta_biallelic)}}
 
 \item{epsilon}{The probability of a single read being miscalled as the other
 allele. Applies in both directions.}
@@ -95,6 +97,7 @@ zero, then the distribution is binomial, rather than beta-binomial.
 }
 \seealso{
 Other simulated data functions: 
-\code{\link{process_sim}()}
+\code{\link{process_sim}()},
+\code{\link{sim_biallelic_magenta}()}
 }
 \concept{simulated data functions}
