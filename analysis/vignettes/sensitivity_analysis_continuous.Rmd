@@ -96,7 +96,8 @@ toverall <- cont_sensitivity(coi = 1:25, max_coi = 30, repetitions = 100,
                              plaf = p, coverage = 400, seq_error = 0, 
                              coi_method = c("1", "2"))
 
-toverall_image <- sensitivity_plot(data = toverall, dims = c(2, 1), 
+toverall_image <- sensitivity_plot(data = toverall, dims = c(1, 2), 
+                                   result_type = "cont",
                                    title = "Predicted COI", 
                                    sub_title = c("Method 1", "Method 2"))
 
@@ -106,7 +107,9 @@ toverall_error <- error_plot(toverall, fill = "coi_method",
                              fill_levels = c("Method 1", "Method 2"))
 
 toverall_fig <- ggpubr::ggarrange(toverall_image, toverall_error, 
-                                  labels = "AUTO")
+                                  labels = c("", "C"),
+                                  nrow = 2,
+                                  font.label = list(size = 10))
 toverall_fig
 ```
 
@@ -124,7 +127,8 @@ the COI.
 tcoi <- cont_sensitivity(coi = 2:40, max_coi = 40, repetitions = 100, plaf = p,
                          coi_method = c("1", "2"))
 
-tcoi_image <- sensitivity_plot(data = tcoi, dims = c(2, 1), 
+tcoi_image <- sensitivity_plot(data = tcoi, dims = c(1, 2), 
+                               result_type = "cont",
                                title = "Predicted COI", 
                                sub_title = c("Method 1", "Method 2"))
 
@@ -133,7 +137,10 @@ tcoi_error <- error_plot(tcoi, fill = "coi_method",
                          title = "Error",
                          fill_levels = c("Method 1", "Method 2"))
 
-tcoi_fig <- ggpubr::ggarrange(tcoi_image, tcoi_error, labels = "AUTO") 
+tcoi_fig <- ggpubr::ggarrange(tcoi_image, tcoi_error, 
+                              labels = c("", "C"), 
+                              nrow = 2, 
+                              font.label = list(size = 10)) 
 tcoi_fig
 ```
 
@@ -162,8 +169,9 @@ tcomparison <- cont_sensitivity(coi = 2:20, plaf = p,
 
 tcomparison_image <- 
   sensitivity_plot(data = tcomparison,
+                   result_type = "cont",
                    title = "Predicted COI",
-                   dims = c(3, 1),
+                   dims = c(1, 3),
                    sub_title = paste0("Comparison = ", c("End", 
                                                          "Ideal", 
                                                          "Overall")))
@@ -174,7 +182,9 @@ tcomparison_error <- error_plot(tcomparison, fill = "comparison",
                                 title = "Error")
 
 tcomparison_fig <- ggpubr::ggarrange(tcomparison_image, tcomparison_error, 
-                                     labels = "AUTO") 
+                                     labels = c("", "D"), 
+                                     nrow = 2, 
+                                     font.label = list(size = 10)) 
 tcomparison_fig
 ```
 
@@ -207,6 +217,7 @@ tdistance <- cont_sensitivity(coi = 2:20, plaf = p, comparison = "overall",
 
 tdistance_image <- 
   sensitivity_plot(data = tdistance,
+                   result_type = "cont",
                    title = "Predicted COI",
                    dims = c(3, 2),
                    sub_title = paste(rep(c("Absolute Sum", 
@@ -225,7 +236,10 @@ tdistance_error <- error_plot(tdistance, fill = "distance",
                               second_fill = "coi_method")
 
 tdistance_fig <- ggpubr::ggarrange(tdistance_image, tdistance_error, 
-                                   labels = "AUTO")
+                                   labels = c("", "G"),
+                                   heights = c(5, 2),
+                                   nrow = 2, 
+                                   font.label = list(size = 10))
 tdistance_fig
 ```
 
@@ -241,6 +255,7 @@ tweight <- cont_sensitivity(coi = 2:20, weighted = c(FALSE, TRUE),
 
 tweight_image <- 
   sensitivity_plot(data = tweight,
+                   result_type = "cont",
                    title = "Predicted COI",
                    dims = c(2, 2),
                    sub_title = 
@@ -253,7 +268,11 @@ tweight_error <- error_plot(tweight, fill = "coi_method",
                             title = "Error",
                             second_fill = "weighted")
 
-tweight_fig <- ggpubr::ggarrange(tweight_image, tweight_error, labels = "AUTO") 
+tweight_fig <- ggpubr::ggarrange(tweight_image, tweight_error, 
+                                 labels = c("", "E"),
+                                 heights = c(2, 1),
+                                 nrow = 2, 
+                                 font.label = list(size = 10)) 
 tweight_fig
 ```
 
@@ -273,6 +292,7 @@ tcoverage <- cont_sensitivity(coi = 2:20, coverage = c(25, 50, 100, 200, 400, 80
 
 tcoverage_image <- 
   sensitivity_plot(data = tcoverage,
+                   result_type = "cont",
                    title = "Predicted COI",
                    dims = c(4, 3),
                    sub_title = paste(paste0("Coverage ", c(25, 50, 100, 200, 400, 800)),
@@ -285,7 +305,10 @@ tcoverage_error <- error_plot(tcoverage, fill = "coverage",
                               second_fill = "coi_method")
 
 tcoverage_fig <- ggpubr::ggarrange(tcoverage_image, tcoverage_error, 
-                                   labels = "AUTO")
+                                   labels = c("", "M"),
+                                   heights = c(5, 2),
+                                   nrow = 2, 
+                                   font.label = list(size = 10))
 tcoverage_fig
 ```
 
@@ -336,8 +359,9 @@ tloci_1 <- list(
 # Plot
 tloci_image_1 <- 
   sensitivity_plot(data = tloci_1,
+                   result_type = "cont",
                    title = "Predicted COI",
-                   dims = c(2, 1),
+                   dims = c(1, 2),
                    sub_title = paste0("Loci = ", c(1e3, 1e4)))
 
 # Add a loci column
@@ -347,7 +371,10 @@ tloci_error_1 <- error_plot(tloci_1, fill = "loci",
                             legend_title = "Loci", 
                             title = "Error")
 
-tloci_fig_1 <- ggpubr::ggarrange(tloci_image_1, tloci_error_1, labels = "AUTO")
+tloci_fig_1 <- ggpubr::ggarrange(tloci_image_1, tloci_error_1, 
+                                 labels = c("", "C"),
+                                 nrow = 2, 
+                                 font.label = list(size = 10))
 tloci_fig_1
 ```
 
@@ -393,8 +420,9 @@ tloci_2 <- list(
 # Plot
 tloci_image_2 <- 
   sensitivity_plot(data = tloci_2,
+                   result_type = "cont",
                    title = "Predicted COI",
-                   dims = c(2, 1),
+                   dims = c(1, 2),
                    sub_title = paste0("Loci = ", c(1e3, 1e4)))
 
 # Add a loci column
@@ -404,7 +432,10 @@ tloci_error_2 <- error_plot(tloci_2, fill = "loci",
                             legend_title = "Loci", 
                             title = "Error")
 
-tloci_fig_2 <- ggpubr::ggarrange(tloci_image_2, tloci_error_2, labels = "AUTO")
+tloci_fig_2 <- ggpubr::ggarrange(tloci_image_2, tloci_error_2, 
+                                 labels = c("", "C"),
+                                 nrow = 2, 
+                                 font.label = list(size = 10))
 tloci_fig_2
 ```
 
@@ -419,6 +450,7 @@ talpha_1 <- cont_sensitivity(coi = 2:20, alpha = seq(0.01, 5.51, 0.5),
 
 talpha_image_1 <- 
   sensitivity_plot(data = talpha_1,
+                   result_type = "cont",
                    title = "Predicted COI",
                    dims = c(4, 3),
                    sub_title = paste0("Alpha = ", seq(0.01, 5.51, 0.5)))
@@ -428,7 +460,10 @@ talpha_error_1 <- error_plot(talpha_1, fill = "alpha",
                              title = "Error")
 
 talpha_fig_1 <- ggpubr::ggarrange(talpha_image_1, talpha_error_1, 
-                                  labels = "AUTO")
+                                  labels = c("", "M"),
+                                  heights = c(5, 2),
+                                  nrow = 2, 
+                                  font.label = list(size = 10))
 talpha_fig_1
 ```
 
@@ -442,6 +477,7 @@ talpha_2 <- cont_sensitivity(coi = 2:20, alpha = seq(0.01, 5.51, 0.5),
 
 talpha_image_2 <- 
   sensitivity_plot(data = talpha_2,
+                   result_type = "cont",
                    title = "Predicted COI",
                    dims = c(4, 3),
                    sub_title = paste0("Alpha = ", seq(0.01, 5.51, 0.5)))
@@ -451,7 +487,10 @@ talpha_error_2 <- error_plot(talpha_2, fill = "alpha",
                              title = "Error")
 
 talpha_fig_2 <- ggpubr::ggarrange(talpha_image_2, talpha_error_2, 
-                                  labels = "AUTO")
+                                  labels = c("", "M"),
+                                  heights = c(5, 2),
+                                  nrow = 2, 
+                                  font.label = list(size = 10))
 talpha_fig_2
 ```
 
@@ -466,6 +505,7 @@ tover <- cont_sensitivity(coi = 2:20, overdispersion = seq(0, 0.2, 0.05),
 
 tover_image <- 
   sensitivity_plot(data = tover,
+                   result_type = "cont",
                    title = "Predicted COI",
                    dims = c(4, 3),
                    sub_title = paste(paste0("Over ", seq(0, 0.2, 0.05)),
@@ -477,7 +517,11 @@ tover_error <- error_plot(tover, fill = "overdispersion",
                           title = "Error",
                           second_fill = "coi_method")
 
-tover_fig <- ggpubr::ggarrange(tover_image, tover_error, labels = "AUTO")
+tover_fig <- ggpubr::ggarrange(tover_image, tover_error, 
+                               labels = c("", "K"),
+                               heights = c(5, 2),
+                               nrow = 2, 
+                               font.label = list(size = 10))
 tover_fig
 ```
 
@@ -492,9 +536,10 @@ consistently underpredicting the COI by a large amount.
 ### Relatedness
 ```{r relatedness, eval = eval_tests}
 trelated <- cont_sensitivity(coi = 2:20, relatedness = seq(0, 0.5, 0.1), 
-                             repetitions = 1, plaf = p, coi_method = c("1", "2"))
+                             repetitions = 100, plaf = p, coi_method = c("1", "2"))
 
 trelated_image <- sensitivity_plot(data = trelated,
+                                   result_type = "cont",
                                    title = "Predicted COI",
                                    dims = c(4, 3),
                                    sub_title = paste(paste0("Related =  ", seq(0, 0.5, 0.1)),
@@ -507,12 +552,14 @@ trelated_error <- error_plot(trelated, fill = "relatedness",
                           second_fill = "coi_method")
 
 trelated_fig <- ggpubr::ggarrange(trelated_image, trelated_error, 
-                                  nrow = 2, heights = c(2, 1),
-                                  labels = "AUTO")
+                                  nrow = 2,
+                                  labels = c("", "M"),
+                                  heights = c(5, 2),
+                                  font.label = list(size = 10))
 trelated_fig
 ```
 
-```{r overdispersion image, eval = eval_images, echo = F, out.width = "75%"}
+```{r relatedness image, eval = eval_images, echo = F, out.width = "75%"}
 knitr::include_graphics('figures/discrete/trelated.png')
 ```
 
@@ -523,6 +570,7 @@ tepsilon <- cont_sensitivity(coi = 2:20, epsilon = seq(0, 0.008, 0.001),
 
 tepsilon_image <- 
   sensitivity_plot(data = tepsilon,
+                   result_type = "cont",
                    title = "Predicted COI",
                    dims = c(3, 3),
                    sub_title = paste0("Epsilon = ", seq(0, 0.008, 0.001)))
@@ -532,7 +580,10 @@ tepsilon_error <- error_plot(tepsilon, fill = "epsilon",
                              title = "Error")
 
 tepsilon_fig <- ggpubr::ggarrange(tepsilon_image, tepsilon_error, 
-                                  labels = "AUTO")
+                                  nrow = 2,
+                                  labels = c("", "J"),
+                                  heights = c(5, 2),
+                                  font.label = list(size = 10))
 tepsilon_fig
 ```
 
@@ -556,6 +607,7 @@ seq_title <- rep(paste0("Sequence Error = ", seq(0, 0.04, 0.01)[-1]), each = 3)
 
 tseq_image <- 
   sensitivity_plot(data = tseq,
+                   result_type = "cont",
                    title = "Predicted COI",
                    dims = c(4, 3),
                    sub_title = seq_title,
@@ -569,7 +621,11 @@ tseq_error <- error_plot(tseq, fill = "seq_error",
                          title = "Error",
                          second_fill = "epsilon")
 
-tseq_fig <- ggpubr::ggarrange(tseq_image, tseq_error, labels = "AUTO")
+tseq_fig <- ggpubr::ggarrange(tseq_image, tseq_error, 
+                              nrow = 2,
+                              labels = c("", "M"),
+                              heights = c(7, 3),
+                              font.label = list(size = 10))
 tseq_fig
 ```
 
