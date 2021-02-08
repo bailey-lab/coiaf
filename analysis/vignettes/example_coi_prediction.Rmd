@@ -159,29 +159,67 @@ for (k in 2:7) {
 
 In this case, COI is found as 1/WSAF when PLAF = 0 (i.e. the y-axis intercept).
 
-```{r}
-# Method 1 Example
-sim <- sim_biallelic(coi = 3, plaf = p, relatedness = 0.5)
-plot(sim$data$plaf, sim$data$wsaf, pch = 20, cex = 0.5, col = "black", 
-     ylim = c(0,1), xlab = "PLAF", ylab = "WSAF", main = paste("COI =", 3))
-p_vec <- seq(0, 0.5, l=101)
-theory_cois <- theoretical_coi(seq(1, 7), p_vec, coi_method = "1")
-for (i in c(2, 7)) {
-    lines(p_vec, theory_cois[[paste("coi_", i, sep = "")]], 
-          col = "red", lty = 1, lwd = 2)
-}
-text(x = rep(0.505, 1), y = 1 - 0.5^(1), labels = 2, col = "red", cex = 0.6)
-text(x = rep(0.505, 1), y = 1 - 0.5^(6), labels = 7, col = "red", cex = 0.6)
+## Figure 1
+```{r ggplot2 attempt, warning = F}
+library(ggplot2)
 
-# Method 2
-sim$data <- subset(sim$data, wsaf > 0 & wsaf < 1)
-plot(sim$data$plaf, sim$data$wsaf, pch = 20, cex = 0.5, col = "black", 
-     ylim = c(0,1), xlab = "PLAF", ylab = "WSAF at Heterozygous Sites", main = paste("COI =", 3))
-theory_cois <- theoretical_coi(seq(1, 7), p_vec, coi_method = "2")
-for (i in 2:7) {
-    lines(p_vec, theory_cois[[paste("coi_", i, sep = "")]], 
-          col = "red", lty = 1, lwd = 2)
-}
-text(x = rep(-0.005, 6), y = 1/2:7, labels = 2:7, col = "red", cex = 0.6)
+set.seed(4)
+sim <- sim_biallelic(coi = 4, plaf = p)
+p_vec <- seq(0, 0.5, l=101)
+
+mytheme <- list(theme_classic(), 
+  theme(text = element_text(family = "Times New Roman"),
+        plot.title = element_text(hjust = 0.5, size = 10),
+        axis.title = element_text(size = 8),
+        legend.position = "bottom",
+        legend.title = element_text(size = 10),
+        legend.text = element_text(size = 8)))
+
+method1 <- ggplot() + 
+  geom_point(data = sim$data, aes(x = plaf, y = wsaf)) + 
+  geom_line(aes(x = p_vec, y = 1 - p_vec^1 - (1 - p_vec)^1), color = "red") +
+  geom_line(aes(x = p_vec, y = 1 - p_vec^2 - (1 - p_vec)^2), color = "red") +
+  geom_line(aes(x = p_vec, y = 1 - p_vec^3 - (1 - p_vec)^3), color = "red") +
+  geom_line(aes(x = p_vec, y = 1 - p_vec^4 - (1 - p_vec)^4), color = "red") +
+  geom_line(aes(x = p_vec, y = 1 - p_vec^5 - (1 - p_vec)^5), color = "red") +
+  annotate(geom = "text", x = 0.505, y = 1 - 0.5^(0:4), 
+           label = c("1", "2", "3", "4", "5"), col = "red", size = 7 / .pt) +
+  mytheme +
+  labs(x = "PLAF", y = "WSAF", title = "Method 1")
+
+method2 <- ggplot() + 
+  geom_point(data = sim$data, aes(x = plaf, y = wsaf)) + 
+  geom_line(aes(x = p_vec, y = (p_vec - p_vec^2)/(1 - p_vec^2 - (1 - p_vec)^2)), 
+                color = "red") +
+  geom_line(aes(x = p_vec, y = (p_vec - p_vec^3)/(1 - p_vec^3 - (1 - p_vec)^3)), 
+                color = "red") +
+  geom_line(aes(x = p_vec, y = (p_vec - p_vec^4)/(1 - p_vec^4 - (1 - p_vec)^4)), 
+                color = "red") +
+  geom_line(aes(x = p_vec, y = (p_vec - p_vec^5)/(1 - p_vec^5 - (1 - p_vec)^5)), 
+                color = "red") +
+  geom_line(aes(x = p_vec, y = (p_vec - p_vec^6)/(1 - p_vec^6 - (1 - p_vec)^6)), 
+                color = "red") +
+  annotate(geom = "text", x = -0.005, y = 1/2:6, 
+           label = c("2", "3", "4", "5", "6"), col = "red", size = 7 / .pt) +
+  mytheme +
+  labs(x = "PLAF", y = "WSAF", title = "Method 2")
+
+ggpubr::ggarrange(method1, method2,
+                  ncol = 2,
+                  labels = "AUTO",
+                  font.label = list(size = 10))
+
+# To get the following code to work, must have toverall_images return a list
+# of plots
+# Figure1 <- c(list(method1, method2), toverall_image)
+# ggpubr::ggarrange(ggpubr::ggarrange(plotlist = Figure1,
+#                                     nrow = 2, ncol = 2, 
+#                                     labels = "AUTO", 
+#                                     font.label = list(size = 10)), 
+#                   toverall_error,
+#                   nrow = 2,
+#                   heights = c(2, 1),
+#                   labels = c("" ,"E"),
+#                   font.label = list(size = 10))
 ```
 
