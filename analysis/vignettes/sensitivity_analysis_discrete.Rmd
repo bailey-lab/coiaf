@@ -319,7 +319,7 @@ noticeable difference in performance.
 ### Loci
 ```{r loci method 1, eval = eval_tests}
 # Set the range over which we will iterate
-loci = c(1e3, 1e4)
+loci = c(1e2, 1e3, 1e4)
 
 # For each loci, reset the PLAF and then run
 bloci <- lapply(loci, function(new_L){
@@ -357,18 +357,18 @@ tloci_image_1 <-
   sensitivity_plot(data = tloci_1,
                    result_type = "disc",
                    title = "Predicted COI",
-                   dims = c(2, 1),
-                   sub_title = paste0("Loci = ", c(1e3, 1e4)))
+                   dims = c(1, 3),
+                   sub_title = paste0("Loci = ", c(1e2, 1e3, 1e4)))
 
 # Add a loci column
-tloci_1$boot_error$loci <- rep(c(1e3, 1e4), 
+tloci_1$boot_error$loci <- rep(c(1e2, 1e3, 1e4), 
                              each = length(unique(tloci_1$boot_error$coi)))
 tloci_error_1 <- error_plot(tloci_1, fill = "loci", 
                             legend_title = "Loci", 
                             title = "Error")
 
 tloci_fig_1 <- ggpubr::ggarrange(tloci_image_1, tloci_error_1, 
-                                 labels = c("", "C"), 
+                                 labels = c("", "D"), 
                                  nrow = 2, 
                                  font.label = list(size = 10))
 tloci_fig_1
@@ -380,7 +380,7 @@ knitr::include_graphics('figures/discrete/tloci_1.png')
 
 ```{r loci method 2, eval = eval_tests}
 # Set the range over which we will iterate
-loci = c(1e3, 1e4)
+loci = c(1e2, 1e3, 1e4)
 
 # For each loci, reset the PLAF and then run
 bloci <- lapply(loci, function(new_L){
@@ -418,18 +418,18 @@ tloci_image_2 <-
   sensitivity_plot(data = tloci_2,
                    result_type = "disc",
                    title = "Predicted COI",
-                   dims = c(2, 1),
-                   sub_title = paste0("Loci = ", c(1e3, 1e4)))
+                   dims = c(1, 3),
+                   sub_title = paste0("Loci = ", c(1e2, 1e3, 1e4)))
 
 # Add a loci column
-tloci_2$boot_error$loci <- rep(c(1e3, 1e4), 
+tloci_2$boot_error$loci <- rep(c(1e2, 1e3, 1e4), 
                              each = length(unique(tloci_2$boot_error$coi)))
 tloci_error_2 <- error_plot(tloci_2, fill = "loci", 
                             legend_title = "Loci", 
                             title = "Error")
 
 tloci_fig_2 <- ggpubr::ggarrange(tloci_image_2, tloci_error_2, 
-                                 labels = c("", "C"), 
+                                 labels = c("", "D"), 
                                  nrow = 2, 
                                  font.label = list(size = 10))
 tloci_fig_2
