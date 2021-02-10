@@ -89,7 +89,7 @@ parameters." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -100,7 +100,7 @@ parameters." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/ojwatson/coiaf/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -135,6 +135,7 @@ parameters.</p>
   coverage <span class='op'>=</span> <span class='fl'>200</span>,
   alpha <span class='op'>=</span> <span class='fl'>1</span>,
   overdispersion <span class='op'>=</span> <span class='fl'>0</span>,
+  relatedness <span class='op'>=</span> <span class='fl'>0</span>,
   epsilon <span class='op'>=</span> <span class='fl'>0</span>,
   seq_error <span class='op'>=</span> <span class='fl'>0.01</span>,
   cut <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>0.5</span>, <span class='fl'>0.01</span><span class='op'>)</span>,
@@ -181,6 +182,16 @@ to the binomial distribution. Counts are Beta-binomially distributed, with
 the beta distribution having shape parameters
 \(\frac{p}{overdispersion}\) and
 \(\frac{1-p}{overdispersion}\).</p></td>
+    </tr>
+    <tr>
+      <th>relatedness</th>
+      <td><p>The probability that a strain in mixed infections is
+related to another. Default = 0 (unrelated). The implementation is similar
+to relatedness as defined in THE REAL McCOIL simulations. In the original
+paper (https://doi.org/10.1371/journal.pcbi.1005348) this is defined as:
+"... simulated relatedness (r) among lineages within the same host by
+sampling alleles either from an existing lineage within the same host
+(with probability r) or from the population (with probability (1-r))."</p></td>
     </tr>
     <tr>
       <th>epsilon</th>
