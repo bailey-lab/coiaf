@@ -119,9 +119,8 @@ sim_biallelic_magenta <- function(out,
                                 wsaf     = counts/coverage),
               inputs = data.frame(alpha          = alpha,
                                   overdispersion = overdispersion,
-                                  relatedness    = relatedness,
-                                  epsilon        = epsilon),
-              relatedness = out$relatedness)
+                                  relatedness    = out$relatedness,
+                                  epsilon        = epsilon))
 
   return(ret)
 }
