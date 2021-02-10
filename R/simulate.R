@@ -93,10 +93,8 @@ sim_biallelic <- function(coi = 3,
   assert_same_length(plaf, coverage)
   assert_single_pos(alpha, zero_allowed = FALSE)
   assert_single_pos(overdispersion, zero_allowed = TRUE)
-  assert_single_pos(epsilon, zero_allowed = TRUE)
-  assert_single_pos(relatedness, zero_allowed = TRUE)
-  assert_bounded(epsilon)
-  assert_bounded(relatedness)
+  assert_single_bounded(relatedness)
+  assert_single_bounded(epsilon)
 
   # Generate strain proportions
   w <- rdirichlet(rep(alpha, coi))

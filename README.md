@@ -61,10 +61,10 @@ Features in development:
 
   - [x] Method 2
   - [x] For Method 2, how do we tell when COI = 1
-  - [ ] Add a relatedness parameter to the simulated data
+  - [x] Add a relatedness parameter to the simulated data
   - [x] Do another round of sensitivity analysis using the continuous
     method
-  - [ ] Find a way to convert continuous predictions to discrete
-    predictions
   - [ ] Run the full SNP dataset
+  - [ ] Create infrastructure for running real data given a particular
+    data format
   - [ ] Statistics for the world map plots (ex: bootstrapping)

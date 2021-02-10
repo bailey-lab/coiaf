@@ -17,6 +17,8 @@
 #' @param data The data to be plotted.
 #' @param dims A list representing the number of rows and columns our plots
 #' will be split into.
+#' @param result_type An indicator that indicates if a count or boxplot should
+#' be plotted.
 #' @param sub_title A list of titles for each individual subplot.
 #' @param title The title of the overall figure.
 #' @param caption The caption of the overall figure.
@@ -28,6 +30,7 @@
 
 sensitivity_plot <- function(data,
                              dims,
+                             result_type,
                              sub_title = NULL,
                              title = NULL,
                              caption = NULL) {
@@ -48,6 +51,8 @@ sensitivity_plot <- function(data,
   # Check inputs
   assert_in(names(data),
             c("predicted_coi", "probability", "param_grid", "boot_error"))
+  assert_single_string(result_type)
+  assert_in(result_type, c("disc", "cont"))
   assert_pos_int(dims, zero_allowed = FALSE)
   assert_length(dims, 2)
   if (!is.null(sub_title)) assert_vector(sub_title)
@@ -86,6 +91,7 @@ sensitivity_plot <- function(data,
   myplots <- lapply(num_loops,
                     sensitivity_plot_element,
                     data = plot_df,
+                    result_type = result_type,
                     sub_title = sub_title)
 
   # Arrange the plots
@@ -97,7 +103,7 @@ sensitivity_plot <- function(data,
   } else {
     # Include panel labels if there are more than one plots
     arranged_plots <- ggpubr::ggarrange(plotlist = myplots,
-                                        labels = "auto",
+                                        labels = "AUTO",
                                         font.label = list(size = 10),
                                         nrow = dims[1],
                                         ncol = dims[2])
@@ -124,7 +130,7 @@ sensitivity_plot <- function(data,
 #'
 #' @keywords internal
 
-sensitivity_plot_element <- function(data, loop_num, sub_title) {
+sensitivity_plot_element <- function(data, loop_num, result_type, sub_title) {
 
   # Ensure that ggplot2 is installed
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
@@ -136,7 +142,6 @@ sensitivity_plot_element <- function(data, loop_num, sub_title) {
   single_plot <-
     ggplot2::ggplot(dplyr::filter(data, .data$loop_number == loop_num),
                     ggplot2::aes(x = .data$true_coi, y = .data$estimated_coi)) +
-    ggplot2::geom_count(color = "blue", alpha = 0.7, show.legend = FALSE) +
     ggplot2::scale_size_area() +
     ggplot2::geom_abline(color = "red", size = 1) +
     ggplot2::theme_classic() +
@@ -147,6 +152,17 @@ sensitivity_plot_element <- function(data, loop_num, sub_title) {
     ggplot2::labs(x = "True COI",
                   y = "Estimated COI",
                   title = sub_title[loop_num])
+
+  # Choose geom_count or geom_boxplot depending on whether we are looking at
+  # discrete or continuous data
+  if (result_type == "disc") {
+    single_plot <- single_plot +
+      ggplot2::geom_count(color = "blue", alpha = 0.7, show.legend = FALSE)
+  } else if (result_type == "cont") {
+    single_plot <- single_plot +
+      ggplot2::geom_boxplot(color = "blue", alpha = 0.7, show.legend = FALSE,
+                            aes(group = .data$true_coi))
+  }
 }
 
 #------------------------------------------------
@@ -180,7 +196,7 @@ error_plot <- function(data,
                        fill_levels = NULL,
                        title = NULL,
                        legend_title = fill,
-                       legend.position = "bottom",
+                       legend.position = "right",
                        second_fill = NULL) {
 
   # Ensure that ggplot2 is installed
@@ -244,11 +260,12 @@ error_plot <- function(data,
                    axis.title   = ggplot2::element_text(size = 10),
                    legend.title = ggplot2::element_text(size = 10),
                    legend.text  = ggplot2::element_text(size = 8)) +
-    ggplot2::labs(y = "Mean Absolute Error", title = title, fill = legend_title)
+    ggplot2::labs(x = "COI", y = "Mean Absolute Error",
+                  title = title, fill = legend_title)
 
   if (!is.null(second_fill)) {
     error_plot <- error_plot +
-      ggplot2::facet_wrap(~ plot_data[[second_fill]], nrow = 2)
+      ggplot2::facet_wrap(~ plot_data[[second_fill]], ncol = 2)
   }
 
   return(error_plot)
