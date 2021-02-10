@@ -1,8 +1,9 @@
 #------------------------------------------------
 #' Simulate biallelic data from a magenta output
 #'
-#' Simulate biallelic data using a \code{magenta} model output.
+#' Simulate biallelic data using a `magenta` model output.
 #'
+#' @param out Output of a `magenta` model.
 #' @param coverage Coverage at each locus. If a single value then the same
 #'   coverage is applied over all loci.
 #' @param alpha Shape parameter of the symmetric Dirichlet prior on strain
@@ -29,11 +30,10 @@
 #'   + `overdispersion`: Overdispersion in count data.
 #'   + `relatedness`: Within sample relatedness between strains.
 #'   + `epsilon`: Probability of a single read being miscalled.
-#' * `relatedness`: Within sample relatedness
 #'
 #' @family simulated data functions
 #'
-#' @example
+#' @examples
 #' \dontrun{
 #'
 #'  devtools::install_github("OJWatson/magenta")
@@ -49,7 +49,6 @@
 #'  sims_with_data <- sim_biallelic_magenta(sims[[1]])
 #'
 #' }
-#'
 #' @export
 sim_biallelic_magenta <- function(out,
                                   coverage = 200,
@@ -156,7 +155,7 @@ magenta_sim_format <- function(r) {
   for(i in seq_along(coi_list)) {
 
     if(coi_list[i] > 1) {
-      relatedness <- mean(dist(phased_list[[i]], method = "manhattan") / r$parameters_List$g_num_loci)
+      relatedness <- mean(stats::dist(phased_list[[i]], method = "manhattan") / r$parameters_List$g_num_loci)
     } else {
       relatedness <- NA
     }

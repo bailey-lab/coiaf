@@ -13,6 +13,8 @@ sim_biallelic_magenta(
 )
 }
 \arguments{
+\item{out}{Output of a \code{magenta} model.}
+
 \item{coverage}{Coverage at each locus. If a single value then the same
 coverage is applied over all loci.}
 
@@ -48,11 +50,27 @@ A list of:
 \item \code{relatedness}: Within sample relatedness between strains.
 \item \code{epsilon}: Probability of a single read being miscalled.
 }
-\item \code{relatedness}: Within sample relatedness
 }
 }
 \description{
 Simulate biallelic data using a \code{magenta} model output.
+}
+\examples{
+\dontrun{
+
+ devtools::install_github("OJWatson/magenta")
+ library(magenta)
+
+ out <- magenta::pipeline(
+ EIR=1,N=1000,years=2,num_loci = 1000,full_save=TRUE,
+ drug_list = drug_list_create(drugs = list(magenta:::drug_create_dhappq()))
+ )
+
+ sims <- magenta_sim_format(out)
+
+ sims_with_data <- sim_biallelic_magenta(sims[[1]])
+
+}
 }
 \seealso{
 Other simulated data functions: 

@@ -47,7 +47,7 @@
 #'   sampling alleles either from an existing lineage within the same host
 #'   (with probability r) or from the population (with probability (1-r))." Note
 #'   this is not the most reflective of malaria within sample relatedness
-#'   patterns. For this please see \code{\link(sim_magenta_biallelic)}
+#'   patterns. For this please see [sim_biallelic_magenta()].
 #'
 #' @return A list of:
 #' * `coi`: The COI used to simulate the data.

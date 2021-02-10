@@ -161,7 +161,7 @@ sensitivity_plot_element <- function(data, loop_num, result_type, sub_title) {
   } else if (result_type == "cont") {
     single_plot <- single_plot +
       ggplot2::geom_boxplot(color = "blue", alpha = 0.7, show.legend = FALSE,
-                            aes(group = .data$true_coi))
+                            ggplot2::aes(group = .data$true_coi))
   }
 }
 
