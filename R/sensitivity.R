@@ -22,7 +22,7 @@ single_sensitivity <- function(coi = 3,
                                overdispersion = 0,
                                relatedness = 0,
                                epsilon = 0,
-                               seq_error = 0.01,
+                               seq_error = NULL,
                                cut = seq(0, 0.5, 0.01),
                                comparison = "overall",
                                distance ="squared",
@@ -39,7 +39,7 @@ single_sensitivity <- function(coi = 3,
   assert_single_pos(overdispersion)
   assert_single_bounded(relatedness)
   assert_single_bounded(epsilon)
-  assert_single_bounded(seq_error)
+  if (!is.null(seq_error)) assert_single_bounded(seq_error)
   assert_bounded(cut, left = 0, right = 0.5)
   assert_vector(cut)
   assert_increasing(cut)
@@ -98,7 +98,7 @@ sensitivity <- function(repetitions = 10,
                         overdispersion = 0,
                         relatedness = 0,
                         epsilon = 0,
-                        seq_error = 0.01,
+                        seq_error = NULL,
                         cut = seq(0, 0.5, 0.01),
                         comparison = "overall",
                         distance = "squared",
@@ -116,7 +116,7 @@ sensitivity <- function(repetitions = 10,
   assert_pos(overdispersion)
   assert_bounded(relatedness)
   assert_bounded(epsilon)
-  assert_bounded(seq_error)
+  if (!is.null(seq_error)) assert_single_bounded(seq_error)
   assert_bounded(cut, left = 0, right = 0.5)
   assert_vector(cut)
   assert_increasing(cut)
@@ -326,7 +326,7 @@ cont_sensitivity <- function(repetitions = 10,
                              overdispersion = 0,
                              relatedness = 0,
                              epsilon = 0,
-                             seq_error = 0.01,
+                             seq_error = NULL,
                              cut = seq(0, 0.5, 0.01),
                              comparison = "overall",
                              distance = "squared",
@@ -344,7 +344,7 @@ cont_sensitivity <- function(repetitions = 10,
   assert_pos(overdispersion)
   assert_bounded(relatedness)
   assert_bounded(epsilon)
-  assert_bounded(seq_error)
+  if (!is.null(seq_error)) assert_single_bounded(seq_error)
   assert_bounded(cut, left = 0, right = 0.5)
   assert_vector(cut)
   assert_increasing(cut)

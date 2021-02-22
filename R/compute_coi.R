@@ -52,7 +52,7 @@
 compute_coi <- function(data,
                         data_type,
                         max_coi = 25,
-                        seq_error = 0.01,
+                        seq_error = NULL,
                         cut = seq(0, 0.5, 0.01),
                         comparison = "overall",
                         distance = "squared",
@@ -62,7 +62,7 @@ compute_coi <- function(data,
   assert_in(data_type, c("sim", "real"))
   assert_single_string(data_type)
   assert_single_pos_int(max_coi)
-  assert_single_bounded(seq_error)
+  if (!is.null(seq_error)) assert_single_bounded(seq_error)
   assert_bounded(cut, left = 0, right = 0.5)
   assert_vector(cut)
   assert_increasing(cut)
