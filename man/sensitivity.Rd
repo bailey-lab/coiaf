@@ -14,7 +14,7 @@ sensitivity(
   overdispersion = 0,
   relatedness = 0,
   epsilon = 0,
-  seq_error = 0.01,
+  seq_error = NULL,
   cut = seq(0, 0.5, 0.01),
   comparison = "overall",
   distance = "squared",
@@ -55,7 +55,8 @@ sampling alleles either from an existing lineage within the same host
 \item{epsilon}{The probability of a single read being miscalled as the other
 allele. Applies in both directions.}
 
-\item{seq_error}{The level of sequencing error that is assumed.}
+\item{seq_error}{The level of sequencing error that is assumed. If no value
+is inputted, then we infer the level of sequence error.}
 
 \item{cut}{A vector indicating how often the data is summarized.}
 

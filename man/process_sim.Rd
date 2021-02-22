@@ -4,12 +4,13 @@
 \alias{process_sim}
 \title{Process simulated data}
 \usage{
-process_sim(sim, seq_error = 0.01, cut = seq(0, 0.5, 0.01), coi_method = "1")
+process_sim(sim, seq_error = NULL, cut = seq(0, 0.5, 0.01), coi_method = "1")
 }
 \arguments{
 \item{sim}{Output of \code{\link[=sim_biallelic]{sim_biallelic()}}.}
 
-\item{seq_error}{The level of sequencing error that is assumed.}
+\item{seq_error}{The level of sequencing error that is assumed. If no value
+is inputted, then we infer the level of sequence error.}
 
 \item{cut}{How often the data is summarized.}
 
