@@ -35,7 +35,6 @@ process <- function(wsaf,
     # Compare expected number and actual number of points, but ensure that
     # seq_error is greater than 1%
     seq_error <- round(max((error - round(expected))/length(low_plafs), 0.01), 4)
-    print(seq_error)
   }
 
   if (coi_method == "1") {
