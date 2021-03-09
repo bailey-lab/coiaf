@@ -26,7 +26,6 @@ single_sensitivity <- function(coi = 3,
                                bin_size = 20,
                                comparison = "overall",
                                distance ="squared",
-                               weighted = TRUE,
                                coi_method = "1") {
 
   # Check inputs
@@ -45,7 +44,6 @@ single_sensitivity <- function(coi = 3,
   assert_in(comparison, c("end", "ideal", "overall"))
   assert_single_string(distance)
   assert_in(distance, c("abs_sum", "sum_abs", "squared"))
-  assert_single_logical(weighted)
   assert_single_string(coi_method)
   assert_in(coi_method, c("1", "2"))
 
@@ -100,7 +98,6 @@ sensitivity <- function(repetitions = 10,
                         bin_size = 20,
                         comparison = "overall",
                         distance = "squared",
-                        weighted = TRUE,
                         coi_method = "1") {
 
   # Check inputs
@@ -120,7 +117,6 @@ sensitivity <- function(repetitions = 10,
   assert_in(comparison, c("end", "ideal", "overall"))
   assert_string(distance)
   assert_in(distance, c("abs_sum", "sum_abs", "squared"))
-  assert_logical(weighted)
   assert_string(coi_method)
   assert_in(coi_method, c("1", "2"))
 
@@ -136,7 +132,6 @@ sensitivity <- function(repetitions = 10,
                             bin_size = bin_size,
                             comparison = comparison,
                             distance = distance,
-                            weighted = weighted,
                             coi_method = coi_method,
                             stringsAsFactors = FALSE)
 
@@ -168,7 +163,6 @@ sensitivity <- function(repetitions = 10,
                            param_grid$bin_size[x],
                            param_grid$comparison[x],
                            param_grid$distance[x],
-                           param_grid$weighted[x],
                            param_grid$coi_method[x])
       return (test_result)
     })
@@ -327,7 +321,6 @@ cont_sensitivity <- function(repetitions = 10,
                              bin_size = 20,
                              comparison = "overall",
                              distance = "squared",
-                             weighted = TRUE,
                              coi_method = "1") {
 
   # Check inputs
@@ -347,7 +340,6 @@ cont_sensitivity <- function(repetitions = 10,
   assert_in(comparison, c("end", "ideal", "overall"))
   assert_string(distance)
   assert_in(distance, c("abs_sum", "sum_abs", "squared"))
-  assert_logical(weighted)
   assert_string(coi_method)
   assert_in(coi_method, c("1", "2"))
 
@@ -363,7 +355,6 @@ cont_sensitivity <- function(repetitions = 10,
                             bin_size = bin_size,
                             comparison = comparison,
                             distance = distance,
-                            weighted = weighted,
                             coi_method = coi_method,
                             stringsAsFactors = FALSE)
 
@@ -396,7 +387,6 @@ cont_sensitivity <- function(repetitions = 10,
                                   param_grid$seq_error[x],
                                   param_grid$bin_size[x],
                                   param_grid$distance[x],
-                                  param_grid$weighted[x],
                                   param_grid$coi_method[x])
       return (test_result)
     })

@@ -24,7 +24,6 @@
 likelihood <- function(coi,
                        processed_data,
                        distance = "squared",
-                       weighted = TRUE,
                        coi_method = "1") {
   # Check inputs
   assert_single_pos(coi)
@@ -32,7 +31,6 @@ likelihood <- function(coi,
   assert_in(coi_method, c("1", "2"))
   assert_single_string(distance)
   assert_in(distance, c("abs_sum", "sum_abs", "squared"))
-  assert_single_logical(weighted)
   assert_single_string(coi_method)
   assert_in(coi_method, c("1", "2"))
 
@@ -49,9 +47,6 @@ likelihood <- function(coi,
 
   # Distance
   gap <- theory_coi - processed_data$m_variant
-  if (weighted){
-    gap <- gap * processed_data$bucket_size
-  }
 
   if (distance == "abs_sum"){
     # Find sum of differences
@@ -99,7 +94,6 @@ optimize_coi <- function(data,
                          seq_error = NULL,
                          bin_size = 20,
                          distance = "squared",
-                         weighted = TRUE,
                          coi_method = "1") {
 
   # Check inputs
@@ -110,7 +104,6 @@ optimize_coi <- function(data,
   assert_single_pos_int(bin_size)
   assert_single_string(distance)
   assert_in(distance, c("abs_sum", "sum_abs", "squared"))
-  assert_logical(weighted)
   assert_single_string(coi_method)
   assert_in(coi_method, c("1", "2"))
 
@@ -152,7 +145,6 @@ optimize_coi <- function(data,
                       fn = likelihood,
                       processed_data = processed_data,
                       distance = distance,
-                      weighted = TRUE,
                       coi_method = coi_method,
                       method = "L-BFGS-B", lower = 1+1e-5, upper = max_coi,
                       control = list(fnscale = 1, ndeps = 1e-5))

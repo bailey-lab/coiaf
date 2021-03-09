@@ -56,7 +56,6 @@ compute_coi <- function(data,
                         bin_size = 20,
                         comparison = "overall",
                         distance = "squared",
-                        weighted = TRUE,
                         coi_method = "1") {
   ##Check inputs
   assert_in(data_type, c("sim", "real"))
@@ -68,7 +67,6 @@ compute_coi <- function(data,
   assert_in(comparison, c("end", "ideal", "overall"))
   assert_single_string(distance)
   assert_in(distance, c("abs_sum", "sum_abs", "squared"))
-  assert_single_logical(weighted)
   assert_single_string(coi_method)
   assert_in(coi_method, c("1", "2"))
 
@@ -210,8 +208,7 @@ compute_coi <- function(data,
   } else if (comparison == "overall") {
     ## Method 3: Find distance between curves
     # Utilize helper function to compute overall distance between two curves
-    overall_res <- distance_curves(processed_data, theory_cois,
-                                   distance, weighted)
+    overall_res <- distance_curves(processed_data, theory_cois, distance)
 
     # Extract information from the helper function
     coi  <- overall_res$coi
@@ -250,12 +247,10 @@ compute_coi <- function(data,
 #'
 #' @keywords internal
 
-distance_curves <- function(processed_data, theory_cois,
-                            distance = "squared", weighted = TRUE) {
+distance_curves <- function(processed_data, theory_cois, distance = "squared") {
   # Check inputs
   assert_single_string(distance)
   assert_in(distance, c("abs_sum", "sum_abs", "squared"))
-  assert_single_logical(weighted)
 
   # Find bound of COIs. Subtract 1 because theory_cois includes the PLAF at
   # the end
@@ -267,9 +262,6 @@ distance_curves <- function(processed_data, theory_cois,
   # First find difference between theoretical and simulate curve. Weigh
   # difference if wanted
   gap <- match_theory_cois - processed_data$m_variant
-  if (weighted) {
-    gap <- gap * processed_data$bucket_size
-  }
 
   if (distance == "abs_sum") {
     # Find sum of differences
