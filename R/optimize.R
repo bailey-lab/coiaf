@@ -97,7 +97,7 @@ optimize_coi <- function(data,
                          data_type,
                          max_coi = 25,
                          seq_error = NULL,
-                         cut = seq(0, 0.5, 0.01),
+                         bin_size = 20,
                          distance = "squared",
                          weighted = TRUE,
                          coi_method = "1") {
@@ -107,9 +107,7 @@ optimize_coi <- function(data,
   assert_single_string(data_type)
   assert_single_pos_int(max_coi)
   if (!is.null(seq_error)) assert_single_bounded(seq_error)
-  assert_bounded(cut, left = 0, right = 0.5)
-  assert_vector(cut)
-  assert_increasing(cut)
+  assert_single_pos_int(bin_size)
   assert_single_string(distance)
   assert_in(distance, c("abs_sum", "sum_abs", "squared"))
   assert_logical(weighted)
@@ -126,12 +124,17 @@ optimize_coi <- function(data,
 
   # Process data
   if (data_type == "sim") {
-    processed_data <- process_sim(data, seq_error, cut, coi_method)
+    processed <- process_sim(data, seq_error, bin_size, coi_method)
+    processed_data <- processed$data
+    seq_error <- processed$seq_error
+    bin_size <- processed$bin_size
+    cuts <- processed$cuts
   } else if (data_type == "real") {
-    processed_data <- process_real(data$wsaf, data$plaf,
-                                   seq_error,
-                                   cut,
-                                   coi_method)
+    processed <- process_real(data$wsaf, data$plaf, seq_error, bin_size, coi_method)
+    processed_data <- processed$data
+    seq_error <- processed$seq_error
+    bin_size <- processed$bin_size
+    cuts <- processed$cuts
   }
 
   # Special case where there are no heterozygous sites

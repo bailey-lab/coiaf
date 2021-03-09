@@ -23,7 +23,7 @@ single_sensitivity <- function(coi = 3,
                                relatedness = 0,
                                epsilon = 0,
                                seq_error = NULL,
-                               cut = seq(0, 0.5, 0.01),
+                               bin_size = 20,
                                comparison = "overall",
                                distance ="squared",
                                weighted = TRUE,
@@ -40,9 +40,7 @@ single_sensitivity <- function(coi = 3,
   assert_single_bounded(relatedness)
   assert_single_bounded(epsilon)
   if (!is.null(seq_error)) assert_single_bounded(seq_error)
-  assert_bounded(cut, left = 0, right = 0.5)
-  assert_vector(cut)
-  assert_increasing(cut)
+  assert_single_pos_int(bin_size)
   assert_single_string(comparison)
   assert_in(comparison, c("end", "ideal", "overall"))
   assert_single_string(distance)
@@ -56,8 +54,8 @@ single_sensitivity <- function(coi = 3,
                             relatedness, epsilon)
 
   # Compute COI
-  calc_coi <- compute_coi(sim_data, "sim", max_coi, seq_error, cut,
-                          comparison, distance, weighted, coi_method)
+  calc_coi <- compute_coi(sim_data, "sim", max_coi, seq_error, bin_size,
+                          comparison, distance, coi_method)
 }
 
 
@@ -99,7 +97,7 @@ sensitivity <- function(repetitions = 10,
                         relatedness = 0,
                         epsilon = 0,
                         seq_error = NULL,
-                        cut = seq(0, 0.5, 0.01),
+                        bin_size = 20,
                         comparison = "overall",
                         distance = "squared",
                         weighted = TRUE,
@@ -117,9 +115,7 @@ sensitivity <- function(repetitions = 10,
   assert_bounded(relatedness)
   assert_bounded(epsilon)
   if (!is.null(seq_error)) assert_single_bounded(seq_error)
-  assert_bounded(cut, left = 0, right = 0.5)
-  assert_vector(cut)
-  assert_increasing(cut)
+  assert_single_pos_int(bin_size)
   assert_string(comparison)
   assert_in(comparison, c("end", "ideal", "overall"))
   assert_string(distance)
@@ -137,6 +133,7 @@ sensitivity <- function(repetitions = 10,
                             relatedness = relatedness,
                             epsilon = epsilon,
                             seq_error = seq_error,
+                            bin_size = bin_size,
                             comparison = comparison,
                             distance = distance,
                             weighted = weighted,
@@ -168,7 +165,7 @@ sensitivity <- function(repetitions = 10,
                            param_grid$relatedness[x],
                            param_grid$epsilon[x],
                            param_grid$seq_error[x],
-                           cut,
+                           param_grid$bin_size[x],
                            param_grid$comparison[x],
                            param_grid$distance[x],
                            param_grid$weighted[x],
@@ -327,7 +324,7 @@ cont_sensitivity <- function(repetitions = 10,
                              relatedness = 0,
                              epsilon = 0,
                              seq_error = NULL,
-                             cut = seq(0, 0.5, 0.01),
+                             bin_size = 20,
                              comparison = "overall",
                              distance = "squared",
                              weighted = TRUE,
@@ -345,9 +342,7 @@ cont_sensitivity <- function(repetitions = 10,
   assert_bounded(relatedness)
   assert_bounded(epsilon)
   if (!is.null(seq_error)) assert_single_bounded(seq_error)
-  assert_bounded(cut, left = 0, right = 0.5)
-  assert_vector(cut)
-  assert_increasing(cut)
+  assert_single_pos_int(bin_size)
   assert_string(comparison)
   assert_in(comparison, c("end", "ideal", "overall"))
   assert_string(distance)
@@ -365,6 +360,7 @@ cont_sensitivity <- function(repetitions = 10,
                             relatedness = relatedness,
                             epsilon = epsilon,
                             seq_error = seq_error,
+                            bin_size = bin_size,
                             comparison = comparison,
                             distance = distance,
                             weighted = weighted,
@@ -398,7 +394,7 @@ cont_sensitivity <- function(repetitions = 10,
                                   "sim",
                                   param_grid$max_coi[x],
                                   param_grid$seq_error[x],
-                                  cut,
+                                  param_grid$bin_size[x],
                                   param_grid$distance[x],
                                   param_grid$weighted[x],
                                   param_grid$coi_method[x])

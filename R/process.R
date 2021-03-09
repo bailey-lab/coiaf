@@ -15,7 +15,7 @@
 process <- function(wsaf,
                     plaf,
                     seq_error = NULL,
-                    cut = seq(0, 0.5, 0.01),
+                    bin_size = 20,
                     coi_method = "1") {
 
   # Infer value of seq_error if NULL
@@ -41,9 +41,8 @@ process <- function(wsaf,
     # Isolate PLAF, determine the PLAF cuts, and whether a site is a variant,
     # accounting for sequence error
     df <- data.frame(
-      plaf_cut = cut(plaf, cut, include.lowest = TRUE),
-      variant = ifelse(wsaf <= seq_error | wsaf >= (1 - seq_error), 0, 1)
-      )
+      plaf_cut = Hmisc::cut2(plaf, m = bin_size),
+      variant = ifelse(wsaf <= seq_error | wsaf >= (1 - seq_error), 0, 1))
 
   } else if (coi_method == "2") {
     # Subset to heterozygous sites
@@ -52,11 +51,21 @@ process <- function(wsaf,
     wsaf <- data$wsaf
     plaf <- data$plaf
 
+    # If remove all data, need to return a pseudo result to not induce errors.
+    # Additionally, in order to define a cut, need at least 2 data points
+    if (length(plaf) <= 1) {
+      vec <- setNames(rep("", 4), c("plaf_cut", "m_variant", "bucket_size", "midpoints"))
+      df_grouped <- dplyr::bind_rows(vec)[0, ]
+      res <- list(data = df_grouped,
+                  seq_error = seq_error,
+                  bin_size = bin_size,
+                  cuts = NULL)
+      return(res)
+    }
+
     # Isolate PLAF, and keep WSAF as is
-    df <- data.frame(
-      plaf_cut = cut(plaf, cut, include.lowest = TRUE),
-      variant = wsaf
-    )
+    df <- data.frame(plaf_cut = Hmisc::cut2(plaf, m = bin_size),
+                     variant = wsaf)
   }
 
   # Average over intervals of PLAF
@@ -64,11 +73,16 @@ process <- function(wsaf,
     dplyr::group_by(.data$plaf_cut, .drop = FALSE) %>%
     dplyr::summarise(m_variant   = mean(.data$variant),
                      bucket_size = dplyr::n()) %>%
-    as.data.frame()
+    stats::na.omit()
 
-  # Include midpoints and remove missing data
-  df_grouped$midpoints <- cut[-length(cut)] + diff(cut)/2
-  df_grouped <- stats::na.omit(df_grouped)
+  cuts <- Hmisc::cut2(plaf, m = bin_size, onlycuts = TRUE)
+  df_grouped$midpoints <- cuts[-length(cuts)] + diff(cuts) / 2
+
+  # Return data, seq_error, and cuts
+  res <- list(data = df_grouped,
+              seq_error = seq_error,
+              bin_size = bin_size,
+              cuts = cuts)
 }
 
 #------------------------------------------------
@@ -96,19 +110,17 @@ process <- function(wsaf,
 
 process_sim <- function(sim,
                         seq_error = NULL,
-                        cut = seq(0, 0.5, 0.01),
+                        bin_size = 20,
                         coi_method = "1") {
   # Check inputs
   if (!is.null(seq_error)) assert_single_bounded(seq_error)
-  assert_bounded(cut, left = 0, right = 0.5)
-  assert_vector(cut)
-  assert_increasing(cut)
+  assert_single_pos_int(bin_size)
 
   # Run helper to process
   processed_sim <- process(wsaf       = sim$data$wsaf,
                            plaf       = sim$data$plaf,
                            seq_error  = seq_error,
-                           cut        = cut,
+                           bin_size   = bin_size,
                            coi_method = coi_method)
 }
 
@@ -132,7 +144,7 @@ process_sim <- function(sim,
 
 process_real <- function(wsaf, plaf,
                          seq_error = NULL,
-                         cut = seq(0, 0.5, 0.01),
+                         bin_size = 20,
                          coi_method = "1") {
   # Check inputs
   assert_vector(wsaf)
@@ -140,9 +152,7 @@ process_real <- function(wsaf, plaf,
   assert_vector(plaf)
   assert_bounded(plaf)
   if (!is.null(seq_error)) assert_single_bounded(seq_error)
-  assert_bounded(cut, left = 0, right = 0.5)
-  assert_vector(cut)
-  assert_increasing(cut)
+  assert_single_pos_int(bin_size)
 
   # Ensure that the PLAF is at most 0.5
   plaf[plaf > 0.5] <- 1 - plaf[plaf > 0.5]
@@ -152,6 +162,6 @@ process_real <- function(wsaf, plaf,
   processed_real <- process(wsaf       = wsaf,
                             plaf       = plaf,
                             seq_error  = seq_error,
-                            cut        = cut,
+                            bin_size   = bin_size,
                             coi_method = coi_method)
 }
