@@ -14,7 +14,6 @@
 #' @param coi The COI for which the likelihood will be generated.
 #' @param processed_data The processed COI data. This is the output of
 #' [process_sim()] or [process_real()].
-#' @inheritParams theoretical_coi
 #' @inheritParams compute_coi
 #'
 #' @return The likelihood for a specific COI value.
@@ -76,11 +75,7 @@ likelihood <- function(coi,
 #' surface to be optimized. The function uses a likelihood function as defined
 #' by [likelihood()].
 #'
-#' @param data The data for which the COI will be computed.
-#' @param data_type The type of the data to be analyzed. One of
-#' `"sim"` or `"real"`.
-#' @inheritParams sensitivity
-#' @inheritParams likelihood
+#' @inheritParams compute_coi
 #'
 #' @return The predicted COI value.
 #' @seealso [stats::optim()] for the complete documentation on the optimization

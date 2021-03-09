@@ -9,7 +9,17 @@
 #'
 #' @inheritParams process_real
 #'
-#' @return Real COI curve.
+#' @return A list of the following:
+#' * `data`: A tibble with
+#'  + `plaf_cut`: Breaks of the form `[a, b)`.
+#'  + `m_variant`: The average WSAF or proportion of variant sites in each
+#'  segment defined by `plaf_cut`.
+#'  + `bucket_size`: The number of loci in each bucket.
+#'  + `midpoints`: The midpoint of each bucket.
+#' * `seq_error`: The sequence error inferred.
+#' * `bin_size`: The minimum size of each bin.
+#' * `cuts`: The breaks utilized in splitting the data.
+#'  of each COI.
 #' @keywords internal
 
 process <- function(wsaf,
@@ -100,10 +110,20 @@ process <- function(wsaf,
 #' @param sim Output of [sim_biallelic()].
 #' @param seq_error The level of sequencing error that is assumed. If no value
 #' is inputted, then we infer the level of sequence error.
-#' @param cut How often the data is summarized.
+#' @param bin_size The minimum size of each bin of data.
 #' @inheritParams theoretical_coi
 #'
-#' @return Simulated COI curve.
+#' @return A list of the following:
+#' * `data`: A tibble with
+#'  + `plaf_cut`: Breaks of the form `[a, b)`.
+#'  + `m_variant`: The average WSAF or proportion of variant sites in each
+#'  segment defined by `plaf_cut`.
+#'  + `bucket_size`: The number of loci in each bucket.
+#'  + `midpoints`: The midpoint of each bucket.
+#' * `seq_error`: The sequence error inferred.
+#' * `bin_size`: The minimum size of each bin.
+#' * `cuts`: The breaks utilized in splitting the data.
+#'  of each COI.
 #' @family simulated data functions
 #' @seealso [process_real()] to process real data.
 #' @export
@@ -137,7 +157,17 @@ process_sim <- function(sim,
 #' @param plaf The population-level allele frequency.
 #' @inheritParams process_sim
 #'
-#' @return Real COI curve.
+#' @return A list of the following:
+#' * `data`: A tibble with
+#'  + `plaf_cut`: Breaks of the form `[a, b)`.
+#'  + `m_variant`: The average WSAF or proportion of variant sites in each
+#'  segment defined by `plaf_cut`.
+#'  + `bucket_size`: The number of loci in each bucket.
+#'  + `midpoints`: The midpoint of each bucket.
+#' * `seq_error`: The sequence error inferred.
+#' * `bin_size`: The minimum size of each bin.
+#' * `cuts`: The breaks utilized in splitting the data.
+#'  of each COI.
 #' @family real data functions
 #' @seealso [process_sim()] to process simulated data.
 #' @export

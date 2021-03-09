@@ -31,16 +31,17 @@
 #'   * `squared`: Sum of squared difference.
 #'   }}
 #'
-#' @inheritParams optimize_coi
-#' @param cut A vector indicating how often the data is summarized.
+#' @param data The data for which the COI will be computed.
+#' @param data_type The type of the data to be analyzed. One of
+#' `"sim"` or `"real"`.
+#' @param max_coi A number indicating the maximum COI to compare the
+#' simulated data to.
+#' @inheritParams process_real
 #' @param comparison The method to be employed. One of `"end"`, `"ideal"`,
 #' `"overall"`.
 #' @param distance The distance method used to determine the distance between
 #' the theoretical and simulated curves for the `"overall"` method. One of
 #' `"abs_sum"`, `"sum_abs"`, `"squared"`.
-#' @param weighted An indicator indicating whether to compute the weighted
-#' distance.
-#' @inheritParams theoretical_coi
 #'
 #' @return A list of the following:
 #' * `coi`: The predicted COI of the sample.

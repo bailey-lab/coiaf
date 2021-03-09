@@ -4,13 +4,7 @@
 \alias{likelihood}
 \title{Likelihood of a COI}
 \usage{
-likelihood(
-  coi,
-  processed_data,
-  distance = "squared",
-  weighted = TRUE,
-  coi_method = "1"
-)
+likelihood(coi, processed_data, distance = "squared", coi_method = "1")
 }
 \arguments{
 \item{coi}{The COI for which the likelihood will be generated.}
@@ -21,9 +15,6 @@ likelihood(
 \item{distance}{The distance method used to determine the distance between
 the theoretical and simulated curves for the \code{"overall"} method. One of
 \code{"abs_sum"}, \code{"sum_abs"}, \code{"squared"}.}
-
-\item{weighted}{An indicator indicating whether to compute the weighted
-distance.}
 
 \item{coi_method}{The method we will use to calculate the theoretical COI.
 The method is either "1" or "2". The default value is "1".}

@@ -4,12 +4,7 @@
 \alias{distance_curves}
 \title{Compute distance between two curves}
 \usage{
-distance_curves(
-  processed_data,
-  theory_cois,
-  distance = "squared",
-  weighted = TRUE
-)
+distance_curves(processed_data, theory_cois, distance = "squared")
 }
 \arguments{
 \item{theory_cois}{The theoretical COI curves.}
@@ -17,9 +12,6 @@ distance_curves(
 \item{distance}{The distance method used to determine the distance between
 the theoretical and simulated curves for the \code{"overall"} method. One of
 \code{"abs_sum"}, \code{"sum_abs"}, \code{"squared"}.}
-
-\item{weighted}{An indicator indicating whether to compute the weighted
-distance.}
 }
 \value{
 A list of the following:

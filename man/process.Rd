@@ -4,13 +4,7 @@
 \alias{process}
 \title{Process data}
 \usage{
-process(
-  wsaf,
-  plaf,
-  seq_error = NULL,
-  cut = seq(0, 0.5, 0.01),
-  coi_method = "1"
-)
+process(wsaf, plaf, seq_error = NULL, bin_size = 20, coi_method = "1")
 }
 \arguments{
 \item{wsaf}{The within-sample allele frequency.}
@@ -20,13 +14,29 @@ process(
 \item{seq_error}{The level of sequencing error that is assumed. If no value
 is inputted, then we infer the level of sequence error.}
 
-\item{cut}{How often the data is summarized.}
+\item{bin_size}{The minimum size of each bin of data.}
 
 \item{coi_method}{The method we will use to calculate the theoretical COI.
 The method is either "1" or "2". The default value is "1".}
 }
 \value{
-Real COI curve.
+A list of the following:
+\itemize{
+\item \code{data}: A tibble with
+}
+\itemize{
+\item \code{plaf_cut}: Breaks of the form \verb{[a, b)}.
+\item \code{m_variant}: The average WSAF or proportion of variant sites in each
+segment defined by \code{plaf_cut}.
+\item \code{bucket_size}: The number of loci in each bucket.
+\item \code{midpoints}: The midpoint of each bucket.
+}
+\itemize{
+\item \code{seq_error}: The sequence error inferred.
+\item \code{bin_size}: The minimum size of each bin.
+\item \code{cuts}: The breaks utilized in splitting the data.
+of each COI.
+}
 }
 \description{
 Helper function to process data

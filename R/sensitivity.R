@@ -3,11 +3,7 @@
 #'
 #' Runs a single full COI sensitivity analysis.
 #'
-#' @param max_coi A number indicating the maximum COI to compare the
-#' simulated data to.
 #' @inheritParams sim_biallelic
-#' @inheritParams process_sim
-#' @param cut A vector indicating how often the data is summarized.
 #' @inheritParams compute_coi
 #'
 #' @return Predicted COI value.
