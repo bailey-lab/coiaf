@@ -4,13 +4,23 @@
 \alias{sensitivity_plot}
 \title{Sensitivity plot}
 \usage{
-sensitivity_plot(data, dims, sub_title = NULL, title = NULL, caption = NULL)
+sensitivity_plot(
+  data,
+  dims,
+  result_type,
+  sub_title = NULL,
+  title = NULL,
+  caption = NULL
+)
 }
 \arguments{
 \item{data}{The data to be plotted.}
 
 \item{dims}{A list representing the number of rows and columns our plots
 will be split into.}
+
+\item{result_type}{An indicator that indicates if a count or boxplot should
+be plotted.}
 
 \item{sub_title}{A list of titles for each individual subplot.}
 

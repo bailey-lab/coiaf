@@ -7,7 +7,7 @@
 process(
   wsaf,
   plaf,
-  seq_error = 0.01,
+  seq_error = NULL,
   cut = seq(0, 0.5, 0.01),
   coi_method = "1"
 )
@@ -17,7 +17,8 @@ process(
 
 \item{plaf}{The population-level allele frequency.}
 
-\item{seq_error}{The level of sequencing error that is assumed.}
+\item{seq_error}{The level of sequencing error that is assumed. If no value
+is inputted, then we infer the level of sequence error.}
 
 \item{cut}{How often the data is summarized.}
 

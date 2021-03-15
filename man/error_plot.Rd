@@ -10,7 +10,7 @@ error_plot(
   fill_levels = NULL,
   title = NULL,
   legend_title = fill,
-  legend.position = "bottom",
+  legend.position = "right",
   second_fill = NULL
 )
 }

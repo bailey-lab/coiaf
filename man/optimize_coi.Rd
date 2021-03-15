@@ -8,7 +8,7 @@ optimize_coi(
   data,
   data_type,
   max_coi = 25,
-  seq_error = 0.01,
+  seq_error = NULL,
   cut = seq(0, 0.5, 0.01),
   distance = "squared",
   weighted = TRUE,
@@ -24,7 +24,8 @@ optimize_coi(
 \item{max_coi}{A number indicating the maximum COI to compare the
 simulated data to.}
 
-\item{seq_error}{The level of sequencing error that is assumed.}
+\item{seq_error}{The level of sequencing error that is assumed. If no value
+is inputted, then we infer the level of sequence error.}
 
 \item{cut}{A vector indicating how often the data is summarized.}
 

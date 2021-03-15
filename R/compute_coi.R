@@ -52,7 +52,7 @@
 compute_coi <- function(data,
                         data_type,
                         max_coi = 25,
-                        seq_error = 0.01,
+                        seq_error = NULL,
                         cut = seq(0, 0.5, 0.01),
                         comparison = "overall",
                         distance = "squared",
@@ -62,7 +62,7 @@ compute_coi <- function(data,
   assert_in(data_type, c("sim", "real"))
   assert_single_string(data_type)
   assert_single_pos_int(max_coi)
-  assert_single_bounded(seq_error)
+  if (!is.null(seq_error)) assert_single_bounded(seq_error)
   assert_bounded(cut, left = 0, right = 0.5)
   assert_vector(cut)
   assert_increasing(cut)
@@ -120,11 +120,19 @@ compute_coi <- function(data,
     }
 
     # Size is the number of loci per bucket
-    size <- data.frame(plaf_cut = cut(data$data$plaf, cut, include.lowest = TRUE),
-                       variant = data$data$wsaf) %>%
+    if (data_type == "sim") {
+      size_plaf <- data$data$plaf
+      size_wsaf <- data$data$wsaf
+    } else if (data_type == "real") {
+      size_plaf <- data$plaf
+      size_wsaf <- data$wsaf
+    }
+    size <- data.frame(plaf_cut = cut(size_plaf, cut, include.lowest = TRUE),
+                       variant = size_wsaf) %>%
       dplyr::group_by(.data$plaf_cut, .drop = FALSE) %>%
-      dplyr::summarise(bucket_size = dplyr::n())
-    size$midpoints <- cut[-length(cut)] + diff(cut)/2
+      dplyr::summarise(bucket_size = dplyr::n()) %>%
+      stats::na.omit()
+    size$midpoints <- cut[-length(cut)] + diff(cut) / 2
 
     breaks = size$midpoints
     nloci  = size$bucket_size
@@ -140,7 +148,7 @@ compute_coi <- function(data,
                                  suffix = c("_expect", "_data")) %>%
       tidyr::replace_na(list(bucket_size_data = 0))
 
-    if (sum(combined$Lower - combined$bucket_size_data) >= 0) {
+    if (sum(combined$Lower - combined$bucket_size_data, na.rm = T) >= 0) {
       ret <- list(coi = 1, probability = c(1, rep(0, max_coi - 1)))
       return(ret)
     }

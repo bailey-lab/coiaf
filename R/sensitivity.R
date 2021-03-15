@@ -20,8 +20,9 @@ single_sensitivity <- function(coi = 3,
                                coverage = 200,
                                alpha = 1,
                                overdispersion = 0,
+                               relatedness = 0,
                                epsilon = 0,
-                               seq_error = 0.01,
+                               seq_error = NULL,
                                cut = seq(0, 0.5, 0.01),
                                comparison = "overall",
                                distance ="squared",
@@ -36,8 +37,9 @@ single_sensitivity <- function(coi = 3,
   assert_single_pos_int(coverage)
   assert_single_pos(alpha, zero_allowed = FALSE)
   assert_single_pos(overdispersion)
+  assert_single_bounded(relatedness)
   assert_single_bounded(epsilon)
-  assert_single_bounded(seq_error)
+  if (!is.null(seq_error)) assert_single_bounded(seq_error)
   assert_bounded(cut, left = 0, right = 0.5)
   assert_vector(cut)
   assert_increasing(cut)
@@ -50,7 +52,8 @@ single_sensitivity <- function(coi = 3,
   assert_in(coi_method, c("1", "2"))
 
   # Simulate data
-  sim_data <- sim_biallelic(coi, plaf, coverage, alpha, overdispersion, epsilon)
+  sim_data <- sim_biallelic(coi, plaf, coverage, alpha, overdispersion,
+                            relatedness, epsilon)
 
   # Compute COI
   calc_coi <- compute_coi(sim_data, "sim", max_coi, seq_error, cut,
@@ -93,8 +96,9 @@ sensitivity <- function(repetitions = 10,
                         coverage = 200,
                         alpha = 1,
                         overdispersion = 0,
+                        relatedness = 0,
                         epsilon = 0,
-                        seq_error = 0.01,
+                        seq_error = NULL,
                         cut = seq(0, 0.5, 0.01),
                         comparison = "overall",
                         distance = "squared",
@@ -110,8 +114,9 @@ sensitivity <- function(repetitions = 10,
   assert_pos_int(coverage)
   assert_pos(alpha, zero_allowed = FALSE)
   assert_pos(overdispersion)
+  assert_bounded(relatedness)
   assert_bounded(epsilon)
-  assert_bounded(seq_error)
+  if (!is.null(seq_error)) assert_single_bounded(seq_error)
   assert_bounded(cut, left = 0, right = 0.5)
   assert_vector(cut)
   assert_increasing(cut)
@@ -129,6 +134,7 @@ sensitivity <- function(repetitions = 10,
                             coverage = coverage,
                             alpha = alpha,
                             overdispersion = overdispersion,
+                            relatedness = relatedness,
                             epsilon = epsilon,
                             seq_error = seq_error,
                             comparison = comparison,
@@ -159,6 +165,7 @@ sensitivity <- function(repetitions = 10,
                            param_grid$coverage[x],
                            param_grid$alpha[x],
                            param_grid$overdispersion[x],
+                           param_grid$relatedness[x],
                            param_grid$epsilon[x],
                            param_grid$seq_error[x],
                            cut,
@@ -317,8 +324,9 @@ cont_sensitivity <- function(repetitions = 10,
                              coverage = 200,
                              alpha = 1,
                              overdispersion = 0,
+                             relatedness = 0,
                              epsilon = 0,
-                             seq_error = 0.01,
+                             seq_error = NULL,
                              cut = seq(0, 0.5, 0.01),
                              comparison = "overall",
                              distance = "squared",
@@ -334,8 +342,9 @@ cont_sensitivity <- function(repetitions = 10,
   assert_pos_int(coverage)
   assert_pos(alpha, zero_allowed = FALSE)
   assert_pos(overdispersion)
+  assert_bounded(relatedness)
   assert_bounded(epsilon)
-  assert_bounded(seq_error)
+  if (!is.null(seq_error)) assert_single_bounded(seq_error)
   assert_bounded(cut, left = 0, right = 0.5)
   assert_vector(cut)
   assert_increasing(cut)
@@ -353,6 +362,7 @@ cont_sensitivity <- function(repetitions = 10,
                             coverage = coverage,
                             alpha = alpha,
                             overdispersion = overdispersion,
+                            relatedness = relatedness,
                             epsilon = epsilon,
                             seq_error = seq_error,
                             comparison = comparison,
@@ -381,6 +391,7 @@ cont_sensitivity <- function(repetitions = 10,
                                 param_grid$coverage[x],
                                 param_grid$alpha[x],
                                 param_grid$overdispersion[x],
+                                param_grid$relatedness[x],
                                 param_grid$epsilon[x])
 
       test_result <- optimize_coi(test_sim,

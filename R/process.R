@@ -14,9 +14,28 @@
 
 process <- function(wsaf,
                     plaf,
-                    seq_error = 0.01,
+                    seq_error = NULL,
                     cut = seq(0, 0.5, 0.01),
                     coi_method = "1") {
+
+  # Infer value of seq_error if NULL
+  if (is.null(seq_error)) {
+    # Cut the data
+    bins <- cut(plaf, seq(0, 0.5, 0.05), include.lowest = TRUE)
+
+    # Data points in the lowest bin
+    low_plafs <- wsaf[which(bins == levels(bins)[1])]
+
+    # Number of data points with WSAF > 0
+    error <- sum(low_plafs > 0, na.rm = T)
+
+    # Expected number of points
+    expected <- length(low_plafs) * 0.025
+
+    # Compare expected number and actual number of points, but ensure that
+    # seq_error is greater than 1%
+    seq_error <- round(max((error - round(expected))/length(low_plafs), 0.01), 4)
+  }
 
   if (coi_method == "1") {
     # Isolate PLAF, determine the PLAF cuts, and whether a site is a variant,
@@ -27,6 +46,12 @@ process <- function(wsaf,
       )
 
   } else if (coi_method == "2") {
+    # Subset to heterozygous sites
+    data <- data.frame(wsaf = wsaf, plaf = plaf) %>%
+      dplyr::filter(wsaf >= seq_error & wsaf <= (1 - seq_error))
+    wsaf <- data$wsaf
+    plaf <- data$plaf
+
     # Isolate PLAF, and keep WSAF as is
     df <- data.frame(
       plaf_cut = cut(plaf, cut, include.lowest = TRUE),
@@ -59,7 +84,8 @@ process <- function(wsaf,
 #' haplotype of the parasites is computed.
 #'
 #' @param sim Output of [sim_biallelic()].
-#' @param seq_error The level of sequencing error that is assumed.
+#' @param seq_error The level of sequencing error that is assumed. If no value
+#' is inputted, then we infer the level of sequence error.
 #' @param cut How often the data is summarized.
 #' @inheritParams theoretical_coi
 #'
@@ -69,20 +95,14 @@ process <- function(wsaf,
 #' @export
 
 process_sim <- function(sim,
-                        seq_error = 0.01,
+                        seq_error = NULL,
                         cut = seq(0, 0.5, 0.01),
                         coi_method = "1") {
   # Check inputs
-  assert_single_bounded(seq_error)
+  if (!is.null(seq_error)) assert_single_bounded(seq_error)
   assert_bounded(cut, left = 0, right = 0.5)
   assert_vector(cut)
   assert_increasing(cut)
-
-  # Subset data to focus only on heterozygous sites
-  if (coi_method == "2") {
-    sim$data <- dplyr::filter(sim$data, .data$wsaf > seq_error &
-                                .data$wsaf < (1 - seq_error))
-  }
 
   # Run helper to process
   processed_sim <- process(wsaf       = sim$data$wsaf,
@@ -111,7 +131,7 @@ process_sim <- function(sim,
 #' @export
 
 process_real <- function(wsaf, plaf,
-                         seq_error = 0.01,
+                         seq_error = NULL,
                          cut = seq(0, 0.5, 0.01),
                          coi_method = "1") {
   # Check inputs
@@ -119,7 +139,7 @@ process_real <- function(wsaf, plaf,
   assert_bounded(wsaf)
   assert_vector(plaf)
   assert_bounded(plaf)
-  assert_single_bounded(seq_error)
+  if (!is.null(seq_error)) assert_single_bounded(seq_error)
   assert_bounded(cut, left = 0, right = 0.5)
   assert_vector(cut)
   assert_increasing(cut)
@@ -127,14 +147,6 @@ process_real <- function(wsaf, plaf,
   # Ensure that the PLAF is at most 0.5
   plaf[plaf > 0.5] <- 1 - plaf[plaf > 0.5]
   assert_bounded(plaf, left = 0, right = 0.5)
-
-  # Subset data to focus only on heterozygous sites
-  if (coi_method == "2") {
-    data <- data.frame(wsaf = wsaf, plaf = plaf) %>%
-      dplyr::filter(wsaf > 0 & wsaf < 1)
-    wsaf <- data$wsaf
-    plaf <- data$plaf
-  }
 
   # Run helper to process
   processed_real <- process(wsaf       = wsaf,

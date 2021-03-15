@@ -86,16 +86,17 @@ set.seed(1)
 
 # Define number of loci, and distribution of minor allele frequencies
 L <- 1e3
-p <- rbeta(L, 1, 5)
+p <- stats::rbeta(L, 1, 5)
 p[p > 0.5] <- 1 - p[p > 0.5]
 ```
 
 ### Overall Performance
 ```{r overall, eval = eval_tests}
-toverall <- sensitivity(coi = 1:25, max_coi = 30, repetitions = 10, plaf = p,
-                        coverage = 200, seq_error = 0, coi_method = c("1", "2"))
+toverall <- sensitivity(coi = 1:25, max_coi = 30, repetitions = 100, plaf = p,
+                        coverage = 400, seq_error = 0, coi_method = c("1", "2"))
 
-toverall_image <- sensitivity_plot(data = toverall, dims = c(2, 1), 
+toverall_image <- sensitivity_plot(data = toverall, dims = c(1, 2), 
+                                   result_type = "disc",
                                    title = "Predicted COI", 
                                    sub_title = c("Method 1", "Method 2"))
 
@@ -105,7 +106,9 @@ toverall_error <- error_plot(toverall, fill = "coi_method",
                              fill_levels = c("Method 1", "Method 2"))
 
 toverall_fig <- ggpubr::ggarrange(toverall_image, toverall_error, 
-                                  labels = "AUTO")
+                                  labels = c("", "C"),
+                                  nrow = 2,
+                                  font.label = list(size = 10))
 toverall_fig
 ```
 
@@ -120,10 +123,11 @@ We first want to understand for what range our model can accurately predict
 the COI.
 
 ```{r coi, eval = eval_tests}
-tcoi <- sensitivity(coi = 2:40, max_coi = 40, repetitions = 10, plaf = p,
+tcoi <- sensitivity(coi = 2:40, max_coi = 40, repetitions = 100, plaf = p,
                     coi_method = c("1", "2"))
 
-tcoi_image <- sensitivity_plot(data = tcoi, dims = c(2, 1), 
+tcoi_image <- sensitivity_plot(data = tcoi, dims = c(1, 2), 
+                               result_type = "disc",
                                title = "Predicted COI", 
                                sub_title = c("Method 1", "Method 2"))
 
@@ -132,7 +136,10 @@ tcoi_error <- error_plot(tcoi, fill = "coi_method",
                          title = "Error",
                          fill_levels = c("Method 1", "Method 2"))
 
-tcoi_fig <- ggpubr::ggarrange(tcoi_image, tcoi_error, labels = "AUTO") 
+tcoi_fig <- ggpubr::ggarrange(tcoi_image, tcoi_error, 
+                              labels = c("", "C"),
+                              nrow = 2,
+                              font.label = list(size = 10)) 
 tcoi_fig
 ```
 
@@ -157,12 +164,13 @@ COIs of 2 till 20.
 ```{r comparison, eval = eval_tests}
 tcomparison <- sensitivity(coi = 2:20, plaf = p, 
                            comparison = c("end", "ideal", "overall"),
-                           distance = "squared", repetitions = 10)
+                           distance = "squared", repetitions = 100)
 
 tcomparison_image <- 
   sensitivity_plot(data = tcomparison,
+                   result_type = "disc",
                    title = "Predicted COI",
-                   dims = c(3, 1),
+                   dims = c(1, 3),
                    sub_title = paste0("Comparison = ", c("End", 
                                                          "Ideal", 
                                                          "Overall")))
@@ -173,7 +181,9 @@ tcomparison_error <- error_plot(tcomparison, fill = "comparison",
                                 title = "Error")
 
 tcomparison_fig <- ggpubr::ggarrange(tcomparison_image, tcomparison_error, 
-                                     labels = "AUTO") 
+                                     labels = c("", "D"), 
+                                     nrow = 2, 
+                                     font.label = list(size = 10)) 
 tcomparison_fig
 ```
 
@@ -202,10 +212,11 @@ document, we will use the `overall` method.
 ```{r distance, eval = eval_tests}
 tdistance <- sensitivity(coi = 2:20, plaf = p, comparison = "overall",
                          distance = c("abs_sum", "sum_abs", "squared"),
-                         repetitions = 10, coi_method = c("1", "2"))
+                         repetitions = 100, coi_method = c("1", "2"))
 
 tdistance_image <- 
   sensitivity_plot(data = tdistance,
+                   result_type = "disc",
                    title = "Predicted COI",
                    dims = c(3, 2),
                    sub_title = paste(rep(c("Absolute Sum", 
@@ -224,7 +235,9 @@ tdistance_error <- error_plot(tdistance, fill = "distance",
                               second_fill = "coi_method")
 
 tdistance_fig <- ggpubr::ggarrange(tdistance_image, tdistance_error, 
-                                   labels = "AUTO")
+                                   labels = c("", "G"), 
+                                   nrow = 2, 
+                                   font.label = list(size = 10))
 tdistance_fig
 ```
 
@@ -235,7 +248,7 @@ knitr::include_graphics('figures/discrete/tdistance.png')
 ### Weighted
 ```{r weight, eval = eval_tests}
 tweight <- sensitivity(coi = 2:20, weighted = c(FALSE, TRUE),
-                       distance = "squared", plaf = p, repetitions = 10,
+                       distance = "squared", plaf = p, repetitions = 100,
                        coi_method = c("1", "2"))
 
 tweight_image <- 
@@ -252,7 +265,10 @@ tweight_error <- error_plot(tweight, fill = "coi_method",
                             title = "Error",
                             second_fill = "weighted")
 
-tweight_fig <- ggpubr::ggarrange(tweight_image, tweight_error, labels = "AUTO") 
+tweight_fig <- ggpubr::ggarrange(tweight_image, tweight_error, 
+                                 labels = c("", "C"), 
+                                 nrow = 2, 
+                                 font.label = list(size = 10)) 
 tweight_fig
 ```
 
@@ -268,10 +284,11 @@ often, but the difference is very small.
 ### Coverage
 ```{r coverage, eval = eval_tests}
 tcoverage <- sensitivity(coi = 2:20, coverage = c(25, 50, 100, 200, 400, 800), 
-                         repetitions = 10, plaf = p, coi_method = c("1", "2"))
+                         repetitions = 100, plaf = p, coi_method = c("1", "2"))
 
 tcoverage_image <- 
   sensitivity_plot(data = tcoverage,
+                   result_type = "disc",
                    title = "Predicted COI",
                    dims = c(4, 3),
                    sub_title = paste(paste0("Coverage ", c(25, 50, 100, 200, 400, 800)),
@@ -284,7 +301,10 @@ tcoverage_error <- error_plot(tcoverage, fill = "coverage",
                               second_fill = "coi_method")
 
 tcoverage_fig <- ggpubr::ggarrange(tcoverage_image, tcoverage_error, 
-                                   labels = "AUTO")
+                                   labels = c("", "M"), 
+                                   nrow = 2, 
+                                   heights = c(5, 2),
+                                   font.label = list(size = 10))
 tcoverage_fig
 ```
 
@@ -299,14 +319,14 @@ noticeable difference in performance.
 ### Loci
 ```{r loci method 1, eval = eval_tests}
 # Set the range over which we will iterate
-loci = c(1e3, 1e4)
+loci = c(1e2, 1e3, 1e4)
 
 # For each loci, reset the PLAF and then run
 bloci <- lapply(loci, function(new_L){
   new_p <- rbeta(new_L, 1, 5)
   new_p[new_p > 0.5] <- 1 - new_p[new_p > 0.5]
   
-  inner_tloci <- sensitivity(coi = 2:20, repetitions = 10, plaf = new_p,
+  inner_tloci <- sensitivity(coi = 2:20, repetitions = 100, plaf = new_p,
                              coi_method = "1")
   inner_tloci$param_grid$loci <- new_L
   return(inner_tloci)
@@ -335,18 +355,22 @@ tloci_1 <- list(
 # Plot
 tloci_image_1 <- 
   sensitivity_plot(data = tloci_1,
+                   result_type = "disc",
                    title = "Predicted COI",
-                   dims = c(2, 1),
-                   sub_title = paste0("Loci = ", c(1e3, 1e4)))
+                   dims = c(1, 3),
+                   sub_title = paste0("Loci = ", c(1e2, 1e3, 1e4)))
 
 # Add a loci column
-tloci_1$boot_error$loci <- rep(c(1e3, 1e4), 
+tloci_1$boot_error$loci <- rep(c(1e2, 1e3, 1e4), 
                              each = length(unique(tloci_1$boot_error$coi)))
 tloci_error_1 <- error_plot(tloci_1, fill = "loci", 
                             legend_title = "Loci", 
                             title = "Error")
 
-tloci_fig_1 <- ggpubr::ggarrange(tloci_image_1, tloci_error_1, labels = "AUTO")
+tloci_fig_1 <- ggpubr::ggarrange(tloci_image_1, tloci_error_1, 
+                                 labels = c("", "D"), 
+                                 nrow = 2, 
+                                 font.label = list(size = 10))
 tloci_fig_1
 ```
 
@@ -356,14 +380,14 @@ knitr::include_graphics('figures/discrete/tloci_1.png')
 
 ```{r loci method 2, eval = eval_tests}
 # Set the range over which we will iterate
-loci = c(1e3, 1e4)
+loci = c(1e2, 1e3, 1e4)
 
 # For each loci, reset the PLAF and then run
 bloci <- lapply(loci, function(new_L){
   new_p <- rbeta(new_L, 1, 5)
   new_p[new_p > 0.5] <- 1 - new_p[new_p > 0.5]
   
-  inner_tloci <- sensitivity(coi = 2:20, repetitions = 10, plaf = new_p, 
+  inner_tloci <- sensitivity(coi = 2:20, repetitions = 100, plaf = new_p, 
                              coi_method = "2")
   inner_tloci$param_grid$loci <- new_L
   return(inner_tloci)
@@ -392,18 +416,22 @@ tloci_2 <- list(
 # Plot
 tloci_image_2 <- 
   sensitivity_plot(data = tloci_2,
+                   result_type = "disc",
                    title = "Predicted COI",
-                   dims = c(2, 1),
-                   sub_title = paste0("Loci = ", c(1e3, 1e4)))
+                   dims = c(1, 3),
+                   sub_title = paste0("Loci = ", c(1e2, 1e3, 1e4)))
 
 # Add a loci column
-tloci_2$boot_error$loci <- rep(c(1e3, 1e4), 
+tloci_2$boot_error$loci <- rep(c(1e2, 1e3, 1e4), 
                              each = length(unique(tloci_2$boot_error$coi)))
 tloci_error_2 <- error_plot(tloci_2, fill = "loci", 
                             legend_title = "Loci", 
                             title = "Error")
 
-tloci_fig_2 <- ggpubr::ggarrange(tloci_image_2, tloci_error_2, labels = "AUTO")
+tloci_fig_2 <- ggpubr::ggarrange(tloci_image_2, tloci_error_2, 
+                                 labels = c("", "D"), 
+                                 nrow = 2, 
+                                 font.label = list(size = 10))
 tloci_fig_2
 ```
 
@@ -414,10 +442,11 @@ knitr::include_graphics('figures/discrete/tloci_2.png')
 ### Alpha
 ```{r alpha method 1, eval = eval_tests}
 talpha_1 <- sensitivity(coi = 2:20, alpha = seq(0.01, 5.51, 0.5), 
-                        repetitions = 10, plaf = p)
+                        repetitions = 100, plaf = p)
 
 talpha_image_1 <- 
   sensitivity_plot(data = talpha_1,
+                   result_type = "disc",
                    title = "Predicted COI",
                    dims = c(4, 3),
                    sub_title = paste0("Alpha = ", seq(0.01, 5.51, 0.5)))
@@ -427,7 +456,10 @@ talpha_error_1 <- error_plot(talpha_1, fill = "alpha",
                              title = "Error")
 
 talpha_fig_1 <- ggpubr::ggarrange(talpha_image_1, talpha_error_1, 
-                                  labels = "AUTO")
+                                  labels = c("", "M"), 
+                                  nrow = 2, 
+                                  heights = c(5, 2),
+                                  font.label = list(size = 10))
 talpha_fig_1
 ```
 
@@ -437,10 +469,11 @@ knitr::include_graphics('figures/discrete/talpha_1.png')
 
 ```{r alpha method 2, eval = eval_tests}
 talpha_2 <- sensitivity(coi = 2:20, alpha = seq(0.01, 5.51, 0.5), 
-                        repetitions = 10, plaf = p)
+                        repetitions = 100, plaf = p)
 
 talpha_image_2 <- 
   sensitivity_plot(data = talpha_2,
+                   result_type = "disc",
                    title = "Predicted COI",
                    dims = c(4, 3),
                    sub_title = paste0("Alpha = ", seq(0.01, 5.51, 0.5)))
@@ -450,7 +483,10 @@ talpha_error_2 <- error_plot(talpha_2, fill = "alpha",
                              title = "Error")
 
 talpha_fig_2 <- ggpubr::ggarrange(talpha_image_2, talpha_error_2, 
-                                  labels = "AUTO")
+                                  labels = c("", "M"), 
+                                  nrow = 2, 
+                                  heights = c(5, 2),
+                                  font.label = list(size = 10))
 talpha_fig_2
 ```
 
@@ -461,10 +497,11 @@ knitr::include_graphics('figures/discrete/talpha_2.png')
 ### Overdispersion
 ```{r overdispersion, eval = eval_tests}
 tover <- sensitivity(coi = 2:20, overdispersion = seq(0, 0.2, 0.05), 
-                     repetitions = 10, plaf = p, coi_method = c("1", "2"))
+                     repetitions = 100, plaf = p, coi_method = c("1", "2"))
 
 tover_image <- 
   sensitivity_plot(data = tover,
+                   result_type = "disc",
                    title = "Predicted COI",
                    dims = c(4, 3),
                    sub_title = paste(paste0("Over ", seq(0, 0.2, 0.05)),
@@ -476,7 +513,11 @@ tover_error <- error_plot(tover, fill = "overdispersion",
                           title = "Error",
                           second_fill = "coi_method")
 
-tover_fig <- ggpubr::ggarrange(tover_image, tover_error, labels = "AUTO")
+tover_fig <- ggpubr::ggarrange(tover_image, tover_error, 
+                               labels = c("", "K"), 
+                               nrow = 2, 
+                               heights = c(5, 2),
+                               font.label = list(size = 10))
 tover_fig
 ```
 
@@ -488,13 +529,43 @@ When you introduce overdispersion, models perform poorly. Any overdispersion
 causes a large drop in accuracy. This drop in accuracy is caused by the model
 consistently underpredicting the COI by a large amount.
 
+### Relatedness
+```{r relatedness, eval = eval_tests}
+trelated <- sensitivity(coi = 2:20, relatedness = seq(0, 0.5, 0.1), 
+                        repetitions = 100, plaf = p, coi_method = c("1", "2"))
+
+trelated_image <- sensitivity_plot(data = trelated,
+                                   result_type = "disc",
+                                   title = "Predicted COI",
+                                   dims = c(4, 3),
+                                   sub_title = paste(paste0("Related =  ", seq(0, 0.5, 0.1)),
+                                     rep(c("Method 1", "Method 2"), each = 6),
+                                     sep = ", "))
+
+trelated_error <- error_plot(trelated, fill = "relatedness", 
+                          legend_title = "Related", 
+                          title = "Error",
+                          second_fill = "coi_method")
+
+trelated_fig <- ggpubr::ggarrange(trelated_image, trelated_error, 
+                                  nrow = 2, heights = c(5, 2),
+                                  labels = c("", "M"), 
+                                  font.label = list(size = 10))
+trelated_fig
+```
+
+```{r relatedness image, eval = eval_images, echo = F, out.width = "75%"}
+# knitr::include_graphics('figures/discrete/trelated.png')
+```
+
 ### Epsilon
 ```{r epsilon, eval = eval_tests}
 tepsilon <- sensitivity(coi = 2:20, epsilon = seq(0, 0.008, 0.001), 
-                        repetitions = 10, plaf = p)
+                        repetitions = 100, plaf = p)
 
 tepsilon_image <- 
   sensitivity_plot(data = tepsilon,
+                   result_type = "disc",
                    title = "Predicted COI",
                    dims = c(3, 3),
                    sub_title = paste0("Epsilon = ", seq(0, 0.008, 0.001)))
@@ -504,7 +575,9 @@ tepsilon_error <- error_plot(tepsilon, fill = "epsilon",
                              title = "Error")
 
 tepsilon_fig <- ggpubr::ggarrange(tepsilon_image, tepsilon_error, 
-                                  labels = "AUTO")
+                                  labels = c("", "J"), 
+                                  nrow = 2, 
+                                  font.label = list(size = 10))
 tepsilon_fig
 ```
 
@@ -521,13 +594,14 @@ COI for these tests.
 ```{r seq error, eval = eval_tests}
 tseq <- sensitivity(coi = 2:20, epsilon = seq(0, 0.008, 0.004), 
                     seq_error = seq(0, 0.04, 0.01)[-1], 
-                    repetitions = 10, plaf = p)
+                    repetitions = 100, plaf = p)
 
 ep_title <- rep(paste0("Epsilon=", seq(0, 0.008, 0.004)), 2) 
 seq_title <- rep(paste0("Sequence Error = ", seq(0, 0.04, 0.01)[-1]), each = 3)
 
 tseq_image <- 
   sensitivity_plot(data = tseq,
+                   result_type = "disc",
                    title = "Predicted COI",
                    dims = c(4, 3),
                    sub_title = seq_title,
@@ -541,7 +615,11 @@ tseq_error <- error_plot(tseq, fill = "seq_error",
                          title = "Error",
                          second_fill = "epsilon")
 
-tseq_fig <- ggpubr::ggarrange(tseq_image, tseq_error, labels = "AUTO")
+tseq_fig <- ggpubr::ggarrange(tseq_image, tseq_error, 
+                              labels = c("", "M"), 
+                              heights = c(5, 2),
+                              nrow = 2, 
+                              font.label = list(size = 10))
 tseq_fig
 ```
 
@@ -558,24 +636,25 @@ large, the model starts to underpredict the COI.
 # Below, we save the runs we performed for future use
 saved_analysis <- list(toverall, tcoi, tcomparison, tdistance, tweight, 
                        tcoverage, tloci_1, tloci_2, talpha_1, talpha_2,  tover,
-                       tepsilon, tseq)
+                       trelated, tepsilon, tseq)
 
 names(saved_analysis) <- list("toverall", "tcoi", "tcomparison", "tdistance", 
                               "tweight", "tcoverage", "tloci_1", "tloci_2", 
-                              "talpha_1", "talpha_2", "tover", "tepsilon", 
-                              "tseq")
+                              "talpha_1", "talpha_2", "tover", "trelated", 
+                              "tepsilon", "tseq")
 
 saveRDS(saved_analysis, file = "saved_analysis_discrete.rds")
 
 # Here, we update all the stored images
 update_images <- list(toverall_fig, tcoi_fig, tcomparison_fig, tdistance_fig, 
                       tweight_fig, tcoverage_fig, tloci_fig_1, tloci_fig_2, 
-                      talpha_fig_1, talpha_fig_2, tover_fig, tepsilon_fig, 
+                      talpha_fig_1, talpha_fig_2, tover_fig, trelated_fig, 
+                      tepsilon_fig, 
                       tseq_fig)
 names(update_images) <- list("toverall", "tcoi", "tcomparison", "tdistance", 
                              "tweight", "tcoverage", "tloci_1", "tloci_2", 
-                             "talpha_1", "talpha_2", "tover", "tepsilon", 
-                             "tseq")
+                             "talpha_1", "talpha_2", "tover", "trelated", 
+                             "tepsilon", "tseq")
 
 for (i in seq_len(length(update_images))){
   filename = paste0("figures/discrete/", 

@@ -18,7 +18,8 @@
 #'
 #' @export
 
-theoretical_coi <- function(coi_range, plaf = seq(0, 0.5, l = 101),
+theoretical_coi <- function(coi_range,
+                            plaf = seq(0, 0.5, l = 101),
                             coi_method = "1") {
   # Check inputs
   assert_pos(coi_range, zero_allowed = FALSE)

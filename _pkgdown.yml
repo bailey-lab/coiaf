@@ -17,7 +17,6 @@ reference:
     desc: >
       Process and run real data
     contents:
-    - run_real
     - process_real
     - example_real_data
   - title: Simulation
@@ -27,6 +26,7 @@ reference:
     - sim_biallelic
     - process_sim
     - sensitivity
+    - cont_sensitivity
   - title: Visualize
     contents:
     - matches("plot")

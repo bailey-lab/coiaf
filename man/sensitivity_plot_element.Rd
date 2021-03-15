@@ -4,12 +4,15 @@
 \alias{sensitivity_plot_element}
 \title{Single sensitivity plot}
 \usage{
-sensitivity_plot_element(data, loop_num, sub_title)
+sensitivity_plot_element(data, loop_num, result_type, sub_title)
 }
 \arguments{
 \item{data}{The data to be plotted.}
 
 \item{loop_num}{The loop number. Represents how many total panels will
+be plotted.}
+
+\item{result_type}{An indicator that indicates if a count or boxplot should
 be plotted.}
 
 \item{sub_title}{A list of titles for each individual subplot.}

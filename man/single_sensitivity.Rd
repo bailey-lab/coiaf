@@ -11,8 +11,9 @@ single_sensitivity(
   coverage = 200,
   alpha = 1,
   overdispersion = 0,
+  relatedness = 0,
   epsilon = 0,
-  seq_error = 0.01,
+  seq_error = NULL,
   cut = seq(0, 0.5, 0.01),
   comparison = "overall",
   distance = "squared",
@@ -40,10 +41,19 @@ the beta distribution having shape parameters
 \mjseqn{\frac{p}{overdispersion}} and
 \mjseqn{\frac{1-p}{overdispersion}}.}
 
+\item{relatedness}{The probability that a strain in mixed infections is
+related to another. Default = 0 (unrelated). The implementation is similar
+to relatedness as defined in THE REAL McCOIL simulations. In the original
+paper (https://doi.org/10.1371/journal.pcbi.1005348) this is defined as:
+"... simulated relatedness (r) among lineages within the same host by
+sampling alleles either from an existing lineage within the same host
+(with probability r) or from the population (with probability (1-r))."}
+
 \item{epsilon}{The probability of a single read being miscalled as the other
 allele. Applies in both directions.}
 
-\item{seq_error}{The level of sequencing error that is assumed.}
+\item{seq_error}{The level of sequencing error that is assumed. If no value
+is inputted, then we infer the level of sequence error.}
 
 \item{cut}{A vector indicating how often the data is summarized.}
 
