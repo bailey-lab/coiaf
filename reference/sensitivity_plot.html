@@ -125,7 +125,14 @@
     <p>Creates a plot of the sensitivity analysis.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>sensitivity_plot</span><span class='op'>(</span><span class='va'>data</span>, <span class='va'>dims</span>, sub_title <span class='op'>=</span> <span class='cn'>NULL</span>, title <span class='op'>=</span> <span class='cn'>NULL</span>, caption <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>sensitivity_plot</span><span class='op'>(</span>
+  <span class='va'>data</span>,
+  <span class='va'>dims</span>,
+  <span class='va'>result_type</span>,
+  sub_title <span class='op'>=</span> <span class='cn'>NULL</span>,
+  title <span class='op'>=</span> <span class='cn'>NULL</span>,
+  caption <span class='op'>=</span> <span class='cn'>NULL</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -138,6 +145,11 @@
       <th>dims</th>
       <td><p>A list representing the number of rows and columns our plots
 will be split into.</p></td>
+    </tr>
+    <tr>
+      <th>result_type</th>
+      <td><p>An indicator that indicates if a count or boxplot should
+be plotted.</p></td>
     </tr>
     <tr>
       <th>sub_title</th>

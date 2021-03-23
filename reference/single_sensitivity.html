@@ -134,11 +134,10 @@
   overdispersion <span class='op'>=</span> <span class='fl'>0</span>,
   relatedness <span class='op'>=</span> <span class='fl'>0</span>,
   epsilon <span class='op'>=</span> <span class='fl'>0</span>,
-  seq_error <span class='op'>=</span> <span class='fl'>0.01</span>,
-  cut <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>0.5</span>, <span class='fl'>0.01</span><span class='op'>)</span>,
+  seq_error <span class='op'>=</span> <span class='cn'>NULL</span>,
+  bin_size <span class='op'>=</span> <span class='fl'>20</span>,
   comparison <span class='op'>=</span> <span class='st'>"overall"</span>,
   distance <span class='op'>=</span> <span class='st'>"squared"</span>,
-  weighted <span class='op'>=</span> <span class='cn'>TRUE</span>,
   coi_method <span class='op'>=</span> <span class='st'>"1"</span>
 <span class='op'>)</span></pre>
 
@@ -193,11 +192,12 @@ allele. Applies in both directions.</p></td>
     </tr>
     <tr>
       <th>seq_error</th>
-      <td><p>The level of sequencing error that is assumed.</p></td>
+      <td><p>The level of sequencing error that is assumed. If no value
+is inputted, then we infer the level of sequence error.</p></td>
     </tr>
     <tr>
-      <th>cut</th>
-      <td><p>A vector indicating how often the data is summarized.</p></td>
+      <th>bin_size</th>
+      <td><p>The minimum size of each bin of data.</p></td>
     </tr>
     <tr>
       <th>comparison</th>
@@ -209,11 +209,6 @@ allele. Applies in both directions.</p></td>
       <td><p>The distance method used to determine the distance between
 the theoretical and simulated curves for the <code>"overall"</code> method. One of
 <code>"abs_sum"</code>, <code>"sum_abs"</code>, <code>"squared"</code>.</p></td>
-    </tr>
-    <tr>
-      <th>weighted</th>
-      <td><p>An indicator indicating whether to compute the weighted
-distance.</p></td>
     </tr>
     <tr>
       <th>coi_method</th>

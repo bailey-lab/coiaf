@@ -125,13 +125,7 @@
     <p>Generate the COI curve for real data.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>process_real</span><span class='op'>(</span>
-  <span class='va'>wsaf</span>,
-  <span class='va'>plaf</span>,
-  seq_error <span class='op'>=</span> <span class='fl'>0.01</span>,
-  cut <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>0.5</span>, <span class='fl'>0.01</span><span class='op'>)</span>,
-  coi_method <span class='op'>=</span> <span class='st'>"1"</span>
-<span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>process_real</span><span class='op'>(</span><span class='va'>wsaf</span>, <span class='va'>plaf</span>, seq_error <span class='op'>=</span> <span class='cn'>NULL</span>, bin_size <span class='op'>=</span> <span class='fl'>20</span>, coi_method <span class='op'>=</span> <span class='st'>"1"</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -146,11 +140,12 @@
     </tr>
     <tr>
       <th>seq_error</th>
-      <td><p>The level of sequencing error that is assumed.</p></td>
+      <td><p>The level of sequencing error that is assumed. If no value
+is inputted, then we infer the level of sequence error.</p></td>
     </tr>
     <tr>
-      <th>cut</th>
-      <td><p>How often the data is summarized.</p></td>
+      <th>bin_size</th>
+      <td><p>The minimum size of each bin of data.</p></td>
     </tr>
     <tr>
       <th>coi_method</th>
@@ -161,7 +156,23 @@ The method is either "1" or "2". The default value is "1".</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Real COI curve.</p>
+    <p>A list of the following:</p><ul>
+<li><p><code>data</code>: A tibble with</p></li>
+</ul>
+<ul>
+<li><p><code>plaf_cut</code>: Breaks of the form <code>[a, b)</code>.</p></li>
+<li><p><code>m_variant</code>: The average WSAF or proportion of variant sites in each
+segment defined by <code>plaf_cut</code>.</p></li>
+<li><p><code>bucket_size</code>: The number of loci in each bucket.</p></li>
+<li><p><code>midpoints</code>: The midpoint of each bucket.</p></li>
+</ul>
+<ul>
+<li><p><code>seq_error</code>: The sequence error inferred.</p></li>
+<li><p><code>bin_size</code>: The minimum size of each bin.</p></li>
+<li><p><code>cuts</code>: The breaks utilized in splitting the data.
+of each COI.</p></li>
+</ul>
+
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>The function computes whether a SNP is a variant site or not, based on the
