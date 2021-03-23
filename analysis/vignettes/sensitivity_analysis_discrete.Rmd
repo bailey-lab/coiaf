@@ -44,7 +44,6 @@ our COI framework. The parameters that we will examine are:
 * `distance`: The distance method used to determine the distance between the 
 theoretical and simulated curves for the `"overall"` method. One of `"abs_sum"`, 
 `"sum_abs"`, `"squared"`.
-* `weighted`: An indicator indicating whether to compute weighted distance.
 * `coverage`: Coverage at each locus.
 * `loci`: The number of loci.
 * `alpha`: Shape parameter of the symmetric Dirichlet prior on strain proportions.
@@ -55,6 +54,7 @@ $(1-p) / \text{overdispersion}$.
 * `epsilon`: The probability of a single read being miscalled as the other allele.
 Applies in both directions.
 * `seq_error`: The level of sequencing error that is assumed.
+* `bin_size`: The minimum size of each bin of data.
 
 In addition, we will compare two different methods of determining the COI.
 The first method uses the mean number of variant sites, binned in groups of 
@@ -72,11 +72,11 @@ for only the sites that are heterogeneous.
 | Alpha           | `1`                   |
 | Overdispersion  | `0`                   |
 | Epsilon         | `0`                   |
-| Sequence Error  | `0.01`                |
-| Cut             | `seq(0, 0.5, 0.01)`   |
+| Sequence Error  | `NULL`                |
+| Bin Size        | `20`                  |
 | Comparison      | `"overall"`           |
 | Distance        | `"squared"`           |
-| Weighted        | `TRUE`                |
+| COI Method      | `"1"`                 |
 
 
 ### Setting our PLAF
@@ -244,42 +244,6 @@ tdistance_fig
 ```{r distance image, eval = eval_images, echo = F, out.width = "75%"}
 knitr::include_graphics('figures/discrete/tdistance.png')
 ```
-
-### Weighted
-```{r weight, eval = eval_tests}
-tweight <- sensitivity(coi = 2:20, weighted = c(FALSE, TRUE),
-                       distance = "squared", plaf = p, repetitions = 100,
-                       coi_method = c("1", "2"))
-
-tweight_image <- 
-  sensitivity_plot(data = tweight,
-                   title = "Predicted COI",
-                   dims = c(2, 2),
-                   sub_title = 
-                   paste(rep(c("Not Weighted", "Weighted"), 2),
-                         rep(c("Method 1", "Method 2"), each = 2), sep = ", "))
-
-tweight_error <- error_plot(tweight, fill = "coi_method", 
-                            fill_levels = c("1", "2"),
-                            legend_title = "COI Method", 
-                            title = "Error",
-                            second_fill = "weighted")
-
-tweight_fig <- ggpubr::ggarrange(tweight_image, tweight_error, 
-                                 labels = c("", "C"), 
-                                 nrow = 2, 
-                                 font.label = list(size = 10)) 
-tweight_fig
-```
-
-```{r weight image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/discrete/tweight.png')
-```
-
-Comparing weighted to non-weighted distance metrics, it appears that there is
-not a large difference between the algorithm's performance. In general, it 
-appears that by weighing the distance, the algorithm does not underpredict as
-often, but the difference is very small.
 
 ### Coverage
 ```{r coverage, eval = eval_tests}
@@ -631,6 +595,34 @@ Interestingly, having no sequence error causes problems in the algorithm. Based
 off the figure, it is clear that introducing some sequence error does combat
 issues introduced by the value of epsilon. However, if the sequence error is too
 large, the model starts to underpredict the COI.
+
+### Bin Size
+```{r bin size, eval = eval_tests}
+tbin <- sensitivity(coi = 2:20, bin_size = seq(10, 100, 30),
+                    distance = "squared", plaf = p, repetitions = 10,
+                    coi_method = c("1", "2"), seq_error = 0.01)
+
+tbin_image <- sensitivity_plot(data = tbin,
+                               result_type = "disc",
+                               title = "Predicted COI",
+                               dims = c(2, 4),
+                               sub_title = rep(paste("Bin Size =", seq(10, 100, 30)), 2))
+
+tbin_error <- error_plot(tbin, fill = "bin_size", 
+                         fill_levels = c("10", "40", "70", "100"),
+                         legend_title = "COI Method", 
+                         title = "Error")
+
+tbin_fig <- ggpubr::ggarrange(tbin_image, tbin_error, 
+                              labels = c("", "C"), 
+                              nrow = 2, 
+                              font.label = list(size = 10)) 
+tbin_fig
+```
+
+```{r weight image, eval = eval_images, echo = F, out.width = "75%"}
+# knitr::include_graphics('figures/discrete/tweight.png')
+```
 
 ```{r save results, eval = eval_tests, echo = FALSE}
 # Below, we save the runs we performed for future use

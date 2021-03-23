@@ -68,18 +68,17 @@ for (k in 2:7) {
        col = "red", cex = 0.6)
 
   # Compute windowed averages over WSAF and overlay in blue
-  cut <- seq(0,0.5,0.01)
-  df_grouped <- process_sim(sim1, cut = cut)
+  df_grouped <- process_sim(sim1)
 
-  lines(df_grouped$midpoints, df_grouped$m_variant, 
+  lines(df_grouped$data$midpoints, df_grouped$data$m_variant, 
         col = "blue", lwd = 2, type = "o", pch = 20)
   
   # Predict the COI and print the results
-  calc_coi = compute_coi(sim1, "sim", max_coi = 10, cut = cut)
+  calc_coi = compute_coi(sim1, "sim", max_coi = 10)
   end_coi = unlist(c(end_coi, calc_coi$coi))
   
   # COI using optimization
-  add = optimize_coi(sim1, "sim", max_coi = 10, cut = cut)
+  add = optimize_coi(sim1, "sim", max_coi = 10)
   opt_coi = unlist(c(opt_coi, add))
 }
 ```
@@ -126,7 +125,6 @@ for (k in 2:7) {
   # simulate data and subset to heterozygous sites only
   set.seed(10)
   sim1 <- sim_biallelic(coi = k, plaf = p)
-  sim1$data <- subset(sim1$data, wsaf > 0 & wsaf < 1)
 
   # plot raw WSAF as grey dots
   plot(sim1$data$plaf, sim1$data$wsaf, pch = 20, cex = 0.5, col = "gray", 
@@ -141,18 +139,18 @@ for (k in 2:7) {
   text(x = rep(-0.005, 6), y = 1/2:7, labels = 2:7, col = "red", cex = 0.6)
 
   # compute sliding-window averages over WSAF and overlay in blue
-  cut_breaks <- seq(0, 0.5, 0.025)
-  df_grouped <- process_sim(sim1, 0.01, cut_breaks, coi_method = "2")
+  df_grouped <- process_sim(sim1, coi_method = "2")
+  print(df_grouped$seq_error)
 
-  lines(df_grouped$midpoints, df_grouped$m_variant,
+  lines(df_grouped$data$midpoints, df_grouped$data$m_variant,
         col = "blue", lwd = 2, type = "o", pch = 20)
   
   # Predict the COI and print the results
-  disc = compute_coi(sim1, "sim", max_coi = 10, cut = cut_breaks, coi_method = "2")
+  disc = compute_coi(sim1, "sim", max_coi = 10, coi_method = "2")
   disc_coi = unlist(c(disc_coi, disc$coi))
   
   # COI using optimization
-  cont = optimize_coi(sim1, "sim", max_coi = 10, cut = cut_breaks, coi_method = "2", seq_error = 0.01)
+  cont = optimize_coi(sim1, "sim", max_coi = 10, coi_method = "2")
   cont_coi = unlist(c(cont_coi, cont))
 }
 ```

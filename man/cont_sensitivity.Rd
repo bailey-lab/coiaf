@@ -15,10 +15,9 @@ cont_sensitivity(
   relatedness = 0,
   epsilon = 0,
   seq_error = NULL,
-  cut = seq(0, 0.5, 0.01),
+  bin_size = 20,
   comparison = "overall",
   distance = "squared",
-  weighted = TRUE,
   coi_method = "1"
 )
 }
@@ -58,7 +57,7 @@ allele. Applies in both directions.}
 \item{seq_error}{The level of sequencing error that is assumed. If no value
 is inputted, then we infer the level of sequence error.}
 
-\item{cut}{A vector indicating how often the data is summarized.}
+\item{bin_size}{The minimum size of each bin of data.}
 
 \item{comparison}{The method to be employed. One of \code{"end"}, \code{"ideal"},
 \code{"overall"}.}
@@ -66,9 +65,6 @@ is inputted, then we infer the level of sequence error.}
 \item{distance}{The distance method used to determine the distance between
 the theoretical and simulated curves for the \code{"overall"} method. One of
 \code{"abs_sum"}, \code{"sum_abs"}, \code{"squared"}.}
-
-\item{weighted}{An indicator indicating whether to compute the weighted
-distance.}
 
 \item{coi_method}{The method we will use to calculate the theoretical COI.
 The method is either "1" or "2". The default value is "1".}

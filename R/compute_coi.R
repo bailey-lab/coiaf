@@ -31,16 +31,17 @@
 #'   * `squared`: Sum of squared difference.
 #'   }}
 #'
-#' @inheritParams optimize_coi
-#' @param cut A vector indicating how often the data is summarized.
+#' @param data The data for which the COI will be computed.
+#' @param data_type The type of the data to be analyzed. One of
+#' `"sim"` or `"real"`.
+#' @param max_coi A number indicating the maximum COI to compare the
+#' simulated data to.
+#' @inheritParams process_real
 #' @param comparison The method to be employed. One of `"end"`, `"ideal"`,
 #' `"overall"`.
 #' @param distance The distance method used to determine the distance between
 #' the theoretical and simulated curves for the `"overall"` method. One of
 #' `"abs_sum"`, `"sum_abs"`, `"squared"`.
-#' @param weighted An indicator indicating whether to compute the weighted
-#' distance.
-#' @inheritParams theoretical_coi
 #'
 #' @return A list of the following:
 #' * `coi`: The predicted COI of the sample.
@@ -53,24 +54,20 @@ compute_coi <- function(data,
                         data_type,
                         max_coi = 25,
                         seq_error = NULL,
-                        cut = seq(0, 0.5, 0.01),
+                        bin_size = 20,
                         comparison = "overall",
                         distance = "squared",
-                        weighted = TRUE,
                         coi_method = "1") {
   ##Check inputs
   assert_in(data_type, c("sim", "real"))
   assert_single_string(data_type)
   assert_single_pos_int(max_coi)
   if (!is.null(seq_error)) assert_single_bounded(seq_error)
-  assert_bounded(cut, left = 0, right = 0.5)
-  assert_vector(cut)
-  assert_increasing(cut)
+  assert_single_pos_int(bin_size)
   assert_single_string(comparison)
   assert_in(comparison, c("end", "ideal", "overall"))
   assert_single_string(distance)
   assert_in(distance, c("abs_sum", "sum_abs", "squared"))
-  assert_single_logical(weighted)
   assert_single_string(coi_method)
   assert_in(coi_method, c("1", "2"))
 
@@ -90,23 +87,18 @@ compute_coi <- function(data,
 
   # Process data
   if (data_type == "sim") {
-    processed_data <- process_sim(data, seq_error, cut, coi_method)
+    processed <- process_sim(data, seq_error, bin_size, coi_method)
+    processed_data <- processed$data
+    seq_error <- processed$seq_error
+    bin_size <- processed$bin_size
+    cuts <- processed$cuts
   } else if (data_type == "real") {
-    processed_data <- process_real(data$wsaf, data$plaf,
-                                   seq_error,
-                                   cut,
-                                   coi_method)
+    processed <- process_real(data$wsaf, data$plaf, seq_error, bin_size, coi_method)
+    processed_data <- processed$data
+    seq_error <- processed$seq_error
+    bin_size <- processed$bin_size
+    cuts <- processed$cuts
   }
-
-  # Calculate theoretical COI curves for the interval specified. Since we want
-  # the theoretical curves and the simulated curves to have the PLAF values, we
-  # compute the theoretical COI curves at processed_data$midpoints
-  theory_cois <- theoretical_coi(1:max_coi,
-                                 processed_data$midpoints,
-                                 coi_method)
-
-  # To check that PLAFs are the same
-  assert_eq(theory_cois$plaf, processed_data$midpoints)
 
   ## Special cases for Method 2 where COI = 1
   # If there is no heterozygous data, it means that the COI = 1. Otherwise, we
@@ -119,7 +111,8 @@ compute_coi <- function(data,
       return(ret)
     }
 
-    # Size is the number of loci per bucket
+    # We want to first get all the data that we initially submitted to our
+    # function
     if (data_type == "sim") {
       size_plaf <- data$data$plaf
       size_wsaf <- data$data$wsaf
@@ -127,24 +120,33 @@ compute_coi <- function(data,
       size_plaf <- data$plaf
       size_wsaf <- data$wsaf
     }
-    size <- data.frame(plaf_cut = cut(size_plaf, cut, include.lowest = TRUE),
+
+    # We then want to group our data using our established cuts and determine
+    # how many loci are in each bucket and the midpoint of each bucket (the PLAF
+    # for each bucket).
+    size <- data.frame(plaf_cut = Hmisc::cut2(size_plaf, cuts = processed$cuts, minmax = F),
                        variant = size_wsaf) %>%
       dplyr::group_by(.data$plaf_cut, .drop = FALSE) %>%
       dplyr::summarise(bucket_size = dplyr::n()) %>%
       stats::na.omit()
-    size$midpoints <- cut[-length(cut)] + diff(cut) / 2
 
-    breaks = size$midpoints
+    size$midpoints <- processed_data$midpoints
+
+    mid    = size$midpoints
     nloci  = size$bucket_size
 
-    # 95% CI for how many heterozygous loci we expect per bucket
-    CI <- Hmisc::binconf((2 * breaks * (1 - breaks)) * nloci, nloci) * nloci
+    # Using the midpoints of each bucket, we can determine the 95% CI for the
+    # expected number of heterozygous loci if the COI was 2. The number of
+    # strains containing the minor allele can be defined using a binomial
+    # distribution. If the COI = 2 and we have 1 strain with a minor allele,
+    # then the locus is heterozygous -- this is shown in the next line.
+    CI <- Hmisc::binconf((2 * mid * (1 - mid)) * nloci, nloci) * nloci
     expectation <- tibble::tibble(cbind(size, CI))
 
     # If the number of loci in our simulated data is less than the expected
     # value, we predict that our COI will be 1
     combined <- dplyr::left_join(expectation, processed_data,
-                                 by = c("plaf_cut", "midpoints"),
+                                 by = "midpoints",
                                  suffix = c("_expect", "_data")) %>%
       tidyr::replace_na(list(bucket_size_data = 0))
 
@@ -153,6 +155,16 @@ compute_coi <- function(data,
       return(ret)
     }
   }
+
+  # Calculate theoretical COI curves for the interval specified. Since we want
+  # the theoretical curves and the simulated curves to have the PLAF values, we
+  # compute the theoretical COI curves at processed_data$midpoints
+  theory_cois <- theoretical_coi(1:max_coi,
+                                 processed_data$midpoints,
+                                 coi_method)
+
+  # To check that PLAFs are the same
+  assert_eq(theory_cois$plaf, processed_data$midpoints)
 
   # Minus 1 because theory_cois now includes the PLAF at the end
   bound_coi = ncol(theory_cois) - 1
@@ -206,8 +218,7 @@ compute_coi <- function(data,
   } else if (comparison == "overall") {
     ## Method 3: Find distance between curves
     # Utilize helper function to compute overall distance between two curves
-    overall_res <- distance_curves(processed_data, theory_cois,
-                                   distance, weighted)
+    overall_res <- distance_curves(processed_data, theory_cois, distance)
 
     # Extract information from the helper function
     coi  <- overall_res$coi
@@ -220,10 +231,8 @@ compute_coi <- function(data,
   dist <- dist / sum(dist, na.rm = T)
   dist[is.nan(dist)] <- 0
 
-  # Prepare list to return
-  ret <- list(as.numeric(coi), dist)
-  names(ret) <- c("coi", "probability")
-  return(ret)
+  # List to return
+  ret <- list(coi = as.numeric(coi), probability = dist)
 }
 
 #------------------------------------------------
@@ -248,12 +257,10 @@ compute_coi <- function(data,
 #'
 #' @keywords internal
 
-distance_curves <- function(processed_data, theory_cois,
-                            distance = "squared", weighted = TRUE) {
+distance_curves <- function(processed_data, theory_cois, distance = "squared") {
   # Check inputs
   assert_single_string(distance)
   assert_in(distance, c("abs_sum", "sum_abs", "squared"))
-  assert_single_logical(weighted)
 
   # Find bound of COIs. Subtract 1 because theory_cois includes the PLAF at
   # the end
@@ -265,9 +272,6 @@ distance_curves <- function(processed_data, theory_cois,
   # First find difference between theoretical and simulate curve. Weigh
   # difference if wanted
   gap <- match_theory_cois - processed_data$m_variant
-  if (weighted) {
-    gap <- gap * processed_data$bucket_size
-  }
 
   if (distance == "abs_sum") {
     # Find sum of differences

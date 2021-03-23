@@ -14,7 +14,6 @@
 #' @param coi The COI for which the likelihood will be generated.
 #' @param processed_data The processed COI data. This is the output of
 #' [process_sim()] or [process_real()].
-#' @inheritParams theoretical_coi
 #' @inheritParams compute_coi
 #'
 #' @return The likelihood for a specific COI value.
@@ -24,7 +23,6 @@
 likelihood <- function(coi,
                        processed_data,
                        distance = "squared",
-                       weighted = TRUE,
                        coi_method = "1") {
   # Check inputs
   assert_single_pos(coi)
@@ -32,7 +30,6 @@ likelihood <- function(coi,
   assert_in(coi_method, c("1", "2"))
   assert_single_string(distance)
   assert_in(distance, c("abs_sum", "sum_abs", "squared"))
-  assert_single_logical(weighted)
   assert_single_string(coi_method)
   assert_in(coi_method, c("1", "2"))
 
@@ -49,9 +46,6 @@ likelihood <- function(coi,
 
   # Distance
   gap <- theory_coi - processed_data$m_variant
-  if (weighted){
-    gap <- gap * processed_data$bucket_size
-  }
 
   if (distance == "abs_sum"){
     # Find sum of differences
@@ -81,11 +75,7 @@ likelihood <- function(coi,
 #' surface to be optimized. The function uses a likelihood function as defined
 #' by [likelihood()].
 #'
-#' @param data The data for which the COI will be computed.
-#' @param data_type The type of the data to be analyzed. One of
-#' `"sim"` or `"real"`.
-#' @inheritParams sensitivity
-#' @inheritParams likelihood
+#' @inheritParams compute_coi
 #'
 #' @return The predicted COI value.
 #' @seealso [stats::optim()] for the complete documentation on the optimization
@@ -97,9 +87,8 @@ optimize_coi <- function(data,
                          data_type,
                          max_coi = 25,
                          seq_error = NULL,
-                         cut = seq(0, 0.5, 0.01),
+                         bin_size = 20,
                          distance = "squared",
-                         weighted = TRUE,
                          coi_method = "1") {
 
   # Check inputs
@@ -107,12 +96,9 @@ optimize_coi <- function(data,
   assert_single_string(data_type)
   assert_single_pos_int(max_coi)
   if (!is.null(seq_error)) assert_single_bounded(seq_error)
-  assert_bounded(cut, left = 0, right = 0.5)
-  assert_vector(cut)
-  assert_increasing(cut)
+  assert_single_pos_int(bin_size)
   assert_single_string(distance)
   assert_in(distance, c("abs_sum", "sum_abs", "squared"))
-  assert_logical(weighted)
   assert_single_string(coi_method)
   assert_in(coi_method, c("1", "2"))
 
@@ -126,12 +112,17 @@ optimize_coi <- function(data,
 
   # Process data
   if (data_type == "sim") {
-    processed_data <- process_sim(data, seq_error, cut, coi_method)
+    processed <- process_sim(data, seq_error, bin_size, coi_method)
+    processed_data <- processed$data
+    seq_error <- processed$seq_error
+    bin_size <- processed$bin_size
+    cuts <- processed$cuts
   } else if (data_type == "real") {
-    processed_data <- process_real(data$wsaf, data$plaf,
-                                   seq_error,
-                                   cut,
-                                   coi_method)
+    processed <- process_real(data$wsaf, data$plaf, seq_error, bin_size, coi_method)
+    processed_data <- processed$data
+    seq_error <- processed$seq_error
+    bin_size <- processed$bin_size
+    cuts <- processed$cuts
   }
 
   # Special case where there are no heterozygous sites
@@ -149,7 +140,6 @@ optimize_coi <- function(data,
                       fn = likelihood,
                       processed_data = processed_data,
                       distance = distance,
-                      weighted = TRUE,
                       coi_method = coi_method,
                       method = "L-BFGS-B", lower = 1+1e-5, upper = max_coi,
                       control = list(fnscale = 1, ndeps = 1e-5))

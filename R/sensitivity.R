@@ -3,11 +3,7 @@
 #'
 #' Runs a single full COI sensitivity analysis.
 #'
-#' @param max_coi A number indicating the maximum COI to compare the
-#' simulated data to.
 #' @inheritParams sim_biallelic
-#' @inheritParams process_sim
-#' @param cut A vector indicating how often the data is summarized.
 #' @inheritParams compute_coi
 #'
 #' @return Predicted COI value.
@@ -23,10 +19,9 @@ single_sensitivity <- function(coi = 3,
                                relatedness = 0,
                                epsilon = 0,
                                seq_error = NULL,
-                               cut = seq(0, 0.5, 0.01),
+                               bin_size = 20,
                                comparison = "overall",
                                distance ="squared",
-                               weighted = TRUE,
                                coi_method = "1") {
 
   # Check inputs
@@ -39,15 +34,12 @@ single_sensitivity <- function(coi = 3,
   assert_single_pos(overdispersion)
   assert_single_bounded(relatedness)
   assert_single_bounded(epsilon)
-  if (!is.null(seq_error)) assert_single_bounded(seq_error)
-  assert_bounded(cut, left = 0, right = 0.5)
-  assert_vector(cut)
-  assert_increasing(cut)
+  if (!is.null(seq_error) & !is.na(seq_error)) assert_single_bounded(seq_error)
+  assert_single_pos_int(bin_size)
   assert_single_string(comparison)
   assert_in(comparison, c("end", "ideal", "overall"))
   assert_single_string(distance)
   assert_in(distance, c("abs_sum", "sum_abs", "squared"))
-  assert_single_logical(weighted)
   assert_single_string(coi_method)
   assert_in(coi_method, c("1", "2"))
 
@@ -55,9 +47,14 @@ single_sensitivity <- function(coi = 3,
   sim_data <- sim_biallelic(coi, plaf, coverage, alpha, overdispersion,
                             relatedness, epsilon)
 
+  # Workaround for when seq_error = NULL. Have seq_error saved as NA so
+  # our general sensitivity function can deal with it. But need to concver back
+  # to NULL.
+  if (is.na(seq_error)) seq_error = NULL
+
   # Compute COI
-  calc_coi <- compute_coi(sim_data, "sim", max_coi, seq_error, cut,
-                          comparison, distance, weighted, coi_method)
+  calc_coi <- compute_coi(sim_data, "sim", max_coi, seq_error, bin_size,
+                          comparison, distance, coi_method)
 }
 
 
@@ -99,10 +96,9 @@ sensitivity <- function(repetitions = 10,
                         relatedness = 0,
                         epsilon = 0,
                         seq_error = NULL,
-                        cut = seq(0, 0.5, 0.01),
+                        bin_size = 20,
                         comparison = "overall",
                         distance = "squared",
-                        weighted = TRUE,
                         coi_method = "1") {
 
   # Check inputs
@@ -116,17 +112,18 @@ sensitivity <- function(repetitions = 10,
   assert_pos(overdispersion)
   assert_bounded(relatedness)
   assert_bounded(epsilon)
-  if (!is.null(seq_error)) assert_single_bounded(seq_error)
-  assert_bounded(cut, left = 0, right = 0.5)
-  assert_vector(cut)
-  assert_increasing(cut)
+  if (!is.null(seq_error)) assert_bounded(seq_error)
+  assert_pos_int(bin_size)
   assert_string(comparison)
   assert_in(comparison, c("end", "ideal", "overall"))
   assert_string(distance)
   assert_in(distance, c("abs_sum", "sum_abs", "squared"))
-  assert_logical(weighted)
   assert_string(coi_method)
   assert_in(coi_method, c("1", "2"))
+
+  # Workaround for when seq_error = NULL. Have seq_error saved as NA so
+  # our general sensitivity function can deal with it.
+  if (is.null(seq_error)) seq_error = NA
 
   # Create parameter grid
   param_grid <- expand.grid(coi = coi,
@@ -137,9 +134,9 @@ sensitivity <- function(repetitions = 10,
                             relatedness = relatedness,
                             epsilon = epsilon,
                             seq_error = seq_error,
+                            bin_size = bin_size,
                             comparison = comparison,
                             distance = distance,
-                            weighted = weighted,
                             coi_method = coi_method,
                             stringsAsFactors = FALSE)
 
@@ -168,10 +165,9 @@ sensitivity <- function(repetitions = 10,
                            param_grid$relatedness[x],
                            param_grid$epsilon[x],
                            param_grid$seq_error[x],
-                           cut,
+                           param_grid$bin_size[x],
                            param_grid$comparison[x],
                            param_grid$distance[x],
-                           param_grid$weighted[x],
                            param_grid$coi_method[x])
       return (test_result)
     })
@@ -327,10 +323,9 @@ cont_sensitivity <- function(repetitions = 10,
                              relatedness = 0,
                              epsilon = 0,
                              seq_error = NULL,
-                             cut = seq(0, 0.5, 0.01),
+                             bin_size = 20,
                              comparison = "overall",
                              distance = "squared",
-                             weighted = TRUE,
                              coi_method = "1") {
 
   # Check inputs
@@ -344,15 +339,12 @@ cont_sensitivity <- function(repetitions = 10,
   assert_pos(overdispersion)
   assert_bounded(relatedness)
   assert_bounded(epsilon)
-  if (!is.null(seq_error)) assert_single_bounded(seq_error)
-  assert_bounded(cut, left = 0, right = 0.5)
-  assert_vector(cut)
-  assert_increasing(cut)
+  if (!is.null(seq_error)) assert_bounded(seq_error)
+  assert_pos_int(bin_size)
   assert_string(comparison)
   assert_in(comparison, c("end", "ideal", "overall"))
   assert_string(distance)
   assert_in(distance, c("abs_sum", "sum_abs", "squared"))
-  assert_logical(weighted)
   assert_string(coi_method)
   assert_in(coi_method, c("1", "2"))
 
@@ -365,9 +357,9 @@ cont_sensitivity <- function(repetitions = 10,
                             relatedness = relatedness,
                             epsilon = epsilon,
                             seq_error = seq_error,
+                            bin_size = bin_size,
                             comparison = comparison,
                             distance = distance,
-                            weighted = weighted,
                             coi_method = coi_method,
                             stringsAsFactors = FALSE)
 
@@ -398,9 +390,8 @@ cont_sensitivity <- function(repetitions = 10,
                                   "sim",
                                   param_grid$max_coi[x],
                                   param_grid$seq_error[x],
-                                  cut,
+                                  param_grid$bin_size[x],
                                   param_grid$distance[x],
-                                  param_grid$weighted[x],
                                   param_grid$coi_method[x])
       return (test_result)
     })
