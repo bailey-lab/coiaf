@@ -111,7 +111,8 @@ compute_coi <- function(data,
       return(ret)
     }
 
-    # Size is the number of loci per bucket
+    # We want to first get all the data that we initially submitted to our
+    # function
     if (data_type == "sim") {
       size_plaf <- data$data$plaf
       size_wsaf <- data$data$wsaf
@@ -119,6 +120,10 @@ compute_coi <- function(data,
       size_plaf <- data$plaf
       size_wsaf <- data$wsaf
     }
+
+    # We then want to group our data using our established cuts and determine
+    # how many loci are in each bucket and the midpoint of each bucket (the PLAF
+    # for each bucket).
     size <- data.frame(plaf_cut = Hmisc::cut2(size_plaf, cuts = processed$cuts, minmax = F),
                        variant = size_wsaf) %>%
       dplyr::group_by(.data$plaf_cut, .drop = FALSE) %>%
@@ -127,11 +132,15 @@ compute_coi <- function(data,
 
     size$midpoints <- processed_data$midpoints
 
-    breaks = size$midpoints
+    mid    = size$midpoints
     nloci  = size$bucket_size
 
-    # 95% CI for how many heterozygous loci we expect per bucket
-    CI <- Hmisc::binconf((2 * breaks * (1 - breaks)) * nloci, nloci) * nloci
+    # Using the midpoints of each bucket, we can determine the 95% CI for the
+    # expected number of heterozygous loci if the COI was 2. The number of
+    # strains containing the minor allele can be defined using a binomial
+    # distribution. If the COI = 2 and we have 1 strain with a minor allele,
+    # then the locus is heterozygous -- this is shown in the next line.
+    CI <- Hmisc::binconf((2 * mid * (1 - mid)) * nloci, nloci) * nloci
     expectation <- tibble::tibble(cbind(size, CI))
 
     # If the number of loci in our simulated data is less than the expected
