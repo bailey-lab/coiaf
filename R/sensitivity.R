@@ -34,7 +34,7 @@ single_sensitivity <- function(coi = 3,
   assert_single_pos(overdispersion)
   assert_single_bounded(relatedness)
   assert_single_bounded(epsilon)
-  if (!is.null(seq_error)) assert_single_bounded(seq_error)
+  if (!is.null(seq_error) & !is.na(seq_error)) assert_single_bounded(seq_error)
   assert_single_pos_int(bin_size)
   assert_single_string(comparison)
   assert_in(comparison, c("end", "ideal", "overall"))
@@ -46,6 +46,11 @@ single_sensitivity <- function(coi = 3,
   # Simulate data
   sim_data <- sim_biallelic(coi, plaf, coverage, alpha, overdispersion,
                             relatedness, epsilon)
+
+  # Workaround for when seq_error = NULL. Have seq_error saved as NA so
+  # our general sensitivity function can deal with it. But need to concver back
+  # to NULL.
+  if (is.na(seq_error)) seq_error = NULL
 
   # Compute COI
   calc_coi <- compute_coi(sim_data, "sim", max_coi, seq_error, bin_size,
@@ -107,14 +112,18 @@ sensitivity <- function(repetitions = 10,
   assert_pos(overdispersion)
   assert_bounded(relatedness)
   assert_bounded(epsilon)
-  if (!is.null(seq_error)) assert_single_bounded(seq_error)
-  assert_single_pos_int(bin_size)
+  if (!is.null(seq_error)) assert_bounded(seq_error)
+  assert_pos_int(bin_size)
   assert_string(comparison)
   assert_in(comparison, c("end", "ideal", "overall"))
   assert_string(distance)
   assert_in(distance, c("abs_sum", "sum_abs", "squared"))
   assert_string(coi_method)
   assert_in(coi_method, c("1", "2"))
+
+  # Workaround for when seq_error = NULL. Have seq_error saved as NA so
+  # our general sensitivity function can deal with it.
+  if (is.null(seq_error)) seq_error = NA
 
   # Create parameter grid
   param_grid <- expand.grid(coi = coi,
@@ -330,8 +339,8 @@ cont_sensitivity <- function(repetitions = 10,
   assert_pos(overdispersion)
   assert_bounded(relatedness)
   assert_bounded(epsilon)
-  if (!is.null(seq_error)) assert_single_bounded(seq_error)
-  assert_single_pos_int(bin_size)
+  if (!is.null(seq_error)) assert_bounded(seq_error)
+  assert_pos_int(bin_size)
   assert_string(comparison)
   assert_in(comparison, c("end", "ideal", "overall"))
   assert_string(distance)
