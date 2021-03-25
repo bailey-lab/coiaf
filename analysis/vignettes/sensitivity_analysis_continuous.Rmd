@@ -24,7 +24,7 @@ knitr::opts_chunk$set(
 # run and the stored images not printed or the tests can not be run and stored 
 # images printed. To run the tests, set eval_tests to TRUE. To print the stored
 # images, set eval_tests to FALSE.
-eval_tests  = FALSE
+eval_tests  = TRUE
 eval_images = !eval_tests
 
 # N.B. to save the plots, we can use the following code. Write this after the
@@ -125,7 +125,7 @@ the COI.
 
 ```{r coi, eval = eval_tests}
 tcoi <- cont_sensitivity(coi = 2:40, max_coi = 40, repetitions = 100, plaf = p,
-                         coi_method = c("1", "2"))
+                         coi_method = c("1", "2"), seq_error = 0.01)
 
 tcoi_image <- sensitivity_plot(data = tcoi, dims = c(1, 2), 
                                result_type = "cont",
@@ -164,8 +164,9 @@ COIs of 2 till 20.
 ### Comparison
 ```{r comparison, eval = eval_tests}
 tcomparison <- cont_sensitivity(coi = 2:20, plaf = p, 
-                           comparison = c("end", "ideal", "overall"),
-                           distance = "squared", repetitions = 100)
+                                comparison = c("end", "ideal", "overall"),
+                                distance = "squared", repetitions = 100, 
+                                seq_error = 0.01)
 
 tcomparison_image <- 
   sensitivity_plot(data = tcomparison,
@@ -212,8 +213,9 @@ document, we will use the `overall` method.
 ### Distance
 ```{r distance, eval = eval_tests}
 tdistance <- cont_sensitivity(coi = 2:20, plaf = p, comparison = "overall",
-                         distance = c("abs_sum", "sum_abs", "squared"),
-                         repetitions = 100, coi_method = c("1", "2"))
+                              distance = c("abs_sum", "sum_abs", "squared"),
+                              repetitions = 100, coi_method = c("1", "2"), 
+                              seq_error = 0.01)
 
 tdistance_image <- 
   sensitivity_plot(data = tdistance,
@@ -247,48 +249,11 @@ tdistance_fig
 knitr::include_graphics('figures/continuous/tdistance.png')
 ```
 
-### Weighted
-```{r weight, eval = eval_tests}
-tweight <- cont_sensitivity(coi = 2:20, weighted = c(FALSE, TRUE),
-                       distance = "squared", plaf = p, repetitions = 100,
-                       coi_method = c("1", "2"))
-
-tweight_image <- 
-  sensitivity_plot(data = tweight,
-                   result_type = "cont",
-                   title = "Predicted COI",
-                   dims = c(2, 2),
-                   sub_title = 
-                   paste(rep(c("Not Weighted", "Weighted"), 2),
-                         rep(c("Method 1", "Method 2"), each = 2), sep = ", "))
-
-tweight_error <- error_plot(tweight, fill = "coi_method", 
-                            fill_levels = c("1", "2"),
-                            legend_title = "COI Method", 
-                            title = "Error",
-                            second_fill = "weighted")
-
-tweight_fig <- ggpubr::ggarrange(tweight_image, tweight_error, 
-                                 labels = c("", "E"),
-                                 heights = c(2, 1),
-                                 nrow = 2, 
-                                 font.label = list(size = 10)) 
-tweight_fig
-```
-
-```{r weight image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/continuous/tweight.png')
-```
-
-Comparing weighted to non-weighted distance metrics, it appears that there is
-not a large difference between the algorithm's performance. In general, it 
-appears that by weighing the distance, the algorithm does not underpredict as
-often, but the difference is very small.
-
 ### Coverage
 ```{r coverage, eval = eval_tests}
 tcoverage <- cont_sensitivity(coi = 2:20, coverage = c(25, 50, 100, 200, 400, 800), 
-                         repetitions = 100, plaf = p, coi_method = c("1", "2"))
+                              repetitions = 100, seq_error = 0.01, 
+                              plaf = p, coi_method = c("1", "2"))
 
 tcoverage_image <- 
   sensitivity_plot(data = tcoverage,
@@ -331,7 +296,7 @@ bloci <- lapply(loci, function(new_L){
   new_p[new_p > 0.5] <- 1 - new_p[new_p > 0.5]
   
   inner_tloci <- cont_sensitivity(coi = 2:20, repetitions = 100, plaf = new_p,
-                             coi_method = "1")
+                                  coi_method = "1", seq_error = 0.01)
   inner_tloci$param_grid$loci <- new_L
   return(inner_tloci)
 })
@@ -392,7 +357,7 @@ bloci <- lapply(loci, function(new_L){
   new_p[new_p > 0.5] <- 1 - new_p[new_p > 0.5]
   
   inner_tloci <- cont_sensitivity(coi = 2:20, repetitions = 100, plaf = new_p, 
-                             coi_method = "2")
+                                  coi_method = "2", seq_error = 0.01)
   inner_tloci$param_grid$loci <- new_L
   return(inner_tloci)
 })
@@ -446,7 +411,7 @@ knitr::include_graphics('figures/continuous/tloci_2.png')
 ### Alpha
 ```{r alpha method 1, eval = eval_tests}
 talpha_1 <- cont_sensitivity(coi = 2:20, alpha = seq(0.01, 5.51, 0.5), 
-                        repetitions = 100, plaf = p)
+                             repetitions = 100, seq_error = 0.01, plaf = p)
 
 talpha_image_1 <- 
   sensitivity_plot(data = talpha_1,
@@ -473,7 +438,7 @@ knitr::include_graphics('figures/continuous/talpha_1.png')
 
 ```{r alpha method 2, eval = eval_tests}
 talpha_2 <- cont_sensitivity(coi = 2:20, alpha = seq(0.01, 5.51, 0.5), 
-                        repetitions = 100, plaf = p)
+                            repetitions = 100, seq_error = 0.01, plaf = p)
 
 talpha_image_2 <- 
   sensitivity_plot(data = talpha_2,
@@ -501,7 +466,8 @@ knitr::include_graphics('figures/continuous/talpha_2.png')
 ### Overdispersion
 ```{r overdispersion, eval = eval_tests}
 tover <- cont_sensitivity(coi = 2:20, overdispersion = seq(0, 0.2, 0.05), 
-                     repetitions = 100, plaf = p, coi_method = c("1", "2"))
+                          repetitions = 100, seq_error = 0.01, 
+                          plaf = p, coi_method = c("1", "2"))
 
 tover_image <- 
   sensitivity_plot(data = tover,
@@ -536,7 +502,8 @@ consistently underpredicting the COI by a large amount.
 ### Relatedness
 ```{r relatedness, eval = eval_tests}
 trelated <- cont_sensitivity(coi = 2:20, relatedness = seq(0, 0.5, 0.1), 
-                             repetitions = 100, plaf = p, coi_method = c("1", "2"))
+                             repetitions = 100, seq_error = 0.01, 
+                             plaf = p, coi_method = c("1", "2"))
 
 trelated_image <- sensitivity_plot(data = trelated,
                                    result_type = "cont",
@@ -566,7 +533,7 @@ knitr::include_graphics('figures/discrete/trelated.png')
 ### Epsilon
 ```{r epsilon, eval = eval_tests}
 tepsilon <- cont_sensitivity(coi = 2:20, epsilon = seq(0, 0.008, 0.001), 
-                        repetitions = 100, plaf = p)
+                             repetitions = 100, seq_error = 0.01, plaf = p)
 
 tepsilon_image <- 
   sensitivity_plot(data = tepsilon,
@@ -599,8 +566,8 @@ COI for these tests.
 ### Sequencing Error
 ```{r seq error, eval = eval_tests}
 tseq <- cont_sensitivity(coi = 2:20, epsilon = seq(0, 0.008, 0.004), 
-                    seq_error = seq(0, 0.04, 0.01)[-1], 
-                    repetitions = 100, plaf = p)
+                         seq_error = seq(0, 0.04, 0.01)[-1], 
+                         repetitions = 100, plaf = p)
 
 ep_title <- rep(paste0("Epsilon=", seq(0, 0.008, 0.004)), 2) 
 seq_title <- rep(paste0("Sequence Error = ", seq(0, 0.04, 0.01)[-1]), each = 3)
@@ -638,29 +605,56 @@ off the figure, it is clear that introducing some sequence error does combat
 issues introduced by the value of epsilon. However, if the sequence error is too
 large, the model starts to underpredict the COI.
 
+### Bin Size
+```{r bin size, eval = eval_tests}
+tbin <- cont_sensitivity(coi = 2:20, bin_size = seq(10, 100, 30),
+                         distance = "squared", plaf = p, repetitions = 100,
+                         coi_method = c("1", "2"), seq_error = 0.01)
+
+tbin_image <- sensitivity_plot(data = tbin,
+                               result_type = "cont",
+                               title = "Predicted COI",
+                               dims = c(2, 4),
+                               sub_title = rep(paste("Bin Size =", seq(10, 100, 30)), 2))
+
+tbin_error <- error_plot(tbin, fill = "bin_size", 
+                         fill_levels = c("10", "40", "70", "100"),
+                         legend_title = "COI Method", 
+                         title = "Error")
+
+tbin_fig <- ggpubr::ggarrange(tbin_image, tbin_error, 
+                              labels = c("", "C"), 
+                              nrow = 2, 
+                              font.label = list(size = 10)) 
+tbin_fig
+```
+
+```{r weight image, eval = eval_images, echo = F, out.width = "75%"}
+# knitr::include_graphics('figures/discrete/tweight.png')
+```
+
 ```{r save results, eval = eval_tests, echo = FALSE}
 # Below, we save the runs we performed for future use
-saved_analysis <- list(toverall, tcoi, tcomparison, tdistance, tweight, 
-                       tcoverage, tloci_1, tloci_2, talpha_1, talpha_2,  tover,
-                       trelated, tepsilon, tseq)
+saved_analysis <- list(toverall, tcoi, tcomparison, tdistance, tcoverage, 
+                       tloci_1, tloci_2, talpha_1, talpha_2,  tover,
+                       trelated, tepsilon, tseq, tbin)
 
 names(saved_analysis) <- list("toverall", "tcoi", "tcomparison", "tdistance", 
-                              "tweight", "tcoverage", "tloci_1", "tloci_2", 
+                              "tcoverage", "tloci_1", "tloci_2", 
                               "talpha_1", "talpha_2", "tover", "trelated", 
-                              "tepsilon", "tseq")
+                              "tepsilon", "tseq", "tbin")
 
-saveRDS(saved_analysis, file = "saved_analysis_discrete.rds")
+saveRDS(saved_analysis, file = "saved_analysis_continuous.rds")
 
 # Here, we update all the stored images
 update_images <- list(toverall_fig, tcoi_fig, tcomparison_fig, tdistance_fig, 
-                      tweight_fig, tcoverage_fig, tloci_fig_1, tloci_fig_2, 
+                      tcoverage_fig, tloci_fig_1, tloci_fig_2, 
                       talpha_fig_1, talpha_fig_2, tover_fig, trelated_fig, 
-                      tepsilon_fig, 
-                      tseq_fig)
+                      tepsilon_fig, tseq_fig, tbin_fig)
 names(update_images) <- list("toverall", "tcoi", "tcomparison", "tdistance", 
-                             "tweight", "tcoverage", "tloci_1", "tloci_2", 
+                             "tcoverage", "tloci_1", "tloci_2", 
                              "talpha_1", "talpha_2", "tover", "trelated", 
-                             "tepsilon", "tseq")
+                             "tepsilon", "tseq", "tbin")
 
 for (i in seq_len(length(update_images))){
   filename = paste0("figures/continuous/", 
