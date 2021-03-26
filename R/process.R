@@ -53,11 +53,10 @@ process <- function(wsaf,
     error_dist <- utils::head(sort(error), -expected)
 
     # Find 95% error
-    seq_error <- as.numeric(stats::quantile(error_dist, 0.95))
+    seq_error <- as.numeric(stats::quantile(error_dist, 0.95, na.rm = T))
 
     # Ensure that seq_error is greater than 1%
     seq_error <- round(max(seq_error, 0.01, na.rm = T), 4)
-    # seq_error <- 1.96 * seq_error
     # print(seq_error)
   }
 
@@ -65,7 +64,7 @@ process <- function(wsaf,
     # Isolate PLAF, determine the PLAF cuts, and whether a site is a variant,
     # accounting for sequence error
     df <- data.frame(
-      plaf_cut = Hmisc::cut2(plaf, m = bin_size),
+      plaf_cut = suppressWarnings(Hmisc::cut2(plaf, m = bin_size)),
       variant = ifelse(wsaf <= seq_error | wsaf >= (1 - seq_error), 0, 1))
 
   } else if (coi_method == "2") {
@@ -88,8 +87,33 @@ process <- function(wsaf,
     }
 
     # Isolate PLAF, and keep WSAF as is
-    df <- data.frame(plaf_cut = Hmisc::cut2(plaf, m = bin_size),
+    df <- data.frame(plaf_cut = suppressWarnings(Hmisc::cut2(plaf, m = bin_size)),
                      variant = wsaf)
+  }
+
+  # In some instances, Hmisc::cut2 assigns a cut with only 1 number in it.
+  # If this happens and we try to group our data, this can mess up our data.
+  # Therefore, to account for this, we find all instances where this occurs
+  # and combine these factors with the previous factor.
+  one_point <- !stringr::str_starts(levels(df$plaf_cut), "\\[")
+
+  # We find all places where we only have one point. But, we ignore the case
+  # where the one point is the first break (0).
+  if (sum(one_point) > 1 | (sum(one_point) == 1 & which(one_point)[1] != 1)) {
+    if (which(one_point)[1] == 1) {
+      # When 0 is its own break, we ignore it and store all the other locations
+      points <- which(one_point)[-1]
+    } else {
+      # When 0 is not its own break, we store all locations
+      points <- which(one_point)
+    }
+
+    # We make a list of the factor names of all the points we want to remove. We
+    # name the list with the previous factor, and combine the two together. This
+    # effectively puts the points in the single factor into the previous one.
+    point_list <- c(levels(df$plaf_cut)[points])
+    names(point_list) <- levels(df$plaf_cut)[points - 1]
+    df$plaf_cut <- forcats::fct_recode(df$plaf_cut, !!!point_list)
   }
 
   # Average over intervals of PLAF
@@ -99,7 +123,13 @@ process <- function(wsaf,
                      bucket_size = dplyr::n()) %>%
     stats::na.omit()
 
-  cuts <- Hmisc::cut2(plaf, m = bin_size, onlycuts = TRUE)
+  # Find the cuts for our data
+  cuts <- suppressWarnings(Hmisc::cut2(plaf, m = bin_size, onlycuts = TRUE))
+  if (sum(one_point) > 1 | (sum(one_point) == 1 & which(one_point)[1] != 1)) {
+    cuts <- cuts[-points]
+  }
+
+  # We then find our midpoints
   df_grouped$midpoints <- cuts[-length(cuts)] + diff(cuts) / 2
 
   # Return data, seq_error, and cuts
