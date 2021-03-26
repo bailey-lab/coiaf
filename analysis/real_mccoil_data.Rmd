@@ -29,6 +29,15 @@ list_apply <- function(x, fun, ...){
   }
 }
 
+# Theme for ggplot2 images
+mytheme <- list(theme_classic(), 
+  theme(text = element_text(family = "Times New Roman"),
+        plot.title = element_text(hjust = 0.5, size = 10),
+        axis.title = element_text(size = 8),
+        legend.position = "bottom",
+        legend.title = element_text(size = 10),
+        legend.text = element_text(size = 8)))
+
 # Define booleans to determine whether certain code chunks should be run.
 run_real = FALSE
 read_pf3k = FALSE
@@ -184,130 +193,71 @@ two methods. We end up with `r length(unique(rmcl_coi_out$name))` samples.
 exclude <- setdiff(unique(complete_predictions$name), unique(rmcl_coi_out$name))
 compare_data <- complete_predictions %>% 
   dplyr::filter(! name %in% exclude) %>% 
+  dplyr::filter(rmcl_med != 25) %>% 
   dplyr::relocate(Region, .after = dplyr::last_col())
 ```
 
 ## Evaluate Our Predictions
-
-
-```{r exclude patients}
-# test <- compare_data %>% 
-#   dplyr::mutate(dplyr::across(!c(continuous_1_med, continuous_2_med, discrete_2_med), as.factor)) %>% 
-#   dplyr::select(!c(name, Region, rmcl_025_med, rmcl_975_med))
-# 
-# GGally::ggpairs(test,
-#                 upper = list(continuous = "density", combo = "box_no_facet", discrete = "count"),
-#                 lower = list(continuous = "smooth", combo = "dot_no_facet", discrete = "autopoint"),
-#                 cardinality_threshold = 50) + 
-#   ggplot2::theme_bw()
-
-ggplot(compare_data, aes(y = continuous_1_med, x = as.factor(rmcl_med))) +
-  geom_boxplot()
-```
-
-Plot the results looking at COI.
-
-```{r predicted COI plot}
-num_breaks <- function(x) floor(seq(0, max(x), length.out = 5))
-
-ggplot(compare_data, aes(continuous_1_med)) +
-  geom_density(fill = "gray", alpha = 0.3) + 
-  facet_wrap(. ~ Region, nrow = 4, scales = "free", labeller = "label_both") +
-  scale_x_continuous(breaks = num_breaks) +
-  theme_classic() +
-  theme(plot.title = element_text(hjust = 0.5, size = 13),
-        axis.title = element_text(size = 10)) +
-  guides(fill = FALSE) +
-  labs(x = "Predicted COI", y = "Density", 
-       title = "Predicted COI in Each Region")
-```
-
-Look at continuous vs discrete predictions
-```{r cont vs disc predictions}
-# Do not summarize over the VCFs as this causes problems
-cont_vs_disc <- raw_predictions %>%
-  dplyr::bind_rows() %>% 
-  dplyr::filter(! name %in% exclude) 
-
-# Set up facet titles
-disc <- paste("Discrete Prediction:", sort(unique(cont_vs_disc$discrete_1)))
-names(disc) <- sort(unique(cont_vs_disc$discrete_1))
-
-ggplot(dplyr::filter(cont_vs_disc, discrete_1 != 25), aes(discrete_1)) +
-  geom_density(fill = "gray", alpha = 0.3) + 
-  facet_wrap(. ~ rmcl_med, 
-             scales = "free", 
-             labeller = "label_both") +
-  theme_classic() +
-  theme(plot.title = element_text(hjust = 0.5, size = 13),
-        axis.title = element_text(size = 10)) +
-  guides(fill = FALSE) +
-  labs(x = "Continuous COI", y = "Density", 
-       title = "Continuous COI Compared to Discrete COI")
-```
-
-Comparison to REAL McCOIL.
-```{r median coiaf vs REAL McCOIL}
-num_breaks_v2 <- function(x) round(seq(min(x), max(x), length.out = 5))
-
-ggplot(compare_data, aes(discrete_1_med - rmcl_med)) +
-  geom_density(fill = "gray", alpha = 0.3) +
-  facet_wrap(. ~ Region, nrow = 4, scales = "free", labeller = "label_both") + 
-  theme_classic() +
-  scale_x_continuous(breaks = num_breaks_v2) +
-  theme(plot.title  = element_text(hjust = 0.5, size = 13),
-        axis.title = element_text(size = 10)) +
-  guides(fill = FALSE) +
-  labs(x = "Difference Between coiaf And REAL McCOIL Median", y = "Density", 
-       title = "Difference Between coiaf And REAL McCOIL Median By Region")
-```
-
-```{r single region comparison}
-dis_max <- max(compare_data$discrete_1_med)
-ggplot(compare_data, aes(discrete_1_med)) +
-  geom_bar(stat = "count") +
-  geom_text(aes(label = ..count..), stat = 'count', vjust = -0.3, color = "black", size = 3.5) +
-  scale_x_continuous("Estimated COI", breaks = 1:dis_max, labels = as.character(1:dis_max)) +
-  theme_classic() +
-  theme(plot.title  = element_text(hjust = 0.5, size = 13),
-        axis.title = element_text(size = 10)) +
-  labs(y = "Count")
-
-rmcl_max <- max(compare_data$rmcl_med)
-ggplot(compare_data, aes(rmcl_med)) +
-  geom_bar(stat = "count") +
-  geom_text(aes(label = ..count..), stat = 'count', vjust = -0.3, color = "black", size = 3.5) +
-  scale_x_continuous("Estimated COI", breaks = 1:rmcl_max, labels = as.character(1:rmcl_max)) +
-  theme_classic() +
-  theme(plot.title  = element_text(hjust = 0.5, size = 13),
-        axis.title = element_text(size = 10)) +
-  labs(y = "Count")
+We first reshape our data so that discrete and continuous predictions are
+under the same column.
+```{r pivoting data}
+pivot_data <- compare_data %>% 
+  tidyr::pivot_longer(tidyr::starts_with(c("discrete", "continuous")), 
+                      names_to = c(".value", "coi_method"), 
+                      names_pattern = "(.*)_(.)_.*") %>% 
+  tidyr::pivot_longer(dplyr::any_of(c("discrete", "continuous")), 
+                      names_to = "optimization", 
+                      values_to = "COI", 
+                      values_drop_na = TRUE) %>% 
+  dplyr::relocate(tidyselect::any_of(c("coi_method", "optimization", "COI")), 
+                  .after = name)
 ```
 
 
-### Incorrect Trends
-Why does our model get samples wrong?
+```{r plot all data}
+label_names <- c("continuous" = "Continuous Optimization",
+                 "discrete" = "Discrete Optimization")
 
-```{r, eval = FALSE}
-# Convert continuous result to discrete result
-enhanced <- compare_data %>% 
-  dplyr::mutate(round = ifelse(pred_med - floor(pred_med) >= 0.2, 
-                             ceiling(pred_med),
-                             floor(pred_med))) %>% 
-  dplyr::relocate(round, .after = pred_med)
+# Both
+ggplot(pivot_data, aes(y = COI, x = rmcl_med, color = coi_method)) +
+  scale_size_area() +
+  geom_abline(color = "gray", size = 0.5) +
+  ggplot2::geom_count(alpha = 0.7, position=position_jitter(w = 0.1)) +
+  mytheme +
+  facet_wrap(. ~ optimization, labeller = as_labeller(label_names)) +
+  guides(size = FALSE) +
+  theme(legend.position = "right") +
+  ylab("coiaf Prediction") +
+  scale_color_discrete("Method") +
+  scale_x_continuous("THE REAL McCOIL Prediction", breaks = seq(0, 10))
 
-incorrect <- enhanced %>% 
-  dplyr::filter(round != rmcl_med) %>% 
-  dplyr::arrange(pred_med)
+# Only discrete
+ggplot(dplyr::filter(pivot_data, optimization == "discrete"),
+       aes(y = COI, x = rmcl_med, color = coi_method)) +
+  scale_size_area() +
+  geom_abline(color = "gray", size = 0.5) +
+  ggplot2::geom_count(alpha = 0.7, position=position_jitter(w = 0.1)) +
+  mytheme +
+  facet_wrap(.~ Region, labeller = label_both) +
+  guides(size = FALSE) +
+  theme(legend.position = "right") +
+  ylab("coiaf Prediction") +
+  scale_color_discrete("Method") +
+  scale_x_continuous("THE REAL McCOIL Prediction", breaks = seq(1, 10))
 
-# Make sure PLAF is less than 0.5. This is done in process real. Plot a specific
-# sample
-plot(colMeans(rmcl_wsafs$cat_region_21_vcf_0, na.rm = T) %>% 
-  ifelse(. > 0.5, 1 - ., .),
-     rmcl_wsafs$cat_region_21_vcf_0["PV0091-C",],
-  main = "Opt = 1.20035, RMCL = 1")
+# Only continuous
+ggplot(dplyr::filter(pivot_data, optimization == "continuous"),
+       aes(y = COI, x = cut_width(rmcl_med, 1), color = coi_method)) +
+  geom_abline(color = "gray", size = 0.5) +
+  ggplot2::geom_boxplot() +
+  mytheme +
+  facet_wrap(.~ Region, labeller = label_both) +
+  guides(size = FALSE) +
+  theme(legend.position = "right") +
+  ylab("coiaf Prediction") +
+  scale_color_discrete("Method") +
+  scale_x_discrete("THE REAL McCOIL Prediction", labels = seq(1, 10))
 ```
-
 
 ## World Maps
 
@@ -441,9 +391,112 @@ all_world_map <- patient_lat_long %>%
 print(world_map(all_world_map, all_world_map$pred_med, "COI", 
                 breaks = c(1, 2, 4, 6, 8, 10)))
 ```
-
-***
+ 
+*** 
+ 
 # Old Code
+
+Plot the results looking at COI.
+```{r predicted COI plot}
+num_breaks <- function(x) floor(seq(0, max(x), length.out = 5))
+
+ggplot(compare_data, aes(continuous_1_med)) +
+  geom_density(fill = "gray", alpha = 0.3) + 
+  facet_wrap(. ~ Region, nrow = 4, scales = "free", labeller = "label_both") +
+  scale_x_continuous(breaks = num_breaks) +
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5, size = 13),
+        axis.title = element_text(size = 10)) +
+  guides(fill = FALSE) +
+  labs(x = "Predicted COI", y = "Density", 
+       title = "Predicted COI in Each Region")
+```
+
+Look at continuous vs discrete predictions
+```{r cont vs disc predictions}
+# Do not summarize over the VCFs as this causes problems
+cont_vs_disc <- raw_predictions %>%
+  dplyr::bind_rows() %>% 
+  dplyr::filter(! name %in% exclude) 
+
+# Set up facet titles
+disc <- paste("Discrete Prediction:", sort(unique(cont_vs_disc$discrete_1)))
+names(disc) <- sort(unique(cont_vs_disc$discrete_1))
+
+ggplot(dplyr::filter(cont_vs_disc, discrete_1 != 25), aes(discrete_1)) +
+  geom_density(fill = "gray", alpha = 0.3) + 
+  facet_wrap(. ~ rmcl_med, 
+             scales = "free", 
+             labeller = "label_both") +
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5, size = 13),
+        axis.title = element_text(size = 10)) +
+  guides(fill = FALSE) +
+  labs(x = "Continuous COI", y = "Density", 
+       title = "Continuous COI Compared to Discrete COI")
+```
+
+Comparison to REAL McCOIL.
+```{r median coiaf vs REAL McCOIL}
+num_breaks_v2 <- function(x) round(seq(min(x), max(x), length.out = 5))
+
+ggplot(compare_data, aes(discrete_1_med - rmcl_med)) +
+  geom_density(fill = "gray", alpha = 0.3) +
+  facet_wrap(. ~ Region, nrow = 4, scales = "free", labeller = "label_both") + 
+  theme_classic() +
+  scale_x_continuous(breaks = num_breaks_v2) +
+  theme(plot.title  = element_text(hjust = 0.5, size = 13),
+        axis.title = element_text(size = 10)) +
+  guides(fill = FALSE) +
+  labs(x = "Difference Between coiaf And REAL McCOIL Median", y = "Density", 
+       title = "Difference Between coiaf And REAL McCOIL Median By Region")
+```
+
+```{r single region comparison}
+dis_max <- max(compare_data$discrete_1_med)
+ggplot(compare_data, aes(discrete_1_med)) +
+  geom_bar(stat = "count") +
+  geom_text(aes(label = ..count..), stat = 'count', vjust = -0.3, color = "black", size = 3.5) +
+  scale_x_continuous("Estimated COI", breaks = 1:dis_max, labels = as.character(1:dis_max)) +
+  theme_classic() +
+  theme(plot.title  = element_text(hjust = 0.5, size = 13),
+        axis.title = element_text(size = 10)) +
+  labs(y = "Count")
+
+rmcl_max <- max(compare_data$rmcl_med)
+ggplot(compare_data, aes(rmcl_med)) +
+  geom_bar(stat = "count") +
+  geom_text(aes(label = ..count..), stat = 'count', vjust = -0.3, color = "black", size = 3.5) +
+  scale_x_continuous("Estimated COI", breaks = 1:rmcl_max, labels = as.character(1:rmcl_max)) +
+  theme_classic() +
+  theme(plot.title  = element_text(hjust = 0.5, size = 13),
+        axis.title = element_text(size = 10)) +
+  labs(y = "Count")
+```
+
+
+### Incorrect Trends
+Why does our model get samples wrong?
+
+```{r, eval = FALSE}
+# Convert continuous result to discrete result
+enhanced <- compare_data %>% 
+  dplyr::mutate(round = ifelse(pred_med - floor(pred_med) >= 0.2, 
+                             ceiling(pred_med),
+                             floor(pred_med))) %>% 
+  dplyr::relocate(round, .after = pred_med)
+
+incorrect <- enhanced %>% 
+  dplyr::filter(round != rmcl_med) %>% 
+  dplyr::arrange(pred_med)
+
+# Make sure PLAF is less than 0.5. This is done in process real. Plot a specific
+# sample
+plot(colMeans(rmcl_wsafs$cat_region_21_vcf_0, na.rm = T) %>% 
+  ifelse(. > 0.5, 1 - ., .),
+     rmcl_wsafs$cat_region_21_vcf_0["PV0091-C",],
+  main = "Opt = 1.20035, RMCL = 1")
+```
 
 Looking at sequence error
 ```{r}
