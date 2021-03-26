@@ -61,21 +61,61 @@ rmcl_coi_out <- readRDS(paste0(path, "RMCL_coi_out.rds")) %>%
 Run our data, set it up in an ideal format and save the data sets as .rds files.
 
 ```{r run data, eval = run_real}
-raw_predictions <- list_apply(seq_len(length(rmcl_wsafs)), function(x) {
-  # Run predictions
+# seq(1, length(rmcl_wsafs), 10)
+raw_predictions <-  pbapply::pblapply(seq_len(length(rmcl_wsafs)), function(x) {
+  print(names(rmcl_wsafs)[x])
   sample <- rmcl_wsafs[[x]]
   plaf   <- colMeans(sample, na.rm = T)
   
   # For each sample run the optimize_coi function
-  coi_region <- lapply(seq_len(nrow(sample)), function(i) {
+  coi_region <- pbapply::pblapply(seq_len(nrow(sample)), function(i) {
     wsaf  <- sample[i,]
     input <- tibble::tibble(wsaf = wsaf, plaf = plaf) %>% tidyr::drop_na()
-    coi_region <- optimize_coi(input, "real") 
+    
+    ## Compute COI
+    # Discrete
+    rob_d1 <- function(input) {
+      tryCatch(discrete_1 <- compute_coi(input, "real", coi_method = "1", bin_size = 50)$coi, 
+             error = function(e) {print(paste("Error for sample", rownames(sample)[i])); NaN})
+    }
+    discrete_1 <- rob_d1(input)
+    rob_d2 <- function(input) {
+      tryCatch(discrete_2 <- compute_coi(input, "real", coi_method = "2", bin_size = 50)$coi, 
+             error = function(e) {print(paste("Error for sample", rownames(sample)[i])); NaN})
+    }
+    discrete_2 <- rob_d2(input)
+
+    # Continuous
+    rob_c1 <- function(input) {
+      tryCatch(continuous_1 <- optimize_coi(input, "real", coi_method = "1", bin_size = 50), 
+             error = function(e) {print(paste("Error for sample", rownames(sample)[i])); NaN})
+    }
+    continuous_1 <- rob_c1(input)
+    rob_c2 <- function(input) {
+      tryCatch(continuous_2 <- optimize_coi(input, "real", coi_method = "2", bin_size = 50), 
+             error = function(e) {print(paste("Error for sample", rownames(sample)[i])); NaN})
+    }
+    continuous_2 <- rob_c2(input)
+    # continuous_1 <- optimize_coi(input, "real", coi_method = "1")
+    # continuous_2 <- optimize_coi(input, "real", coi_method = "2")
+
+    # coi_region <- discrete_1
+    coi_region <- list(discrete_1 = discrete_1, discrete_2 = discrete_2,
+                       continuous_1 = continuous_1, continuous_2 = continuous_2)
+
   }) %>% unlist()
+  coi_region <- split(unlist(coi_region), names(coi_region))
   
-  coi_pred <- tibble::tibble(name = rownames(sample),
-                             pred = coi_region,
-                             file = names(rmcl_wsafs)[x])
+  # Prediction tibble
+  pred <- tibble::tibble(name = rownames(sample),
+                         discrete_1 = coi_region$discrete_1,
+                         discrete_2 = coi_region$discrete_2,
+                         continuous_1 = coi_region$continuous_1,
+                         continuous_2 = coi_region$continuous_2,
+                         file = names(rmcl_wsafs)[x])
+  # pred <- tibble::tibble(name = rownames(sample),
+                         # discrete_1 = coi_region,
+                         # file = names(rmcl_wsafs)[x])
 
   # Summarize over the 5 rmcl runs
   rmcl_outputs <- rmcl_coi_out %>%
@@ -86,8 +126,8 @@ raw_predictions <- list_apply(seq_len(length(rmcl_wsafs)), function(x) {
                      rmcl_975_med = median(rmcl_975),
                      .groups = "drop") 
 
-  # Join the tibbles and find difference
-  combined <- dplyr::full_join(coi_pred, rmcl_outputs, by = "name") %>% 
+  # Join the tibbles
+  combined <-  dplyr::full_join(pred, rmcl_outputs, by = "name") %>% 
     dplyr::mutate(Region = as.numeric(stringr::str_extract(file, "(?<=region_)[:digit:]*"))) %>% 
     dplyr::mutate(VCF = as.numeric(stringr::str_extract(file, "(?<=vcf_)[:digit:]*"))) %>% 
     dplyr::relocate(file, .after = dplyr::last_col())
@@ -95,14 +135,18 @@ raw_predictions <- list_apply(seq_len(length(rmcl_wsafs)), function(x) {
 })
 names(raw_predictions) <- names(rmcl_wsafs)
 
-# Set up a tibble with all the information from the runs
+# Set up a tibble with all the information from the runs. Summarize over the 10
+# VCFs
 complete_predictions <- raw_predictions %>%
   dplyr::bind_rows() %>% 
   dplyr::group_by(name, Region) %>% 
-  dplyr::summarise(pred_med = median(pred),
-                   rmcl_med = median(rmcl_med),
-                   rmcl_025_med = median(rmcl_025_med),
-                   rmcl_975_med = median(rmcl_975_med),
+  dplyr::summarise(discrete_1_med   = median(discrete_1),
+                   discrete_2_med   = median(discrete_2),
+                   continuous_1_med = median(continuous_1),
+                   continuous_2_med = median(continuous_2),
+                   rmcl_med         = median(rmcl_med),
+                   rmcl_025_med     = median(rmcl_025_med),
+                   rmcl_975_med     = median(rmcl_975_med),
                    .groups = "drop") %>% 
   dplyr::relocate(Region, .after = dplyr::last_col())
 
@@ -112,8 +156,8 @@ saveRDS(complete_predictions, file = "analysis/rmcl_complete_predictions.rds")
 ```
 
 ```{r load data, eval = !run_real, include = FALSE}
-raw_predictions <- readRDS("rmcl_raw_predictions.rds")
-complete_predictions <- readRDS("rmcl_complete_predictions.rds")
+raw_predictions_old <- readRDS("analysis/rmcl_raw_predictions_old.rds")
+complete_predictions_old <- readRDS("analysis/rmcl_complete_predictions_old.rds")
 ```
 
 We want to make sure that we have tested all the patients, so we can look at
