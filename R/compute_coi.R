@@ -204,7 +204,7 @@ compute_coi <- function(data,
 
       # Using ideal PLAF, determine which cut it would be part of
       # and then figure out m_variant value at this cut
-      m_var <- processed_data$m_variant[cut(ideal_plaf, cut)]
+      m_var <- processed_data$m_variant[Hmisc::cut2(ideal_plaf, cuts = processed$cuts, minmax = F)]
 
       # Find distance between theoretical and simulated curves
       dist[i] <- abs(theory_wsaf - m_var)
