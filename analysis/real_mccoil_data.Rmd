@@ -177,30 +177,40 @@ wsafs_patients <- lapply(seq_len(length(rmcl_wsafs)), function(x) {
 wsafs_patients %>% unlist() %>% unique() %>% length()
 ```
 Looking at these values, we can see that for our WSAF matrices and our 
-predictions the number of patients match. However, our rmcl output has fewer
-total patients. We need to be sure to exclude these whenw we are comparing our
-two methods.
-
-## Evaluate Our Predictions
-
-We want to be sure to exclude all samples for which we do not have a rmcl
-estimate.
+predictions the number of patients match. However, our RMCL output has fewer
+total patients. We need to be sure to exclude these when we are comparing our
+two methods. We end up with `r length(unique(rmcl_coi_out$name))` samples.
 ```{r exclude patients}
 exclude <- setdiff(unique(complete_predictions$name), unique(rmcl_coi_out$name))
 compare_data <- complete_predictions %>% 
   dplyr::filter(! name %in% exclude) %>% 
-  dplyr::mutate(diff_med = pred_med - rmcl_med) %>% 
-  dplyr::mutate(in_CI = ifelse(pred_med >= rmcl_025_med & 
-                                 pred_med <= rmcl_975_med, 1, 0)) %>% 
   dplyr::relocate(Region, .after = dplyr::last_col())
 ```
 
-Plot the results looking at COI and comparison to REAL McCOIL.
+## Evaluate Our Predictions
+
+
+```{r exclude patients}
+# test <- compare_data %>% 
+#   dplyr::mutate(dplyr::across(!c(continuous_1_med, continuous_2_med, discrete_2_med), as.factor)) %>% 
+#   dplyr::select(!c(name, Region, rmcl_025_med, rmcl_975_med))
+# 
+# GGally::ggpairs(test,
+#                 upper = list(continuous = "density", combo = "box_no_facet", discrete = "count"),
+#                 lower = list(continuous = "smooth", combo = "dot_no_facet", discrete = "autopoint"),
+#                 cardinality_threshold = 50) + 
+#   ggplot2::theme_bw()
+
+ggplot(compare_data, aes(y = continuous_1_med, x = as.factor(rmcl_med))) +
+  geom_boxplot()
+```
+
+Plot the results looking at COI.
 
 ```{r predicted COI plot}
 num_breaks <- function(x) floor(seq(0, max(x), length.out = 5))
 
-ggplot(compare_data, aes(pred_med)) +
+ggplot(compare_data, aes(continuous_1_med)) +
   geom_density(fill = "gray", alpha = 0.3) + 
   facet_wrap(. ~ Region, nrow = 4, scales = "free", labeller = "label_both") +
   scale_x_continuous(breaks = num_breaks) +
@@ -212,10 +222,35 @@ ggplot(compare_data, aes(pred_med)) +
        title = "Predicted COI in Each Region")
 ```
 
+Look at continuous vs discrete predictions
+```{r cont vs disc predictions}
+# Do not summarize over the VCFs as this causes problems
+cont_vs_disc <- raw_predictions %>%
+  dplyr::bind_rows() %>% 
+  dplyr::filter(! name %in% exclude) 
+
+# Set up facet titles
+disc <- paste("Discrete Prediction:", sort(unique(cont_vs_disc$discrete_1)))
+names(disc) <- sort(unique(cont_vs_disc$discrete_1))
+
+ggplot(dplyr::filter(cont_vs_disc, discrete_1 != 25), aes(discrete_1)) +
+  geom_density(fill = "gray", alpha = 0.3) + 
+  facet_wrap(. ~ rmcl_med, 
+             scales = "free", 
+             labeller = "label_both") +
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5, size = 13),
+        axis.title = element_text(size = 10)) +
+  guides(fill = FALSE) +
+  labs(x = "Continuous COI", y = "Density", 
+       title = "Continuous COI Compared to Discrete COI")
+```
+
+Comparison to REAL McCOIL.
 ```{r median coiaf vs REAL McCOIL}
 num_breaks_v2 <- function(x) round(seq(min(x), max(x), length.out = 5))
 
-ggplot(compare_data, aes(diff_med)) +
+ggplot(compare_data, aes(discrete_1_med - rmcl_med)) +
   geom_density(fill = "gray", alpha = 0.3) +
   facet_wrap(. ~ Region, nrow = 4, scales = "free", labeller = "label_both") + 
   theme_classic() +
@@ -226,6 +261,29 @@ ggplot(compare_data, aes(diff_med)) +
   labs(x = "Difference Between coiaf And REAL McCOIL Median", y = "Density", 
        title = "Difference Between coiaf And REAL McCOIL Median By Region")
 ```
+
+```{r single region comparison}
+dis_max <- max(compare_data$discrete_1_med)
+ggplot(compare_data, aes(discrete_1_med)) +
+  geom_bar(stat = "count") +
+  geom_text(aes(label = ..count..), stat = 'count', vjust = -0.3, color = "black", size = 3.5) +
+  scale_x_continuous("Estimated COI", breaks = 1:dis_max, labels = as.character(1:dis_max)) +
+  theme_classic() +
+  theme(plot.title  = element_text(hjust = 0.5, size = 13),
+        axis.title = element_text(size = 10)) +
+  labs(y = "Count")
+
+rmcl_max <- max(compare_data$rmcl_med)
+ggplot(compare_data, aes(rmcl_med)) +
+  geom_bar(stat = "count") +
+  geom_text(aes(label = ..count..), stat = 'count', vjust = -0.3, color = "black", size = 3.5) +
+  scale_x_continuous("Estimated COI", breaks = 1:rmcl_max, labels = as.character(1:rmcl_max)) +
+  theme_classic() +
+  theme(plot.title  = element_text(hjust = 0.5, size = 13),
+        axis.title = element_text(size = 10)) +
+  labs(y = "Count")
+```
+
 
 ### Incorrect Trends
 Why does our model get samples wrong?
@@ -303,6 +361,46 @@ patient_lat_long <- dplyr::left_join(complete_predictions, meta,
                                      by = c("name" = "Sample")) 
 ```
 
+<!-- *** -->
+
+<!-- ZIP LINK IS INCORRECT!!!! -->
+
+<!-- We may also be interested in the prevalence of malaria in various regions. -->
+<!-- ```{r prevalence data, eval = read_pf3k} -->
+<!-- # Get raster data -->
+<!-- zip <- "https://malariaatlas.org/trends/content/images/region-images/2018_Cube/Pf/PfPR/global_PfPR_2000-17.png.zip" -->
+<!-- file <- tempfile() -->
+<!-- download.file(zip, file) -->
+<!-- contents <- utils::unzip(file, list = TRUE) -->
+<!-- saveRDS(contents, file = "analysis/prevalence.rds") -->
+<!-- ``` -->
+
+<!-- ```{r load prevalence, eval = !read_pf3k, include = FALSE} -->
+<!-- prevalence <- readRDS("analysis/prevalence.rds") -->
+<!-- ``` -->
+
+<!-- May need to install `rgdal` -->
+<!-- ```{r determine raster prevalence} -->
+<!-- # Get the lat longs from the Pf3k data -->
+<!-- coords <- data.frame(meta$Long, meta$Lat) -->
+<!-- names(coords) <- c("x","y") -->
+
+<!-- # Make column for 2-10 year old prevalence -->
+<!-- meta$prev_2_10 <- as.numeric(meta$Year) -->
+<!-- for(i in sort(unique(meta$prev_2_10))){ -->
+<!--   tf <- tempfile() -->
+<!--   raster <- utils::unzip(zipfile = file,  -->
+<!--                   files = grep(paste0("global_PfPR_",i,".png"), contents$Name, value = TRUE), -->
+<!--                   exdir = tf) -->
+<!--   raster <- raster::raster(raster) -->
+<!--   pos <- which(meta$Year == i) -->
+<!--   i_coords <- coords[pos, ] -->
+<!--   prev <- raster::extract(raster, i_coords) -->
+<!--   meta$prev_2_10[pos] <- prev -->
+<!-- } -->
+<!-- ``` -->
+
+
 ### Plotting
 
 World map with average COI
@@ -313,8 +411,8 @@ map_average <- patient_lat_long %>%
   dplyr::group_by(color) %>% 
   dplyr::summarise(lat = mean(Lat),
                    long = mean(Long), 
-                   coi_mean = mean(pred_med),
-                   coi_med = median(pred_med), 
+                   coi_mean = mean(discrete_1_med),
+                   coi_med  = median(discrete_1_med), 
                    .groups = "drop")
 
 # Plot the mean COI
@@ -344,3 +442,82 @@ print(world_map(all_world_map, all_world_map$pred_med, "COI",
                 breaks = c(1, 2, 4, 6, 8, 10)))
 ```
 
+***
+# Old Code
+
+Looking at sequence error
+```{r}
+coi1 <- rmcl_coi_out %>% 
+  dplyr::filter(rmcl == 1) %>% 
+  dplyr::group_by(name, region) %>% 
+  dplyr::summarise(rmcl_med         = median(rmcl),
+                   rmcl_025_med     = median(rmcl_025),
+                   rmcl_975_med     = median(rmcl_975),
+                   .groups = "drop")
+
+t <- unname(rmcl_wsafs$cat_region_1_vcf_1["FP0020-C",][rmcl_wsafs$cat_region_1_vcf_1["FP0020-C",] != 1 & rmcl_wsafs$cat_region_1_vcf_1["FP0020-C",] != 0])
+
+hist(t[t > 0.01])
+```
+
+```{r}
+raw_predictions <-  parallel::mclapply(seq_len(length(rmcl_wsafs)), function(x) {
+  sample <- rmcl_wsafs[[x]]
+  plaf   <- colMeans(sample, na.rm = T)
+  
+  # For each sample run the optimize_coi function
+  coi_region <- pbapply::pblapply(seq_len(nrow(sample)), function(i) {
+    wsaf  <- sample[i,]
+    input <- tibble::tibble(wsaf = wsaf, plaf = plaf) %>% tidyr::drop_na()
+    
+    iteration <- compute_coi(input, "real", coi_method = "2")
+    return(c(coi = iteration$coi, loci = iteration$num_loci))
+
+    
+  }) %>% unlist()
+  coi_region <- split(unlist(coi_region), names(coi_region))
+}) %>% unlist()
+```
+
+```{r bootstrapping code, eval = F}
+raw_predictions <-  parallel::mclapply(seq_len(10), function(x) {
+  # Run predictions. THROW THIS INTO OPTIMIZE_COI FUNCTION. MAKE A STANDALONE FUNCTION THAT IS CALED WITHIN OPTIMIZE_COI
+  sample <- rmcl_wsafs[[x]]
+  plaf   <- colMeans(sample, na.rm = T)
+  
+  # For each sample run the optimize_coi function
+  coi_region <- pbapply::pblapply(seq_len(nrow(sample)), function(i) {
+    wsaf  <- sample[i,]
+    input <- tibble::tibble(wsaf = wsaf, plaf = plaf) %>% tidyr::drop_na()
+    
+    # Bootstrapping using input as our data
+    boot_coi <- function(data, indices) {
+      # Get the subset of the data
+      sampled <- data[indices, ]
+
+      ## Compute COI
+      # Discrete
+      discrete_1 <- compute_coi(sampled, "real", coi_method = "1")$coi
+      discrete_2 <- compute_coi(sampled, "real", coi_method = "2")$coi
+
+      # Continuous
+      continuous_1 <- optimize_coi(sampled, "real", coi_method = "1")
+      continuous_2 <- optimize_coi(sampled, "real", coi_method = "2")
+
+      boot_coi <- c(discrete_1, discrete_2, continuous_1, continuous_2)
+
+      # coi_region <- list(discrete_1 = discrete_1, discrete_2 = discrete_2,
+                         # continuous_1 = continuous_1, continuous_2 = continuous_2)
+
+      return(boot_coi)
+    }
+
+    results <- boot::boot(data = input, statistic = boot_coi, R = 100)
+    coi_region <- list(discrete_1 = results$t0[1], discrete_2 = results$t0[2],
+                       continuous_1 = results$t0[3], continuous_2 = results$t0[4])
+
+    # To find CI
+    # boot::boot.ci(results, type = "norm", index = 1)
+    
+  }) %>% unlist()
+```
