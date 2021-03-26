@@ -1,5 +1,5 @@
 ---
-title: "Pf6k Sample Locations and malaria prevalence"
+title: "Pf6k Sample Locations and Malaria Prevalence"
 author: "OJ Watson"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 output:
@@ -62,7 +62,7 @@ fig2 <- roxer::map_plot(unique(meta[,c("Lat", "Long", "color")]),"Lat","Long")
 fig2
 ```
 
-To assign the prevelance to these points:
+To assign the prevalence to these points:
 
 ```{r}
 
@@ -75,7 +75,7 @@ meta$prev_2_10 <- as.numeric(meta$Year)
 
 # get rasters using malariaAtlas package (this will take like 15 mins to download)
 PfPR2_10 <- malariaAtlas::getRaster(
-  surface = "Plasmodium falciparum PR2 - 10 version 2020", 
+  # surface = "Plasmodium falciparum PR2 - 10 version 2020", 
   year = sort(unique(meta$prev_2_10))
 )
 
