@@ -313,10 +313,10 @@ world_map <- function(data,
                         alpha = alpha) +
     ggplot2::scale_colour_viridis_c(limits = c(breaks[1],
                                                breaks[length(breaks)]),
-                                    breaks = breaks) +
+                                    breaks = breaks, alpha = alpha) +
     ggplot2::theme_void() +
     ggplot2::theme(legend.position = "bottom") +
     ggplot2::scale_size(guide = "none") +
     ggplot2::labs(color = label) +
-    ggplot2::coord_quickmap(xlim = c(-75, 150), ylim = c(-20, 20))
+    ggplot2::coord_quickmap(xlim = c(-75, 150), ylim = c(-30, 30))
 }

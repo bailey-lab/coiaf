@@ -69,10 +69,14 @@ features. This `README` will be updated as the package is developed accordingly.
 
 Features in development:
 
-- [x] Method 2
-- [x] For Method 2, how do we tell when COI = 1
-- [x] Add a relatedness parameter to the simulated data
-- [x] Do another round of sensitivity analysis using the continuous method
-- [ ] Run the full SNP dataset
 - [ ] Create infrastructure for running real data given a particular data format
+- [ ] Account for read depth by weighing coverage
+- [ ] Create a shiny app
+
+To dos:
+
+- [ ] Clean up package documentation and vignettes for release
+- [ ] Run the full SNP dataset
 - [ ] Statistics for the world map plots (ex: bootstrapping)
+- [ ] Add citation file for the package
+- [ ] Pf7k data will be released summer of 2021. Run coiaf on new data
