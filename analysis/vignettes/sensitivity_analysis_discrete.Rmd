@@ -1,7 +1,5 @@
 ---
 title: "Discrete Sensitivity Analysis"
-author: "Aris Paschalidis"
-date: "`r format(Sys.time(), '%B %Y')`"
 output: rmarkdown::html_vignette
 vignette: >
  %\VignetteIndexEntry{Discrete Sensitivity Analysis}
@@ -12,6 +10,7 @@ vignette: >
 ```{r setup, include = FALSE}
 # Here, we set default options for our markdown file
 knitr::opts_chunk$set(
+  collapse = TRUE,
   comment = "#>",
   tidy = TRUE,
   tidy.opts = list(width.cutoff = 80),
@@ -35,7 +34,7 @@ eval_images = !eval_tests
 library(coiaf)
 ```
 
-## Introduction
+# Introduction
 
 In this analysis file, we aim to understand the effect of varying parameters on
 our COI framework. The parameters that we will examine are:
@@ -61,7 +60,7 @@ The first method uses the mean number of variant sites, binned in groups of
 increasing PLAF to infer COI. The second method compares the WSAF to the PLAF 
 for only the sites that are heterogeneous.
 
-### Default Parameters
+## Default Parameters
 
 | Parameter       | Default Value         |
 |:---------------:|:---------------------:|
@@ -79,7 +78,7 @@ for only the sites that are heterogeneous.
 | COI Method      | `"1"`                 |
 
 
-### Setting our PLAF
+## Setting our PLAF
 ```{r initialization, eval = eval_tests}
 # Set the seed
 set.seed(1)
@@ -90,7 +89,7 @@ p <- stats::rbeta(L, 1, 5)
 p[p > 0.5] <- 1 - p[p > 0.5]
 ```
 
-### Overall Performance
+## Overall Performance
 ```{r overall, eval = eval_tests}
 toverall <- sensitivity(coi = 1:25, max_coi = 30, repetitions = 100, plaf = p,
                         coverage = 400, seq_error = 0, coi_method = c("1", "2"))
@@ -116,12 +115,9 @@ toverall_fig
 knitr::include_graphics('figures/discrete/toverall.png')
 ```
 
-## Sensitivity Analysis
+# Sensitivity Analysis
 
-### COI
-We first want to understand for what range our model can accurately predict
-the COI.
-
+## COI
 ```{r coi, eval = eval_tests}
 tcoi <- sensitivity(coi = 2:40, max_coi = 40, repetitions = 100, plaf = p,
                     coi_method = c("1", "2"), seq_error = 0.01)
@@ -147,20 +143,7 @@ tcoi_fig
 knitr::include_graphics('figures/discrete/tcoi.png')
 ```
 
-Based on the above set of runs, it appears that the algorithm performs well for
-a very large range of COIs. We see that as the true COI increases, the error
-and bias likewise increase. However, even at a COI of 40, the error and bias are
-small, at roughly 4 and -4, respectively. It is interesting to note that our
-bias is always negative. This indicates that the algorithm consistently 
-underpredicts the COI.
-
-The fact that our model struggles with larger COIs makes sense as at that point,
-the theoretical COI curves are essentially identical. Although it is remarkable
-that the algorithm performs this well at COIs that large, COIs of greater than 
-20 are somewhat unrealistic. For the rest of this document, we only consider 
-COIs of 2 till 20.
-
-### Comparison
+## Comparison
 ```{r comparison, eval = eval_tests}
 tcomparison <- sensitivity(coi = 2:20, plaf = p, 
                            comparison = c("end", "ideal", "overall"),
@@ -192,24 +175,7 @@ tcomparison_fig
 knitr::include_graphics('figures/discrete/tcomparison.png')
 ```
 
-Looking at the images for the three methods: `end`, `ideal`, `overall`, it is
-clear that the `end` method does not perform particularly well. For low COI
-values, more specifically a COI of below 5, the method is accurate. However, 
-with a COI of greater than 5, the algorithm consistently over predicts the COI.
-
-The `ideal` method, on the other hand performs quite well. For every COI, it 
-will for some runs predict the correct COI. However, the distribution is quite 
-large and the model does not consistently predict the same COI.
-
-The `overall` method seems to perform the best. It does underpredict the COI for 
-large COI values but the variance in the prediction is less than in the `ideal`
-method.
-
-Based on these results, it seem that the `ideal` method and the `overall` method
-are the best. Which one is better is debatable, but for the rest of this 
-document, we will use the `overall` method.
-
-### Distance
+## Distance
 ```{r distance, eval = eval_tests}
 tdistance <- sensitivity(coi = 2:20, plaf = p, comparison = "overall",
                          distance = c("abs_sum", "sum_abs", "squared"),
@@ -247,7 +213,7 @@ tdistance_fig
 knitr::include_graphics('figures/discrete/tdistance.png')
 ```
 
-### Coverage
+## Coverage
 ```{r coverage, eval = eval_tests}
 tcoverage <- sensitivity(coi = 2:20, coverage = c(25, 50, 100, 200, 400, 800), 
                          repetitions = 100, seq_error = 0.01, 
@@ -279,11 +245,7 @@ tcoverage_fig
 knitr::include_graphics('figures/discrete/tcoverage.png')
 ```
 
-It can be seen, based on the figures, that the lower the coverage is, the worse
-our algorithm does. With a coverage greater than 100, however, there is not a
-noticeable difference in performance.
-
-### Loci
+## Loci
 ```{r loci method 1, eval = eval_tests}
 # Set the range over which we will iterate
 loci = c(1e2, 1e3, 1e4)
@@ -406,7 +368,7 @@ tloci_fig_2
 knitr::include_graphics('figures/discrete/tloci_2.png')
 ```
 
-### Alpha
+## Alpha
 ```{r alpha method 1, eval = eval_tests}
 talpha_1 <- sensitivity(coi = 2:20, alpha = seq(0.01, 5.51, 0.5), 
                         repetitions = 100, seq_error = 0.01, plaf = p)
@@ -461,7 +423,7 @@ talpha_fig_2
 knitr::include_graphics('figures/discrete/talpha_2.png')
 ```
 
-### Overdispersion
+## Overdispersion
 ```{r overdispersion, eval = eval_tests}
 tover <- sensitivity(coi = 2:20, overdispersion = seq(0, 0.2, 0.05), 
                      repetitions = 100, seq_error = 0.01, 
@@ -493,11 +455,7 @@ tover_fig
 knitr::include_graphics('figures/discrete/tover.png')
 ```
 
-When you introduce overdispersion, models perform poorly. Any overdispersion 
-causes a large drop in accuracy. This drop in accuracy is caused by the model
-consistently underpredicting the COI by a large amount.
-
-### Relatedness
+## Relatedness
 ```{r relatedness, eval = eval_tests}
 trelated <- sensitivity(coi = 2:20, relatedness = seq(0, 0.5, 0.1), 
                         repetitions = 100, seq_error = 0.01, 
@@ -524,22 +482,21 @@ trelated_fig
 ```
 
 ```{r relatedness image, eval = eval_images, echo = F, out.width = "75%"}
-# knitr::include_graphics('figures/discrete/trelated.png')
+knitr::include_graphics('figures/discrete/trelated.png')
 ```
 
-### Epsilon
+## Epsilon
 ```{r epsilon, eval = eval_tests}
-tepsilon <- sensitivity(coi = 2:20, epsilon = seq(0, 0.008, 0.001), 
+tepsilon <- sensitivity(coi = 2:20, epsilon = seq(0, 0.010, 0.005), 
                         repetitions = 100, seq_error = 0.01, plaf = p)
 
 tepsilon_image <- 
   sensitivity_plot(data = tepsilon,
                    result_type = "disc",
                    title = "Predicted COI",
-                   dims = c(3, 3),
-                   sub_title = paste0("Epsilon = ", seq(0, 0.008, 0.001)))
+                   dims = c(1, 3))
 
-tepsilon_error <- error_plot(tepsilon, fill = "epsilon", 
+tepsilon_error <- error_plot(tepsilon, fill = "epsilon",
                              legend_title = "Epsilon", 
                              title = "Error")
 
@@ -554,35 +511,25 @@ tepsilon_fig
 knitr::include_graphics('figures/discrete/tepsilon.png')
 ```
 
-The algorithm performs best at an epsilon value of 0. As epsilon becomes larger,
-the model greatly overpredicts the COI. This can be seen for an epsilon of 
-0.008, where the COI is almost always predicted to be 25, the maximum allowable
-COI for these tests.
-
-### Sequencing Error
+## Sequencing Error
 ```{r seq error, eval = eval_tests}
-tseq <- sensitivity(coi = 2:20, epsilon = seq(0, 0.008, 0.004), 
-                    seq_error = seq(0, 0.04, 0.01)[-1], 
-                    repetitions = 100, plaf = p)
+tseq <- sensitivity(coi = 2:20, epsilon = 0.1, 
+                    seq_error = seq(0.1, 0.16, 0.02),
+                    repetitions = 100, coi_method = "2", plaf = p)
 
-ep_title <- rep(paste0("Epsilon=", seq(0, 0.008, 0.004)), 2) 
-seq_title <- rep(paste0("Sequence Error = ", seq(0, 0.04, 0.01)[-1]), each = 3)
+# ep_title <- rep(paste0("Epsilon=", seq(0, 0.010, 0.005), 2))
+# seq_title <- rep(paste0("Sequence Error = ", seq(0, 0.2, 0.05)[-1]), each = 3)
 
 tseq_image <- 
   sensitivity_plot(data = tseq,
                    result_type = "disc",
                    title = "Predicted COI",
-                   dims = c(4, 3),
-                   sub_title = seq_title,
-                   caption = stringr::str_wrap("The first, second, and third 
-                                               columns correspond to an epsilon
-                                               of 0, 0.004, and 0.008, 
-                                               respectively."))
+                   dims = c(2, 2),
+                   sub_title = paste0("Sequence Error = ", seq(0.1, 0.16, 0.02)))
 
 tseq_error <- error_plot(tseq, fill = "seq_error", 
                          legend_title = "Sequence Error", 
-                         title = "Error",
-                         second_fill = "epsilon")
+                         title = "Error")
 
 tseq_fig <- ggpubr::ggarrange(tseq_image, tseq_error, 
                               labels = c("", "M"), 
@@ -596,12 +543,7 @@ tseq_fig
 knitr::include_graphics('figures/discrete/tseq.png')
 ```
 
-Interestingly, having no sequence error causes problems in the algorithm. Based
-off the figure, it is clear that introducing some sequence error does combat
-issues introduced by the value of epsilon. However, if the sequence error is too
-large, the model starts to underpredict the COI.
-
-### Bin Size
+## Bin Size
 ```{r bin size, eval = eval_tests}
 tbin <- sensitivity(coi = 2:20, bin_size = seq(10, 100, 30),
                     distance = "squared", plaf = p, repetitions = 100,
@@ -626,7 +568,7 @@ tbin_fig
 ```
 
 ```{r weight image, eval = eval_images, echo = F, out.width = "75%"}
-# knitr::include_graphics('figures/discrete/tweight.png')
+knitr::include_graphics('figures/discrete/tbin.png')
 ```
 
 ```{r save results, eval = eval_tests, echo = FALSE}

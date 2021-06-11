@@ -1,42 +1,16 @@
 ---
-title: "Example Simulation"
-author: "Aris Paschalidis"
-date: "`r format(Sys.time(), '%B %Y')`"
+title: "Simulation Details"
 output: rmarkdown::html_vignette
 vignette: >
- %\VignetteIndexEntry{Example Simulation}
+ %\VignetteIndexEntry{Simulation Details}
  %\VignetteEngine{knitr::rmarkdown}
  %\VignetteEncoding{UTF-8}
 ---
 
-## Simulation
-
-In this package, data are simulated using a simple statistical model:
-
-1. Strain proportions are drawn from a symmetric Dirichlet distribution with 
-shape parameter alpha.
-
-1. Phased haplotypes are drawn at every locus, one for each COI. The allele at 
-each locus is drawn from a Bernoulli distribution with probability given by the 
-PLAF.
-
-1. The "true" within-sample allele frequency at every locus is obtained by 
-multiplying haplotypes by their strain proportions, and summing over haplotypes.
-Errors are introduced through the equation,
-$$wsaf_{error} = wsaf(1-e) + (1-wsaf)e$$ 
-where $wsaf$ is the WSAF without error and $e$ is the error parameter epsilon.
-
-1. Final read counts are drawn from a beta-binomial distribution with 
-expectation $w_{error}$. The raw number of draws is given by the coverage, and 
-the skew of the distribution is given by the overdispersion parameter. If the
-overdispersion is equal to zero, then the distribution is binomial, rather 
-than beta-binomial.
-
-## Example
-
 ```{r setup, include = FALSE}
 # Here, we set default options for our markdown file
 knitr::opts_chunk$set(
+  collapse = TRUE,
   comment = "#>",
   tidy = TRUE,
   tidy.opts = list(width.cutoff = 80)
@@ -59,6 +33,77 @@ rdirichlet <- function(shape = rep(1,3)) {
 }
 ```
 
+# Theory
+
+In this package, synthetic sequencing data are generated using a simple
+statistical model for a number of individuals in a given population. Each
+individual is assigned a COI value, which is used to simulate the number of
+sequence reads mapped to the reference and alternative allele for the biallelic
+SNPs considered. These are then used to derive the within-sample frequency of
+the population-level minor allele, $w_i$, at each locus.    
+
+We first define the number of loci being simulated, $l$. We assume that the
+distribution of reference allele frequencies for locus $i$, $R_i$, is described
+by a Beta distribution with shape parameters $\alpha$ and $\beta$:
+$$
+    \mathbb{P}(R_i = r_i) = \frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha)\Gamma(\beta)}r_i^{(\alpha-1)}(1-r_i)^{(\beta-1)},
+$$
+
+\noindent where $\Gamma$ is the Gamma function. In our simulations, we assume
+$\alpha = 1$ and $\beta = 5$ and draw $l$ values of $R_i$. In our methods, we
+have defined relationships with respect to the frequency of the minor allele,
+$p_i$. Recall that $p_i \in [0, 0.5]$. Thus, we define
+$$
+    p_i = \begin{cases} 
+          r_i & r_i \leq 0.5 \\
+          1 - r_i & r_i > 0.5.
+       \end{cases}
+$$
+
+To simulate $w_i$ for each individual, we first assign the COI, $k$. Next, we
+simulate the genotype at locus $i$, drawing $k$ values from a Binomial
+distribution with probability $p_i$, i.e., the probability of having the minor
+allele at locus $i$ is equal to the population-level frequency of the minor
+allele. This yields the matrix, $\mathbb{G} \in \mathbb{R}^{k \times l}$, with
+$k$ rows and $l$ columns defining the phased haplotype of each strain, where
+$\mathbb{G}_{i,j} = 1$ indicates that strain $j$ at locus $i$ has the minor
+allele.
+
+To determine the number of sequence reads related to each strain, we first draw
+the proportion of each strain, $\mathbf{S} = (S_1, \ldots, S_k)$, in an individual
+with $k$ strains, which we assume is described by a Dirichlet distribution with
+concentration parameters $\alpha_1, \ldots, \alpha_k$. The ``true" WSAF of the
+minor allele at locus $i$, denoted $\tau_i$, is thus given by the sum of the
+strain proportions for strains with the minor allele. We can express this using
+matrix multiplication:
+$$
+    \boldsymbol \tau = \mathbf{S} \times \mathbb{G}_i,
+$$
+\noindent where $\boldsymbol \tau \in \mathbb{R}^{1 \times l}$, $\mathbf{S} \in \mathbb{R}^{1 \times k}$, and $\mathbb{G} \in \mathbb{R}^{k \times l}$.
+
+In simulations with no assumed sequence error, the number of sequence reads with
+the minor allele at each locus is given by sampling from a Binomial distribution
+$c$ times with probability $\boldsymbol \tau$, where $c$ is the assumed number
+of sequence reads, i.e., the read depth or coverage. However, in simulations
+with sequence error, we perturb the ``true" WSAF by assuming that a number of
+sequence reads are incorrectly sampled. An incorrectly sampled locus with the
+major allele will yield the minor allele and vice versa. In our simulations, we
+assume a fixed sequence error, $\epsilon$, such that the probability of
+correctly sampling the minor allele is $1 - \epsilon$, and the probability of
+incorrectly sampling the minor allele is $\epsilon$. Therefore, we can represent
+the probability of sampling the minor allele, now denoted as
+$\boldsymbol{\tau}_\epsilon$ to indicate the added error, as
+$$
+    \boldsymbol{\tau}_\epsilon = \boldsymbol \tau(1 - \epsilon) + (1 - \boldsymbol \tau)\epsilon.
+$$
+
+Lastly, we may account for overdispersion—additional unexpected variability in
+our data—and sample the number of sequence reads with the minor allele at each
+locus from a Beta-binomial distribution rather than a Binomial distribution.
+Dividing the number of instances of the minor allele by the coverage at each
+locus results in the simulated WSAF.
+
+# Example
 The default values when a simulation is run are detailed in the table below.
 
 | Parameter       | Default Value         |
@@ -69,7 +114,6 @@ The default values when a simulation is run are detailed in the table below.
 | Alpha           | `1`                   |
 | Overdispersion  | `0`                   |
 | Epsilon         | `0`                   |
-
 
 The PLAF can be generated as follows
 ```{r PLAF}
@@ -96,7 +140,7 @@ knitr::kable(strain_p, digits = 3, align = "l")
 ```
 
 True WSAF can be found by
-```{r, true wsaf}
+```{r true wsaf}
 true_wsaf <- mapply(function(x) rbinom(COI, 1, x), x = PLAF)
 rownames(true_wsaf) <- paste("Strain", 1:3)
 colnames(true_wsaf) <- paste("Locus", 1:5)
@@ -105,7 +149,7 @@ knitr::kable(true_wsaf, digits = 3, align = "l")
 ```
 
 Simulated WSAF can be found by
-```{r}
+```{r sim wsaf}
 # Coverage
 L <- length(PLAF)
   if (length(coverage) == 1) {

@@ -1,7 +1,5 @@
 ---
 title: "Example COI Prediction"
-author: "Oliver Watson, Aris Paschalidis"
-date: "`r format(Sys.time(), '%B %Y')`"
 output: rmarkdown::html_vignette
 vignette: >
  %\VignetteIndexEntry{Example COI Prediction}
@@ -12,6 +10,7 @@ vignette: >
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   comment = "#>",
+  collapse = TRUE,
   fig.width = 7, 
   fig.height = 7
 )
@@ -34,7 +33,7 @@ p[p > 0.5] <- 1 - p[p > 0.5]
 ```
 
 
-## Method 1
+# Method 1
 
 The first approach in the manuscript document for estimating COI is shown below. 
 This works by using the mean number of variant sites, binned in groups of 
@@ -74,7 +73,7 @@ for (k in 2:7) {
         col = "blue", lwd = 2, type = "o", pch = 20)
   
   # Predict the COI and print the results
-  calc_coi = compute_coi(sim1, "sim", max_coi = 10)
+  calc_coi = compute_coi(sim1, "sim", max_coi = 50, seq_error = 0.01)
   end_coi = unlist(c(end_coi, calc_coi$coi))
   
   # COI using optimization
@@ -109,7 +108,7 @@ for (k in 1:10) {
 }
 ```
 
-## Method 2
+# Method 2
 
 In method 2, we plot WSAF against PLAF for only the sites that are 
 heterogeneous, i.e. not all REF or ALT calls. 
@@ -156,68 +155,3 @@ for (k in 2:7) {
 ```
 
 In this case, COI is found as 1/WSAF when PLAF = 0 (i.e. the y-axis intercept).
-
-## Figure 1
-```{r ggplot2 attempt, warning = F}
-library(ggplot2)
-
-set.seed(4)
-sim <- sim_biallelic(coi = 4, plaf = p)
-p_vec <- seq(0, 0.5, l=101)
-
-mytheme <- list(theme_classic(), 
-  theme(text = element_text(family = "Times New Roman"),
-        plot.title = element_text(hjust = 0.5, size = 10),
-        axis.title = element_text(size = 8),
-        legend.position = "bottom",
-        legend.title = element_text(size = 10),
-        legend.text = element_text(size = 8)))
-
-method1 <- ggplot() + 
-  geom_point(data = sim$data, aes(x = plaf, y = wsaf)) + 
-  geom_line(aes(x = p_vec, y = 1 - p_vec^1 - (1 - p_vec)^1), color = "red") +
-  geom_line(aes(x = p_vec, y = 1 - p_vec^2 - (1 - p_vec)^2), color = "red") +
-  geom_line(aes(x = p_vec, y = 1 - p_vec^3 - (1 - p_vec)^3), color = "red") +
-  geom_line(aes(x = p_vec, y = 1 - p_vec^4 - (1 - p_vec)^4), color = "red") +
-  geom_line(aes(x = p_vec, y = 1 - p_vec^5 - (1 - p_vec)^5), color = "red") +
-  annotate(geom = "text", x = 0.505, y = 1 - 0.5^(0:4), 
-           label = c("1", "2", "3", "4", "5"), col = "red", size = 7 / .pt) +
-  mytheme +
-  labs(x = "PLAF", y = "WSAF", title = "Method 1")
-
-method2 <- ggplot() + 
-  geom_point(data = sim$data, aes(x = plaf, y = wsaf)) + 
-  geom_line(aes(x = p_vec, y = (p_vec - p_vec^2)/(1 - p_vec^2 - (1 - p_vec)^2)), 
-                color = "red") +
-  geom_line(aes(x = p_vec, y = (p_vec - p_vec^3)/(1 - p_vec^3 - (1 - p_vec)^3)), 
-                color = "red") +
-  geom_line(aes(x = p_vec, y = (p_vec - p_vec^4)/(1 - p_vec^4 - (1 - p_vec)^4)), 
-                color = "red") +
-  geom_line(aes(x = p_vec, y = (p_vec - p_vec^5)/(1 - p_vec^5 - (1 - p_vec)^5)), 
-                color = "red") +
-  geom_line(aes(x = p_vec, y = (p_vec - p_vec^6)/(1 - p_vec^6 - (1 - p_vec)^6)), 
-                color = "red") +
-  annotate(geom = "text", x = -0.005, y = 1/2:6, 
-           label = c("2", "3", "4", "5", "6"), col = "red", size = 7 / .pt) +
-  mytheme +
-  labs(x = "PLAF", y = "WSAF", title = "Method 2")
-
-ggpubr::ggarrange(method1, method2,
-                  ncol = 2,
-                  labels = "AUTO",
-                  font.label = list(size = 10))
-
-# To get the following code to work, must have toverall_images return a list
-# of plots
-# Figure1 <- c(list(method1, method2), toverall_image)
-# ggpubr::ggarrange(ggpubr::ggarrange(plotlist = Figure1,
-#                                     nrow = 2, ncol = 2, 
-#                                     labels = "AUTO", 
-#                                     font.label = list(size = 10)), 
-#                   toverall_error,
-#                   nrow = 2,
-#                   heights = c(2, 1),
-#                   labels = c("" ,"E"),
-#                   font.label = list(size = 10))
-```
-

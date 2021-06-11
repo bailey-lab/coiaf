@@ -57,7 +57,6 @@ process <- function(wsaf,
 
     # Ensure that seq_error is greater than 1%
     seq_error <- round(max(seq_error, 0.01, na.rm = T), 4)
-    # print(seq_error)
   }
 
   if (coi_method == "1") {
