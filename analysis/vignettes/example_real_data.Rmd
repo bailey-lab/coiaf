@@ -1,7 +1,5 @@
 ---
 title: "Real Data Example"
-author: "Aris Paschalidis"
-date: "`r format(Sys.time(), '%B %Y')`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Real Data Example}
@@ -12,6 +10,7 @@ vignette: >
 ```{r setup, include = FALSE}
 # Here, we set default options for our markdown file
 knitr::opts_chunk$set(
+  collapse = TRUE,
   comment = "#>",
   fig.width = 5, 
   fig.height = 5
@@ -23,68 +22,119 @@ library(ggplot2)
 library(coiaf)
 ```
 
-## Data Structure
-
-## Run The Algorithm
-
-Running the algorithm is quite straightforward.
-
-```{r old, eval = F, include = F}
-# Old inside loop
-# Run predictions
-sample <- example_real_data[[x]]
-predicted <- run_real(sample)
-
-# Extract COI from the predictions
-extract_coi <- tibble::enframe(unlist(lapply(predicted, function(x){ x$coi })),
-                               value = "prediction") %>%
-  dplyr::mutate(file = names(example_real_data)[x])
-
-return(extract_coi)
-
-# Old graphing
-ggplot(coi_pred_tib, aes(factor(prediction), fill = factor(prediction))) + 
-  geom_bar(stat = "count") + 
-  facet_grid(. ~file) + 
-  ggsci::scale_fill_locuszoom() +
-  geom_text(aes(label = ..count..), stat = 'count', vjust = -0.3, color = "black", size = 3.5) +
-  theme_classic() +
-  theme(plot.title   = element_text(hjust = 0.5, size = 10),
-        axis.title   = element_text(size = 8)) +
-  guides(fill = FALSE) +
-  labs(x = "Predicted COI", y = "Count", title = "Bar Plot of Predicted COI")
+# Data Structure
+Data is fed into the algorithm as a matrix containing the WSAF of each sample at
+each examined locus on the genome, with the sample represented by the rows and
+the locus represented by the columns. The first 5 rows and 3 columns of the
+example real data set included with this package is shown below:
+```{r print data}
+print(example_real_data[1:5, 1:3])
 ```
 
 
-```{r predict coi}
-coi_pred <- lapply(seq_len(length(example_real_data)), function(x) {
-  # Run predictions
-  sample <- example_real_data[[x]]
-  plaf   <- colMeans(sample, na.rm = T)
-  
-  # For each sample run the optimize_coi function
-  coi_region <- lapply(seq_len(nrow(sample)), function(i) {
-    wsaf  <- sample[i,]
-    input <- tibble::tibble(wsaf = wsaf, plaf = plaf) %>% tidyr::drop_na()
-    coi_region <- optimize_coi(input, "real") 
-  }) %>% unlist()
-  
-  coi_pred <- tibble::tibble(name = rownames(sample),
-                             prediction = coi_region,
-                             file = names(example_real_data)[x])
+# Run The Algorithm
+Now that we have the data, running the algorithm using either of our two
+methods is quite straightforward.
+
+First, we must compute the PLAF by average the WSAF of our samples.
+```{r PLAF}
+plaf <- colMeans(example_real_data, na.rm = T)
+```
+
+In the dataset provided, `example_real_data`, there are 
+`r dim(example_real_data)[1]` unique samples with `r dim(example_real_data)[2]`
+loci each. Therefore, to find the COI for each sample, we must generate a for
+loop and iterate over each sample.
+
+## Method 1
+### Discrete
+```{r method 1 discrete}
+m1_dis <- lapply(seq_len(nrow(example_real_data)), function(i) {
+  # We first isolate the WSAF for that sample and then plug the WSAF and PLAF
+  # into our function
+  wsaf  <- example_real_data[i,]
+  input <- tibble::tibble(wsaf = wsaf, plaf = plaf) %>% tidyr::drop_na()
+  res <- compute_coi(input, "real", coi_method = "1")
 })
 
-# Name the predictions so that it is easier to understand
-names(coi_pred) <- names(example_real_data)
+# compute_coi returns both the COI and a measure of confidence in our prediction
+# thus we must isolate each separately
+m1_dis_cois <- lapply(m1_dis, function(x) { x$coi }) %>% unlist()  
 
-# Print out the predicted COI
-coi_pred
+# extract the probabilities and assign them names based on what COI was checked
+m1_dis_probs <- lapply(m1_dis, function(x) { 
+  probs <- x$probability
+  names(probs) <- paste0("COI_", 1:length(probs))
+  return(probs)
+})
+
+# Assign the name of the sample to the returned vectors
+names(m1_dis_cois)  <- rownames(example_real_data)
+names(m1_dis_probs) <- rownames(example_real_data)
 ```
 
-For roughly 5000 loci and 500 patients, the model will take about 20 seconds to
-run. It may be helpful to include a progress bar in the code by replacing 
-`lapply` in the above function with a user defined function. For example, the 
-package `pbapply` can be used as follows:
+### Continuous
+```{r method 1 continuous}
+m1_dis_cont <- lapply(seq_len(nrow(example_real_data)), function(i) {
+  # We first isolate the WSAF for that sample and then plug the WSAF and PLAF
+  # into our function
+  wsaf  <- example_real_data[i,]
+  input <- tibble::tibble(wsaf = wsaf, plaf = plaf) %>% tidyr::drop_na()
+  res <- optimize_coi(input, "real", coi_method = "1")
+}) %>% unlist()
+
+# Assign the name of the sample to the returned vector
+names(m1_dis_cont) <- rownames(example_real_data)
+```
+
+## Method 2
+### Discrete
+```{r method 2 discrete}
+m2_dis <- lapply(seq_len(nrow(example_real_data)), function(i) {
+  # We first isolate the WSAF for that sample and then plug the WSAF and PLAF
+  # into our function
+  wsaf  <- example_real_data[i,]
+  input <- tibble::tibble(wsaf = wsaf, plaf = plaf) %>% tidyr::drop_na()
+  res <- compute_coi(input, "real", coi_method = "2")
+})
+
+# compute_coi returns both the COI and a measure of confidence in our prediction
+# thus we must isolate each separately
+m2_dis_cois <- lapply(m2_dis, function(x) { x$coi }) %>% unlist()  
+
+# extract the probabilities and assign them names based on what COI was checked
+m2_dis_probs <- lapply(m2_dis, function(x) { 
+  probs <- x$probability
+  names(probs) <- paste0("COI_", 1:length(probs))
+  return(probs)
+})
+
+# Assign the name of the sample to the returned vectors
+names(m2_dis_cois)  <- rownames(example_real_data)
+names(m2_dis_probs) <- rownames(example_real_data)
+```
+
+### Continuous
+```{r method 2 continuous}
+m2_dis_cont <- lapply(seq_len(nrow(example_real_data)), function(i) {
+  # We first isolate the WSAF for that sample and then plug the WSAF and PLAF
+  # into our function
+  wsaf  <- example_real_data[i,]
+  input <- tibble::tibble(wsaf = wsaf, plaf = plaf) %>% tidyr::drop_na()
+  res <- optimize_coi(input, "real", coi_method = "2")
+}) %>% unlist()
+
+# Assign the name of the sample to the returned vector
+names(m2_dis_cont) <- rownames(example_real_data)
+```
+
+## Progress Bar
+For roughly 1000 loci and 10 samples, the model will take less than 0.5 seconds
+to run. It may be helpful to include a progress bar when running additional loci
+or samples by replacing `lapply` in the above function with a user defined
+function. We recommend the use of the 
+[`pbapply` package](https://peter.solymos.org/pbapply/), which can be used as 
+follows:
 
 ```{r progress bar function, eval = F}
 # Function to determine if pbapply is installed. If it is installed, it will
@@ -101,22 +151,8 @@ list_apply <- function(x, fun, ...){
 All that is left to do is to replace the above `lapply` with the newly defined
 `list_apply`.
 
-```{r graphing}
-# Change the names of the file to be more clear
-coi_pred_tib <- tibble::as_tibble(do.call(rbind, coi_pred)) %>% 
-  dplyr::mutate(file = factor(ifelse(file == "cat_region_1_vcf_0", 
-                                     "Region 1 VCF 0", 
-                                     "Region 1 VCF 1"))) 
-
-# Plot
-ggplot(coi_pred_tib, aes(prediction, fill = file)) + 
-  geom_density(alpha = 0.5) + 
-  facet_grid(. ~file) +
-  ggsci::scale_fill_locuszoom() +
-  theme_classic() +
-  theme(plot.title   = element_text(hjust = 0.5, size = 10),
-        axis.title   = element_text(size = 8)) +
-  guides(fill = FALSE) +
-  labs(x = "Predicted COI", y = "Density", title = "Bar Plot of Predicted COI", fill = NULL)
-```
-
+# Data Visualization
+We recommend exploring the [`ggplot2`](https://ggplot2.tidyverse.org/index.html)
+package to plot results. The 
+[Graph Gallery](https://www.r-graph-gallery.com/index.html) is a beautiful 
+website with tons of awesome graphs and demos that may provide some inspiration.

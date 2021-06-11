@@ -5,10 +5,8 @@
 \alias{example_real_data}
 \title{Example real data}
 \format{
-A list of matrices. The list indicates the region of the genome and
-the VCF file where the samples came from. The two matrices have the same
-structure. The rows of the matrix indicate the patient and the columns of
-the matrix indicate the WSAF at each locus.
+A matrix of data. The rows of the matrix indicate the sample name and
+the columns of the matrix indicate the WSAF at each locus.
 }
 \source{
 ftp://ngs.sanger.ac.uk/production/malaria/pfcommunityproject/Pf6/
