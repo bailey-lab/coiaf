@@ -40,6 +40,10 @@ navbar:
     href: index.html
   - text: Reference
     href: reference/index.html
+  - text: News
+    menu:
+    - text: "Change log"
+      href: news/index.html
   articles: ~
   # When include the articles in the website, uncomment the below code
   # - text: Articles
