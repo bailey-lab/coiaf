@@ -18,3 +18,4 @@
 ^03_Pf6k_sample_locations_and_regions_plot\.Rmd$
 ^data-raw$
 ^LICENSE\.md$
+^tests/testthat/test_wsaf_derivation\.R$

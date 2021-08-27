@@ -91,8 +91,9 @@ p[p > 0.5] <- 1 - p[p > 0.5]
 
 ## Overall Performance
 ```{r overall, eval = eval_tests}
-toverall <- sensitivity(coi = 1:25, max_coi = 30, repetitions = 100, plaf = p,
-                        coverage = 400, seq_error = 0, coi_method = c("1", "2"))
+toverall <- sensitivity(coi = 1:20, repetitions = 100, plaf = p, 
+                        coverage = 1000, seq_error = 0, 
+                        coi_method = c("1", "2"))
 
 toverall_image <- sensitivity_plot(data = toverall, dims = c(1, 2), 
                                    result_type = "disc",
@@ -214,35 +215,57 @@ knitr::include_graphics('figures/discrete/tdistance.png')
 ```
 
 ## Coverage
-```{r coverage, eval = eval_tests}
-tcoverage <- sensitivity(coi = 2:20, coverage = c(25, 50, 100, 200, 400, 800), 
-                         repetitions = 100, seq_error = 0.01, 
-                         plaf = p, coi_method = c("1", "2"))
+```{r coverage method 1, eval = eval_tests}
+tcoverage_1 <- sensitivity(coi = 2:20, coverage = c(50, 100, 250, 500, 1000, 2000), 
+                         repetitions = 100, seq_error = 0.01,
+                         plaf = p, coi_method = "1")
 
-tcoverage_image <- 
-  sensitivity_plot(data = tcoverage,
+tcoverage_image_1 <- 
+  sensitivity_plot(data = tcoverage_1,
                    result_type = "disc",
                    title = "Predicted COI",
-                   dims = c(4, 3),
-                   sub_title = paste(paste0("Coverage ", c(25, 50, 100, 200, 400, 800)),
-                                     rep(c("Method 1", "Method 2"), each = 6),
-                                     sep = ", "))
+                   dims = c(2, 3),
+                   sub_title = paste0("Coverage ", c(50, 100, 250, 500, 1000, 2000)))
 
-tcoverage_error <- error_plot(tcoverage, fill = "coverage", 
+tcoverage_error_1 <- error_plot(tcoverage_1, fill = "coverage", 
                               legend_title = "Coverage", 
-                              title = "Error",
-                              second_fill = "coi_method")
+                              title = "Error")
 
-tcoverage_fig <- ggpubr::ggarrange(tcoverage_image, tcoverage_error, 
-                                   labels = c("", "M"), 
+tcoverage_fig_1 <- ggpubr::ggarrange(tcoverage_image_1, tcoverage_error_1, 
+                                   labels = c("", "G"), 
                                    nrow = 2, 
                                    heights = c(5, 2),
                                    font.label = list(size = 10))
-tcoverage_fig
+tcoverage_fig_1
+```
+
+```{r coverage method 2, eval = eval_tests}
+tcoverage_2 <- sensitivity(coi = 2:20, coverage = c(50, 100, 250, 500, 1000, 2000), 
+                         repetitions = 100, seq_error = 0.01,
+                         plaf = p, coi_method = "2")
+
+tcoverage_image_2 <- 
+  sensitivity_plot(data = tcoverage_2,
+                   result_type = "disc",
+                   title = "Predicted COI",
+                   dims = c(2, 3),
+                   sub_title = paste0("Coverage ", c(50, 100, 250, 500, 1000, 2000)))
+
+tcoverage_error_2 <- error_plot(tcoverage_2, fill = "coverage", 
+                              legend_title = "Coverage", 
+                              title = "Error")
+
+tcoverage_fig_2 <- ggpubr::ggarrange(tcoverage_image_2, tcoverage_error_2, 
+                                   labels = c("", "G"), 
+                                   nrow = 2, 
+                                   heights = c(5, 2),
+                                   font.label = list(size = 10))
+tcoverage_fig_2
 ```
 
 ```{r coverage image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics('figures/discrete/tcoverage.png')
+knitr::include_graphics('figures/discrete/tcoverage_1.png')
+knitr::include_graphics('figures/discrete/tcoverage_2.png')
 ```
 
 ## Loci

@@ -68,6 +68,7 @@ Features in development:
 To dos:
 
   - [ ] Clean up package documentation and vignettes for release
+  - [ ] Add progress bars using `cli`
   - [ ] Run the full SNP dataset
   - [ ] Statistics for the world map plots (ex: bootstrapping)
   - [ ] Add citation file for the package
