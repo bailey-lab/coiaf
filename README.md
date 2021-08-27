@@ -1,12 +1,11 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# coiaf <a href='https://ojwatson.github.io/coiaf/'><img src='man/figures/logo.png' align="right" height="139" /></a>
+# coiaf <a href='https://bailey-lab.github.io/coiaf/'><img src='man/figures/logo.png' align="right" height="139" /></a>
 
 <!-- badges: start -->
 
-[![R build
-status](https://github.com/OJWatson/coiaf/workflows/R-CMD-check/badge.svg)](https://github.com/OJWatson/coiaf/actions)
+[![R-CMD-check](https://github.com/bailey-lab/coiaf/workflows/R-CMD-check/badge.svg)](https://github.com/bailey-lab/coiaf/actions)
 [![Lifecycle:
 stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
 [![License:

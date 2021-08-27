@@ -1,12 +1,13 @@
-#' \pkg{coiaf} COI Estimation from Allele Frequency
-#'
-#' @docType package
-#' @name coiaf
-#'
+#' @keywords internal
+"_PACKAGE"
+
+# The following block is used by usethis to automatically manage
+# roxygen namespace tags. Modify with care!
+## usethis namespace: start
 #' @importFrom stats rbeta rbinom rgamma runif
 #' @importFrom rlang .data
-#'
-"_PACKAGE"
+## usethis namespace: end
+NULL
 
 #' Example real data
 #'
