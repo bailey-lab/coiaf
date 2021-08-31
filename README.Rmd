@@ -64,11 +64,19 @@ devtools::install_github(repo = "https://github.com/bailey-lab/coiaf",
 
 
 ## Usage
-In order to run real data, please refer to the Articles drop down menu. Several
-articles are provided which detail how the algorithm works, how data was 
-simulated to test the algorithm, and importantly how to run real data.
-A short example on running real data is included and outlines the necessary
-data structure as well as the commands to run.
+Please consult the [example real data vignette](https://github.com/bailey-lab/coiaf/blob/master/analysis/vignettes/example_real_data.Rmd)
+for a primer on how to run real data using `coiaf`. For a description of how
+the estimation methods work, please consult the 
+[example coi prediction vignette](https://github.com/bailey-lab/coiaf/blob/master/analysis/vignettes/example_coi_prediction.Rmd).
+
+Once the repository goes public, we will be publishing a website, which will
+make navigating the vignettes and documentation much easier.
+
+<!-- In order to run real data, please refer to the Articles drop down menu. Several -->
+<!-- articles are provided which detail how the algorithm works, how data was  -->
+<!-- simulated to test the algorithm, and importantly how to run real data. -->
+<!-- A short example on running real data is included and outlines the necessary -->
+<!-- data structure as well as the commands to run. -->
 
 ### Development
 Please note that this package is still under development and may be missing 

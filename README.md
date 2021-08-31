@@ -51,11 +51,21 @@ devtools::install_github(repo = "https://github.com/bailey-lab/coiaf",
 
 ## Usage
 
-In order to run real data, please refer to the Articles drop down menu.
-Several articles are provided which detail how the algorithm works, how
-data was simulated to test the algorithm, and importantly how to run
-real data. A short example on running real data is included and outlines
-the necessary data structure as well as the commands to run.
+Please consult the [example real data
+vignette](https://github.com/bailey-lab/coiaf/blob/master/analysis/vignettes/example_real_data.Rmd)
+for a primer on how to run real data using `coiaf`. For a description of
+how the estimation methods work, please consult the [example coi
+prediction
+vignette](https://github.com/bailey-lab/coiaf/blob/master/analysis/vignettes/example_coi_prediction.Rmd).
+
+Once the repository goes public, we will be publishing a website, which
+will make navigating the vignettes and documentation much easier.
+
+<!-- In order to run real data, please refer to the Articles drop down menu. Several -->
+<!-- articles are provided which detail how the algorithm works, how data was  -->
+<!-- simulated to test the algorithm, and importantly how to run real data. -->
+<!-- A short example on running real data is included and outlines the necessary -->
+<!-- data structure as well as the commands to run. -->
 
 ### Development
 
@@ -65,16 +75,16 @@ developed accordingly.
 
 Features in development:
 
-  - [ ] Create infrastructure for running real data given a particular
+-   [ ] Create infrastructure for running real data given a particular
     data format
-  - [ ] Account for read depth by weighing coverage
-  - [ ] Create a shiny app
+-   [ ] Account for read depth by weighing coverage
+-   [ ] Create a shiny app
 
 To dos:
 
-  - [ ] Clean up package documentation and vignettes for release
-  - [ ] Add progress bars using `cli`
-  - [ ] Run the full SNP dataset
-  - [ ] Statistics for the world map plots (ex: bootstrapping)
-  - [ ] Add citation file for the package
-  - [ ] Pf7k data will be released summer of 2021. Run coiaf on new data
+-   [ ] Clean up package documentation and vignettes for release
+-   [ ] Add progress bars using `cli`
+-   [ ] Run the full SNP dataset
+-   [ ] Statistics for the world map plots (ex: bootstrapping)
+-   [ ] Add citation file for the package
+-   [ ] Pf7k data will be released summer of 2021. Run coiaf on new data
