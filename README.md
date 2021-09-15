@@ -7,7 +7,7 @@
 
 [![R-CMD-check](https://github.com/bailey-lab/coiaf/workflows/R-CMD-check/badge.svg)](https://github.com/bailey-lab/coiaf/actions)
 [![Lifecycle:
-stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
+stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![License:
 MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 <!-- badges: end -->

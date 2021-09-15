@@ -18,7 +18,8 @@ Description: Provides a direct method for estimating complexity of
     infection using within-sample allele frequencies from whole genome
     sequence data.
 License: MIT + file LICENSE
-URL: https://bailey-lab.github.io/coiaf/, https://github.com/bailey-lab/coiaf
+URL: https://bailey-lab.github.io/coiaf/,
+    https://github.com/bailey-lab/coiaf
 BugReports: https://github.com/bailey-lab/coiaf/issues
 Depends: 
     R (>= 3.5.0)
