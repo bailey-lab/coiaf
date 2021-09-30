@@ -222,10 +222,10 @@ label_names <- c("continuous" = "Continuous Optimization",
 ggplot(pivot_data, aes(y = COI, x = rmcl_med, color = coi_method)) +
   scale_size_area() +
   geom_abline(color = "gray", size = 0.5) +
-  ggplot2::geom_count(alpha = 0.7, position=position_jitter(w = 0.1)) +
+  ggplot2::geom_count(alpha = 0.7, position=position_jitter(width = 0.1)) +
   mytheme +
   facet_wrap(. ~ optimization, labeller = as_labeller(label_names)) +
-  guides(size = FALSE) +
+  guides(size = "none") +
   theme(legend.position = "right") +
   ylab("coiaf Prediction") +
   scale_color_discrete("Method") +
@@ -236,10 +236,10 @@ ggplot(dplyr::filter(pivot_data, optimization == "discrete"),
        aes(y = COI, x = rmcl_med, color = coi_method)) +
   scale_size_area() +
   geom_abline(color = "gray", size = 0.5) +
-  ggplot2::geom_count(alpha = 0.7, position=position_jitter(w = 0.1)) +
+  ggplot2::geom_count(alpha = 0.7, position=position_jitter(width = 0.1)) +
   mytheme +
   facet_wrap(.~ Region, labeller = label_both) +
-  guides(size = FALSE) +
+  guides(size = "none") +
   theme(legend.position = "right") +
   ylab("coiaf Prediction") +
   scale_color_discrete("Method") +
@@ -252,7 +252,7 @@ ggplot(dplyr::filter(pivot_data, optimization == "continuous"),
   ggplot2::geom_boxplot() +
   mytheme +
   facet_wrap(.~ Region, labeller = label_both) +
-  guides(size = FALSE) +
+  guides(size = "none") +
   theme(legend.position = "right") +
   ylab("coiaf Prediction") +
   scale_color_discrete("Method") +
