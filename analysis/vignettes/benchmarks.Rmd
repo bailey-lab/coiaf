@@ -1,0 +1,57 @@
+---
+title: "Benchmarks"
+author: "Aris Paschalidis"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+library(coiaf)
+```
+
+# Comparing the two {coiaf} methods
+```{r function definitions}
+# Set seed
+set.seed(101)
+
+# Create function to take variable coi and # of loci
+create_data <- function(coi, n_loci) {
+  plaf <- stats::rbeta(n_loci, 1, 5)
+  plaf[plaf > 0.5] <- 1 - plaf[plaf > 0.5]
+  
+  sim_biallelic(coi = coi, plaf = plaf)
+}
+```
+
+```{r disc vs cont}
+results <- bench::press(
+  coi = c(1, seq(5, 25, 5)),
+  n_loci = c(100, 1000, 5000, 10000),
+  {
+    dat <- create_data(coi, n_loci)
+    bench::mark(
+      min_iterations = 10,
+      discrete = compute_coi(dat, "sim", max_coi = 50),
+      continuous = optimize_coi(dat, "sim", max_coi = 50),
+      check = FALSE
+    )
+  }
+)
+
+results
+
+ggplot2::autoplot(results) + miplicorn::theme_miplicorn()
+```
+From these results, we can see that for small numbers of loci, the discrete
+method is almost twice as fast as the continuous method. However, as the number
+of loci increases, this difference becomes smaller. There is consistently a 
+difference in median speed of around 20 ms.
