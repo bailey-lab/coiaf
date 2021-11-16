@@ -1,14 +1,19 @@
-.Rproj.user
-.Rproj.user
+# Artifacts
+.DS_Store
+.httr-oauth
+.Rdata
 .Rhistory
-.RData
-.Ruserdata
-inst/doc
+.Rproj.user
+
+# Docs
 docs
-analysis/data/slurm_outs
-analysis/data/derived/McCOIL_work
+inst/doc
+
+# Internal
 00_Pf6k_vcf_download_loci_selection_and_RMCL.Rmd
 01_Pf6k_WSAF_creation_for_coiafRmd
 03_Pf6k_sample_locations_and_regions_plot.Rmd
-scripts
+analysis/data/derived/McCOIL_work
+analysis/data/slurm_outs
+paper-checklist.*
 tests/testthat/test_wsaf_derivation.R
