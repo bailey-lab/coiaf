@@ -37,20 +37,25 @@ sensitivity_plot <- function(data,
 
   # Ensure that ggplot2 and ggpubr are installed
   if (!requireNamespace("ggplot2", quietly = TRUE) &
-      !requireNamespace("ggpubr", quietly = TRUE)) {
+    !requireNamespace("ggpubr", quietly = TRUE)) {
     stop("Packages \"ggplot2\" and \"ggpubr\" must be installed in order to plot the tests.",
-         call. = FALSE)
+      call. = FALSE
+    )
   } else if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("Package \"ggplot2\" must be installed in order to plot the tests.",
-         call. = FALSE)
+      call. = FALSE
+    )
   } else if (!requireNamespace("ggpubr", quietly = TRUE)) {
     stop("Package \"ggpubr\" must be installed in order to plot the tests.",
-         call. = FALSE)
+      call. = FALSE
+    )
   }
 
   # Check inputs
-  assert_in(names(data),
-            c("predicted_coi", "probability", "param_grid", "boot_error"))
+  assert_in(
+    names(data),
+    c("predicted_coi", "probability", "param_grid", "boot_error")
+  )
   assert_single_string(result_type)
   assert_in(result_type, c("disc", "cont"))
   assert_pos_int(dims, zero_allowed = FALSE)
@@ -68,8 +73,10 @@ sensitivity_plot <- function(data,
   # columns: true_coi, estimated_coi, and loop_number.
   plot_df <- data$predicted_coi %>%
     tidyr::gather("true_coi", "estimated_coi") %>%
-    tidyr::extract(.data$true_coi, c("true_coi", "loop_number"),
-                   "coi_(.+)_(.+)") %>%
+    tidyr::extract(
+      .data$true_coi, c("true_coi", "loop_number"),
+      "coi_(.+)_(.+)"
+    ) %>%
     dplyr::mutate_all(as.numeric)
 
   # We determine how many different panels there will be by finding the unique
@@ -77,45 +84,54 @@ sensitivity_plot <- function(data,
   num_loops <- unique(plot_df$loop_number)
 
   # Ensure that there are enough panels to include all the graphs
-  user_dims = dims[1] * dims[2]
-  needed_dims    = length(num_loops)
+  user_dims <- dims[1] * dims[2]
+  needed_dims <- length(num_loops)
   if (!all(user_dims >= needed_dims)) {
-    message <- glue::glue("Must specify enough plotting panels:",
-                          "\n\u2139 {needed_dims} panels are required.",
-                          "\n\u2716 User specified {user_dims} panels.")
+    message <- glue::glue(
+      "Must specify enough plotting panels:",
+      "\n\u2139 {needed_dims} panels are required.",
+      "\n\u2716 User specified {user_dims} panels."
+    )
     stop(message, call. = FALSE)
   }
 
   # We then call a helper function: sensitivity_plot_element, that creates each
   # individual plot and store these plots as a list
   myplots <- lapply(num_loops,
-                    sensitivity_plot_element,
-                    data = plot_df,
-                    result_type = result_type,
-                    sub_title = sub_title)
+    sensitivity_plot_element,
+    data = plot_df,
+    result_type = result_type,
+    sub_title = sub_title
+  )
 
   # Arrange the plots
   if (dims[1] * dims[2] == 1) {
     # Do not include a panel label if there is only one plot
-    arranged_plots <- ggpubr::ggarrange(plotlist = myplots,
-                                        nrow = dims[1],
-                                        ncol = dims[2])
+    arranged_plots <- ggpubr::ggarrange(
+      plotlist = myplots,
+      nrow = dims[1],
+      ncol = dims[2]
+    )
   } else {
     # Include panel labels if there are more than one plots
-    arranged_plots <- ggpubr::ggarrange(plotlist = myplots,
-                                        labels = "AUTO",
-                                        font.label = list(size = 10),
-                                        nrow = dims[1],
-                                        ncol = dims[2])
+    arranged_plots <- ggpubr::ggarrange(
+      plotlist = myplots,
+      labels = "AUTO",
+      font.label = list(size = 10),
+      nrow = dims[1],
+      ncol = dims[2]
+    )
   }
 
   arranged_plots <-
     ggpubr::annotate_figure(arranged_plots,
-                            top = ggpubr::text_grob(title, size = 13),
-                            bottom = ggpubr::text_grob(caption,
-                                                       hjust = 0,
-                                                       x = 0.01,
-                                                       size = 10))
+      top = ggpubr::text_grob(title, size = 13),
+      bottom = ggpubr::text_grob(caption,
+        hjust = 0,
+        x = 0.01,
+        size = 10
+      )
+    )
 }
 
 #------------------------------------------------
@@ -135,23 +151,30 @@ sensitivity_plot_element <- function(data, loop_num, result_type, sub_title) {
   # Ensure that ggplot2 is installed
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop('Package \"ggplot2\" must be installed in order to plot the test.',
-       call. = FALSE)
+      call. = FALSE
+    )
   }
 
   # Plot the figure
   single_plot <-
-    ggplot2::ggplot(dplyr::filter(data, .data$loop_number == loop_num),
-                    ggplot2::aes(x = .data$true_coi, y = .data$estimated_coi)) +
+    ggplot2::ggplot(
+      dplyr::filter(data, .data$loop_number == loop_num),
+      ggplot2::aes(x = .data$true_coi, y = .data$estimated_coi)
+    ) +
     ggplot2::scale_size_area() +
     ggplot2::geom_abline(color = "red", size = 1) +
     ggplot2::theme_classic() +
-    ggplot2::theme(plot.title   = ggplot2::element_text(hjust = 0.5, size = 10),
-                   axis.title   = ggplot2::element_text(size = 7),
-                   legend.title = ggplot2::element_text(size = 7),
-                   legend.text  = ggplot2::element_text(size = 7)) +
-    ggplot2::labs(x = "True COI",
-                  y = "Estimated COI",
-                  title = sub_title[loop_num])
+    ggplot2::theme(
+      plot.title = ggplot2::element_text(hjust = 0.5, size = 12),
+      axis.title = ggplot2::element_text(size = 10),
+      legend.title = ggplot2::element_text(size = 10),
+      legend.text = ggplot2::element_text(size = 10)
+    ) +
+    ggplot2::labs(
+      x = "True COI",
+      y = "Estimated COI",
+      title = sub_title[loop_num]
+    )
 
   # Choose geom_count or geom_boxplot depending on whether we are looking at
   # discrete or continuous data
@@ -160,8 +183,10 @@ sensitivity_plot_element <- function(data, loop_num, result_type, sub_title) {
       ggplot2::geom_count(color = "blue", alpha = 0.7, show.legend = FALSE)
   } else if (result_type == "cont") {
     single_plot <- single_plot +
-      ggplot2::geom_boxplot(color = "blue", alpha = 0.7, show.legend = FALSE,
-                            ggplot2::aes(group = .data$true_coi))
+      ggplot2::geom_boxplot(
+        color = "blue", alpha = 0.7, show.legend = FALSE,
+        ggplot2::aes(group = .data$true_coi)
+      )
   }
 }
 
@@ -202,12 +227,15 @@ error_plot <- function(data,
   # Ensure that ggplot2 is installed
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("Package \"ggplot2\" must be installed in order to plot the test.",
-         call. = FALSE)
+      call. = FALSE
+    )
   }
 
   # Check inputs
-  assert_in(names(data),
-            c("predicted_coi", "probability", "param_grid", "boot_error"))
+  assert_in(
+    names(data),
+    c("predicted_coi", "probability", "param_grid", "boot_error")
+  )
   assert_single_string(fill)
   if (!is.null(fill_levels)) assert_string(fill_levels)
   if (!is.null(title)) assert_single_string(title)
@@ -224,11 +252,15 @@ error_plot <- function(data,
   # upper. This makes plotting easier and ensures that error bars are not shown
   # for data points where the mean absolute error is 0.
   plot_data <- plot_data %>%
-    dplyr::mutate(dplyr::across(where(function(x) dplyr::n_distinct(x) > 1) &
-                                  !tidyselect::all_of(c("mae", "lower",
-                                                        "upper", "bias")),
-                                as.factor)) %>%
-    dplyr::mutate(mae   = dplyr::na_if(.data$mae, 0)) %>%
+    dplyr::mutate(dplyr::across(
+      where(function(x) dplyr::n_distinct(x) > 1) &
+        !tidyselect::all_of(c(
+          "mae", "lower",
+          "upper", "bias"
+        )),
+      as.factor
+    )) %>%
+    dplyr::mutate(mae = dplyr::na_if(.data$mae, 0)) %>%
     dplyr::mutate(lower = dplyr::na_if(.data$lower, 0)) %>%
     dplyr::mutate(upper = dplyr::na_if(.data$upper, 0))
 
@@ -237,9 +269,11 @@ error_plot <- function(data,
     # Ensure that the number of levels input (fill_levels) are the same as the
     # number of levels for the fill variable
     if (length(fill_levels) != nlevels(plot_data[[fill]])) {
-      message <- glue::glue("Number of levels must match:",
-                            "\n\u2139 Variable has {nlevels(plot_data[[fill]])} levels.",
-                            "\n\u2716 User specified {length(fill_levels)} levels.")
+      message <- glue::glue(
+        "Number of levels must match:",
+        "\n\u2139 Variable has {nlevels(plot_data[[fill]])} levels.",
+        "\n\u2716 User specified {length(fill_levels)} levels."
+      )
       stop(message, call. = FALSE)
     } else {
       # Customize labels
@@ -248,20 +282,29 @@ error_plot <- function(data,
   }
 
   # Plot the data and return
-  error_plot <- ggplot2::ggplot(plot_data,
-                                ggplot2::aes(x = .data$coi, y = .data$mae,
-                                             fill = eval(parse(text = fill)))) +
+  error_plot <- ggplot2::ggplot(
+    plot_data,
+    ggplot2::aes(
+      x = .data$coi, y = .data$mae,
+      fill = eval(parse(text = fill))
+    )
+  ) +
     ggplot2::geom_col(position = "dodge", na.rm = T) +
     ggplot2::geom_errorbar(ggplot2::aes(ymin = .data$lower, ymax = .data$upper),
-                           width = .2, position = ggplot2::position_dodge(.9)) +
+      width = .2, position = ggplot2::position_dodge(.9)
+    ) +
     ggplot2::theme_classic() +
-    ggplot2::theme(legend.position = legend.position,
-                   plot.title   = ggplot2::element_text(hjust = 0.5, size = 13),
-                   axis.title   = ggplot2::element_text(size = 10),
-                   legend.title = ggplot2::element_text(size = 10),
-                   legend.text  = ggplot2::element_text(size = 8)) +
-    ggplot2::labs(x = "COI", y = "Mean Absolute Error",
-                  title = title, fill = legend_title)
+    ggplot2::theme(
+      legend.position = legend.position,
+      plot.title = ggplot2::element_text(hjust = 0.5, size = 12),
+      axis.title = ggplot2::element_text(size = 10),
+      legend.title = ggplot2::element_text(size = 10),
+      legend.text = ggplot2::element_text(size = 10)
+    ) +
+    ggplot2::labs(
+      x = "COI", y = "Mean Absolute Error",
+      title = title, fill = legend_title
+    )
 
   if (!is.null(second_fill)) {
     error_plot <- error_plot +
@@ -295,7 +338,7 @@ world_map <- function(data,
                       variable,
                       label = NULL,
                       alpha = 0.1,
-                      breaks = c(1,2)) {
+                      breaks = c(1, 2)) {
 
   # Access world map data from ggplot2
   world <- ggplot2::map_data("world")
@@ -303,17 +346,29 @@ world_map <- function(data,
   # Plot world map
   map <- ggplot2::ggplot() +
     ggplot2::borders("world") +
-    ggplot2::geom_polygon(data = world,
-                          ggplot2::aes(x = .data$long, y = .data$lat,
-                                       group = .data$group),
-                          fill = "grey", alpha = 0.3) +
-    ggplot2::geom_point(data = data,
-                        ggplot2::aes(x = .data$long, y = .data$lat,
-                                     size = variable, color = variable),
-                        alpha = alpha) +
-    ggplot2::scale_colour_viridis_c(limits = c(breaks[1],
-                                               breaks[length(breaks)]),
-                                    breaks = breaks, alpha = alpha) +
+    ggplot2::geom_polygon(
+      data = world,
+      ggplot2::aes(
+        x = .data$long, y = .data$lat,
+        group = .data$group
+      ),
+      fill = "grey", alpha = 0.3
+    ) +
+    ggplot2::geom_point(
+      data = data,
+      ggplot2::aes(
+        x = .data$long, y = .data$lat,
+        size = variable, color = variable
+      ),
+      alpha = alpha
+    ) +
+    ggplot2::scale_colour_viridis_c(
+      limits = c(
+        breaks[1],
+        breaks[length(breaks)]
+      ),
+      breaks = breaks, alpha = alpha
+    ) +
     ggplot2::theme_void() +
     ggplot2::theme(legend.position = "bottom") +
     ggplot2::scale_size(guide = "none") +
