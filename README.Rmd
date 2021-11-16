@@ -17,12 +17,14 @@ knitr::opts_chunk$set(
 
 ```{r logo, eval = F, include = F}
 # Code for logo. To run, use the R package `hexSticker`
-sticker("man/figures/logo_background.jpg", package="coiaf", 
-        filename="man/figures/logo2.png", 
-        s_x = 1, s_y = 1, s_width = 1.7,
-        p_size = 12, p_x = 0.95, p_y = 1.5, p_color = "#fdead4",
-        h_color = "#93a448", h_fill = "#75d8c3",
-        white_around_sticker = T, dpi = 500)
+sticker("man/figures/logo_background.jpg",
+  package = "coiaf",
+  filename = "man/figures/logo2.png",
+  s_x = 1, s_y = 1, s_width = 1.7,
+  p_size = 12, p_x = 0.95, p_y = 1.5, p_color = "#fdead4",
+  h_color = "#93a448", h_fill = "#75d8c3",
+  white_around_sticker = T, dpi = 500
+)
 ```
 
 <!-- badges: start -->
@@ -32,45 +34,31 @@ sticker("man/figures/logo_background.jpg", package="coiaf",
 <!-- badges: end -->
 
 ## Introduction
-In malaria, individuals are often infected with different parasite strains. 
-These multi-clonal infections occur either because an individual received 
-repeated mosquito bites from infectious mosquitoes or because they received a 
-single bite from an infectious mosquito harboring multiple parasites. Such mixed
-infections may be composed of genetically unrelated strains or parasites that 
-are related. The number of genetically different parasite strains in an 
-individual, known as the complexity of infection (COI), provides important 
-insight into the severity of infection and the parasite population. 
-Probabilistic likelihood and Bayesian models have been developed to estimate the
-COI, but rapid direct measures such as heterozygosity or *FwS* have not been 
-directly related to the COI. Moreover, current methods have utilized statistics
-that rely on the assumption that parasites in mixed infections are unrelated to
-determine the relative COI. In this package we present two new methods that use
-easily computable measures to directly estimate the COI from sequence read depth
-data. Our methods are computationally efficient and are proven to be comparably
-accurate to current methods in literature.
+In malaria, individuals are often infected with different parasite strains, with
+the complexity of infection (COI) giving the number of genetically different
+parasite strains in an individual. Changes in the mean COI in a population have
+been shown to be informative of changes in transmission intensity with a number
+of probabilistic likelihood and Bayesian models now developed to estimate COI.
+However, rapid, direct measures based on heterozygosity or *FwS* have not been
+directly related to the COI. In this package we present two new methods that use
+easily calculated measures to directly estimate the COI from sequence read depth
+data.
 
 ## Installation
-To install the package, please follow the code below. In order to install,
-`devtools` must be installed. Note that as this is still a private repo, you
-must enter an authorization token to `devtools::install_github`. Follow the
-instructions at [Managing Git(Hub)
-Credentials](https://usethis.r-lib.org/articles/articles/git-credentials.html)
-to generate a personal access token (PAT) for github.
-```{r, eval = FALSE}
+You may install the package from [Github](https://github.com/bailey-lab/coiaf)
+using `devtools`.
+```{r installation, eval = FALSE}
 # install.packages("devtools")
-devtools::install_github(repo = "https://github.com/bailey-lab/coiaf",
-                         auth_token = "PAT token")
+devtools::install_github(repo = "https://github.com/bailey-lab/coiaf")
 ```
 
 
 ## Usage
-Please consult the [example real data vignette](https://github.com/bailey-lab/coiaf/blob/master/analysis/vignettes/example_real_data.Rmd)
-for a primer on how to run real data using `coiaf`. For a description of how
-the estimation methods work, please consult the 
-[example coi prediction vignette](https://github.com/bailey-lab/coiaf/blob/master/analysis/vignettes/example_coi_prediction.Rmd).
-
-Once the repository goes public, we will be publishing a website, which will
-make navigating the vignettes and documentation much easier.
+Please consult the [example real data
+vignette](https://github.com/bailey-lab/coiaf/blob/main/analysis/vignettes/example_real_data.Rmd)
+for a primer on how to run real data using `coiaf`. For a description of how the
+estimation methods work, please consult the [example coi prediction
+vignette](https://github.com/bailey-lab/coiaf/blob/main/analysis/vignettes/example_coi_prediction.Rmd).
 
 <!-- In order to run real data, please refer to the Articles drop down menu. Several -->
 <!-- articles are provided which detail how the algorithm works, how data was  -->
@@ -79,20 +67,5 @@ make navigating the vignettes and documentation much easier.
 <!-- data structure as well as the commands to run. -->
 
 ### Development
-Please note that this package is still under development and may be missing 
-features. This `README` will be updated as the package is developed accordingly.
-
-Features in development:
-
-- [ ] Create infrastructure for running real data given a particular data format
-- [ ] Account for read depth by weighing coverage
-- [ ] Create a shiny app
-
-To dos:
-
-- [ ] Clean up package documentation and vignettes for release
-- [ ] Add progress bars using `cli`
-- [ ] Run the full SNP dataset
-- [ ] Statistics for the world map plots (ex: bootstrapping)
-- [ ] Add citation file for the package
-- [ ] Pf7k data will be released summer of 2021. Run coiaf on new data
+Please note that this package is still under development and may be missing
+features.
