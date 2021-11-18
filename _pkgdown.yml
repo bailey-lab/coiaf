@@ -4,46 +4,49 @@ template:
   params:
     bootswatch: flatly
 
+development:
+  mode: auto
+
 reference:
   - title: Complexity of Infection
     desc: >
       Determine the complexity of infection (COI) of a sample
     contents:
-    - optimize_coi
-    - likelihood
-    - compute_coi
-    - theoretical_coi
+      - optimize_coi
+      - likelihood
+      - compute_coi
+      - theoretical_coi
   - title: Real Data
     desc: >
       Process and run real data
     contents:
-    - process_real
-    - example_real_data
+      - process_real
+      - example_real_data
   - title: Simulation
     desc: >
       Simulate data and run algorithm
     contents:
-    - sim_biallelic
-    - process_sim
-    - sensitivity
-    - cont_sensitivity
+      - sim_biallelic
+      - process_sim
+      - sensitivity
+      - cont_sensitivity
   - title: Visualize
     contents:
-    - matches("plot")
-    - world_map
+      - matches("plot")
+      - world_map
 
 navbar:
   title: coiaf
   type: default
   left:
-  - icon: fa-home fa-lg
-    href: index.html
-  - text: Reference
-    href: reference/index.html
-  - text: News
-    menu:
-    - text: "Change log"
-      href: news/index.html
+    - icon: fa-home fa-lg
+      href: index.html
+    - text: Reference
+      href: reference/index.html
+    - text: News
+      menu:
+        - text: "Change log"
+          href: news/index.html
   articles: ~
   # When include the articles in the website, uncomment the below code
   # - text: Articles
@@ -57,4 +60,3 @@ navbar:
   #     href: articles/example_coi_prediction.html
   #   - text: Simulation Example
   #     href: articles/example_simulation.html
-
