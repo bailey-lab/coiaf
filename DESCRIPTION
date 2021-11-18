@@ -14,9 +14,8 @@ Authors@R:
              email = "oj.watson@hotmail.co.uk",
              comment = c(ORCID = "0000-0003-2374-0741")))
 Maintainer: Aris Paschalidis <aris_paschalidis@brown.edu>
-Description: Provides a direct method for estimating complexity of
-    infection using within-sample allele frequencies from whole genome
-    sequence data.
+Description: Provides a direct method for estimating complexity of infection
+    using easily calculated measures from sequence read depth data.
 License: MIT + file LICENSE
 URL: https://bailey-lab.github.io/coiaf/,
     https://github.com/bailey-lab/coiaf

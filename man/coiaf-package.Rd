@@ -8,9 +8,7 @@
 \description{
 \if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
 
-Provides a direct method for estimating complexity of
-    infection using within-sample allele frequencies from whole genome
-    sequence data.
+Provides a direct method for estimating complexity of infection using easily calculated measures from sequence read depth data.
 }
 \seealso{
 Useful links:
