@@ -17,6 +17,7 @@
 ^docs$
 ^example_simulations\.R$
 ^LICENSE\.md$
+^paper-checklist\.Rmd$
 ^pkgdown$
 ^README\.Rmd$
 ^tests/testthat/test_wsaf_derivation\.R$
