@@ -1,7 +1,7 @@
 Type: Package
 Package: coiaf
 Title: Complexity of Infection Estimation with Allele Frequencies
-Version: 0.1.0
+Version: 0.1.0.9000
 Authors@R:
     c(person(given = "Aris",
              family = "Paschalidis",
