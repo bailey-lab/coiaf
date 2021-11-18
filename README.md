@@ -28,11 +28,18 @@ depth data.
 ## Installation
 
 You may install the package from
-[Github](https://github.com/bailey-lab/coiaf) using `devtools`.
+[Github](https://github.com/bailey-lab/coiaf) using `devtools`. You may
+either install the most recent release or the development version of the
+software.
 
 ```r
 # install.packages("devtools")
-devtools::install_github(repo = "https://github.com/bailey-lab/coiaf")
+
+# Most recent release
+devtools::install_github("bailey-lab/coiaf@v0.1.0")
+
+# Development version
+devtools::install_github("bailey-lab/coiaf")
 ```
 
 ## Usage
