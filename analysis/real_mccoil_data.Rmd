@@ -246,6 +246,53 @@ pivot_data <- compare_data %>%
   )
 ```
 
+```{r figure 3}
+panela <- ggplot(
+  dplyr::filter(pivot_data, coi_method == "1"),
+  aes(y = COI, x = rmcl_med, color = optimization)
+) +
+  scale_size_area() +
+  geom_abline(color = "gray", size = 0.5) +
+  ggplot2::geom_count(alpha = 0.8, position = position_jitter(width = 0.1)) +
+  mytheme +
+  # theme(
+  #   legend.position = "right",
+  #   legend.title = element_blank()
+  # ) +
+  labs(title = "Variant Method", y = "coiaf Prediction", color = "Optimization Method") +
+  scale_color_discrete(labels = c("Continuous", "Discrete")) +
+  guides(size = "none") +
+  scale_x_continuous("THE REAL McCOIL Prediction", breaks = seq(0, 10))
+
+panelb <- ggplot(
+  dplyr::filter(pivot_data, coi_method == "2"),
+  aes(y = COI, x = rmcl_med, color = optimization)
+) +
+  scale_size_area() +
+  geom_abline(color = "gray", size = 0.5) +
+  ggplot2::geom_count(alpha = 0.8, position = position_jitter(width = 0.1)) +
+  mytheme +
+  labs(title = "Frequency Method", y = "coiaf Prediction", color = "Optimization Method") +
+  scale_color_discrete(labels = c("Continuous", "Discrete")) +
+  guides(size = "none") +
+  scale_x_continuous("THE REAL McCOIL Prediction", breaks = seq(0, 10))
+
+panelc <- ggplot(pivot_data, aes(x = COI - rmcl_med, fill = coi_method)) +
+  geom_density(alpha = 0.6) +
+  # geom_vline(xintercept = 0) +
+  labs(x = "COI - Median RMCL", y = "Density", fill = "COI Method") +
+  scale_fill_discrete(labels = c("Variant", "Frequency")) +
+  mytheme +
+  theme(legend.position = "right")
+
+# Use patchwork to make life easier
+patchwork <- (panela / panelb) | panelc
+patchwork +
+  plot_annotation(tag_levels = "A") +
+  plot_layout(guides = "collect") &
+  theme(legend.position = "bottom")
+```
+
 
 ```{r plot all data}
 label_names <- c(
@@ -518,4 +565,66 @@ ggplot(
   labs(x = "Prevalence", y = "Estimated COI") +
   scale_color_discrete(name = "Estimation Method", labels = c("Continuous Method 1", "THE REAL McCOIL")) +
   mytheme
+```
+
+***
+
+# Figure 4C
+```{r}
+fig4c <- patient_lat_long %>%
+  tidyr::pivot_longer(tidyr::starts_with(c("discrete", "continuous")),
+    names_to = c(".value", "coi_method"),
+    names_pattern = "(.*)_(.)_.*"
+  ) %>%
+  tidyr::pivot_longer(dplyr::any_of(c("discrete", "continuous")),
+    names_to = "optimization",
+    values_to = "COI",
+    values_drop_na = TRUE
+  ) %>%
+  dplyr::relocate(tidyselect::any_of(c("coi_method", "optimization", "COI")),
+    .after = name
+  ) %>%
+  dplyr::filter(coi_method == "1" & optimization == "discrete")
+
+tt <- fig4c %>%
+  dplyr::group_by(Region) %>%
+  dplyr::mutate(med_prev = median(prev_2_10, na.rm = TRUE)) %>%
+  dplyr::filter(med_prev != 0) %>%
+  dplyr::arrange(prev_2_10) %>%
+  dplyr::ungroup() %>%
+  dplyr::mutate(
+    Region = forcats::as_factor(Region),
+    continent = countrycode::countrycode(Country, "country.name", "continent")
+  )
+
+sorted_prev <- tt %>%
+  dplyr::select(Region, med_prev) %>%
+  dplyr::distinct() %>%
+  dplyr::pull(med_prev) %>%
+  sort()
+
+ridges <- ggplot(
+  data = tt,
+  aes(y = forcats::fct_reorder(Region, med_prev), x = COI, fill = continent)
+) +
+  ggridges::geom_density_ridges() +
+  ggridges::theme_ridges() +
+  theme_coiaf() +
+  scale_fill_viridis_d(name = "Continent") +
+  annotate(
+    "text",
+    x = 6.25,
+    y = 1:16 + 0.3,
+    label = round(sorted_prev, 2),
+    size = 2.5
+  ) +
+  labs(x = "COI", y = "Region")
+```
+
+```{r}
+mean_world / med_world / ridges + plot_layout(widths = c(2, 2, 1))
+
+mean_world / ridges +
+  plot_layout(heights = c(2, 1)) +
+  plot_annotation(tag_levels = "A")
 ```

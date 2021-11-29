@@ -49,7 +49,9 @@ Suggests:
     tidyselect,
     vdiffr,
     malariaAtlas,
-    raster
+    raster,
+    ggridges,
+    countrycode
 VignetteBuilder:
     knitr
 RdMacros:
