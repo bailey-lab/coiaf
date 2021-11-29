@@ -25,6 +25,7 @@ Depends:
 Imports:
     boot,
     dplyr,
+    ggplot2,
     forcats,
     glue,
     Hmisc,
@@ -36,7 +37,6 @@ Imports:
     utils
 Suggests:
     bench,
-    ggplot2,
     ggpubr,
     ggsci,
     knitr,
@@ -45,7 +45,8 @@ Suggests:
     spelling,
     testthat,
     tibble,
-    tidyselect
+    tidyselect,
+    vdiffr
 VignetteBuilder:
     knitr
 RdMacros:
