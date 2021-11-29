@@ -64,8 +64,8 @@ process <- function(wsaf,
     # accounting for sequence error
     df <- data.frame(
       plaf_cut = suppressWarnings(Hmisc::cut2(plaf, m = bin_size)),
-      variant = ifelse(wsaf <= seq_error | wsaf >= (1 - seq_error), 0, 1))
-
+      variant = ifelse(wsaf <= seq_error | wsaf >= (1 - seq_error), 0, 1)
+    )
   } else if (coi_method == "2") {
     # Subset to heterozygous sites
     data <- data.frame(wsaf = wsaf, plaf = plaf) %>%
@@ -76,18 +76,25 @@ process <- function(wsaf,
     # If remove all data, need to return a pseudo result to not induce errors.
     # Additionally, in order to define a cut, need at least 2 data points
     if (length(plaf) <= 1) {
-      vec <- stats::setNames(rep("", 4), c("plaf_cut", "m_variant", "bucket_size", "midpoints"))
+      vec <- stats::setNames(
+        rep("", 4),
+        c("plaf_cut", "m_variant", "bucket_size", "midpoints")
+      )
       df_grouped <- dplyr::bind_rows(vec)[0, ]
-      res <- list(data = df_grouped,
-                  seq_error = seq_error,
-                  bin_size = bin_size,
-                  cuts = NULL)
+      res <- list(
+        data = df_grouped,
+        seq_error = seq_error,
+        bin_size = bin_size,
+        cuts = NULL
+      )
       return(res)
     }
 
     # Isolate PLAF, and keep WSAF as is
-    df <- data.frame(plaf_cut = suppressWarnings(Hmisc::cut2(plaf, m = bin_size)),
-                     variant = wsaf)
+    df <- data.frame(
+      plaf_cut = suppressWarnings(Hmisc::cut2(plaf, m = bin_size)),
+      variant = wsaf
+    )
   }
 
   # In some instances, Hmisc::cut2 assigns a cut with only 1 number in it.
@@ -118,8 +125,10 @@ process <- function(wsaf,
   # Average over intervals of PLAF
   df_grouped <- df %>%
     dplyr::group_by(.data$plaf_cut, .drop = FALSE) %>%
-    dplyr::summarise(m_variant   = mean(.data$variant),
-                     bucket_size = dplyr::n()) %>%
+    dplyr::summarise(
+      m_variant   = mean(.data$variant),
+      bucket_size = dplyr::n()
+    ) %>%
     stats::na.omit()
 
   # Find the cuts for our data
@@ -132,10 +141,12 @@ process <- function(wsaf,
   df_grouped$midpoints <- cuts[-length(cuts)] + diff(cuts) / 2
 
   # Return data, seq_error, and cuts
-  res <- list(data = df_grouped,
-              seq_error = seq_error,
-              bin_size = bin_size,
-              cuts = cuts)
+  res <- list(
+    data = df_grouped,
+    seq_error = seq_error,
+    bin_size = bin_size,
+    cuts = cuts
+  )
 }
 
 #------------------------------------------------
@@ -180,11 +191,13 @@ process_sim <- function(sim,
   assert_single_pos_int(bin_size)
 
   # Run helper to process
-  processed_sim <- process(wsaf       = sim$data$wsaf,
-                           plaf       = sim$data$plaf,
-                           seq_error  = seq_error,
-                           bin_size   = bin_size,
-                           coi_method = coi_method)
+  processed_sim <- process(
+    wsaf       = sim$data$wsaf,
+    plaf       = sim$data$plaf,
+    seq_error  = seq_error,
+    bin_size   = bin_size,
+    coi_method = coi_method
+  )
 }
 
 #------------------------------------------------
@@ -232,9 +245,11 @@ process_real <- function(wsaf, plaf,
   assert_bounded(plaf, left = 0, right = 0.5)
 
   # Run helper to process
-  processed_real <- process(wsaf       = wsaf,
-                            plaf       = plaf,
-                            seq_error  = seq_error,
-                            bin_size   = bin_size,
-                            coi_method = coi_method)
+  processed_real <- process(
+    wsaf       = wsaf,
+    plaf       = plaf,
+    seq_error  = seq_error,
+    bin_size   = bin_size,
+    coi_method = coi_method
+  )
 }
