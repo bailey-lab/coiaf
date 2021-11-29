@@ -1,35 +1,26 @@
 ---
-title: "Creation of Figures"
+title: "Figures for Manuscript"
 author: "Aris Paschalidis"
 output:
   html_document:
     highlight: pygments
     toc: true
     toc_float: true
-editor_options:
-  chunk_output_type: console
 ---
 
 ```{r setup, include = FALSE}
-# Here, we set default options for our markdown file
 knitr::opts_chunk$set(
-  comment = "#>"
+  collapse = TRUE,
+  comment = "#>",
+  echo = FALSE
 )
 
 library(coiaf)
 library(ggplot2)
-
-# Theme for ggplot2 images
-mytheme <- list(theme_classic(), 
-  theme(text = element_text(family = "Times New Roman"),
-        plot.title = element_text(hjust = 0.5, size = 12),
-        axis.title = element_text(size = 10),
-        legend.position = "right",
-        legend.title = element_text(size = 12),
-        legend.text = element_text(size = 10)))
+library(patchwork)
 ```
 
-## Figure 1
+## Flowchart of Methods
 ```{r initialize PLAF}
 # Set seed
 set.seed(1)
@@ -40,182 +31,155 @@ p <- stats::rbeta(L, 1, 5)
 p[p > 0.5] <- 1 - p[p > 0.5]
 ```
 
-```{r}
+```{r data points for methods}
 set.seed(30)
 sim <- sim_biallelic(coi = 4, plaf = p, coverage = 400)
 
 # All data
-all <- ggplot() + 
+all <- ggplot() +
   geom_point(data = sim$data, aes(x = plaf, y = wsaf), alpha = 0.5) +
-  mytheme +
-  labs(x = "PLAF", y = "WSAF", title = "All Data Points")
+  theme_coiaf() +
+  labs(x = "PLMAF", y = "WSMAF", title = "All Data Points")
 
-# Variant for method 1
-m1_data <- data.frame(plaf = sim$data$plaf,
-                      wsaf = ifelse(sim$data$wsaf <= 0 | sim$data$wsaf >= 1, 0, 1))
-variant <- ggplot() + 
+# Variant data
+m1_data <- data.frame(
+  plaf = sim$data$plaf,
+  wsaf = ifelse(sim$data$wsaf <= 0 | sim$data$wsaf >= 1, 0, 1)
+)
+variant <- ggplot() +
   geom_point(data = m1_data, aes(x = plaf, y = wsaf), alpha = 0.5) +
-  mytheme +
-  labs(x = "PLAF", y = "Variant Site", title = "Variants")
+  theme_coiaf() +
+  labs(x = "PLMAF", y = "Variant Site", title = "Variants")
 
-# Heterozygous data for method 2
+# Heterozygous data
 m2_data <- data.frame(wsaf = sim$data$wsaf, plaf = sim$data$plaf) %>%
   dplyr::filter(wsaf > 0 & wsaf < 1)
 
-het <- ggplot() + 
+het <- ggplot() +
   geom_point(data = m2_data, aes(x = plaf, y = wsaf), alpha = 0.5) +
-  mytheme +
-  labs(x = "PLAF", y = "WSAF", title = "Heterozygous Data")
-
-ggpubr::ggarrange(all, labels = "AUTO", font.label = list(size = 10))
-
-ggpubr::ggarrange(variant, het, 
-                  labels = c("B", "C"), 
-                  ncol = 2,
-                  font.label = list(size = 10))
+  theme_coiaf() +
+  labs(x = "PLMAF", y = "WSMAF", title = "Heterozygous Data")
 ```
 
-
-```{r}
+```{r figures with theoretical and true lines}
 # Method 1 with red lines
 df_grouped_1 <- process_sim(sim, coi_method = "1", bin_size = 50)
 
 m1r <- ggplot() +
-  geom_point(data = m1_data, aes(x = plaf, y = wsaf), alpha = 0.5) + 
-  geom_line(data = df_grouped_1$data, aes(x = midpoints, y = m_variant), color = "red", size = 1.2) +
+  geom_point(data = m1_data, aes(x = plaf, y = wsaf), alpha = 0.5) +
+  geom_line(
+    data = df_grouped_1$data,
+    aes(x = midpoints, y = m_variant),
+    color = "red",
+    size = 1.2
+  ) +
   geom_line(aes(x = p, y = 1 - p^1 - (1 - p)^1), color = "red", linetype = 2) +
   geom_line(aes(x = p, y = 1 - p^2 - (1 - p)^2), color = "red", linetype = 2) +
   geom_line(aes(x = p, y = 1 - p^3 - (1 - p)^3), color = "red", linetype = 2) +
   geom_line(aes(x = p, y = 1 - p^4 - (1 - p)^4), color = "red", linetype = 2) +
   geom_line(aes(x = p, y = 1 - p^5 - (1 - p)^5), color = "red", linetype = 2) +
-  annotate(geom = "text", x = 0.47, y = 1 - 0.5^(0:1) + 0.04,
-           label = c("COI = 1", "COI = 2"), col = "red", size = 7 / .pt) +
-  annotate(geom = "text", x = 0.47, y = 1 - 0.5^(2:4) - 0.03,
-           label = c("COI = 3", "COI = 4", "COI = 5"), col = "red", size = 7 / .pt) +
-  mytheme +
+  annotate(
+    geom = "text", x = 0.47, y = 1 - 0.5^(0:1) + 0.04,
+    label = c("COI = 1", "COI = 2"), col = "red", size = 7 / .pt
+  ) +
+  annotate(
+    geom = "text", x = 0.47, y = 1 - 0.5^(2:4) - 0.03,
+    label = c("COI = 3", "COI = 4", "COI = 5"), col = "red", size = 7 / .pt
+  ) +
+  theme_coiaf() +
   theme(axis.title.y.right = element_text(color = "red")) +
   scale_y_continuous(sec.axis = dup_axis(name = "Probability a Site is Heterozygous")) +
-  labs(x = "PLAF", y = "Variant Site", title = "Method 1")
+  labs(x = "PLMAF", y = "Variant Site", title = "Variant Method")
 
 # Method 2 with red lines
 df_grouped_2 <- process_sim(sim, coi_method = "2", bin_size = 50)
 
-m2r <- ggplot() + 
-  geom_point(data = m2_data, aes(x = plaf, y = wsaf), alpha = 0.5) + 
-  geom_line(data = df_grouped_2$data, aes(x = midpoints, y = m_variant), color = "red", size = 1.1) +
-  geom_line(aes(x = p, y = (p - p^2)/(1 - p^2 - (1 - p)^2)), 
-                color = "red", linetype = 2) +
-  geom_line(aes(x = p, y = (p - p^3)/(1 - p^3 - (1 - p)^3)), 
-                color = "red", linetype = 2) +
-  geom_line(aes(x = p, y = (p - p^4)/(1 - p^4 - (1 - p)^4)), 
-                color = "red", linetype = 2) +
-  geom_line(aes(x = p, y = (p - p^5)/(1 - p^5 - (1 - p)^5)), 
-                color = "red",linetype = 2) +
-  geom_line(aes(x = p, y = (p - p^6)/(1 - p^6 - (1 - p)^6)), 
-                color = "red",linetype = 2) +
-  annotate(geom = "text", x = 0.01, y = 1/3:5 + 0.03,
-           label = c("COI = 3", "COI = 4", "COI = 5"), col = "red", 
-           size = 7 / .pt, angle='8') +
-  annotate(geom = "text", x = 0.02, y = 1/2 + 0.03,
-           label = c("COI = 2"), col = "red", size = 7 / .pt) +
-  annotate(geom = "text", x = 0.02, y = 1/6 - 0.02,
-           label = c("COI = 6"), col = "red", size = 7 / .pt, angle='10') +
-  mytheme +
+m2r <- ggplot() +
+  geom_point(data = m2_data, aes(x = plaf, y = wsaf), alpha = 0.5) +
+  geom_line(
+    data = df_grouped_2$data,
+    aes(x = midpoints, y = m_variant),
+    color = "red",
+    size = 1.1
+  ) +
+  geom_line(aes(x = p, y = (p - p^2) / (1 - p^2 - (1 - p)^2)),
+    color = "red", linetype = 2
+  ) +
+  geom_line(aes(x = p, y = (p - p^3) / (1 - p^3 - (1 - p)^3)),
+    color = "red", linetype = 2
+  ) +
+  geom_line(aes(x = p, y = (p - p^4) / (1 - p^4 - (1 - p)^4)),
+    color = "red", linetype = 2
+  ) +
+  geom_line(aes(x = p, y = (p - p^5) / (1 - p^5 - (1 - p)^5)),
+    color = "red", linetype = 2
+  ) +
+  geom_line(aes(x = p, y = (p - p^6) / (1 - p^6 - (1 - p)^6)),
+    color = "red", linetype = 2
+  ) +
+  annotate(
+    geom = "text", x = 0.01, y = 1 / 3:5 + 0.03,
+    label = c("COI = 3", "COI = 4", "COI = 5"), col = "red",
+    size = 7 / .pt, angle = "8"
+  ) +
+  annotate(
+    geom = "text", x = 0.02, y = 1 / 2 + 0.03,
+    label = c("COI = 2"), col = "red", size = 7 / .pt
+  ) +
+  annotate(
+    geom = "text", x = 0.02, y = 1 / 6 - 0.02,
+    label = c("COI = 6"), col = "red", size = 7 / .pt, angle = "10"
+  ) +
+  theme_coiaf() +
   theme(axis.title.y.right = element_text(color = "red")) +
-  scale_y_continuous(sec.axis = dup_axis(name = "Expected WSAF Given a Site is Heterozygous")) +
-  labs(x = "PLAF", y = "WSAF", title = "Method 2")
-
-
-ggpubr::ggarrange(m1r, m2r, 
-                  labels = c("D", "E"), 
-                  ncol = 2,
-                  font.label = list(size = 10))
+  scale_y_continuous(sec.axis = dup_axis(name = "Expected WSMAF Given a Site is Heterozygous")) +
+  labs(x = "PLMAF", y = "WSMAF", title = "Frequency Method")
 ```
 
+```{r figure 1}
+plot <- (plot_spacer() +
+  all +
+  plot_spacer() +
+  plot_layout(widths = c(1, 3, 1))
+) /
+  (variant | het) /
+  (m1r | m2r) +
+  plot_annotation(tag_levels = "A")
 
-## Figure 2
-```{r ggplot2 attempt, warning = F}
-set.seed(4)
-sim <- sim_biallelic(coi = 4, plaf = p)
-p <- seq(0, 0.5, l=101)
+plot
 
-df_grouped_1 <- process_sim(sim, coi_method = "1", bin_size = 50)
-df_grouped_2 <- process_sim(sim, coi_method = "2", bin_size = 50)
-
-method1 <- ggplot() + 
-  geom_point(data = sim$data, aes(x = plaf, y = wsaf), alpha = 0.5) + 
-  geom_line(data = df_grouped_1$data, aes(x = midpoints, y = m_variant), color = "red", size = 1.2) +
-  geom_line(aes(x = p, y = 1 - p^1 - (1 - p)^1), color = "red", linetype = 2) +
-  geom_line(aes(x = p, y = 1 - p^2 - (1 - p)^2), color = "red", linetype = 2) +
-  geom_line(aes(x = p, y = 1 - p^3 - (1 - p)^3), color = "red", linetype = 2) +
-  geom_line(aes(x = p, y = 1 - p^4 - (1 - p)^4), color = "red", linetype = 2) +
-  geom_line(aes(x = p, y = 1 - p^5 - (1 - p)^5), color = "red", linetype = 2) +
-  annotate(geom = "text", x = 0.505, y = 1 - 0.5^(0:4), 
-           label = c("1", "2", "3", "4", "5"), col = "red", size = 7 / .pt) +
-  mytheme +
-  theme(axis.title.y.right = element_text(color = "red")) +
-  scale_y_continuous(sec.axis = dup_axis(name = "Probability a Site is Heterozygous")) +
-  labs(x = "PLAF", y = "WSAF", title = "Method 1")
-
-method2 <- ggplot() + 
-  geom_point(data = sim$data, aes(x = plaf, y = wsaf), alpha = 0.5) + 
-  geom_line(data = df_grouped_2$data, aes(x = midpoints, y = m_variant), color = "red", size = 1.1) +
-  geom_line(aes(x = p, y = (p - p^2)/(1 - p^2 - (1 - p)^2)), 
-                color = "red", linetype = 2) +
-  geom_line(aes(x = p, y = (p - p^3)/(1 - p^3 - (1 - p)^3)), 
-                color = "red", linetype = 2) +
-  geom_line(aes(x = p, y = (p - p^4)/(1 - p^4 - (1 - p)^4)), 
-                color = "red", linetype = 2) +
-  geom_line(aes(x = p, y = (p - p^5)/(1 - p^5 - (1 - p)^5)), 
-                color = "red",linetype = 2) +
-  geom_line(aes(x = p, y = (p - p^6)/(1 - p^6 - (1 - p)^6)), 
-                color = "red",linetype = 2) +
-  annotate(geom = "text", x = -0.005, y = 1/2:6, 
-           label = c("2", "3", "4", "5", "6"), col = "red", size = 7 / .pt) +
-  mytheme +
-  theme(axis.title.y.right = element_text(color = "red")) +
-  scale_y_continuous(sec.axis = dup_axis(name = "Expected WSAF Given a Site is Heterozygous")) +
-  labs(x = "PLAF", y = "WSAF", title = "Method 2")
-
-ggpubr::ggarrange(method1, method2,
-                  ncol = 2,
-                  labels = "AUTO",
-                  font.label = list(size = 10))
-
-# To get the following code to work, must have toverall_images return a list
-# of plots
-Figure1 <- c(list(method1, method2), toverall_image)
-ggpubr::ggarrange(ggpubr::ggarrange(plotlist = Figure1,
-                                    nrow = 2, ncol = 2,
-                                    labels = "AUTO",
-                                    font.label = list(size = 10)),
-                  toverall_error,
-                  nrow = 2,
-                  heights = c(2, 1),
-                  labels = c("" ,"E"),
-                  font.label = list(size = 10))
+# ggsave(
+#   "test1.jpeg",
+#   path = "~/Desktop/Malaria/Conferences/ASTMH/Images/",
+#   device = "jpeg",
+#   width = 7,
+#   height = 8,
+#   dpi = 300
+# )
 ```
 
-## Figure 5
+## Case Study of Increased Variance
 ```{r}
-data = data.frame(wsaf = wsaf, plaf = plaf)
+# We must first extract the wsaf and plaf for our sample of interest
+# We look at sample PA0454-C
+# After extracting said data, we can run the following to generate our figure
 
-full <- ggplot() + 
-  geom_point(data = data, aes(x = plaf, y = wsaf), alpha = 0.5) +
-  mytheme +
-  labs(x = "PLAF", y = "WSAF", title = "All Loci")
-
-data_sub <- data %>% dplyr::filter(wsaf > seq_error & wsaf < (1 - seq_error))
-
-subset <- ggplot() + 
-  geom_point(data = data_sub, aes(x = plaf, y = wsaf), alpha = 0.5) +
-  mytheme +
-  labs(x = "PLAF", y = "WSAF", title = "Heterozygous Loci")
-
-ggpubr::ggarrange(full, subset,
-                  ncol = 2,
-                  labels = "AUTO",
-                  font.label = list(size = 10))
+# data = data.frame(wsaf = wsaf, plaf = plaf)
+#
+# full <- ggplot() +
+#   geom_point(data = data, aes(x = plaf, y = wsaf), alpha = 0.5) +
+#   mytheme +
+#   labs(x = "PLAF", y = "WSAF", title = "All Loci")
+#
+# data_sub <- data %>% dplyr::filter(wsaf > seq_error & wsaf < (1 - seq_error))
+#
+# subset <- ggplot() +
+#   geom_point(data = data_sub, aes(x = plaf, y = wsaf), alpha = 0.5) +
+#   mytheme +
+#   labs(x = "PLAF", y = "WSAF", title = "Heterozygous Loci")
+#
+# ggpubr::ggarrange(full, subset,
+#                   ncol = 2,
+#                   labels = "AUTO",
+#                   font.label = list(size = 10))
 ```
-
-
