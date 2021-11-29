@@ -81,9 +81,7 @@ sim_biallelic <- function(coi = 3,
   # If a single value was input, then repeat coverage so that coverage is
   # applied over all loci.
   L <- length(plaf)
-  if (length(coverage) == 1) {
-    coverage <- rep(coverage, L)
-  }
+  if (length(coverage) == 1) coverage <- rep(coverage, L)
 
   # Continue to check inputs
   assert_vector(coverage)
@@ -102,23 +100,21 @@ sim_biallelic <- function(coi = 3,
 
   ## Handle relatedness
   if (relatedness > 0 && coi > 1) {
-
     # If there is relatedness, we iteratively step through each lineage
     for (i in seq_len(coi - 1)) {
-
       # For each loci, we assume that it is related with probability relatedness
       rel_i <- as.logical(rbinom(L, size = 1, prob = relatedness))
-
       # And for those sites that are related, we draw from the other lineages
       if (any(rel_i)) {
-
         if (i == 1) {
-          m[i+1, rel_i] <- m[seq_len(i), rel_i]
+          m[i + 1, rel_i] <- m[seq_len(i), rel_i]
         } else {
-          m[i+1, rel_i] <- apply(m[seq_len(i), rel_i, drop = FALSE],
-                                 2,
-                                 sample,
-                                 size = 1)
+          m[i + 1, rel_i] <- apply(
+            m[seq_len(i), rel_i, drop = FALSE],
+            2,
+            sample,
+            size = 1
+          )
         }
       }
     }
@@ -126,8 +122,8 @@ sim_biallelic <- function(coi = 3,
 
   # Draw with the within sample allele frequencies (p_levels) are
   if (coi == 1) {
-    p_levels = m*w
-  } else{
+    p_levels <- m * w
+  } else {
     p_levels <- colSums(sweep(m, 1, w, "*"))
   }
 
@@ -135,28 +131,36 @@ sim_biallelic <- function(coi = 3,
   p_levels[p_levels > 1] <- 1L
 
   # Add in genotyping error
-  p_error <- p_levels * (1 - epsilon) + (1 - p_levels) *epsilon
+  p_error <- p_levels * (1 - epsilon) + (1 - p_levels) * epsilon
 
   # Draw read counts, taking into account overdispersion
   if (overdispersion == 0) {
     counts <- rbinom(L, size = coverage, prob = p_error)
   } else {
-    counts <- rbetabinom(L,
-                         k = coverage,
-                         alpha = p_error/overdispersion,
-                         beta = (1 - p_error)/overdispersion)
+    counts <- rbetabinom(
+      L,
+      k = coverage,
+      alpha = p_error / overdispersion,
+      beta = (1 - p_error) / overdispersion
+    )
   }
 
   # Return list
-  ret <- list(coi = coi,
-              strain_proportions = w,
-              phased = m,
-              data = data.frame(plaf     = plaf,
-                                coverage = coverage,
-                                counts   = counts,
-                                wsaf     = counts/coverage),
-              inputs = data.frame(alpha          = alpha,
-                                  overdispersion = overdispersion,
-                                  relatedness    = relatedness,
-                                  epsilon        = epsilon))
+  ret <- list(
+    coi = coi,
+    strain_proportions = w,
+    phased = m,
+    data = data.frame(
+      plaf     = plaf,
+      coverage = coverage,
+      counts   = counts,
+      wsaf     = counts / coverage
+    ),
+    inputs = data.frame(
+      alpha          = alpha,
+      overdispersion = overdispersion,
+      relatedness    = relatedness,
+      epsilon        = epsilon
+    )
+  )
 }
