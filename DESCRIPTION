@@ -36,6 +36,7 @@ Imports:
     tidyr,
     utils
 Suggests:
+    ggtext,
     bench,
     ggpubr,
     ggsci,
@@ -46,7 +47,9 @@ Suggests:
     testthat,
     tibble,
     tidyselect,
-    vdiffr
+    vdiffr,
+    malariaAtlas,
+    raster
 VignetteBuilder:
     knitr
 RdMacros:

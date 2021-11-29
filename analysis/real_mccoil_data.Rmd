@@ -21,29 +21,34 @@ options(tibble.max_extra_cols = 5)
 
 # Function to determine if pbapply is installed. If it is installed, it will
 # display a progress bar
-list_apply <- function(x, fun, ...){
+list_apply <- function(x, fun, ...) {
   if (requireNamespace("pbapply", quietly = TRUE)) {
     pbapply::pblapply(x, fun, ...)
-    } else {
+  } else {
     lapply(x, fun, ...)
   }
 }
 
 # Define booleans to determine whether certain code chunks should be run.
-run_real = FALSE
-read_pf6k = FALSE
+run_real <- FALSE
+read_pf6k <- FALSE
 
 library(coiaf)
 library(ggplot2)
+library(patchwork)
 
 # Theme for ggplot2 images
-mytheme <- list(theme_classic(), 
-  theme(text = element_text(family = "Times New Roman"),
-        plot.title = element_text(hjust = 0.5, size = 10),
-        axis.title = element_text(size = 8),
-        legend.position = "right",
-        legend.title = element_text(size = 10),
-        legend.text = element_text(size = 8)))
+mytheme <- list(
+  theme_classic(),
+  theme(
+    text = element_text(family = "Times New Roman"),
+    plot.title = element_text(hjust = 0.5, size = 12),
+    axis.title = element_text(size = 10),
+    legend.position = "right",
+    legend.title = element_text(size = 12),
+    legend.text = element_text(size = 10)
+  )
+)
 ```
 
 In this analysis file, we run our COI algorithm on a collection of real data
@@ -55,15 +60,15 @@ McCOIL.
 
 ```{r read data}
 # Path to data
-path = "~/Desktop/Malaria/COI data/"
+path <- "~/Desktop/Malaria/COI data/"
 
 # Read in the real data and the REAL McCOIL COI predictions
-rmcl_wsafs   <- readRDS(paste0(path, "RMCL_wsafs_unique.rds"))
-rmcl_coi_out <- readRDS(paste0(path, "RMCL_coi_out.rds")) %>% 
-  tibble::as_tibble() %>% 
-  dplyr::mutate(dplyr::across(c(file, name), as.character)) %>% 
-  dplyr::rename(rmcl = COI) %>% 
-  dplyr::rename(rmcl_025 = COI_025) %>% 
+rmcl_wsafs <- readRDS(paste0(path, "RMCL_wsafs_unique.rds"))
+rmcl_coi_out <- readRDS(paste0(path, "RMCL_coi_out.rds")) %>%
+  tibble::as_tibble() %>%
+  dplyr::mutate(dplyr::across(c(file, name), as.character)) %>%
+  dplyr::rename(rmcl = COI) %>%
+  dplyr::rename(rmcl_025 = COI_025) %>%
   dplyr::rename(rmcl_975 = COI_975)
 ```
 
@@ -71,92 +76,114 @@ Run our data, set it up in an ideal format and save the data sets as .rds files.
 
 ```{r run data, eval = run_real}
 # seq(1, length(rmcl_wsafs), 10)
-raw_predictions <-  pbapply::pblapply(seq_len(length(rmcl_wsafs)), function(x) {
+raw_predictions <- pbapply::pblapply(seq_len(length(rmcl_wsafs)), function(x) {
   print(names(rmcl_wsafs)[x])
   sample <- rmcl_wsafs[[x]]
-  plaf   <- colMeans(sample, na.rm = T)
-  
+  plaf <- colMeans(sample, na.rm = T)
+
   # For each sample run the optimize_coi function
   coi_region <- pbapply::pblapply(seq_len(nrow(sample)), function(i) {
-    wsaf  <- sample[i,]
+    wsaf <- sample[i, ]
     input <- tibble::tibble(wsaf = wsaf, plaf = plaf) %>% tidyr::drop_na()
-    
+
     ## Compute COI
     # Discrete
     rob_d1 <- function(input) {
-      tryCatch(discrete_1 <- compute_coi(input, "real", coi_method = "1", bin_size = 50)$coi, 
-             error = function(e) {print(paste("Error for sample", rownames(sample)[i])); NaN})
+      tryCatch(discrete_1 <- compute_coi(input, "real", coi_method = "1", bin_size = 50)$coi,
+        error = function(e) {
+          print(paste("Error for sample", rownames(sample)[i]))
+          NaN
+        }
+      )
     }
     discrete_1 <- rob_d1(input)
     rob_d2 <- function(input) {
-      tryCatch(discrete_2 <- compute_coi(input, "real", coi_method = "2", bin_size = 50)$coi, 
-             error = function(e) {print(paste("Error for sample", rownames(sample)[i])); NaN})
+      tryCatch(discrete_2 <- compute_coi(input, "real", coi_method = "2", bin_size = 50)$coi,
+        error = function(e) {
+          print(paste("Error for sample", rownames(sample)[i]))
+          NaN
+        }
+      )
     }
     discrete_2 <- rob_d2(input)
 
     # Continuous
     rob_c1 <- function(input) {
-      tryCatch(continuous_1 <- optimize_coi(input, "real", coi_method = "1", bin_size = 50), 
-             error = function(e) {print(paste("Error for sample", rownames(sample)[i])); NaN})
+      tryCatch(continuous_1 <- optimize_coi(input, "real", coi_method = "1", bin_size = 50),
+        error = function(e) {
+          print(paste("Error for sample", rownames(sample)[i]))
+          NaN
+        }
+      )
     }
     continuous_1 <- rob_c1(input)
     rob_c2 <- function(input) {
-      tryCatch(continuous_2 <- optimize_coi(input, "real", coi_method = "2", bin_size = 50), 
-             error = function(e) {print(paste("Error for sample", rownames(sample)[i])); NaN})
+      tryCatch(continuous_2 <- optimize_coi(input, "real", coi_method = "2", bin_size = 50),
+        error = function(e) {
+          print(paste("Error for sample", rownames(sample)[i]))
+          NaN
+        }
+      )
     }
     continuous_2 <- rob_c2(input)
     # continuous_1 <- optimize_coi(input, "real", coi_method = "1")
     # continuous_2 <- optimize_coi(input, "real", coi_method = "2")
 
     # coi_region <- discrete_1
-    coi_region <- list(discrete_1 = discrete_1, discrete_2 = discrete_2,
-                       continuous_1 = continuous_1, continuous_2 = continuous_2)
-
+    coi_region <- list(
+      discrete_1 = discrete_1, discrete_2 = discrete_2,
+      continuous_1 = continuous_1, continuous_2 = continuous_2
+    )
   }) %>% unlist()
   coi_region <- split(unlist(coi_region), names(coi_region))
-  
+
   # Prediction tibble
-  pred <- tibble::tibble(name = rownames(sample),
-                         discrete_1 = coi_region$discrete_1,
-                         discrete_2 = coi_region$discrete_2,
-                         continuous_1 = coi_region$continuous_1,
-                         continuous_2 = coi_region$continuous_2,
-                         file = names(rmcl_wsafs)[x])
+  pred <- tibble::tibble(
+    name = rownames(sample),
+    discrete_1 = coi_region$discrete_1,
+    discrete_2 = coi_region$discrete_2,
+    continuous_1 = coi_region$continuous_1,
+    continuous_2 = coi_region$continuous_2,
+    file = names(rmcl_wsafs)[x]
+  )
   # pred <- tibble::tibble(name = rownames(sample),
-                         # discrete_1 = coi_region,
-                         # file = names(rmcl_wsafs)[x])
+  # discrete_1 = coi_region,
+  # file = names(rmcl_wsafs)[x])
 
   # Summarize over the 5 rmcl runs
   rmcl_outputs <- rmcl_coi_out %>%
     dplyr::filter(stringr::str_detect(file, names(rmcl_wsafs)[x])) %>%
     dplyr::group_by(name) %>%
-    dplyr::summarise(rmcl_med     = median(rmcl),
-                     rmcl_025_med = median(rmcl_025),
-                     rmcl_975_med = median(rmcl_975),
-                     .groups = "drop") 
+    dplyr::summarise(
+      rmcl_med = median(rmcl),
+      rmcl_025_med = median(rmcl_025),
+      rmcl_975_med = median(rmcl_975),
+      .groups = "drop"
+    )
 
   # Join the tibbles
-  combined <-  dplyr::full_join(pred, rmcl_outputs, by = "name") %>% 
-    dplyr::mutate(Region = as.numeric(stringr::str_extract(file, "(?<=region_)[:digit:]*"))) %>% 
-    dplyr::mutate(VCF = as.numeric(stringr::str_extract(file, "(?<=vcf_)[:digit:]*"))) %>% 
+  combined <- dplyr::full_join(pred, rmcl_outputs, by = "name") %>%
+    dplyr::mutate(Region = as.numeric(stringr::str_extract(file, "(?<=region_)[:digit:]*"))) %>%
+    dplyr::mutate(VCF = as.numeric(stringr::str_extract(file, "(?<=vcf_)[:digit:]*"))) %>%
     dplyr::relocate(file, .after = dplyr::last_col())
-
 })
 names(raw_predictions) <- names(rmcl_wsafs)
 
 # Set up a tibble with all the information from the runs. Summarize over the 10
 # VCFs
 complete_predictions <- raw_predictions %>%
-  dplyr::bind_rows() %>% 
-  dplyr::group_by(name, Region) %>% 
-  dplyr::summarise(discrete_1_med   = median(discrete_1),
-                   discrete_2_med   = median(discrete_2),
-                   continuous_1_med = median(continuous_1),
-                   continuous_2_med = median(continuous_2),
-                   rmcl_med         = median(rmcl_med),
-                   rmcl_025_med     = median(rmcl_025_med),
-                   rmcl_975_med     = median(rmcl_975_med),
-                   .groups = "drop") %>% 
+  dplyr::bind_rows() %>%
+  dplyr::group_by(name, Region) %>%
+  dplyr::summarise(
+    discrete_1_med = median(discrete_1),
+    discrete_2_med = median(discrete_2),
+    continuous_1_med = median(continuous_1),
+    continuous_2_med = median(continuous_2),
+    rmcl_med = median(rmcl_med),
+    rmcl_025_med = median(rmcl_025_med),
+    rmcl_975_med = median(rmcl_975_med),
+    .groups = "drop"
+  ) %>%
   dplyr::relocate(Region, .after = dplyr::last_col())
 
 # Save data
@@ -183,17 +210,20 @@ length(unique(rmcl_coi_out$name))
 wsafs_patients <- lapply(seq_len(length(rmcl_wsafs)), function(x) {
   rownames(rmcl_wsafs[[x]])
 })
-wsafs_patients %>% unlist() %>% unique() %>% length()
+wsafs_patients %>%
+  unlist() %>%
+  unique() %>%
+  length()
 ```
-Looking at these values, we can see that for our WSAF matrices and our 
+Looking at these values, we can see that for our WSAF matrices and our
 predictions the number of patients match. However, our RMCL output has fewer
 total patients. We need to be sure to exclude these when we are comparing our
 two methods. We end up with `r length(unique(rmcl_coi_out$name))` samples.
 ```{r exclude patients}
 exclude <- setdiff(unique(complete_predictions$name), unique(rmcl_coi_out$name))
-compare_data <- complete_predictions %>% 
-  dplyr::filter(! name %in% exclude) %>% 
-  dplyr::filter(rmcl_med != 25) %>% 
+compare_data <- complete_predictions %>%
+  dplyr::filter(!name %in% exclude) %>%
+  dplyr::filter(rmcl_med != 25) %>%
   dplyr::relocate(Region, .after = dplyr::last_col())
 ```
 
@@ -201,28 +231,33 @@ compare_data <- complete_predictions %>%
 We first reshape our data so that discrete and continuous predictions are
 under the same column.
 ```{r pivoting data}
-pivot_data <- compare_data %>% 
-  tidyr::pivot_longer(tidyr::starts_with(c("discrete", "continuous")), 
-                      names_to = c(".value", "coi_method"), 
-                      names_pattern = "(.*)_(.)_.*") %>% 
-  tidyr::pivot_longer(dplyr::any_of(c("discrete", "continuous")), 
-                      names_to = "optimization", 
-                      values_to = "COI", 
-                      values_drop_na = TRUE) %>% 
-  dplyr::relocate(tidyselect::any_of(c("coi_method", "optimization", "COI")), 
-                  .after = name)
+pivot_data <- compare_data %>%
+  tidyr::pivot_longer(tidyr::starts_with(c("discrete", "continuous")),
+    names_to = c(".value", "coi_method"),
+    names_pattern = "(.*)_(.)_.*"
+  ) %>%
+  tidyr::pivot_longer(dplyr::any_of(c("discrete", "continuous")),
+    names_to = "optimization",
+    values_to = "COI",
+    values_drop_na = TRUE
+  ) %>%
+  dplyr::relocate(tidyselect::any_of(c("coi_method", "optimization", "COI")),
+    .after = name
+  )
 ```
 
 
 ```{r plot all data}
-label_names <- c("continuous" = "Continuous Optimization",
-                 "discrete" = "Discrete Optimization")
+label_names <- c(
+  "continuous" = "Continuous Optimization",
+  "discrete" = "Discrete Optimization"
+)
 
 # Both
 ggplot(pivot_data, aes(y = COI, x = rmcl_med, color = coi_method)) +
   scale_size_area() +
   geom_abline(color = "gray", size = 0.5) +
-  ggplot2::geom_count(alpha = 0.7, position=position_jitter(width = 0.1)) +
+  ggplot2::geom_count(alpha = 0.7, position = position_jitter(width = 0.1)) +
   mytheme +
   facet_wrap(. ~ optimization, labeller = as_labeller(label_names)) +
   guides(size = "none") +
@@ -232,13 +267,15 @@ ggplot(pivot_data, aes(y = COI, x = rmcl_med, color = coi_method)) +
   scale_x_continuous("THE REAL McCOIL Prediction", breaks = seq(0, 10))
 
 # Only discrete
-ggplot(dplyr::filter(pivot_data, optimization == "discrete"),
-       aes(y = COI, x = rmcl_med, color = coi_method)) +
+ggplot(
+  dplyr::filter(pivot_data, optimization == "discrete"),
+  aes(y = COI, x = rmcl_med, color = coi_method)
+) +
   scale_size_area() +
   geom_abline(color = "gray", size = 0.5) +
-  ggplot2::geom_count(alpha = 0.7, position=position_jitter(width = 0.1)) +
+  ggplot2::geom_count(alpha = 0.7, position = position_jitter(width = 0.1)) +
   mytheme +
-  facet_wrap(.~ Region, labeller = label_both) +
+  facet_wrap(. ~ Region, labeller = label_both) +
   guides(size = "none") +
   theme(legend.position = "right") +
   ylab("coiaf Prediction") +
@@ -246,12 +283,14 @@ ggplot(dplyr::filter(pivot_data, optimization == "discrete"),
   scale_x_continuous("THE REAL McCOIL Prediction", breaks = seq(1, 10))
 
 # Only continuous
-ggplot(dplyr::filter(pivot_data, optimization == "continuous"),
-       aes(y = COI, x = cut_width(rmcl_med, 1), color = coi_method)) +
+ggplot(
+  dplyr::filter(pivot_data, optimization == "continuous"),
+  aes(y = COI, x = cut_width(rmcl_med, 1), color = coi_method)
+) +
   geom_abline(color = "gray", size = 0.5) +
   ggplot2::geom_boxplot() +
   mytheme +
-  facet_wrap(.~ Region, labeller = label_both) +
+  facet_wrap(. ~ Region, labeller = label_both) +
   guides(size = "none") +
   theme(legend.position = "right") +
   ylab("coiaf Prediction") +
@@ -263,12 +302,12 @@ ggplot(dplyr::filter(pivot_data, optimization == "continuous"),
 
 ### Pf3k Data
 
-We need to access the Pf3k data in order to create a world map. 
+We need to access the Pf3k data in order to create a world map.
 
 ```{r read Pf6k, eval = read_pf6k}
 # Read in
 tf <- tempfile()
-download.file("ftp://ngs.sanger.ac.uk/production/malaria/pfcommunityproject/Pf6/Pf_6_samples.txt",tf)
+download.file("ftp://ngs.sanger.ac.uk/production/malaria/pfcommunityproject/Pf6/Pf_6_samples.txt", tf)
 meta <- data.table::fread(tf)
 saveRDS(meta, file = "analysis/pf6k_meta.rds")
 ```
@@ -278,7 +317,7 @@ meta <- readRDS("analysis/pf6k_meta.rds")
 ```
 
 We can then cluster our samples into suitably close regions, for which we assume
-the same PLAF exists but without reducing our n. We can use a silhouette plot to 
+the same PLAF exists but without reducing our n. We can use a silhouette plot to
 visualize the optimum number of regions to guide our decisions.
 
 ```{r k-means}
@@ -286,7 +325,7 @@ visualize the optimum number of regions to guide our decisions.
 locations <- unique(meta[, c("Lat", "Long")])
 
 sis <- 2:(nrow(locations) - 1)
-for(k in sis) {
+for (k in sis) {
   si <- cluster::silhouette(cluster::pam(x = locations, k))
   sis[k - 1] <- mean(si[, 3])
 }
@@ -296,21 +335,27 @@ for(k in sis) {
 # workaround for this for making the number a different color is to use
 # `ggtext::element_markdown`, but this does not work for making the tick mark
 # another color
-sil <- data.frame(cluster = seq_along(sis) + 1,
-                  sis = sis)
-ggplot(sil, aes(x = cluster, y = sis)) + 
+sil <- data.frame(
+  cluster = seq_along(sis) + 1,
+  sis = sis
+)
+ggplot(sil, aes(x = cluster, y = sis)) +
   geom_point() +
   geom_vline(xintercept = which(diff(sign(diff(sis))) == -2) + 2, linetype = 5) +
   geom_vline(xintercept = 24, linetype = 5, color = "red") +
-  annotation_custom(grob = grid::segmentsGrob(gp = grid::gpar(col = "red", lwd = 2)), 
-    xmin = 24, xmax = 24, ymin = -0.025, ymax = -0.02) +
+  annotation_custom(
+    grob = grid::segmentsGrob(gp = grid::gpar(col = "red", lwd = 2)),
+    xmin = 24, xmax = 24, ymin = -0.025, ymax = -0.02
+  ) +
   scale_x_continuous(breaks = c(0, 20, 24, 40, 60)) +
   labs(x = "Number of Clusters", y = "Average Silhoutte Score") +
   theme_classic() +
-  theme(text = element_text(family = "Times New Roman"),
-        axis.title = element_text(size = 8),
-        axis.text.x = ggtext::element_markdown(color = c("black", "black", "red", "black", "black")),
-        axis.ticks.x = element_line(color = c("black", "black", "red", "black", "black")))
+  theme(
+    text = element_text(family = "Times New Roman"),
+    axis.title = element_text(size = 8),
+    axis.text.x = ggtext::element_markdown(color = c("black", "black", "red", "black", "black")),
+    axis.ticks.x = element_line(color = c("black", "black", "red", "black", "black"))
+  )
 ```
 
 Based on this plot, we select 24 regions as the optimal cluster number. We then
@@ -318,7 +363,7 @@ cluster our samples and combine the data with our predictions.
 
 ```{r cluster}
 # Clustering with 24 locations
-ks <- cluster::pam(meta[,c("Lat", "Long")], k = 24)
+ks <- cluster::pam(meta[, c("Lat", "Long")], k = 24)
 meta$color <- as.factor(ks$clustering)
 ```
 
@@ -336,7 +381,7 @@ meta <- tidyr::drop_na(meta)
 PfPR2_10 <- malariaAtlas::getRaster(year = sort(unique(meta$prev_2_10)))
 
 # loop through and extra malaria prevalence
-for(i in seq_along(sort(unique(meta$Year)))){
+for (i in seq_along(sort(unique(meta$Year)))) {
   year <- sort(unique(meta$Year))[i]
   pos <- which(meta$Year == year)
   i_coords <- coords[pos, ]
@@ -348,8 +393,9 @@ for(i in seq_along(sort(unique(meta$Year)))){
 fws <- read.csv("ftp://ngs.sanger.ac.uk/production/malaria/pfcommunityproject/Pf6/Pf_6_fws.txt", sep = "\t")
 
 # Combine Pf6k, FwS, and our predictions
-patient_lat_long <- dplyr::left_join(compare_data, meta, 
-                                     by = c("name" = "Sample")) %>% 
+patient_lat_long <- dplyr::left_join(compare_data, meta,
+  by = c("name" = "Sample")
+) %>%
   dplyr::left_join(fws, by = c("name" = "Sample"))
 ```
 
@@ -360,95 +406,115 @@ World map with average COI
 
 ```{r world map, fig.height = 2}
 # Get average of data
-map_average <- patient_lat_long %>% 
-  dplyr::group_by(Site, Lat, Long) %>% 
-  dplyr::summarise(coi_mean = mean(discrete_1_med),
-                   coi_med  = median(discrete_1_med),
-                   prev = median(as.numeric(prev_2_10)),
-                   rmcl_med = median(rmcl_med),
-                   .groups = "drop") %>% 
-  dplyr::rename(lat  = Lat) %>% 
+map_average <- patient_lat_long %>%
+  dplyr::group_by(Site, Lat, Long) %>%
+  dplyr::summarise(
+    coi_mean = mean(discrete_1_med),
+    coi_med = median(discrete_1_med),
+    prev = median(as.numeric(prev_2_10)),
+    rmcl_med = median(rmcl_med),
+    .groups = "drop"
+  ) %>%
+  dplyr::rename(lat = Lat) %>%
   dplyr::rename(long = Long)
 
 # Plot the mean COI
-mean_world <- world_map(map_average, map_average$coi_mean, label = "Mean COI", 
-                        alpha = 0.7, breaks = c(1.0, 1.5, 2.0, 2.5))
+mean_world <- world_map(map_average, map_average$coi_mean,
+  label = "Mean COI",
+  alpha = 0.7, breaks = c(1.0, 1.5, 2.0, 2.5)
+)
 
 # Plot the median COI
-med_world <- world_map(map_average, map_average$coi_med, label = "Median COI", 
-                       alpha = 0.7, breaks = c(1.0, 1.5, 2.0))
+med_world <- world_map(map_average, map_average$coi_med,
+  label = "Median COI",
+  alpha = 0.7, breaks = c(1.0, 1.5, 2.0)
+)
 ```
 
 World map with all data
 
 ```{r all patients map, fig.height = 2}
 # Get data that has a COI of less than 10. This is done for now as we suspect
-# there are some samples that are wrong! Regions that predict 25! 
+# there are some samples that are wrong! Regions that predict 25!
 # The two patients are: "PN0075-C" and "PT0069-C"
 # We also set up data to be descending so that smaller COIs stay on top.
-all_world_map <- patient_lat_long %>% 
-  dplyr::filter(discrete_1_med <= 10) %>% 
-  dplyr::arrange(desc(discrete_1_med)) %>% 
-  dplyr::rename(lat = Lat) %>% 
+all_world_map <- patient_lat_long %>%
+  dplyr::filter(discrete_1_med <= 10) %>%
+  dplyr::arrange(desc(discrete_1_med)) %>%
+  dplyr::rename(lat = Lat) %>%
   dplyr::rename(long = Long)
 
 # Plot all patient COIs (theme is added so that there is less whitespace)
-all_world <- world_map(all_world_map, all_world_map$discrete_1_med, "COI", 
-                       alpha = 0.7, breaks = c(1, 2, 4, 6, 8, 10))
+all_world <- world_map(all_world_map, all_world_map$discrete_1_med, "COI",
+  alpha = 0.7, breaks = c(1, 2, 4, 6, 8, 10)
+)
 ```
- 
+
 ```{r world maps}
 ggpubr::ggarrange(mean_world, med_world, all_world,
-                  labels = "AUTO", 
-                  label.x = 0.06,
-                  nrow = 3,
-                  font.label = list(size = 10))
+  labels = "AUTO",
+  label.x = 0.06,
+  nrow = 3,
+  font.label = list(size = 10)
+)
 ```
- 
- 
+
+
 ```{r prevalance}
 prev_fws <- patient_lat_long %>%
   tidyr::pivot_longer(dplyr::any_of(c("continuous_1_med", "rmcl_med")),
-                      names_to = "Method",
-                      values_to = "COI",
-                      values_drop_na = TRUE) %>%
-  dplyr::select(name, Region:Long, prev_2_10:COI) %>% 
-  dplyr::mutate(prev = as.numeric(prev_2_10), 
-                Method = dplyr::recode(Method, 
-                                       continuous_1_med = "Continuous Method 1",
-                                       rmcl_med = "THE REAL McCOIL"),
-                .keep = "unused")
+    names_to = "Method",
+    values_to = "COI",
+    values_drop_na = TRUE
+  ) %>%
+  dplyr::select(name, Region:Long, prev_2_10:COI) %>%
+  dplyr::mutate(
+    prev = as.numeric(prev_2_10),
+    Method = dplyr::recode(Method,
+      continuous_1_med = "Continuous Method 1",
+      rmcl_med = "THE REAL McCOIL"
+    ),
+    .keep = "unused"
+  )
 
-grouped <- prev_fws %>% 
+grouped <- prev_fws %>%
   dplyr::group_by(prev, Method) %>%
-  dplyr::summarise(COI = median(COI),
-                   Fws = median(Fws),
-                   .groups = "drop") 
+  dplyr::summarise(
+    COI = median(COI),
+    Fws = median(Fws),
+    .groups = "drop"
+  )
 
 # FwS
 ggplot(data = grouped, aes(x = Fws, y = COI, color = Method)) +
-  geom_point(alpha = 0.3, position = position_jitter(height = 0.2)) + 
+  geom_point(alpha = 0.3, position = position_jitter(height = 0.2)) +
   labs(x = "FwS", y = "Estimated COI") +
-  facet_grid(~ Method) +
+  facet_grid(~Method) +
   scale_color_discrete(name = "Estimation Method", labels = c("Discrete Method 1", "THE REAL McCOIL")) +
   mytheme
 
 # Prevalence
 ggplot(data = grouped, aes(x = prev, y = COI, color = Method)) +
-  geom_point(alpha = 0.3, position = position_jitter(height = 0.2)) + 
-  scale_x_log10(breaks = c(0.01, 0.1, 1), 
-                labels = c(0.01, 0.1, 1), 
-                limits = c(0.01, 1)) +
-  facet_grid(~ Method) +
+  geom_point(alpha = 0.3, position = position_jitter(height = 0.2)) +
+  scale_x_log10(
+    breaks = c(0.01, 0.1, 1),
+    labels = c(0.01, 0.1, 1),
+    limits = c(0.01, 1)
+  ) +
+  facet_grid(~Method) +
   labs(x = "Log10 Prevalence", y = "Estimated COI") +
   scale_color_discrete(name = "Estimation Method", labels = c("Continuous Method 1", "THE REAL McCOIL")) +
   mytheme
 
-ggplot(data = tidyr::drop_na(grouped), 
-       aes(x = cut(prev, seq(0, 1, 0.1), right = TRUE), 
-           y = COI, color = Method)) +
-  geom_boxplot(alpha = 0.3) + 
-  facet_grid(~ Method) +
+ggplot(
+  data = tidyr::drop_na(grouped),
+  aes(
+    x = cut(prev, seq(0, 1, 0.1), right = TRUE),
+    y = COI, color = Method
+  )
+) +
+  geom_boxplot(alpha = 0.3) +
+  facet_grid(~Method) +
   labs(x = "Prevalence", y = "Estimated COI") +
   scale_color_discrete(name = "Estimation Method", labels = c("Continuous Method 1", "THE REAL McCOIL")) +
   mytheme
