@@ -35,7 +35,7 @@ theoretical_coi <- function(coi_range,
       curves <- data.frame(first = single_theoretical_coi(i, plaf, coi_method))
       colnames(curves) <- paste0("coi_", i)
     } else {
-      curves[[paste0("coi_", i)]] = single_theoretical_coi(i, plaf, coi_method)
+      curves[[paste0("coi_", i)]] <- single_theoretical_coi(i, plaf, coi_method)
     }
   }
 
@@ -76,6 +76,6 @@ single_theoretical_coi <- function(coi,
   if (coi_method == "1") {
     curve <- 1 - plaf^coi - (1 - plaf)^coi
   } else if (coi_method == "2") {
-      curve <- (plaf - plaf^coi)/(1 - plaf^coi - (1 - plaf)^coi)
+    curve <- (plaf - plaf^coi) / (1 - plaf^coi - (1 - plaf)^coi)
   }
 }
