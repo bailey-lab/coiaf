@@ -4,7 +4,13 @@
 \alias{process_real}
 \title{Process real data}
 \usage{
-process_real(wsaf, plaf, seq_error = NULL, bin_size = 20, coi_method = "1")
+process_real(
+  wsaf,
+  plaf,
+  seq_error = NULL,
+  bin_size = 20,
+  coi_method = "variant"
+)
 }
 \arguments{
 \item{wsaf}{The within-sample allele frequency.}
@@ -17,7 +23,8 @@ is inputted, then we infer the level of sequence error.}
 \item{bin_size}{The minimum size of each bin of data.}
 
 \item{coi_method}{The method we will use to calculate the theoretical COI.
-The method is either "1" or "2". The default value is "1".}
+The method is either "variant" or "frequency". The default value is
+"variant".}
 }
 \value{
 A list of the following:
