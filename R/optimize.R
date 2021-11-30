@@ -22,28 +22,26 @@
 likelihood <- function(coi,
                        processed_data,
                        distance = "squared",
-                       coi_method = "1") {
+                       coi_method = "variant") {
   # Check inputs
   assert_single_pos(coi)
-  assert_single_string(coi_method)
-  assert_in(coi_method, c("1", "2"))
   assert_single_string(distance)
   assert_in(distance, c("abs_sum", "sum_abs", "squared"))
   assert_single_string(coi_method)
-  assert_in(coi_method, c("1", "2"))
+  assert_in(coi_method, c("variant", "frequency"))
 
   # Compute theoretical curve
-  if (coi_method == "1") {
+  if (coi_method == "variant") {
     theory_coi <- theoretical_coi(
       coi,
       processed_data$midpoints,
-      coi_method = "1"
+      coi_method = "variant"
     )
   } else {
     theory_coi <- theoretical_coi(
       coi,
       processed_data$midpoints,
-      coi_method = "2"
+      coi_method = "frequency"
     )
   }
 
@@ -89,7 +87,7 @@ optimize_coi <- function(data,
                          seq_error = NULL,
                          bin_size = 20,
                          distance = "squared",
-                         coi_method = "1") {
+                         coi_method = "variant") {
 
   # Check inputs
   assert_in(data_type, c("sim", "real"))
@@ -100,7 +98,7 @@ optimize_coi <- function(data,
   assert_single_string(distance)
   assert_in(distance, c("abs_sum", "sum_abs", "squared"))
   assert_single_string(coi_method)
-  assert_in(coi_method, c("1", "2"))
+  assert_in(coi_method, c("variant", "frequency"))
 
   # Warnings
   if (distance != "squared") {

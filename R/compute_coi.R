@@ -56,7 +56,7 @@ compute_coi <- function(data,
                         bin_size = 20,
                         comparison = "overall",
                         distance = "squared",
-                        coi_method = "1") {
+                        coi_method = "variant") {
   ## Check inputs
   assert_in(data_type, c("sim", "real"))
   assert_single_string(data_type)
@@ -68,7 +68,7 @@ compute_coi <- function(data,
   assert_single_string(distance)
   assert_in(distance, c("abs_sum", "sum_abs", "squared"))
   assert_single_string(coi_method)
-  assert_in(coi_method, c("1", "2"))
+  assert_in(coi_method, c("variant", "frequency"))
 
   # Warnings
   if (comparison != "overall") {
@@ -113,7 +113,7 @@ compute_coi <- function(data,
   # If there is no heterozygous data, it means that the COI = 1. Otherwise, we
   # can compare the expected number of loci and the number of loci our
   # simulation gives us.
-  if (coi_method == "2") {
+  if (coi_method == "frequency") {
     # No heterozygous data present
     if (dim(processed_data)[1] == 0) {
       ret <- list(coi = 1, probability = c(1, rep(0, max_coi - 1)))
