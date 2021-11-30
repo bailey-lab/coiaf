@@ -44,7 +44,7 @@ Suggests:
     pbapply,
     rmarkdown,
     spelling,
-    testthat,
+    testthat (>= 3.0.0),
     tibble,
     tidyselect,
     vdiffr,
@@ -61,3 +61,4 @@ Language: en-US
 LazyData: TRUE
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
+Config/testthat/edition: 3
