@@ -27,7 +27,6 @@
 #' [ggplot2 website](https://ggplot2.tidyverse.org/index.html).
 #' @family plotting functions
 #' @export
-
 sensitivity_plot <- function(data,
                              dims,
                              result_type,
@@ -38,15 +37,18 @@ sensitivity_plot <- function(data,
   # Ensure that ggplot2 and ggpubr are installed
   if (!requireNamespace("ggplot2", quietly = TRUE) &
     !requireNamespace("ggpubr", quietly = TRUE)) {
-    stop("Packages \"ggplot2\" and \"ggpubr\" must be installed in order to plot the tests.",
+    stop(
+      "Packages \"ggplot2\" and \"ggpubr\" must be installed in order to plot the tests.",
       call. = FALSE
     )
   } else if (!requireNamespace("ggplot2", quietly = TRUE)) {
-    stop("Package \"ggplot2\" must be installed in order to plot the tests.",
+    stop(
+      "Package \"ggplot2\" must be installed in order to plot the tests.",
       call. = FALSE
     )
   } else if (!requireNamespace("ggpubr", quietly = TRUE)) {
-    stop("Package \"ggpubr\" must be installed in order to plot the tests.",
+    stop(
+      "Package \"ggpubr\" must be installed in order to plot the tests.",
       call. = FALSE
     )
   }
@@ -97,7 +99,8 @@ sensitivity_plot <- function(data,
 
   # We then call a helper function: sensitivity_plot_element, that creates each
   # individual plot and store these plots as a list
-  myplots <- lapply(num_loops,
+  myplots <- lapply(
+    num_loops,
     sensitivity_plot_element,
     data = plot_df,
     result_type = result_type,
@@ -123,15 +126,11 @@ sensitivity_plot <- function(data,
     )
   }
 
-  arranged_plots <-
-    ggpubr::annotate_figure(arranged_plots,
-      top = ggpubr::text_grob(title, size = 13),
-      bottom = ggpubr::text_grob(caption,
-        hjust = 0,
-        x = 0.01,
-        size = 10
-      )
-    )
+  arranged_plots <- ggpubr::annotate_figure(
+    arranged_plots,
+    top = ggpubr::text_grob(title, size = 13),
+    bottom = ggpubr::text_grob(caption, hjust = 0, x = 0.01, size = 10)
+  )
 }
 
 #------------------------------------------------
@@ -145,22 +144,21 @@ sensitivity_plot <- function(data,
 #' @inheritParams sensitivity_plot
 #'
 #' @keywords internal
-
 sensitivity_plot_element <- function(data, loop_num, result_type, sub_title) {
 
   # Ensure that ggplot2 is installed
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
-    stop('Package \"ggplot2\" must be installed in order to plot the test.',
+    stop(
+      'Package \"ggplot2\" must be installed in order to plot the test.',
       call. = FALSE
     )
   }
 
   # Plot the figure
-  single_plot <-
-    ggplot2::ggplot(
-      dplyr::filter(data, .data$loop_number == loop_num),
-      ggplot2::aes(x = .data$true_coi, y = .data$estimated_coi)
-    ) +
+  single_plot <- ggplot2::ggplot(
+    dplyr::filter(data, .data$loop_number == loop_num),
+    ggplot2::aes(x = .data$true_coi, y = .data$estimated_coi)
+  ) +
     ggplot2::scale_size_area() +
     ggplot2::geom_abline(color = "red", size = 1) +
     ggplot2::theme_classic() +
@@ -215,7 +213,6 @@ sensitivity_plot_element <- function(data, loop_num, result_type, sub_title) {
 #' [ggplot2 website](https://ggplot2.tidyverse.org/index.html).
 #' @family plotting functions
 #' @export
-
 error_plot <- function(data,
                        fill = "coi",
                        fill_levels = NULL,
@@ -226,7 +223,8 @@ error_plot <- function(data,
 
   # Ensure that ggplot2 is installed
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
-    stop("Package \"ggplot2\" must be installed in order to plot the test.",
+    stop(
+      "Package \"ggplot2\" must be installed in order to plot the test.",
       call. = FALSE
     )
   }
@@ -254,10 +252,7 @@ error_plot <- function(data,
   plot_data <- plot_data %>%
     dplyr::mutate(dplyr::across(
       where(function(x) dplyr::n_distinct(x) > 1) &
-        !tidyselect::all_of(c(
-          "mae", "lower",
-          "upper", "bias"
-        )),
+        !tidyselect::all_of(c("mae", "lower", "upper", "bias")),
       as.factor
     )) %>%
     dplyr::mutate(mae = dplyr::na_if(.data$mae, 0)) %>%
@@ -290,8 +285,10 @@ error_plot <- function(data,
     )
   ) +
     ggplot2::geom_col(position = "dodge", na.rm = T) +
-    ggplot2::geom_errorbar(ggplot2::aes(ymin = .data$lower, ymax = .data$upper),
-      width = .2, position = ggplot2::position_dodge(.9)
+    ggplot2::geom_errorbar(
+      ggplot2::aes(ymin = .data$lower, ymax = .data$upper),
+      width = .2,
+      position = ggplot2::position_dodge(.9)
     ) +
     ggplot2::theme_classic() +
     ggplot2::theme(
@@ -333,7 +330,6 @@ error_plot <- function(data,
 #' more information on creating bubble graphs in R.
 #' @family plotting functions
 #' @export
-
 world_map <- function(data,
                       variable,
                       label = NULL,
@@ -348,26 +344,24 @@ world_map <- function(data,
     ggplot2::borders("world") +
     ggplot2::geom_polygon(
       data = world,
-      ggplot2::aes(
-        x = .data$long, y = .data$lat,
-        group = .data$group
-      ),
-      fill = "grey", alpha = 0.3
+      ggplot2::aes(x = .data$long, y = .data$lat, group = .data$group),
+      fill = "grey",
+      alpha = 0.3
     ) +
     ggplot2::geom_point(
       data = data,
       ggplot2::aes(
-        x = .data$long, y = .data$lat,
-        size = variable, color = variable
+        x = .data$long,
+        y = .data$lat,
+        size = variable,
+        color = variable
       ),
       alpha = alpha
     ) +
     ggplot2::scale_colour_viridis_c(
-      limits = c(
-        breaks[1],
-        breaks[length(breaks)]
-      ),
-      breaks = breaks, alpha = alpha
+      limits = c(breaks[1], breaks[length(breaks)]),
+      breaks = breaks,
+      alpha = alpha
     ) +
     ggplot2::theme_void() +
     ggplot2::theme(legend.position = "bottom") +
