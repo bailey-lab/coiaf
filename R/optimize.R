@@ -19,7 +19,6 @@
 #' @return The likelihood for a specific COI value.
 #' @family optimization functions
 #' @export
-
 likelihood <- function(coi,
                        processed_data,
                        distance = "squared",
@@ -35,29 +34,31 @@ likelihood <- function(coi,
 
   # Compute theoretical curve
   if (coi_method == "1") {
-    theory_coi <- theoretical_coi(coi,
-                                  processed_data$midpoints,
-                                  coi_method = "1")
+    theory_coi <- theoretical_coi(
+      coi,
+      processed_data$midpoints,
+      coi_method = "1"
+    )
   } else {
-    theory_coi <- theoretical_coi(coi,
-                                  processed_data$midpoints,
-                                  coi_method = "2")
+    theory_coi <- theoretical_coi(
+      coi,
+      processed_data$midpoints,
+      coi_method = "2"
+    )
   }
 
   # Distance
   gap <- theory_coi - processed_data$m_variant
 
-  if (distance == "abs_sum"){
+  if (distance == "abs_sum") {
     # Find sum of differences
     gap <- abs(colSums(gap))
-
-  } else if (distance == "sum_abs"){
+  } else if (distance == "sum_abs") {
     # Find absolute value of differences
     gap <- colSums(abs(gap))
-
-  } else if (distance == "squared"){
+  } else if (distance == "squared") {
     # Squared distance
-    gap <- colSums(gap ^ 2)
+    gap <- colSums(gap^2)
   }
 
   # Gap is a named list with two entries: the coi and the PLAF. We want to
@@ -82,7 +83,6 @@ likelihood <- function(coi,
 #' function.
 #' @family optimization functions
 #' @export
-
 optimize_coi <- function(data,
                          data_type,
                          max_coi = 25,
@@ -104,11 +104,13 @@ optimize_coi <- function(data,
 
   # Warnings
   if (distance != "squared") {
-    message <- glue::glue("Please use the recommended distance metric:",
-                          '\n\u2139 The recommended distance metric is "squared".',
-                          '\n\u2716 User specified the "{distance}" metric.')
+    message <- glue::glue(
+      "Please use the recommended distance metric:",
+      '\n\u2139 The recommended distance metric is "squared".',
+      '\n\u2716 User specified the "{distance}" metric.'
+    )
     warning(message, call. = FALSE)
-}
+  }
 
   # Process data
   if (data_type == "sim") {
@@ -126,7 +128,9 @@ optimize_coi <- function(data,
   }
 
   # Special case where there are no heterozygous sites
-  if (nrow(processed_data) == 0) return (coi <- 1)
+  if (nrow(processed_data) == 0) {
+    return(coi <- 1)
+  }
 
   # Compute COI
   # Details:
@@ -136,28 +140,34 @@ optimize_coi <- function(data,
   #   control:
   #     fnscale: Indicates that we want to minimize
   #     ndeps: The step sizes in the optimizer
-  fit <- stats::optim(par = 2,
-                      fn = likelihood,
-                      processed_data = processed_data,
-                      distance = distance,
-                      coi_method = coi_method,
-                      method = "L-BFGS-B", lower = 1+1e-5, upper = max_coi,
-                      control = list(fnscale = 1, ndeps = 1e-5))
+  fit <- stats::optim(
+    par = 2,
+    fn = likelihood,
+    processed_data = processed_data,
+    distance = distance,
+    coi_method = coi_method,
+    method = "L-BFGS-B",
+    lower = 1 + 1e-5,
+    upper = max_coi,
+    control = list(fnscale = 1, ndeps = 1e-5)
+  )
 
   # Output warning if the model does not converge
-  if (fit$convergence != 0){
+  if (fit$convergence != 0) {
     if (fit$convergence == 1) {
-      bullet = "Iteration limit maxit has been reached."
+      bullet <- "Iteration limit maxit has been reached."
     } else if (fit$convergence == 10) {
-      bullet = "Nelder-Mead simplex degeneracy."
+      bullet <- "Nelder-Mead simplex degeneracy."
     } else if (fit$convergence == 51) {
-      bullet = '"L-BFGS-B" method warning.'
+      bullet <- '"L-BFGS-B" method warning.'
     } else if (fit$convergence == 52) {
-      bullet = '"L-BFGS-B" method error'
+      bullet <- '"L-BFGS-B" method error'
     }
-    message <- glue::glue("The model did not converge:",
-                          "\n\u2716 {bullet}",
-                          "\n\u2716 Output of optim: {fit$message}.")
+    message <- glue::glue(
+      "The model did not converge:",
+      "\n\u2716 {bullet}",
+      "\n\u2716 Output of optim: {fit$message}."
+    )
     warning(message, call. = FALSE)
   }
 
