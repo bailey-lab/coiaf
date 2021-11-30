@@ -1,8 +1,4 @@
-context("simulation")
-
-#------------------------------------------------
 test_that("sim_biallelic works", {
-
   set.seed(1)
 
   # define number of loci, and distribution of minor allele frequencies
@@ -14,13 +10,9 @@ test_that("sim_biallelic works", {
   sim1 <- sim_biallelic(coi = k, plaf = p, overdispersion = 0.01)
   expect_identical(names(sim1), c("coi", "strain_proportions", "phased", "data", "inputs"))
   expect_equal(round(sim1$strain_proportions, 2), c(0.62, 0.38))
-
 })
 
-
-#------------------------------------------------
 test_that("sim_biallelic relatedness works", {
-
   set.seed(1)
 
   # define number of loci, and distribution of minor allele frequencies
@@ -40,5 +32,4 @@ test_that("sim_biallelic relatedness works", {
   # we would expect in related samples there will be more homozyogous calls
   expect_gt(tbl2[1], tbl1[1])
   expect_gt(tbl2[4], tbl1[4])
-
 })
