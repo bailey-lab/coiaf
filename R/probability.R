@@ -7,10 +7,9 @@
 #' @param shape Vector of shape parameters.
 #'
 #' @keywords internal
-
-rdirichlet <- function(shape = rep(1,3)) {
+rdirichlet <- function(shape = rep(1, 3)) {
   x <- rgamma(length(shape), shape = shape, rate = max(shape))
-  return(x/sum(x))
+  return(x / sum(x))
 }
 
 #------------------------------------------------
@@ -24,7 +23,6 @@ rdirichlet <- function(shape = rep(1,3)) {
 #' @param beta Second shape parameter of beta distribution.
 #'
 #' @keywords internal
-
 rbetabinom <- function(n = 1, k = 10, alpha = 1, beta = 1) {
   # Check inputs
   assert_single_pos_int(n)

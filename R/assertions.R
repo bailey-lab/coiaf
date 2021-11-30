@@ -9,7 +9,7 @@ nice_format <- function(x) {
   if (is.null(x)) {
     return("")
   }
-  if (length(x)==1) {
+  if (length(x) == 1) {
     ret <- as.character(x)
   } else {
     ret <- paste0("{", paste(x, collapse = ", "), "}")
@@ -142,11 +142,11 @@ assert_single_int <- function(x, name = deparse(substitute(x))) {
 assert_pos <- function(x, zero_allowed = TRUE, message1 = "%s must be greater than or equal to zero", message2 = "%s must be greater than zero", name = deparse(substitute(x))) {
   assert_numeric(x, name = name)
   if (zero_allowed) {
-    if (!all(x>=0)) {
+    if (!all(x >= 0)) {
       stop(sprintf(message1, name), call. = FALSE)
     }
   } else {
-    if (!all(x>0)) {
+    if (!all(x > 0)) {
       stop(sprintf(message2, name), call. = FALSE)
     }
   }
@@ -284,8 +284,8 @@ assert_gr <- function(x, y, message = "%s must be greater than %s",
                       name_x = deparse(substitute(x)), name_y = nice_format(y)) {
   assert_numeric(x, name = name_x)
   assert_numeric(y, name = name_y)
-  assert_in(length(y), c(1,length(x)))
-  if (!all(x>y)) {
+  assert_in(length(y), c(1, length(x)))
+  if (!all(x > y)) {
     stop(sprintf(message, name_x, name_y), call. = FALSE)
   }
   return(TRUE)
@@ -298,8 +298,8 @@ assert_greq <- function(x, y, message = "%s must be greater than or equal to %s"
                         name_x = deparse(substitute(x)), name_y = nice_format(y)) {
   assert_numeric(x, name = name_x)
   assert_numeric(y, name = name_y)
-  assert_in(length(y), c(1,length(x)))
-  if (!all(x>=y)) {
+  assert_in(length(y), c(1, length(x)))
+  if (!all(x >= y)) {
     stop(sprintf(message, name_x, name_y), call. = FALSE)
   }
   return(TRUE)
@@ -312,8 +312,8 @@ assert_le <- function(x, y, message = "%s must be less than %s",
                       name_x = deparse(substitute(x)), name_y = nice_format(y)) {
   assert_numeric(x, name = name_x)
   assert_numeric(y, name = name_y)
-  assert_in(length(y), c(1,length(x)))
-  if (!all(x<y)) {
+  assert_in(length(y), c(1, length(x)))
+  if (!all(x < y)) {
     stop(sprintf(message, name_x, name_y), call. = FALSE)
   }
   return(TRUE)
@@ -326,8 +326,8 @@ assert_leq <- function(x, y, message = "%s must be less than or equal to %s",
                        name_x = deparse(substitute(x)), name_y = nice_format(y)) {
   assert_numeric(x, name = name_x)
   assert_numeric(y, name = name_y)
-  assert_in(length(y), c(1,length(x)))
-  if (!all(x<=y)) {
+  assert_in(length(y), c(1, length(x)))
+  if (!all(x <= y)) {
     stop(sprintf(message, name_x, name_y), call. = FALSE)
   }
   return(TRUE)
@@ -339,20 +339,20 @@ assert_leq <- function(x, y, message = "%s must be less than or equal to %s",
 assert_bounded <- function(x, left = 0, right = 1, inclusive_left = TRUE, inclusive_right = TRUE, name = deparse(substitute(x))) {
   assert_numeric(x, name = name)
   if (inclusive_left) {
-    if (!all(x>=left)) {
+    if (!all(x >= left)) {
       stop(sprintf("%s must be greater than or equal to %s", name, left), call. = FALSE)
     }
   } else {
-    if (!all(x>left)) {
+    if (!all(x > left)) {
       stop(sprintf("%s must be greater than %s", name, left), call. = FALSE)
     }
   }
   if (inclusive_right) {
-    if (!all(x<=right)) {
+    if (!all(x <= right)) {
       stop(sprintf("%s must be less than or equal to %s", name, right), call. = FALSE)
     }
   } else {
-    if (!all(x<right)) {
+    if (!all(x < right)) {
       stop(sprintf("%s must be less than %s", name, right), call. = FALSE)
     }
   }
@@ -402,7 +402,7 @@ assert_length <- function(x, n, message = "%s must be of length %s", name = depa
 #------------------------------------------------
 # x and y are same length
 #' @noRd
-assert_same_length <- function(x, y, message =  "%s and %s must be the same length",
+assert_same_length <- function(x, y, message = "%s and %s must be the same length",
                                name_x = deparse(substitute(x)), name_y = deparse(substitute(y))) {
   if (length(x) != length(y)) {
     stop(sprintf(message, name_x, name_y), call. = FALSE)

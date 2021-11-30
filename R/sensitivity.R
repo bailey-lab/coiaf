@@ -21,7 +21,7 @@ single_sensitivity <- function(coi = 3,
                                seq_error = NULL,
                                bin_size = 20,
                                comparison = "overall",
-                               distance ="squared",
+                               distance = "squared",
                                coi_method = "1") {
 
   # Check inputs
@@ -44,17 +44,32 @@ single_sensitivity <- function(coi = 3,
   assert_in(coi_method, c("1", "2"))
 
   # Simulate data
-  sim_data <- sim_biallelic(coi, plaf, coverage, alpha, overdispersion,
-                            relatedness, epsilon)
+  sim_data <- sim_biallelic(
+    coi,
+    plaf,
+    coverage,
+    alpha,
+    overdispersion,
+    relatedness,
+    epsilon
+  )
 
   # Workaround for when seq_error = NULL. Have seq_error saved as NA so
-  # our general sensitivity function can deal with it. But need to concver back
+  # our general sensitivity function can deal with it. But need to convert back
   # to NULL.
-  if (is.na(seq_error)) seq_error = NULL
+  if (is.na(seq_error)) seq_error <- NULL
 
   # Compute COI
-  calc_coi <- compute_coi(sim_data, "sim", max_coi, seq_error, bin_size,
-                          comparison, distance, coi_method)
+  calc_coi <- compute_coi(
+    sim_data,
+    "sim",
+    max_coi,
+    seq_error,
+    bin_size,
+    comparison,
+    distance,
+    coi_method
+  )
 }
 
 
@@ -123,22 +138,24 @@ sensitivity <- function(repetitions = 10,
 
   # Workaround for when seq_error = NULL. Have seq_error saved as NA so
   # our general sensitivity function can deal with it.
-  if (is.null(seq_error)) seq_error = NA
+  if (is.null(seq_error)) seq_error <- NA
 
   # Create parameter grid
-  param_grid <- expand.grid(coi = coi,
-                            max_coi = max_coi,
-                            coverage = coverage,
-                            alpha = alpha,
-                            overdispersion = overdispersion,
-                            relatedness = relatedness,
-                            epsilon = epsilon,
-                            seq_error = seq_error,
-                            bin_size = bin_size,
-                            comparison = comparison,
-                            distance = distance,
-                            coi_method = coi_method,
-                            stringsAsFactors = FALSE)
+  param_grid <- expand.grid(
+    coi = coi,
+    max_coi = max_coi,
+    coverage = coverage,
+    alpha = alpha,
+    overdispersion = overdispersion,
+    relatedness = relatedness,
+    epsilon = epsilon,
+    seq_error = seq_error,
+    bin_size = bin_size,
+    comparison = comparison,
+    distance = distance,
+    coi_method = coi_method,
+    stringsAsFactors = FALSE
+  )
 
   # Function to determine if pbapply is installed. If it is installed, it will
   # display a progress bar
@@ -155,21 +172,22 @@ sensitivity <- function(repetitions = 10,
 
     # Run each sample repetitions times
     repeats <- lapply(seq_len(repetitions), function(y) {
-      test_result <-
-        single_sensitivity(param_grid$coi[x],
-                           param_grid$max_coi[x],
-                           plaf,
-                           param_grid$coverage[x],
-                           param_grid$alpha[x],
-                           param_grid$overdispersion[x],
-                           param_grid$relatedness[x],
-                           param_grid$epsilon[x],
-                           param_grid$seq_error[x],
-                           param_grid$bin_size[x],
-                           param_grid$comparison[x],
-                           param_grid$distance[x],
-                           param_grid$coi_method[x])
-      return (test_result)
+      test_result <- single_sensitivity(
+        param_grid$coi[x],
+        param_grid$max_coi[x],
+        plaf,
+        param_grid$coverage[x],
+        param_grid$alpha[x],
+        param_grid$overdispersion[x],
+        param_grid$relatedness[x],
+        param_grid$epsilon[x],
+        param_grid$seq_error[x],
+        param_grid$bin_size[x],
+        param_grid$comparison[x],
+        param_grid$distance[x],
+        param_grid$coi_method[x]
+      )
+      return(test_result)
     })
 
     return(repeats)
@@ -177,13 +195,17 @@ sensitivity <- function(repetitions = 10,
 
   # Extract the COIs from the result list
   extracted_cois <- lapply(coi_pred, function(x) {
-    unlist(lapply(x, function(i) { i$coi }))
+    unlist(lapply(x, function(i) {
+      i$coi
+    }))
   })
 
   # Extract the probabilities from the result list
   extracted_probs <- lapply(coi_pred, function(x) {
     # Get the probabilities
-    matrix <- do.call(rbind, lapply(x, function(i) { i$probability }))
+    matrix <- do.call(rbind, lapply(x, function(i) {
+      i$probability
+    }))
 
     # Name the matrix and return
     colnames(matrix) <- paste("coi", 1:max_coi, sep = "_")
@@ -198,16 +220,18 @@ sensitivity <- function(repetitions = 10,
 
   ## Naming
   # Determine how many unique COIs there are
-  num_cois = length(coi)
+  num_cois <- length(coi)
 
   # Calculate the number of times each COI is repeated in param_grid
-  num_repeat_cois = length(param_grid$coi) / num_cois
+  num_repeat_cois <- length(param_grid$coi) / num_cois
 
   # Name the predicted COIs
-  names(extracted_cois) <- paste("coi",
-                                 param_grid$coi,
-                                 rep(seq(num_repeat_cois), each = num_cois),
-                                 sep="_")
+  names(extracted_cois) <- paste(
+    "coi",
+    param_grid$coi,
+    rep(seq(num_repeat_cois), each = num_cois),
+    sep = "_"
+  )
   names(extracted_probs) <- names(extracted_cois)
 
   ## Calculations
@@ -229,12 +253,18 @@ sensitivity <- function(repetitions = 10,
     }
 
     # Bootstrapping
-    results <- boot::boot(data = boot_data, true_coi = param_grid$coi[x],
-                          statistic = mae, R = 1000)
+    results <- boot::boot(
+      data = boot_data,
+      true_coi = param_grid$coi[x],
+      statistic = mae,
+      R = 1000
+    )
 
     # Get the normal confidence interval
-    invisible(utils::capture.output(CI <- boot::boot.ci(results,
-                                                        type = "norm")$norm))
+    invisible(utils::capture.output(CI <- boot::boot.ci(
+      results,
+      type = "norm"
+    )$norm))
 
     # Store the mean absolute error and confidence interval bounds
     extract <- list(mae = results$t0, lower = CI[2], upper = CI[3])
@@ -253,7 +283,7 @@ sensitivity <- function(repetitions = 10,
   boot_error <- param_grid %>%
     dplyr::select_if(function(x) dplyr::n_distinct(x) > 1)
   boot_error <- dplyr::bind_cols(boot_error, boot_mae)
-  boot_error$bias  <- unlist(coi_bias)
+  boot_error$bias <- unlist(coi_bias)
 
   # Warnings for when could not compute CI. We want to show at most 5 cases
   # where there is an issue. Anymore, and the warning message becomes too
@@ -274,16 +304,20 @@ sensitivity <- function(repetitions = 10,
       bullet <- glue::glue("{bullet}\n... and {nrow(warn_tibble) - 5} more failed")
     }
 
-    message <- glue::glue("Can't calculate bootstrapped confidence interval:",
-                          "{bullet}")
+    message <- glue::glue(
+      "Can't calculate bootstrapped confidence interval:",
+      "{bullet}"
+    )
     warning(message, call. = FALSE)
   }
 
   # Return predicted COIs and param_grid
-  ret <- list(predicted_coi = as.data.frame(extracted_cois),
-              probability   = extracted_probs,
-              param_grid    = param_grid,
-              boot_error    = boot_error)
+  ret <- list(
+    predicted_coi = as.data.frame(extracted_cois),
+    probability   = extracted_probs,
+    param_grid    = param_grid,
+    boot_error    = boot_error
+  )
 }
 
 #------------------------------------------------
@@ -349,19 +383,21 @@ cont_sensitivity <- function(repetitions = 10,
   assert_in(coi_method, c("1", "2"))
 
   # Create parameter grid
-  param_grid <- expand.grid(coi = coi,
-                            max_coi = max_coi,
-                            coverage = coverage,
-                            alpha = alpha,
-                            overdispersion = overdispersion,
-                            relatedness = relatedness,
-                            epsilon = epsilon,
-                            seq_error = seq_error,
-                            bin_size = bin_size,
-                            comparison = comparison,
-                            distance = distance,
-                            coi_method = coi_method,
-                            stringsAsFactors = FALSE)
+  param_grid <- expand.grid(
+    coi = coi,
+    max_coi = max_coi,
+    coverage = coverage,
+    alpha = alpha,
+    overdispersion = overdispersion,
+    relatedness = relatedness,
+    epsilon = epsilon,
+    seq_error = seq_error,
+    bin_size = bin_size,
+    comparison = comparison,
+    distance = distance,
+    coi_method = coi_method,
+    stringsAsFactors = FALSE
+  )
 
   # Function to determine if pbapply is installed. If it is installed, it will
   # display a progress bar
@@ -378,44 +414,48 @@ cont_sensitivity <- function(repetitions = 10,
 
     # Run each sample repetitions times
     repeats <- lapply(seq_len(repetitions), function(y) {
-      test_sim <- sim_biallelic(param_grid$coi[x],
-                                plaf,
-                                param_grid$coverage[x],
-                                param_grid$alpha[x],
-                                param_grid$overdispersion[x],
-                                param_grid$relatedness[x],
-                                param_grid$epsilon[x])
+      test_sim <- sim_biallelic(
+        param_grid$coi[x],
+        plaf,
+        param_grid$coverage[x],
+        param_grid$alpha[x],
+        param_grid$overdispersion[x],
+        param_grid$relatedness[x],
+        param_grid$epsilon[x]
+      )
 
-      test_result <- optimize_coi(test_sim,
-                                  "sim",
-                                  param_grid$max_coi[x],
-                                  param_grid$seq_error[x],
-                                  param_grid$bin_size[x],
-                                  param_grid$distance[x],
-                                  param_grid$coi_method[x])
-      return (test_result)
+      test_result <- optimize_coi(
+        test_sim,
+        "sim",
+        param_grid$max_coi[x],
+        param_grid$seq_error[x],
+        param_grid$bin_size[x],
+        param_grid$distance[x],
+        param_grid$coi_method[x]
+      )
+      return(test_result)
     })
 
     return(repeats)
   })
 
   # Extract the COIs from the result list
-  extracted_cois <- lapply(coi_pred, function(x) {
-    unlist(x)
-  })
+  extracted_cois <- lapply(coi_pred, function(x) unlist(x))
 
   ## Naming
   # Determine how many unique COIs there are
-  num_cois = length(coi)
+  num_cois <- length(coi)
 
   # Calculate the number of times each COI is repeated in param_grid
-  num_repeat_cois = length(param_grid$coi) / num_cois
+  num_repeat_cois <- length(param_grid$coi) / num_cois
 
   # Name the predicted COIs
-  names(extracted_cois) <- paste("coi",
-                                 param_grid$coi,
-                                 rep(seq(num_repeat_cois), each = num_cois),
-                                 sep="_")
+  names(extracted_cois) <- paste(
+    "coi",
+    param_grid$coi,
+    rep(seq(num_repeat_cois), each = num_cois),
+    sep = "_"
+  )
 
   ## Calculations
   # Calculate mean absolute error
@@ -436,12 +476,18 @@ cont_sensitivity <- function(repetitions = 10,
     }
 
     # Bootstrapping
-    results <- boot::boot(data = boot_data, true_coi = param_grid$coi[x],
-                          statistic = mae, R = 1000)
+    results <- boot::boot(
+      data = boot_data,
+      true_coi = param_grid$coi[x],
+      statistic = mae,
+      R = 1000
+    )
 
     # Get the normal confidence interval
-    invisible(utils::capture.output(CI <- boot::boot.ci(results,
-                                                        type = "norm")$norm))
+    invisible(utils::capture.output(CI <- boot::boot.ci(
+      results,
+      type = "norm"
+    )$norm))
 
     # Store the mean absolute error and confidence interval bounds
     extract <- list(mae = results$t0, lower = CI[2], upper = CI[3])
@@ -460,7 +506,7 @@ cont_sensitivity <- function(repetitions = 10,
   boot_error <- param_grid %>%
     dplyr::select_if(function(x) dplyr::n_distinct(x) > 1)
   boot_error <- dplyr::bind_cols(boot_error, boot_mae)
-  boot_error$bias  <- unlist(coi_bias)
+  boot_error$bias <- unlist(coi_bias)
 
   # Warnings for when could not compute CI. We want to show at most 5 cases
   # where there is an issue. Anymore, and the warning message becomes too
@@ -481,13 +527,17 @@ cont_sensitivity <- function(repetitions = 10,
       bullet <- glue::glue("{bullet}\n... and {nrow(warn_tibble) - 5} more failed")
     }
 
-    message <- glue::glue("Can't calculate bootstrapped confidence interval:",
-                          "{bullet}")
+    message <- glue::glue(
+      "Can't calculate bootstrapped confidence interval:",
+      "{bullet}"
+    )
     warning(message, call. = FALSE)
   }
 
   # Return predicted COIs and param_grid
-  ret <- list(predicted_coi = as.data.frame(extracted_cois),
-              param_grid    = param_grid,
-              boot_error    = boot_error)
+  ret <- list(
+    predicted_coi = as.data.frame(extracted_cois),
+    param_grid    = param_grid,
+    boot_error    = boot_error
+  )
 }
