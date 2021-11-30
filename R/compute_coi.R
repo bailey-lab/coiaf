@@ -49,7 +49,6 @@
 #'  of each COI.
 #'
 #' @export
-
 compute_coi <- function(data,
                         data_type,
                         max_coi = 25,
@@ -58,7 +57,7 @@ compute_coi <- function(data,
                         comparison = "overall",
                         distance = "squared",
                         coi_method = "1") {
-  ##Check inputs
+  ## Check inputs
   assert_in(data_type, c("sim", "real"))
   assert_single_string(data_type)
   assert_single_pos_int(max_coi)
@@ -73,15 +72,19 @@ compute_coi <- function(data,
 
   # Warnings
   if (comparison != "overall") {
-    message <- glue::glue("Please use the recommended method:",
-                          '\n\u2139 The recommended method is "overall".',
-                          '\n\u2716 User specified the "{comparison}" method.')
+    message <- glue::glue(
+      "Please use the recommended method:",
+      '\n\u2139 The recommended method is "overall".',
+      '\n\u2716 User specified the "{comparison}" method.'
+    )
     warning(message, call. = FALSE)
   }
   if (distance != "squared") {
-    message <- glue::glue("Please use the recommended distance metric:",
-                          '\n\u2139 The recommended distance metric is "squared".',
-                          '\n\u2716 User specified the "{distance}" metric.')
+    message <- glue::glue(
+      "Please use the recommended distance metric:",
+      '\n\u2139 The recommended distance metric is "squared".',
+      '\n\u2716 User specified the "{distance}" metric.'
+    )
     warning(message, call. = FALSE)
   }
 
@@ -93,7 +96,13 @@ compute_coi <- function(data,
     bin_size <- processed$bin_size
     cuts <- processed$cuts
   } else if (data_type == "real") {
-    processed <- process_real(data$wsaf, data$plaf, seq_error, bin_size, coi_method)
+    processed <- process_real(
+      data$wsaf,
+      data$plaf,
+      seq_error,
+      bin_size,
+      coi_method
+    )
     processed_data <- processed$data
     seq_error <- processed$seq_error
     bin_size <- processed$bin_size
@@ -124,16 +133,18 @@ compute_coi <- function(data,
     # We then want to group our data using our established cuts and determine
     # how many loci are in each bucket and the midpoint of each bucket (the PLAF
     # for each bucket).
-    size <- data.frame(plaf_cut = Hmisc::cut2(size_plaf, cuts = processed$cuts, minmax = F),
-                       variant = size_wsaf) %>%
+    size <- data.frame(
+      plaf_cut = Hmisc::cut2(size_plaf, cuts = processed$cuts, minmax = F),
+      variant = size_wsaf
+    ) %>%
       dplyr::group_by(.data$plaf_cut, .drop = FALSE) %>%
       dplyr::summarise(bucket_size = dplyr::n()) %>%
       stats::na.omit()
 
     size$midpoints <- processed_data$midpoints
 
-    mid    = size$midpoints
-    nloci  = size$bucket_size
+    mid <- size$midpoints
+    nloci <- size$bucket_size
 
     # Using the midpoints of each bucket, we can determine the 95% CI for the
     # expected number of heterozygous loci if the COI was 2. The number of
@@ -145,9 +156,12 @@ compute_coi <- function(data,
 
     # If the number of loci in our simulated data is less than the expected
     # value, we predict that our COI will be 1
-    combined <- dplyr::left_join(expectation, processed_data,
-                                 by = "midpoints",
-                                 suffix = c("_expect", "_data")) %>%
+    combined <- dplyr::left_join(
+      expectation,
+      processed_data,
+      by = "midpoints",
+      suffix = c("_expect", "_data")
+    ) %>%
       tidyr::replace_na(list(bucket_size_data = 0))
 
     if (sum(combined$Lower - combined$bucket_size_data, na.rm = T) >= 0) {
@@ -159,27 +173,28 @@ compute_coi <- function(data,
   # Calculate theoretical COI curves for the interval specified. Since we want
   # the theoretical curves and the simulated curves to have the PLAF values, we
   # compute the theoretical COI curves at processed_data$midpoints
-  theory_cois <- theoretical_coi(1:max_coi,
-                                 processed_data$midpoints,
-                                 coi_method)
+  theory_cois <- theoretical_coi(
+    1:max_coi,
+    processed_data$midpoints,
+    coi_method
+  )
 
   # To check that PLAFs are the same
   assert_eq(theory_cois$plaf, processed_data$midpoints)
 
   # Minus 1 because theory_cois now includes the PLAF at the end
-  bound_coi = ncol(theory_cois) - 1
+  bound_coi <- ncol(theory_cois) - 1
 
   if (comparison == "end") {
     ## Method 1: Compare last value
     # Get last row of theoretical COI curves and simulated data (PLAF of 0.5)
     # Last column is removed because it contains the PLAF
     last_theory <- theory_cois[nrow(theory_cois), 1:bound_coi]
-    last_sim    <- processed_data$m_variant[nrow(processed_data)]
+    last_sim <- processed_data$m_variant[nrow(processed_data)]
 
     # Find COI by looking at minimum distance
     dist <- abs(last_theory - last_sim)
-    coi  <- unlist(stringr::str_split(names(which.min(dist)), "_"))[2]
-
+    coi <- unlist(stringr::str_split(names(which.min(dist)), "_"))[2]
   } else if (comparison == "ideal") {
     ## Method 2: Compute ideal PLAF
     # For each COI, find best PLAF and get theoretical and simulated values at
@@ -188,23 +203,24 @@ compute_coi <- function(data,
     for (i in 1:bound_coi) {
       if (i != 1) {
         # Find difference between i and i-1 curve
-        diff = theory_cois[i] - theory_cois[i - 1]
+        diff <- theory_cois[i] - theory_cois[i - 1]
 
         # Get max value and determine the PLAF
         ideal_plaf <- theory_cois$plaf[which.max(diff[[1]])]
 
         # Get max value and determine the theory WSAF
         theory_wsaf <- theory_cois[which.max(diff[[1]]), i]
-
       } else {
         # Determine ideal PLAF and WSAF
-        ideal_plaf  <- theory_cois$plaf[length(theory_cois$plaf)]
+        ideal_plaf <- theory_cois$plaf[length(theory_cois$plaf)]
         theory_wsaf <- theory_cois[length(theory_cois$plaf), i]
       }
 
       # Using ideal PLAF, determine which cut it would be part of
       # and then figure out m_variant value at this cut
-      m_var <- processed_data$m_variant[Hmisc::cut2(ideal_plaf, cuts = processed$cuts, minmax = F)]
+      m_var <- processed_data$m_variant[
+        Hmisc::cut2(ideal_plaf, cuts = processed$cuts, minmax = F)
+      ]
 
       # Find distance between theoretical and simulated curves
       dist[i] <- abs(theory_wsaf - m_var)
@@ -214,14 +230,13 @@ compute_coi <- function(data,
 
     # Find coi by looking at minimum distance
     coi <- unlist(stringr::str_split(names(which.min(dist)), "_"))[2]
-
   } else if (comparison == "overall") {
     ## Method 3: Find distance between curves
     # Utilize helper function to compute overall distance between two curves
     overall_res <- distance_curves(processed_data, theory_cois, distance)
 
     # Extract information from the helper function
-    coi  <- overall_res$coi
+    coi <- overall_res$coi
     dist <- overall_res$dist
   }
 
@@ -256,7 +271,6 @@ compute_coi <- function(data,
 #'   }
 #'
 #' @keywords internal
-
 distance_curves <- function(processed_data, theory_cois, distance = "squared") {
   # Check inputs
   assert_single_string(distance)
@@ -264,7 +278,7 @@ distance_curves <- function(processed_data, theory_cois, distance = "squared") {
 
   # Find bound of COIs. Subtract 1 because theory_cois includes the PLAF at
   # the end
-  bound_coi = ncol(theory_cois) - 1
+  bound_coi <- ncol(theory_cois) - 1
 
   # Remove COI that indicates the PLAF
   match_theory_cois <- theory_cois[, 1:bound_coi]
@@ -276,20 +290,17 @@ distance_curves <- function(processed_data, theory_cois, distance = "squared") {
   if (distance == "abs_sum") {
     # Find sum of differences
     gap <- abs(colSums(gap))
-
   } else if (distance == "sum_abs") {
     # Find absolute value of differences
     gap <- colSums(abs(gap))
-
   } else if (distance == "squared") {
     # Squared distance
-    gap <- colSums(gap ^ 2)
+    gap <- colSums(gap^2)
   }
 
   # Find COI by looking at minimum distance
   coi <- unlist(stringr::str_split(names(which.min(gap)), "_"))[2]
 
   # Prepare list to return
-  ret <- list(coi  = coi,
-              dist = gap)
+  ret <- list(coi = coi, dist = gap)
 }
