@@ -4,7 +4,7 @@
 \alias{theoretical_coi}
 \title{Theoretical COI}
 \usage{
-theoretical_coi(coi_range, plaf = seq(0, 0.5, l = 101), coi_method = "1")
+theoretical_coi(coi_range, plaf = seq(0, 0.5, l = 101), coi_method = "variant")
 }
 \arguments{
 \item{coi_range}{The COIs for which the curve will be calculated.}
@@ -12,7 +12,8 @@ theoretical_coi(coi_range, plaf = seq(0, 0.5, l = 101), coi_method = "1")
 \item{plaf}{The PLAF over which the curve will be calculated.}
 
 \item{coi_method}{The method we will use to calculate the theoretical COI.
-The method is either "1" or "2". The default value is "1".}
+The method is either "variant" or "frequency". The default value is
+"variant".}
 }
 \value{
 The theoretical COI curves for the specified COIs and PLAF.
