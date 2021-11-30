@@ -22,7 +22,7 @@ single_sensitivity <- function(coi = 3,
                                bin_size = 20,
                                comparison = "overall",
                                distance = "squared",
-                               coi_method = "1") {
+                               coi_method = "variant") {
 
   # Check inputs
   assert_single_pos_int(coi)
@@ -41,7 +41,7 @@ single_sensitivity <- function(coi = 3,
   assert_single_string(distance)
   assert_in(distance, c("abs_sum", "sum_abs", "squared"))
   assert_single_string(coi_method)
-  assert_in(coi_method, c("1", "2"))
+  assert_in(coi_method, c("variant", "frequency"))
 
   # Simulate data
   sim_data <- sim_biallelic(
@@ -114,7 +114,7 @@ sensitivity <- function(repetitions = 10,
                         bin_size = 20,
                         comparison = "overall",
                         distance = "squared",
-                        coi_method = "1") {
+                        coi_method = "variant") {
 
   # Check inputs
   assert_pos_int(repetitions)
@@ -134,7 +134,7 @@ sensitivity <- function(repetitions = 10,
   assert_string(distance)
   assert_in(distance, c("abs_sum", "sum_abs", "squared"))
   assert_string(coi_method)
-  assert_in(coi_method, c("1", "2"))
+  assert_in(coi_method, c("variant", "frequency"))
 
   # Workaround for when seq_error = NULL. Have seq_error saved as NA so
   # our general sensitivity function can deal with it.
@@ -360,7 +360,7 @@ cont_sensitivity <- function(repetitions = 10,
                              bin_size = 20,
                              comparison = "overall",
                              distance = "squared",
-                             coi_method = "1") {
+                             coi_method = "variant") {
 
   # Check inputs
   assert_pos_int(repetitions)
@@ -380,7 +380,7 @@ cont_sensitivity <- function(repetitions = 10,
   assert_string(distance)
   assert_in(distance, c("abs_sum", "sum_abs", "squared"))
   assert_string(coi_method)
-  assert_in(coi_method, c("1", "2"))
+  assert_in(coi_method, c("variant", "frequency"))
 
   # Create parameter grid
   param_grid <- expand.grid(
