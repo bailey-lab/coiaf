@@ -12,7 +12,7 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.width = 5, 
+  fig.width = 5,
   fig.height = 5
 )
 # Change the way tibble prints so only prints 5 extra columns
@@ -41,7 +41,7 @@ First, we must compute the PLAF by average the WSAF of our samples.
 plaf <- colMeans(example_real_data, na.rm = T)
 ```
 
-In the dataset provided, `example_real_data`, there are 
+In the dataset provided, `example_real_data`, there are
 `r dim(example_real_data)[1]` unique samples with `r dim(example_real_data)[2]`
 loci each. Therefore, to find the COI for each sample, we must generate a for
 loop and iterate over each sample.
@@ -52,24 +52,26 @@ loop and iterate over each sample.
 m1_dis <- lapply(seq_len(nrow(example_real_data)), function(i) {
   # We first isolate the WSAF for that sample and then plug the WSAF and PLAF
   # into our function
-  wsaf  <- example_real_data[i,]
+  wsaf <- example_real_data[i, ]
   input <- tibble::tibble(wsaf = wsaf, plaf = plaf) %>% tidyr::drop_na()
-  res <- compute_coi(input, "real", coi_method = "1")
+  res <- compute_coi(input, "real", coi_method = "variant")
 })
 
 # compute_coi returns both the COI and a measure of confidence in our prediction
 # thus we must isolate each separately
-m1_dis_cois <- lapply(m1_dis, function(x) { x$coi }) %>% unlist()  
+m1_dis_cois <- lapply(m1_dis, function(x) {
+  x$coi
+}) %>% unlist()
 
 # extract the probabilities and assign them names based on what COI was checked
-m1_dis_probs <- lapply(m1_dis, function(x) { 
+m1_dis_probs <- lapply(m1_dis, function(x) {
   probs <- x$probability
   names(probs) <- paste0("COI_", 1:length(probs))
   return(probs)
 })
 
 # Assign the name of the sample to the returned vectors
-names(m1_dis_cois)  <- rownames(example_real_data)
+names(m1_dis_cois) <- rownames(example_real_data)
 names(m1_dis_probs) <- rownames(example_real_data)
 ```
 
@@ -78,9 +80,9 @@ names(m1_dis_probs) <- rownames(example_real_data)
 m1_dis_cont <- lapply(seq_len(nrow(example_real_data)), function(i) {
   # We first isolate the WSAF for that sample and then plug the WSAF and PLAF
   # into our function
-  wsaf  <- example_real_data[i,]
+  wsaf <- example_real_data[i, ]
   input <- tibble::tibble(wsaf = wsaf, plaf = plaf) %>% tidyr::drop_na()
-  res <- optimize_coi(input, "real", coi_method = "1")
+  res <- optimize_coi(input, "real", coi_method = "variant")
 }) %>% unlist()
 
 # Assign the name of the sample to the returned vector
@@ -93,24 +95,26 @@ names(m1_dis_cont) <- rownames(example_real_data)
 m2_dis <- lapply(seq_len(nrow(example_real_data)), function(i) {
   # We first isolate the WSAF for that sample and then plug the WSAF and PLAF
   # into our function
-  wsaf  <- example_real_data[i,]
+  wsaf <- example_real_data[i, ]
   input <- tibble::tibble(wsaf = wsaf, plaf = plaf) %>% tidyr::drop_na()
-  res <- compute_coi(input, "real", coi_method = "2")
+  res <- compute_coi(input, "real", coi_method = "frequency")
 })
 
 # compute_coi returns both the COI and a measure of confidence in our prediction
 # thus we must isolate each separately
-m2_dis_cois <- lapply(m2_dis, function(x) { x$coi }) %>% unlist()  
+m2_dis_cois <- lapply(m2_dis, function(x) {
+  x$coi
+}) %>% unlist()
 
 # extract the probabilities and assign them names based on what COI was checked
-m2_dis_probs <- lapply(m2_dis, function(x) { 
+m2_dis_probs <- lapply(m2_dis, function(x) {
   probs <- x$probability
   names(probs) <- paste0("COI_", 1:length(probs))
   return(probs)
 })
 
 # Assign the name of the sample to the returned vectors
-names(m2_dis_cois)  <- rownames(example_real_data)
+names(m2_dis_cois) <- rownames(example_real_data)
 names(m2_dis_probs) <- rownames(example_real_data)
 ```
 
@@ -119,9 +123,9 @@ names(m2_dis_probs) <- rownames(example_real_data)
 m2_dis_cont <- lapply(seq_len(nrow(example_real_data)), function(i) {
   # We first isolate the WSAF for that sample and then plug the WSAF and PLAF
   # into our function
-  wsaf  <- example_real_data[i,]
+  wsaf <- example_real_data[i, ]
   input <- tibble::tibble(wsaf = wsaf, plaf = plaf) %>% tidyr::drop_na()
-  res <- optimize_coi(input, "real", coi_method = "2")
+  res <- optimize_coi(input, "real", coi_method = "frequency")
 }) %>% unlist()
 
 # Assign the name of the sample to the returned vector
@@ -132,17 +136,17 @@ names(m2_dis_cont) <- rownames(example_real_data)
 For roughly 1000 loci and 10 samples, the model will take less than 0.5 seconds
 to run. It may be helpful to include a progress bar when running additional loci
 or samples by replacing `lapply` in the above function with a user defined
-function. We recommend the use of the 
-[`pbapply` package](https://peter.solymos.org/pbapply/), which can be used as 
+function. We recommend the use of the
+[`pbapply` package](https://peter.solymos.org/pbapply/), which can be used as
 follows:
 
 ```{r progress bar function, eval = F}
 # Function to determine if pbapply is installed. If it is installed, it will
 # display a progress bar
-list_apply <- function(x, fun, ...){
+list_apply <- function(x, fun, ...) {
   if (requireNamespace("pbapply", quietly = TRUE)) {
     pbapply::pblapply(x, fun, ...)
-    } else {
+  } else {
     lapply(x, fun, ...)
   }
 }
@@ -153,6 +157,6 @@ All that is left to do is to replace the above `lapply` with the newly defined
 
 # Data Visualization
 We recommend exploring the [`ggplot2`](https://ggplot2.tidyverse.org/index.html)
-package to plot results. The 
-[Graph Gallery](https://www.r-graph-gallery.com/index.html) is a beautiful 
+package to plot results. The
+[Graph Gallery](https://www.r-graph-gallery.com/index.html) is a beautiful
 website with tons of awesome graphs and demos that may provide some inspiration.
