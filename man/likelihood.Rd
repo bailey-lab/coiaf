@@ -4,7 +4,7 @@
 \alias{likelihood}
 \title{Likelihood of a COI}
 \usage{
-likelihood(coi, processed_data, distance = "squared", coi_method = "1")
+likelihood(coi, processed_data, distance = "squared", coi_method = "variant")
 }
 \arguments{
 \item{coi}{The COI for which the likelihood will be generated.}

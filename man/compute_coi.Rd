@@ -12,7 +12,7 @@ compute_coi(
   bin_size = 20,
   comparison = "overall",
   distance = "squared",
-  coi_method = "1"
+  coi_method = "variant"
 )
 }
 \arguments{

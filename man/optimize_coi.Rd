@@ -11,7 +11,7 @@ optimize_coi(
   seq_error = NULL,
   bin_size = 20,
   distance = "squared",
-  coi_method = "1"
+  coi_method = "variant"
 )
 }
 \arguments{
