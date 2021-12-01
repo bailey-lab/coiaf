@@ -98,7 +98,7 @@ toverall <- cont_sensitivity(
   plaf = p,
   coverage = 400,
   seq_error = 0,
-  coi_method = c("1", "2")
+  coi_method = c("variant", "frequency")
 )
 
 toverall_image <- sensitivity_plot(
@@ -106,7 +106,7 @@ toverall_image <- sensitivity_plot(
   dims = c(1, 2),
   result_type = "cont",
   title = "Predicted COI",
-  sub_title = c("Method 1", "Method 2")
+  sub_title = c("Variant Method", "Frequency Method")
 )
 
 toverall_error <- error_plot(
@@ -114,7 +114,7 @@ toverall_error <- error_plot(
   fill = "coi_method",
   legend_title = "COI Method",
   title = "Error",
-  fill_levels = c("Method 1", "Method 2")
+  fill_levels = c("Variant Method", "Frequency Method")
 )
 
 toverall_fig <- ggpubr::ggarrange(
@@ -141,7 +141,7 @@ tcoi <- cont_sensitivity(
   repetitions = 100,
   plaf = p,
   seq_error = 0.01,
-  coi_method = c("1", "2")
+  coi_method = c("variant", "frequency")
 )
 
 tcoi_image <- sensitivity_plot(
@@ -149,7 +149,7 @@ tcoi_image <- sensitivity_plot(
   dims = c(1, 2),
   result_type = "cont",
   title = "Predicted COI",
-  sub_title = c("Method 1", "Method 2")
+  sub_title = c("Variant Method", "Frequency Method")
 )
 
 tcoi_error <- error_plot(
@@ -157,7 +157,7 @@ tcoi_error <- error_plot(
   fill = "coi_method",
   legend_title = "COI Method",
   title = "Error",
-  fill_levels = c("Method 1", "Method 2")
+  fill_levels = c("Variant Method", "Frequency Method")
 )
 
 tcoi_fig <- ggpubr::ggarrange(
@@ -224,7 +224,7 @@ tdistance <- cont_sensitivity(
   distance = c("abs_sum", "sum_abs", "squared"),
   repetitions = 100,
   seq_error = 0.01,
-  coi_method = c("1", "2")
+  coi_method = c("variant", "frequency")
 )
 
 tdistance_image <- sensitivity_plot(
@@ -234,7 +234,7 @@ tdistance_image <- sensitivity_plot(
   dims = c(3, 2),
   sub_title = paste(
     rep(c("Absolute Sum", "Sum of Absolute", "Squared Error"), 2),
-    rep(c("Method 1", "Method 2"), each = 3),
+    rep(c("Variant Method", "Frequency Method"), each = 3),
     sep = ", "
   )
 )
@@ -271,7 +271,7 @@ tcoverage <- cont_sensitivity(
   repetitions = 100,
   seq_error = 0.01,
   plaf = p,
-  coi_method = c("1", "2")
+  coi_method = c("variant", "frequency")
 )
 
 tcoverage_image <- sensitivity_plot(
@@ -281,7 +281,7 @@ tcoverage_image <- sensitivity_plot(
   dims = c(4, 3),
   sub_title = paste(
     paste0("Coverage ", c(25, 50, 100, 200, 400, 800)),
-    rep(c("Method 1", "Method 2"), each = 6),
+    rep(c("Variant Method", "Frequency Method"), each = 6),
     sep = ", "
   )
 )
@@ -324,7 +324,7 @@ bloci <- lapply(loci, function(new_L) {
     repetitions = 100,
     plaf = new_p,
     seq_error = 0.01,
-    coi_method = "1"
+    coi_method = "variant"
   )
   inner_tloci$param_grid$loci <- new_L
   return(inner_tloci)
@@ -411,7 +411,7 @@ bloci <- lapply(loci, function(new_L) {
     repetitions = 100,
     plaf = new_p,
     seq_error = 0.01,
-    coi_method = "2"
+    coi_method = "frequency"
   )
   inner_tloci$param_grid$loci <- new_L
   return(inner_tloci)
@@ -572,7 +572,7 @@ tover <- cont_sensitivity(
   repetitions = 100,
   seq_error = 0.01,
   plaf = p,
-  coi_method = c("1", "2")
+  coi_method = c("variant", "frequency")
 )
 
 tover_image <- sensitivity_plot(
@@ -582,7 +582,7 @@ tover_image <- sensitivity_plot(
   dims = c(4, 3),
   sub_title = paste(
     paste0("Over ", seq(0, 0.2, 0.05)),
-    rep(c("Method 1", "Method 2"), each = 5),
+    rep(c("Variant Method", "Frequency Method"), each = 5),
     sep = ", "
   )
 )
@@ -618,7 +618,7 @@ trelated <- cont_sensitivity(
   repetitions = 100,
   seq_error = 0.01,
   plaf = p,
-  coi_method = c("1", "2")
+  coi_method = c("variant", "frequency")
 )
 
 trelated_image <- sensitivity_plot(
@@ -628,7 +628,7 @@ trelated_image <- sensitivity_plot(
   dims = c(4, 3),
   sub_title = paste(
     paste0("Related =  ", seq(0, 0.5, 0.1)),
-    rep(c("Method 1", "Method 2"), each = 6),
+    rep(c("Variant Method", "Frequency Method"), each = 6),
     sep = ", "
   )
 )
@@ -746,7 +746,7 @@ tbin <- cont_sensitivity(
   plaf = p,
   repetitions = 100,
   seq_error = 0.01,
-  coi_method = c("1", "2")
+  coi_method = c("variant", "frequency")
 )
 
 tbin_image <- sensitivity_plot(
