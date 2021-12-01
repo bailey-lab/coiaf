@@ -65,7 +65,11 @@
     <p>Generate the theoretical COI curve for a particular COI value.</p>
     </div>
 
-    <div id="ref-usage">Usage,<div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">single_theoretical_coi</span><span class="op">(</span><span class="va">coi</span>, plaf <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.5</span>, l <span class="op">=</span> <span class="fl">101</span><span class="op">)</span>, coi_method <span class="op">=</span> <span class="st">"1"</span><span class="op">)</span></code></pre></div></div>
+    <div id="ref-usage">Usage,<div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">single_theoretical_coi</span><span class="op">(</span>
+  <span class="va">coi</span>,
+  plaf <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.5</span>, l <span class="op">=</span> <span class="fl">101</span><span class="op">)</span>,
+  coi_method <span class="op">=</span> <span class="st">"variant"</span>
+<span class="op">)</span></code></pre></div></div>
 
     <div id="arguments">
     <h2>Arguments</h2>
@@ -75,7 +79,8 @@
 <dd><p>The PLAF over which the curve will be calculated.</p></dd>
 <dt>coi_method</dt>
 <dd><p>The method we will use to calculate the theoretical COI.
-The method is either "1" or "2". The default value is "1".</p></dd>
+The method is either "variant" or "frequency". The default value is
+"variant".</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
