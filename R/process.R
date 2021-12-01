@@ -26,7 +26,7 @@ process <- function(wsaf,
                     plaf,
                     seq_error = NULL,
                     bin_size = 20,
-                    coi_method = "1") {
+                    coi_method = "variant") {
 
   # Infer value of seq_error if NULL
   if (is.null(seq_error)) {
@@ -59,14 +59,14 @@ process <- function(wsaf,
     seq_error <- round(max(seq_error, 0.01, na.rm = T), 4)
   }
 
-  if (coi_method == "1") {
+  if (coi_method == "variant") {
     # Isolate PLAF, determine the PLAF cuts, and whether a site is a variant,
     # accounting for sequence error
     df <- data.frame(
       plaf_cut = suppressWarnings(Hmisc::cut2(plaf, m = bin_size)),
       variant = ifelse(wsaf <= seq_error | wsaf >= (1 - seq_error), 0, 1)
     )
-  } else if (coi_method == "2") {
+  } else if (coi_method == "frequency") {
     # Subset to heterozygous sites
     data <- data.frame(wsaf = wsaf, plaf = plaf) %>%
       dplyr::filter(wsaf > seq_error & wsaf < (1 - seq_error))
@@ -185,7 +185,7 @@ process <- function(wsaf,
 process_sim <- function(sim,
                         seq_error = NULL,
                         bin_size = 20,
-                        coi_method = "1") {
+                        coi_method = "variant") {
   # Check inputs
   if (!is.null(seq_error)) assert_single_bounded(seq_error)
   assert_single_pos_int(bin_size)
@@ -231,7 +231,7 @@ process_sim <- function(sim,
 process_real <- function(wsaf, plaf,
                          seq_error = NULL,
                          bin_size = 20,
-                         coi_method = "1") {
+                         coi_method = "variant") {
   # Check inputs
   assert_vector(wsaf)
   assert_bounded(wsaf)

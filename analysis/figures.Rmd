@@ -63,7 +63,7 @@ het <- ggplot() +
 
 ```{r figures with theoretical and true lines}
 # Method 1 with red lines
-df_grouped_1 <- process_sim(sim, coi_method = "1", bin_size = 50)
+df_grouped_1 <- process_sim(sim, coi_method = "variant", bin_size = 50)
 
 m1r <- ggplot() +
   geom_point(data = m1_data, aes(x = plaf, y = wsaf), alpha = 0.5) +
@@ -92,7 +92,7 @@ m1r <- ggplot() +
   labs(x = "PLMAF", y = "Variant Site", title = "Variant Method")
 
 # Method 2 with red lines
-df_grouped_2 <- process_sim(sim, coi_method = "2", bin_size = 50)
+df_grouped_2 <- process_sim(sim, coi_method = "frequency", bin_size = 50)
 
 m2r <- ggplot() +
   geom_point(data = m2_data, aes(x = plaf, y = wsaf), alpha = 0.5) +

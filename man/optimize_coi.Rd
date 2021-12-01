@@ -11,7 +11,7 @@ optimize_coi(
   seq_error = NULL,
   bin_size = 20,
   distance = "squared",
-  coi_method = "1"
+  coi_method = "variant"
 )
 }
 \arguments{
@@ -33,7 +33,8 @@ the theoretical and simulated curves for the \code{"overall"} method. One of
 \code{"abs_sum"}, \code{"sum_abs"}, \code{"squared"}.}
 
 \item{coi_method}{The method we will use to calculate the theoretical COI.
-The method is either "1" or "2". The default value is "1".}
+The method is either "variant" or "frequency". The default value is
+"variant".}
 }
 \value{
 The predicted COI value.

@@ -1,5 +1,3 @@
-context("assertions")
-
 #------------------------------------------------
 test_that("nice_format working correctly", {
   expect_true(nice_format(NULL) == "")
@@ -26,11 +24,11 @@ test_that("assert_non_null working correctly", {
 test_that("assert_atomic correctly", {
   expect_true(assert_atomic(TRUE))
   expect_true(assert_atomic(1))
-  expect_true(assert_atomic(seq(0,5,0.5)))
+  expect_true(assert_atomic(seq(0, 5, 0.5)))
   expect_true(assert_atomic(0i))
   expect_true(assert_atomic("foo"))
   expect_true(assert_atomic(raw(8)))
-  expect_true(assert_atomic(matrix(0,3,3)))
+  expect_true(assert_atomic(matrix(0, 3, 3)))
 
   expect_error(assert_atomic(list(1:5)))
   expect_error(assert_atomic(data.frame(1:5)))
@@ -45,7 +43,7 @@ test_that("assert_single correctly", {
   expect_error(assert_single(NULL))
   expect_error(assert_single(1:5))
   expect_error(assert_single(list(0)))
-  expect_error(assert_single(matrix(0,3,3)))
+  expect_error(assert_single(matrix(0, 3, 3)))
   expect_error(assert_single(data.frame(0)))
 })
 
@@ -121,7 +119,7 @@ test_that("assert_int working correctly", {
   expect_error(assert_int(NULL))
   expect_error(assert_int(0.5))
   expect_error(assert_int("foo"))
-  expect_error(assert_int(c(5,"foo")))
+  expect_error(assert_int(c(5, "foo")))
 })
 
 #------------------------------------------------
@@ -133,7 +131,7 @@ test_that("assert_single_int working correctly", {
   expect_error(assert_single_int(NULL))
   expect_error(assert_single_int(0.5))
   expect_error(assert_single_int("foo"))
-  expect_error(assert_single_int(c(5,"foo")))
+  expect_error(assert_single_int(c(5, "foo")))
 })
 
 #------------------------------------------------
@@ -200,15 +198,15 @@ test_that("assert_vector working correctly", {
   expect_true(assert_vector(1:5))
 
   expect_error(assert_vector(NULL))
-  expect_error(assert_vector(matrix(5,3,3)))
+  expect_error(assert_vector(matrix(5, 3, 3)))
   expect_error(assert_vector(list(1:5, 1:10)))
   expect_error(assert_vector(data.frame(1:5, 2:6)))
 })
 
 #------------------------------------------------
 test_that("assert_matrix working correctly", {
-  expect_true(assert_matrix(matrix(NA,1,1)))
-  expect_true(assert_matrix(matrix(5,3,3)))
+  expect_true(assert_matrix(matrix(NA, 1, 1)))
+  expect_true(assert_matrix(matrix(5, 3, 3)))
 
   expect_error(assert_matrix(NULL))
   expect_error(assert_matrix(5))
@@ -250,88 +248,88 @@ test_that("assert_custom_class working correctly", {
 
 #------------------------------------------------
 test_that("assert_eq working correctly", {
-  expect_true(assert_eq(5,5))
-  expect_true(assert_eq(1:5,1:5))
-  expect_true(assert_eq("foo","foo"))
+  expect_true(assert_eq(5, 5))
+  expect_true(assert_eq(1:5, 1:5))
+  expect_true(assert_eq("foo", "foo"))
   expect_true(assert_eq(c(a = 5), c(b = 5)))
 
-  expect_error(assert_eq(NULL,5))
-  expect_error(assert_eq(5,NULL))
-  expect_error(assert_eq(NULL,NULL))
-  expect_error(assert_eq(4,5))
-  expect_error(assert_eq(1:4,1:5))
-  expect_error(assert_eq("foo","bar"))
+  expect_error(assert_eq(NULL, 5))
+  expect_error(assert_eq(5, NULL))
+  expect_error(assert_eq(NULL, NULL))
+  expect_error(assert_eq(4, 5))
+  expect_error(assert_eq(1:4, 1:5))
+  expect_error(assert_eq("foo", "bar"))
 })
 
 #------------------------------------------------
 test_that("assert_neq working correctly", {
-  expect_true(assert_neq(4,5))
-  expect_true(assert_neq(2:6,1:5))
-  expect_true(assert_neq("foo","bar"))
+  expect_true(assert_neq(4, 5))
+  expect_true(assert_neq(2:6, 1:5))
+  expect_true(assert_neq("foo", "bar"))
 
-  expect_error(assert_neq(NULL,5))
-  expect_error(assert_neq(5,NULL))
-  expect_error(assert_neq(NULL,NULL))
-  expect_error(assert_neq(5,5))
-  expect_error(assert_neq(1:5,1:5))
-  expect_error(assert_neq("foo","foo"))
+  expect_error(assert_neq(NULL, 5))
+  expect_error(assert_neq(5, NULL))
+  expect_error(assert_neq(NULL, NULL))
+  expect_error(assert_neq(5, 5))
+  expect_error(assert_neq(1:5, 1:5))
+  expect_error(assert_neq("foo", "foo"))
 })
 
 #------------------------------------------------
 test_that("assert_gr working correctly", {
-  expect_true(assert_gr(5,4))
-  expect_true(assert_gr(1:5,0))
-  expect_true(assert_gr(2:6,1:5))
+  expect_true(assert_gr(5, 4))
+  expect_true(assert_gr(1:5, 0))
+  expect_true(assert_gr(2:6, 1:5))
 
-  expect_error(assert_gr(NULL,5))
-  expect_error(assert_gr(5,NULL))
-  expect_error(assert_gr(NULL,NULL))
-  expect_error(assert_gr(3,3))
-  expect_error(assert_gr(3,4))
-  expect_error(assert_gr(1:4,1:5))
+  expect_error(assert_gr(NULL, 5))
+  expect_error(assert_gr(5, NULL))
+  expect_error(assert_gr(NULL, NULL))
+  expect_error(assert_gr(3, 3))
+  expect_error(assert_gr(3, 4))
+  expect_error(assert_gr(1:4, 1:5))
 })
 
 #------------------------------------------------
 test_that("assert_greq working correctly", {
-  expect_true(assert_greq(5,4))
-  expect_true(assert_greq(5,5))
-  expect_true(assert_greq(1:5,0))
-  expect_true(assert_greq(2:6,1:5))
-  expect_true(assert_greq(1:5,1:5))
+  expect_true(assert_greq(5, 4))
+  expect_true(assert_greq(5, 5))
+  expect_true(assert_greq(1:5, 0))
+  expect_true(assert_greq(2:6, 1:5))
+  expect_true(assert_greq(1:5, 1:5))
 
-  expect_error(assert_greq(NULL,5))
-  expect_error(assert_greq(5,NULL))
-  expect_error(assert_greq(NULL,NULL))
-  expect_error(assert_greq(3,4))
-  expect_error(assert_greq(1:4,1:5))
+  expect_error(assert_greq(NULL, 5))
+  expect_error(assert_greq(5, NULL))
+  expect_error(assert_greq(NULL, NULL))
+  expect_error(assert_greq(3, 4))
+  expect_error(assert_greq(1:4, 1:5))
 })
 
 #------------------------------------------------
 test_that("assert_le working correctly", {
-  expect_true(assert_le(4,5))
-  expect_true(assert_le(1:5,9))
-  expect_true(assert_le(2:6,3:7))
+  expect_true(assert_le(4, 5))
+  expect_true(assert_le(1:5, 9))
+  expect_true(assert_le(2:6, 3:7))
 
-  expect_error(assert_le(NULL,5))
-  expect_error(assert_le(5,NULL))
-  expect_error(assert_le(NULL,NULL))
-  expect_error(assert_le(3,3))
-  expect_error(assert_le(4,3))
-  expect_error(assert_le(1:4,1:5))
+  expect_error(assert_le(NULL, 5))
+  expect_error(assert_le(5, NULL))
+  expect_error(assert_le(NULL, NULL))
+  expect_error(assert_le(3, 3))
+  expect_error(assert_le(4, 3))
+  expect_error(assert_le(1:4, 1:5))
 })
 
 #------------------------------------------------
 test_that("assert_leq working correctly", {
-  expect_true(assert_leq(4,5))
-  expect_true(assert_leq(4,4))
-  expect_true(assert_leq(1:5,9))
-  expect_true(assert_leq(2:6,2:6))
+  expect_true(assert_leq(4, 5))
+  expect_true(assert_leq(4, 4))
+  expect_true(assert_leq(1:5, 9))
+  expect_true(assert_leq(2:6, 2:6))
 
-  expect_error(assert_leq(NULL,5))
-  expect_error(assert_leq(5,NULL))
-  expect_error(assert_leq(NULL,NULL))
-  expect_error(assert_leq(4,3))
-  expect_error(assert_leq(2:6,1:5))
+  expect_error(assert_leq(NULL, 5))
+  expect_error(assert_leq(5, NULL))
+  expect_error(assert_leq(NULL, NULL))
+  expect_error(assert_leq(4, 3))
+  expect_error(assert_leq(2:6, 1:5))
 })
 
 #------------------------------------------------
@@ -377,14 +375,14 @@ test_that("assert_not_in working correctly", {
 test_that("assert_length working correctly", {
   expect_true(assert_length(1:3, 3))
   expect_true(assert_length(3, 1))
-  expect_true(assert_length(matrix(NA,3,4), 12))
+  expect_true(assert_length(matrix(NA, 3, 4), 12))
 
   expect_error(assert_length(1:3, NULL))
   expect_error(assert_length(NULL, 1:3))
   expect_error(assert_length(NULL, NULL))
   expect_error(assert_length(3, 2))
   expect_error(assert_length(1:3, 2))
-  expect_error(assert_length(matrix(NA,3,4), 9))
+  expect_error(assert_length(matrix(NA, 3, 4), 9))
 })
 
 #------------------------------------------------
@@ -405,50 +403,50 @@ test_that("assert_same_length_multiple working correctly", {
 
 #------------------------------------------------
 test_that("assert_2d working correctly", {
-  expect_true(assert_2d(matrix(NA,3,3)))
-  expect_true(assert_2d(matrix(NA,0,0)))
-  expect_true(assert_2d(data.frame(1:3,1:3)))
+  expect_true(assert_2d(matrix(NA, 3, 3)))
+  expect_true(assert_2d(matrix(NA, 0, 0)))
+  expect_true(assert_2d(data.frame(1:3, 1:3)))
 
   expect_error(assert_2d(NULL))
   expect_error(assert_2d(5))
-  expect_error(assert_2d(array(NA, dim = c(2,3,4))))
+  expect_error(assert_2d(array(NA, dim = c(2, 3, 4))))
 })
 
 #------------------------------------------------
 test_that("assert_nrow working correctly", {
-  expect_true(assert_nrow(matrix(NA,3,3), 3))
-  expect_true(assert_nrow(data.frame(1:5,1:5), 5))
+  expect_true(assert_nrow(matrix(NA, 3, 3), 3))
+  expect_true(assert_nrow(data.frame(1:5, 1:5), 5))
 
   expect_error(assert_nrow(NULL, 3))
   expect_error(assert_nrow(3, NULL))
   expect_error(assert_nrow(NULL, NULL))
   expect_error(assert_nrow(5, 1))
-  expect_error(assert_nrow(data.frame(1:5,1:5), 4))
+  expect_error(assert_nrow(data.frame(1:5, 1:5), 4))
 })
 
 #------------------------------------------------
 test_that("assert_ncol working correctly", {
-  expect_true(assert_ncol(matrix(NA,3,3), 3))
-  expect_true(assert_ncol(data.frame(1:5,1:5), 2))
+  expect_true(assert_ncol(matrix(NA, 3, 3), 3))
+  expect_true(assert_ncol(data.frame(1:5, 1:5), 2))
 
   expect_error(assert_ncol(NULL, 3))
   expect_error(assert_ncol(3, NULL))
   expect_error(assert_ncol(NULL, NULL))
   expect_error(assert_ncol(5, 1))
-  expect_error(assert_ncol(data.frame(1:5,1:5), 3))
+  expect_error(assert_ncol(data.frame(1:5, 1:5), 3))
 })
 
 #------------------------------------------------
 test_that("assert_dim working correctly", {
-  expect_true(assert_dim(matrix(NA,3,3), c(3,3)))
-  expect_true(assert_dim(data.frame(1:5,1:5), c(5,2)))
+  expect_true(assert_dim(matrix(NA, 3, 3), c(3, 3)))
+  expect_true(assert_dim(data.frame(1:5, 1:5), c(5, 2)))
 
   expect_error(assert_dim(NULL, 3))
   expect_error(assert_dim(3, NULL))
   expect_error(assert_dim(NULL, NULL))
   expect_error(assert_dim(5, 1))
-  expect_error(assert_dim(data.frame(1:5,1:5), c(3,2)))
-  expect_error(assert_dim(data.frame(1:5,1:5), c(5,3)))
+  expect_error(assert_dim(data.frame(1:5, 1:5), c(3, 2)))
+  expect_error(assert_dim(data.frame(1:5, 1:5), c(5, 3)))
 })
 
 #------------------------------------------------
@@ -482,6 +480,6 @@ test_that("assert_noduplicates working correctly", {
   expect_true(assert_noduplicates(c("foo", "bar")))
   expect_true(assert_noduplicates(NULL))
 
-  expect_error(assert_noduplicates(c(1,1,2)))
+  expect_error(assert_noduplicates(c(1, 1, 2)))
   expect_error(assert_noduplicates(c("foo", "bar", "foo")))
 })

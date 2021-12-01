@@ -12,7 +12,8 @@
 #' @param coi_range The COIs for which the curve will be calculated.
 #' @param plaf The PLAF over which the curve will be calculated.
 #' @param coi_method The method we will use to calculate the theoretical COI.
-#' The method is either "1" or "2". The default value is "1".
+#'   The method is either "variant" or "frequency". The default value is
+#'   "variant".
 #'
 #' @return The theoretical COI curves for the specified COIs and PLAF.
 #'
@@ -20,14 +21,14 @@
 
 theoretical_coi <- function(coi_range,
                             plaf = seq(0, 0.5, l = 101),
-                            coi_method = "1") {
+                            coi_method = "variant") {
   # Check inputs
   assert_pos(coi_range, zero_allowed = FALSE)
   assert_vector(plaf)
   assert_bounded(plaf, left = 0, right = 0.5)
   assert_increasing(plaf)
   assert_single_string(coi_method)
-  assert_in(coi_method, c("1", "2"))
+  assert_in(coi_method, c("variant", "frequency"))
 
   # Compute curve for the COIs
   for (i in coi_range) {
@@ -63,19 +64,19 @@ theoretical_coi <- function(coi_range,
 
 single_theoretical_coi <- function(coi,
                                    plaf = seq(0, 0.5, l = 101),
-                                   coi_method = "1") {
+                                   coi_method = "variant") {
   # Check inputs
   assert_single_pos(coi)
   assert_vector(plaf)
   assert_bounded(plaf, left = 0, right = 0.5)
   assert_increasing(plaf)
   assert_single_string(coi_method)
-  assert_in(coi_method, c("1", "2"))
+  assert_in(coi_method, c("variant", "frequency"))
 
   # Determine the curve
-  if (coi_method == "1") {
+  if (coi_method == "variant") {
     curve <- 1 - plaf^coi - (1 - plaf)^coi
-  } else if (coi_method == "2") {
+  } else if (coi_method == "frequency") {
     curve <- (plaf - plaf^coi) / (1 - plaf^coi - (1 - plaf)^coi)
   }
 }
