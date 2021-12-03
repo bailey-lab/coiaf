@@ -7,6 +7,12 @@ template:
 development:
   mode: auto
 
+authors:
+  Aris Paschalidis:
+    href: "https://www.arispas.com"
+  OJ Watson:
+    href: https://www.imperial.ac.uk/people/o.watson15
+
 reference:
   - title: Complexity of Infection
     desc: >
