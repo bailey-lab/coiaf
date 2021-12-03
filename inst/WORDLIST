@@ -5,6 +5,7 @@ COIs
 Dirichlet
 FwS
 Kullback
+Lato
 Leibler
 Lifecycle
 McCOIL
@@ -20,6 +21,7 @@ args
 arispas
 biallelic
 bootswatch
+bslib
 coi
 coiaf
 config
@@ -38,6 +40,7 @@ https
 io
 macOS
 mae
+nav
 navbar
 ngs
 oldrel
@@ -47,6 +50,8 @@ pandoc
 params
 pcbi
 pfcommunityproject
+pkgdown
+px
 rcmdcheck
 rds
 rspm
