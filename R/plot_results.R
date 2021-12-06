@@ -353,8 +353,8 @@ world_map <- function(data,
       ggplot2::aes(
         x = .data$long,
         y = .data$lat,
-        size = variable,
-        color = variable
+        size = {{ variable }},
+        color = {{ variable }}
       ),
       alpha = alpha
     ) +
