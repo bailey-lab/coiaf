@@ -1,8 +1,8 @@
 pandoc: 2.7.3
-pkgdown: 2.0.0
+pkgdown: 2.0.1
 pkgdown_sha: ~
 articles: {}
-last_built: 2021-12-03T04:53Z
+last_built: 2021-12-06T23:18Z
 urls:
   reference: https://bailey-lab.github.io/coiaf/reference
   article: https://bailey-lab.github.io/coiaf/articles
