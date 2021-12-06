@@ -218,8 +218,10 @@ compare_data <- complete_predictions %>%
 ```
 
 ## Evaluate Our Predictions
-We first reshape our data so that discrete and continuous predictions are
-under the same column.
+We first reshape our data so that we have a single column with our COI
+estimates. This involves creating two new additional column to represent the
+coi_method and optimization method we used to compute the COI.
+
 ```{r pivoting data}
 pivot_data <- compare_data %>%
   tidyr::pivot_longer(
@@ -239,7 +241,10 @@ pivot_data <- compare_data %>%
   )
 ```
 
-```{r figure 3}
+We can next plot all our estimates and further include the deviation from the
+median THE REAL McCOIL estimation.
+
+```{r result figure}
 panela <- ggplot(
   data = dplyr::filter(pivot_data, coi_method == "var"),
   mapping = aes(y = COI, x = rmcl_med, color = optimization)
@@ -289,69 +294,20 @@ patchwork +
   theme(legend.position = "bottom")
 ```
 
-
-```{r plot all data}
-label_names <- c(
-  "cont" = "Continuous Optimization",
-  "dis" = "Discrete Optimization"
-)
-
-# Both
-ggplot(pivot_data, aes(y = COI, x = rmcl_med, color = coi_method)) +
-  scale_size_area() +
-  geom_abline(color = "gray", size = 0.5) +
-  ggplot2::geom_count(alpha = 0.7, position = position_jitter(width = 0.1)) +
-  theme_coiaf() +
-  facet_wrap(. ~ optimization, labeller = as_labeller(label_names)) +
-  guides(size = "none") +
-  theme(legend.position = "right") +
-  ylab("coiaf Prediction") +
-  scale_color_discrete("Method") +
-  scale_x_continuous("THE REAL McCOIL Prediction", breaks = seq(0, 10))
-
-# Only discrete
-ggplot(
-  dplyr::filter(pivot_data, optimization == "discrete"),
-  aes(y = COI, x = rmcl_med, color = coi_method)
-) +
-  scale_size_area() +
-  geom_abline(color = "gray", size = 0.5) +
-  ggplot2::geom_count(alpha = 0.7, position = position_jitter(width = 0.1)) +
-  theme_coiaf() +
-  facet_wrap(. ~ Region, labeller = label_both) +
-  guides(size = "none") +
-  theme(legend.position = "right") +
-  ylab("coiaf Prediction") +
-  scale_color_discrete("Method") +
-  scale_x_continuous("THE REAL McCOIL Prediction", breaks = seq(1, 10))
-
-# Only continuous
-ggplot(
-  dplyr::filter(pivot_data, optimization == "continuous"),
-  aes(y = COI, x = cut_width(rmcl_med, 1), color = coi_method)
-) +
-  geom_abline(color = "gray", size = 0.5) +
-  ggplot2::geom_boxplot() +
-  theme_coiaf() +
-  facet_wrap(. ~ Region, labeller = label_both) +
-  guides(size = "none") +
-  theme(legend.position = "right") +
-  ylab("coiaf Prediction") +
-  scale_color_discrete("Method") +
-  scale_x_discrete("THE REAL McCOIL Prediction", labels = seq(1, 10))
-```
-
 ## World Maps
 
-### Pf3k Data
+### Pf6k Data
 
-We need to access the Pf3k data in order to create a world map.
+We need to access the Pf6k data in order to create a world map.
 
 ```{r read Pf6k, eval = read_pf6k}
 # Read in
-tf <- tempfile()
-download.file("ftp://ngs.sanger.ac.uk/production/malaria/pfcommunityproject/Pf6/Pf_6_samples.txt", tf)
-meta <- data.table::fread(tf)
+temp_file <- tempfile()
+download.file(
+  "ftp://ngs.sanger.ac.uk/production/malaria/pfcommunityproject/Pf6/Pf_6_samples.txt",
+  temp_file
+)
+meta <- data.table::fread(temp_file)
 saveRDS(meta, file = "analysis/pf6k_meta.rds")
 ```
 
@@ -435,7 +391,8 @@ for (i in seq_along(sort(unique(meta$Year)))) {
 fws <- read.csv("ftp://ngs.sanger.ac.uk/production/malaria/pfcommunityproject/Pf6/Pf_6_fws.txt", sep = "\t")
 
 # Combine Pf6k, FwS, and our predictions
-patient_lat_long <- dplyr::left_join(compare_data, meta,
+patient_lat_long <- dplyr::left_join(
+  compare_data, meta,
   by = c("name" = "Sample")
 ) %>%
   dplyr::left_join(fws, by = c("name" = "Sample"))
@@ -451,8 +408,8 @@ World map with average COI
 map_average <- patient_lat_long %>%
   dplyr::group_by(Site, Lat, Long) %>%
   dplyr::summarise(
-    coi_mean = mean(discrete_1_med),
-    coi_med = median(discrete_1_med),
+    coi_mean = mean(dis_var_med),
+    coi_med = median(dis_freq_med),
     prev = median(as.numeric(prev_2_10)),
     rmcl_med = median(rmcl_med),
     .groups = "drop"
@@ -461,16 +418,24 @@ map_average <- patient_lat_long %>%
   dplyr::rename(long = Long)
 
 # Plot the mean COI
-mean_world <- world_map(map_average, map_average$coi_mean,
+mean_world <- world_map(
+  map_average,
+  coi_mean,
   label = "Mean COI",
-  alpha = 0.7, breaks = c(1.0, 1.5, 2.0, 2.5)
+  alpha = 0.7,
+  breaks = c(1.0, 1.5, 2.0, 2.5)
 )
+mean_world
 
 # Plot the median COI
-med_world <- world_map(map_average, map_average$coi_med,
+med_world <- world_map(
+  map_average,
+  coi_med,
   label = "Median COI",
-  alpha = 0.7, breaks = c(1.0, 1.5, 2.0)
+  alpha = 0.7,
+  breaks = c(1.0, 1.5, 2.0)
 )
+med_world
 ```
 
 World map with all data
@@ -481,30 +446,27 @@ World map with all data
 # The two patients are: "PN0075-C" and "PT0069-C"
 # We also set up data to be descending so that smaller COIs stay on top.
 all_world_map <- patient_lat_long %>%
-  dplyr::filter(discrete_1_med <= 10) %>%
-  dplyr::arrange(desc(discrete_1_med)) %>%
+  dplyr::filter(dis_var_med <= 10) %>%
+  dplyr::arrange(desc(dis_var_med)) %>%
   dplyr::rename(lat = Lat) %>%
   dplyr::rename(long = Long)
 
 # Plot all patient COIs (theme is added so that there is less whitespace)
-all_world <- world_map(all_world_map, all_world_map$discrete_1_med, "COI",
-  alpha = 0.7, breaks = c(1, 2, 4, 6, 8, 10)
+all_world <- world_map(
+  all_world_map,
+  dis_var_med,
+  "COI",
+  alpha = 0.7,
+  breaks = c(1, 2, 4, 6, 8, 10)
 )
+all_world
 ```
 
-```{r world maps}
-ggpubr::ggarrange(mean_world, med_world, all_world,
-  labels = "AUTO",
-  label.x = 0.06,
-  nrow = 3,
-  font.label = list(size = 10)
-)
-```
+### Prevalence & FwS
 
-
-```{r prevalance}
+```{r prevalence and fws}
 prev_fws <- patient_lat_long %>%
-  tidyr::pivot_longer(dplyr::any_of(c("continuous_1_med", "rmcl_med")),
+  tidyr::pivot_longer(dplyr::any_of(c("cont_var_med", "rmcl_med")),
     names_to = "Method",
     values_to = "COI",
     values_drop_na = TRUE
@@ -512,8 +474,9 @@ prev_fws <- patient_lat_long %>%
   dplyr::select(name, Region:Long, prev_2_10:COI) %>%
   dplyr::mutate(
     prev = as.numeric(prev_2_10),
-    Method = dplyr::recode(Method,
-      continuous_1_med = "Continuous Method 1",
+    Method = dplyr::recode(
+      Method,
+      cont_var_med = "Continuous Method 1",
       rmcl_med = "THE REAL McCOIL"
     ),
     .keep = "unused"
@@ -532,7 +495,10 @@ ggplot(data = grouped, aes(x = Fws, y = COI, color = Method)) +
   geom_point(alpha = 0.3, position = position_jitter(height = 0.2)) +
   labs(x = "FwS", y = "Estimated COI") +
   facet_grid(~Method) +
-  scale_color_discrete(name = "Estimation Method", labels = c("Discrete Method 1", "THE REAL McCOIL")) +
+  scale_color_discrete(
+    name = "Estimation Method",
+    labels = c("Discrete Method 1", "THE REAL McCOIL")
+  ) +
   theme_coiaf()
 
 # Prevalence
@@ -545,7 +511,10 @@ ggplot(data = grouped, aes(x = prev, y = COI, color = Method)) +
   ) +
   facet_grid(~Method) +
   labs(x = "Log10 Prevalence", y = "Estimated COI") +
-  scale_color_discrete(name = "Estimation Method", labels = c("Continuous Method 1", "THE REAL McCOIL")) +
+  scale_color_discrete(
+    name = "Estimation Method",
+    labels = c("Continuous Method 1", "THE REAL McCOIL")
+  ) +
   theme_coiaf()
 
 ggplot(
@@ -558,30 +527,35 @@ ggplot(
   geom_boxplot(alpha = 0.3) +
   facet_grid(~Method) +
   labs(x = "Prevalence", y = "Estimated COI") +
-  scale_color_discrete(name = "Estimation Method", labels = c("Continuous Method 1", "THE REAL McCOIL")) +
+  scale_color_discrete(
+    name = "Estimation Method",
+    labels = c("Continuous Method 1", "THE REAL McCOIL")
+  ) +
   theme_coiaf()
 ```
 
-***
+### A Different Visualization
 
-# Figure 4C
-```{r}
-fig4c <- patient_lat_long %>%
-  tidyr::pivot_longer(tidyr::starts_with(c("discrete", "continuous")),
+```{r prevalence}
+filter_data <- patient_lat_long %>%
+  tidyr::pivot_longer(
+    cols = dplyr::starts_with(c("dis", "cont")),
     names_to = c(".value", "coi_method"),
-    names_pattern = "(.*)_(.)_.*"
+    names_pattern = "(.*)_(.*)_.*"
   ) %>%
-  tidyr::pivot_longer(dplyr::any_of(c("discrete", "continuous")),
+  tidyr::pivot_longer(
+    cols = dplyr::any_of(c("dis", "cont")),
     names_to = "optimization",
     values_to = "COI",
     values_drop_na = TRUE
   ) %>%
-  dplyr::relocate(tidyselect::any_of(c("coi_method", "optimization", "COI")),
+  dplyr::relocate(
+    dplyr::any_of(c("coi_method", "optimization", "COI")),
     .after = name
   ) %>%
-  dplyr::filter(coi_method == "variant" & optimization == "discrete")
+  dplyr::filter(coi_method == "var" & optimization == "dis")
 
-tt <- fig4c %>%
+continents <- filter_data %>%
   dplyr::group_by(Region) %>%
   dplyr::mutate(med_prev = median(prev_2_10, na.rm = TRUE)) %>%
   dplyr::filter(med_prev != 0) %>%
@@ -592,7 +566,7 @@ tt <- fig4c %>%
     continent = countrycode::countrycode(Country, "country.name", "continent")
   )
 
-sorted_prev <- tt %>%
+sorted_prev <- continents %>%
   dplyr::select(Region, med_prev) %>%
   dplyr::distinct() %>%
   dplyr::pull(med_prev) %>%
@@ -616,10 +590,8 @@ ridges <- ggplot(
   labs(x = "COI", y = "Region")
 ```
 
-```{r}
-mean_world / med_world / ridges + plot_layout(widths = c(2, 2, 1))
-
-mean_world / ridges +
-  plot_layout(heights = c(2, 1)) +
-  plot_annotation(tag_levels = "A")
+```{r patchwork}
+mean_world / med_world / ridges +
+  plot_annotation(tag_levels = "A") +
+  plot_layout(widths = c(2, 2, 1))
 ```
