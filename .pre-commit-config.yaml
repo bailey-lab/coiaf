@@ -50,7 +50,7 @@ repos:
         entry: Cannot commit .Rhistory, .RData, .Rds or .rds.
         language: fail
         files: '\.Rhistory|\.RData|\.Rds|\.rds$'
-        # `exclude: <regex>` to allow committing specific files.
+        exclude: "analysis/pf6k_meta.rds$"
 
   # Check large files, add newline to end of file, and trim trailing whitespace
   - repo: https://github.com/pre-commit/pre-commit-hooks
