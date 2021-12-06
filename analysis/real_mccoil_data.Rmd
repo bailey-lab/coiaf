@@ -14,6 +14,7 @@ editor_options:
 ```{r setup, include = FALSE}
 # Here, we set default options for our markdown file
 knitr::opts_chunk$set(
+  collapse = TRUE,
   comment = "#>"
 )
 # Change the way tibble prints so only prints 5 extra columns
@@ -36,19 +37,6 @@ read_pf6k <- FALSE
 library(coiaf)
 library(ggplot2)
 library(patchwork)
-
-# Theme for ggplot2 images
-mytheme <- list(
-  theme_classic(),
-  theme(
-    text = element_text(family = "Times New Roman"),
-    plot.title = element_text(hjust = 0.5, size = 12),
-    axis.title = element_text(size = 10),
-    legend.position = "right",
-    legend.title = element_text(size = 12),
-    legend.text = element_text(size = 10)
-  )
-)
 ```
 
 In this analysis file, we run our COI algorithm on a collection of real data
@@ -253,13 +241,13 @@ panela <- ggplot(
 ) +
   scale_size_area() +
   geom_abline(color = "gray", size = 0.5) +
-  ggplot2::geom_count(alpha = 0.8, position = position_jitter(width = 0.1)) +
-  mytheme +
-  # theme(
-  #   legend.position = "right",
-  #   legend.title = element_blank()
-  # ) +
-  labs(title = "Variant Method", y = "coiaf Prediction", color = "Optimization Method") +
+  geom_count(alpha = 0.8, position = position_jitter(width = 0.1)) +
+  theme_coiaf() +
+  labs(
+    title = "Variant Method",
+    y = "coiaf Prediction",
+    color = "Optimization Method"
+  ) +
   scale_color_discrete(labels = c("Continuous", "Discrete")) +
   guides(size = "none") +
   scale_x_continuous("THE REAL McCOIL Prediction", breaks = seq(0, 10))
@@ -271,18 +259,21 @@ panelb <- ggplot(
   scale_size_area() +
   geom_abline(color = "gray", size = 0.5) +
   ggplot2::geom_count(alpha = 0.8, position = position_jitter(width = 0.1)) +
-  mytheme +
-  labs(title = "Frequency Method", y = "coiaf Prediction", color = "Optimization Method") +
+  theme_coiaf() +
+  labs(
+    title = "Frequency Method",
+    y = "coiaf Prediction",
+    color = "Optimization Method"
+  ) +
   scale_color_discrete(labels = c("Continuous", "Discrete")) +
   guides(size = "none") +
   scale_x_continuous("THE REAL McCOIL Prediction", breaks = seq(0, 10))
 
 panelc <- ggplot(pivot_data, aes(x = COI - rmcl_med, fill = coi_method)) +
   geom_density(alpha = 0.6) +
-  # geom_vline(xintercept = 0) +
   labs(x = "COI - Median RMCL", y = "Density", fill = "COI Method") +
   scale_fill_discrete(labels = c("Variant", "Frequency")) +
-  mytheme +
+  theme_coiaf() +
   theme(legend.position = "right")
 
 # Use patchwork to make life easier
@@ -305,7 +296,7 @@ ggplot(pivot_data, aes(y = COI, x = rmcl_med, color = coi_method)) +
   scale_size_area() +
   geom_abline(color = "gray", size = 0.5) +
   ggplot2::geom_count(alpha = 0.7, position = position_jitter(width = 0.1)) +
-  mytheme +
+  theme_coiaf() +
   facet_wrap(. ~ optimization, labeller = as_labeller(label_names)) +
   guides(size = "none") +
   theme(legend.position = "right") +
@@ -321,7 +312,7 @@ ggplot(
   scale_size_area() +
   geom_abline(color = "gray", size = 0.5) +
   ggplot2::geom_count(alpha = 0.7, position = position_jitter(width = 0.1)) +
-  mytheme +
+  theme_coiaf() +
   facet_wrap(. ~ Region, labeller = label_both) +
   guides(size = "none") +
   theme(legend.position = "right") +
@@ -336,7 +327,7 @@ ggplot(
 ) +
   geom_abline(color = "gray", size = 0.5) +
   ggplot2::geom_boxplot() +
-  mytheme +
+  theme_coiaf() +
   facet_wrap(. ~ Region, labeller = label_both) +
   guides(size = "none") +
   theme(legend.position = "right") +
@@ -396,9 +387,8 @@ ggplot(sil, aes(x = cluster, y = sis)) +
   ) +
   scale_x_continuous(breaks = c(0, 20, 24, 40, 60)) +
   labs(x = "Number of Clusters", y = "Average Silhoutte Score") +
-  theme_classic() +
+  theme_coiaf() +
   theme(
-    text = element_text(family = "Times New Roman"),
     axis.title = element_text(size = 8),
     axis.text.x = ggtext::element_markdown(color = c("black", "black", "red", "black", "black")),
     axis.ticks.x = element_line(color = c("black", "black", "red", "black", "black"))
@@ -538,7 +528,7 @@ ggplot(data = grouped, aes(x = Fws, y = COI, color = Method)) +
   labs(x = "FwS", y = "Estimated COI") +
   facet_grid(~Method) +
   scale_color_discrete(name = "Estimation Method", labels = c("Discrete Method 1", "THE REAL McCOIL")) +
-  mytheme
+  theme_coiaf()
 
 # Prevalence
 ggplot(data = grouped, aes(x = prev, y = COI, color = Method)) +
@@ -551,7 +541,7 @@ ggplot(data = grouped, aes(x = prev, y = COI, color = Method)) +
   facet_grid(~Method) +
   labs(x = "Log10 Prevalence", y = "Estimated COI") +
   scale_color_discrete(name = "Estimation Method", labels = c("Continuous Method 1", "THE REAL McCOIL")) +
-  mytheme
+  theme_coiaf()
 
 ggplot(
   data = tidyr::drop_na(grouped),
@@ -564,7 +554,7 @@ ggplot(
   facet_grid(~Method) +
   labs(x = "Prevalence", y = "Estimated COI") +
   scale_color_discrete(name = "Estimation Method", labels = c("Continuous Method 1", "THE REAL McCOIL")) +
-  mytheme
+  theme_coiaf()
 ```
 
 ***
