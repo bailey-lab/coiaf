@@ -51,7 +51,8 @@ Suggests:
     malariaAtlas,
     raster,
     ggridges,
-    countrycode
+    countrycode,
+    cli
 VignetteBuilder:
     knitr
 RdMacros:
