@@ -2,7 +2,7 @@
 % Please edit documentation in R/probability.R
 \name{rbetabinom}
 \alias{rbetabinom}
-\title{Draw from Beta-binomial distribution}
+\title{Beta-binomial distribution}
 \usage{
 rbetabinom(n = 1, k = 10, alpha = 1, beta = 1)
 }
@@ -16,6 +16,17 @@ rbetabinom(n = 1, k = 10, alpha = 1, beta = 1)
 \item{beta}{Second shape parameter of beta distribution.}
 }
 \description{
-Draw from Beta-binomial distribution.
+Draw from a Beta-binomial distribution.
 }
+\examples{
+rbetabinom()
+rbetabinom(n = 10, k = 10)
+}
+\seealso{
+\code{\link[=rbeta]{rbeta()}} and \code{\link[=rbinom]{rbinom()}} for additional details.
+
+Other distributions: 
+\code{\link{rdirichlet}()}
+}
+\concept{distributions}
 \keyword{internal}

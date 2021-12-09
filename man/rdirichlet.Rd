@@ -2,7 +2,7 @@
 % Please edit documentation in R/probability.R
 \name{rdirichlet}
 \alias{rdirichlet}
-\title{Draw from Dirichlet distribution}
+\title{Dirichlet distribution}
 \usage{
 rdirichlet(shape = rep(1, 3))
 }
@@ -10,7 +10,18 @@ rdirichlet(shape = rep(1, 3))
 \item{shape}{Vector of shape parameters.}
 }
 \description{
-Draw from Dirichlet distribution given a vector of shape
-parameters.
+Draw from a Dirichlet distribution given a vector of shape parameters. The
+number of observations is inferred from the length of the shape vector.
 }
+\examples{
+rdirichlet(c(1, 1, 1))
+rdirichlet(c(1, 3, 2))
+}
+\seealso{
+\code{\link[=rgamma]{rgamma()}} for additional details.
+
+Other distributions: 
+\code{\link{rbetabinom}()}
+}
+\concept{distributions}
 \keyword{internal}
