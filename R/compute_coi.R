@@ -247,7 +247,7 @@ compute_coi <- function(data,
   dist[is.nan(dist)] <- 0
 
   # List to return
-  ret <- list(coi = as.numeric(coi), probability = dist)
+  list(coi = as.numeric(coi), probability = dist)
 }
 
 #------------------------------------------------
@@ -302,5 +302,5 @@ distance_curves <- function(processed_data, theory_cois, distance = "squared") {
   coi <- unlist(stringr::str_split(names(which.min(gap)), "_"))[2]
 
   # Prepare list to return
-  ret <- list(coi = coi, dist = gap)
+  list(coi = coi, dist = gap)
 }

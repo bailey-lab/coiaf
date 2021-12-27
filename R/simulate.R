@@ -146,7 +146,7 @@ sim_biallelic <- function(coi = 3,
   }
 
   # Return list
-  ret <- list(
+  list(
     coi = coi,
     strain_proportions = w,
     phased = m,

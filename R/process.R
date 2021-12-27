@@ -141,7 +141,7 @@ process <- function(wsaf,
   df_grouped$midpoints <- cuts[-length(cuts)] + diff(cuts) / 2
 
   # Return data, seq_error, and cuts
-  res <- list(
+  list(
     data = df_grouped,
     seq_error = seq_error,
     bin_size = bin_size,
@@ -191,7 +191,7 @@ process_sim <- function(sim,
   assert_single_pos_int(bin_size)
 
   # Run helper to process
-  processed_sim <- process(
+  process(
     wsaf       = sim$data$wsaf,
     plaf       = sim$data$plaf,
     seq_error  = seq_error,
@@ -245,7 +245,7 @@ process_real <- function(wsaf, plaf,
   assert_bounded(plaf, left = 0, right = 0.5)
 
   # Run helper to process
-  processed_real <- process(
+  process(
     wsaf       = wsaf,
     plaf       = plaf,
     seq_error  = seq_error,

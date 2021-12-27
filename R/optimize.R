@@ -61,7 +61,7 @@ likelihood <- function(coi,
 
   # Gap is a named list with two entries: the coi and the PLAF. We want to
   # return only the coi
-  coi <- gap[1]
+  gap[1]
 }
 
 #------------------------------------------------
@@ -170,5 +170,5 @@ optimize_coi <- function(data,
   }
 
   # Return COI
-  coi <- round(fit$par, 4)
+  round(fit$par, 4)
 }

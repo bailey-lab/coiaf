@@ -19,7 +19,7 @@ rdirichlet <- function(shape = rep(1, 3)) {
 
   # Draw from distribution
   x <- rgamma(length(shape), shape = shape, rate = max(shape))
-  return(x / sum(x))
+  x / sum(x)
 }
 
 #------------------------------------------------
@@ -45,6 +45,5 @@ rbetabinom <- function(n = 1, k = 10, alpha = 1, beta = 1) {
 
   # Draw from distribution
   p <- rbeta(n = n, shape1 = alpha, shape2 = beta)
-  ret <- rbinom(n = n, size = k, prob = p)
-  return(ret)
+  rbinom(n = n, size = k, prob = p)
 }
