@@ -79,7 +79,7 @@ sensitivity_plot <- function(data,
       .data$true_coi, c("true_coi", "loop_number"),
       "coi_(.+)_(.+)"
     ) %>%
-    dplyr::mutate_all(as.numeric)
+    dplyr::mutate(dplyr::across(.fns = as.numeric))
 
   # We determine how many different panels there will be by finding the unique
   # values of loop_number

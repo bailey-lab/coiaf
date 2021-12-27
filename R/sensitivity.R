@@ -280,8 +280,7 @@ sensitivity <- function(repetitions = 10,
   })
 
   # Save changing parameters with bootstrapping
-  boot_error <- param_grid %>%
-    dplyr::select_if(function(x) dplyr::n_distinct(x) > 1)
+  boot_error <- dplyr::select(param_grid, where(~ dplyr::n_distinct(.x) > 1))
   boot_error <- dplyr::bind_cols(boot_error, boot_mae)
   boot_error$bias <- unlist(coi_bias)
 
@@ -503,8 +502,7 @@ cont_sensitivity <- function(repetitions = 10,
   })
 
   # Save changing parameters with bootstrapping
-  boot_error <- param_grid %>%
-    dplyr::select_if(function(x) dplyr::n_distinct(x) > 1)
+  boot_error <- dplyr::select(param_grid, where(~ dplyr::n_distinct(.x) > 1))
   boot_error <- dplyr::bind_cols(boot_error, boot_mae)
   boot_error$bias <- unlist(coi_bias)
 
