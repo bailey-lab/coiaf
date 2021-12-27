@@ -33,7 +33,7 @@ p[p > 0.5] <- 1 - p[p > 0.5]
 ```
 
 
-# Method 1
+## Method 1
 
 The first approach in the manuscript document for estimating COI is shown below.
 This works by using the mean number of variant sites, binned in groups of
@@ -116,7 +116,7 @@ for (k in 1:10) {
 }
 ```
 
-# Method 2
+## Method 2
 
 In method 2, we plot WSAF against PLAF for only the sites that are
 heterogeneous, i.e. not all REF or ALT calls.

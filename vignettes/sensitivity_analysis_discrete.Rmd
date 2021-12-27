@@ -34,7 +34,7 @@ eval_images <- !eval_tests
 library(coiaf)
 ```
 
-# Introduction
+## Introduction
 
 In this analysis file, we aim to understand the effect of varying parameters on
 our COI framework. The parameters that we will examine are:
@@ -60,7 +60,7 @@ The first method uses the mean number of variant sites, binned in groups of
 increasing PLAF to infer COI. The second method compares the WSAF to the PLAF
 for only the sites that are heterogeneous.
 
-## Default Parameters
+### Default Parameters
 
 | Parameter       | Default Value         |
 |:---------------:|:---------------------:|
@@ -78,7 +78,7 @@ for only the sites that are heterogeneous.
 | COI Method      | `"1"`                 |
 
 
-## Setting our PLAF
+### Setting our PLAF
 ```{r initialization, eval = eval_tests}
 # Set the seed
 set.seed(1)
@@ -89,7 +89,7 @@ p <- stats::rbeta(L, 1, 5)
 p[p > 0.5] <- 1 - p[p > 0.5]
 ```
 
-## Overall Performance
+### Overall Performance
 ```{r overall, eval = eval_tests}
 toverall <- sensitivity(
   coi = 1:20,
@@ -129,9 +129,9 @@ toverall_fig
 knitr::include_graphics("figures/discrete/toverall.png")
 ```
 
-# Sensitivity Analysis
+## Sensitivity Analysis
 
-## COI
+### COI
 ```{r coi, eval = eval_tests}
 tcoi <- sensitivity(
   coi = 2:40,
@@ -172,7 +172,7 @@ tcoi_fig
 knitr::include_graphics("figures/discrete/tcoi.png")
 ```
 
-## Comparison
+### Comparison
 ```{r comparison, eval = eval_tests}
 tcomparison <- sensitivity(
   coi = 2:20,
@@ -212,7 +212,7 @@ tcomparison_fig
 knitr::include_graphics("figures/discrete/tcomparison.png")
 ```
 
-## Distance
+### Distance
 ```{r distance, eval = eval_tests}
 tdistance <- sensitivity(
   coi = 2:20,
@@ -259,7 +259,7 @@ tdistance_fig
 knitr::include_graphics("figures/discrete/tdistance.png")
 ```
 
-## Coverage
+### Coverage
 ```{r coverage method 1, eval = eval_tests}
 tcoverage_1 <- sensitivity(
   coi = 2:20,
@@ -336,7 +336,7 @@ knitr::include_graphics("figures/discrete/tcoverage_1.png")
 knitr::include_graphics("figures/discrete/tcoverage_2.png")
 ```
 
-## Loci
+### Loci
 ```{r loci method 1, eval = eval_tests}
 # Set the range over which we will iterate
 loci <- c(1e2, 1e3, 1e4)
@@ -513,7 +513,7 @@ tloci_fig_2
 knitr::include_graphics("figures/discrete/tloci_2.png")
 ```
 
-## Alpha
+### Alpha
 ```{r alpha method 1, eval = eval_tests}
 talpha_1 <- sensitivity(
   coi = 2:20,
@@ -592,7 +592,7 @@ talpha_fig_2
 knitr::include_graphics("figures/discrete/talpha_2.png")
 ```
 
-## Overdispersion
+### Overdispersion
 ```{r overdispersion, eval = eval_tests}
 tover <- sensitivity(
   coi = 2:20,
@@ -638,7 +638,7 @@ tover_fig
 knitr::include_graphics("figures/discrete/tover.png")
 ```
 
-## Relatedness
+### Relatedness
 ```{r relatedness, eval = eval_tests}
 trelated <- sensitivity(
   coi = 2:20,
@@ -683,7 +683,7 @@ trelated_fig
 knitr::include_graphics("figures/discrete/trelated.png")
 ```
 
-## Epsilon
+### Epsilon
 ```{r epsilon, eval = eval_tests}
 tepsilon <- sensitivity(
   coi = 2:20,
@@ -721,7 +721,7 @@ tepsilon_fig
 knitr::include_graphics("figures/discrete/tepsilon.png")
 ```
 
-## Sequencing Error
+### Sequencing Error
 ```{r seq error, eval = eval_tests}
 tseq <- sensitivity(
   coi = 2:20,
@@ -765,7 +765,7 @@ tseq_fig
 knitr::include_graphics("figures/discrete/tseq.png")
 ```
 
-## Bin Size
+### Bin Size
 ```{r bin size, eval = eval_tests}
 tbin <- sensitivity(
   coi = 2:20,

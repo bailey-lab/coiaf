@@ -22,7 +22,7 @@ library(ggplot2)
 library(coiaf)
 ```
 
-# Data Structure
+## Data Structure
 Data is fed into the algorithm as a matrix containing the WSAF of each sample at
 each examined locus on the genome, with the sample represented by the rows and
 the locus represented by the columns. The first 5 rows and 3 columns of the
@@ -32,7 +32,7 @@ print(example_real_data[1:5, 1:3])
 ```
 
 
-# Run The Algorithm
+## Run The Algorithm
 Now that we have the data, running the algorithm using either of our two
 methods is quite straightforward.
 
@@ -46,8 +46,8 @@ In the dataset provided, `example_real_data`, there are
 loci each. Therefore, to find the COI for each sample, we must generate a for
 loop and iterate over each sample.
 
-## Method 1
-### Discrete
+### Method 1
+#### Discrete
 ```{r method 1 discrete}
 m1_dis <- lapply(seq_len(nrow(example_real_data)), function(i) {
   # We first isolate the WSAF for that sample and then plug the WSAF and PLAF
@@ -75,7 +75,7 @@ names(m1_dis_cois) <- rownames(example_real_data)
 names(m1_dis_probs) <- rownames(example_real_data)
 ```
 
-### Continuous
+#### Continuous
 ```{r method 1 continuous}
 m1_dis_cont <- lapply(seq_len(nrow(example_real_data)), function(i) {
   # We first isolate the WSAF for that sample and then plug the WSAF and PLAF
@@ -89,8 +89,8 @@ m1_dis_cont <- lapply(seq_len(nrow(example_real_data)), function(i) {
 names(m1_dis_cont) <- rownames(example_real_data)
 ```
 
-## Method 2
-### Discrete
+### Method 2
+#### Discrete
 ```{r method 2 discrete}
 m2_dis <- lapply(seq_len(nrow(example_real_data)), function(i) {
   # We first isolate the WSAF for that sample and then plug the WSAF and PLAF
@@ -118,7 +118,7 @@ names(m2_dis_cois) <- rownames(example_real_data)
 names(m2_dis_probs) <- rownames(example_real_data)
 ```
 
-### Continuous
+#### Continuous
 ```{r method 2 continuous}
 m2_dis_cont <- lapply(seq_len(nrow(example_real_data)), function(i) {
   # We first isolate the WSAF for that sample and then plug the WSAF and PLAF
@@ -155,7 +155,7 @@ list_apply <- function(x, fun, ...) {
 All that is left to do is to replace the above `lapply` with the newly defined
 `list_apply`.
 
-# Data Visualization
+## Data Visualization
 We recommend exploring the [`ggplot2`](https://ggplot2.tidyverse.org/index.html)
 package to plot results. The
 [Graph Gallery](https://www.r-graph-gallery.com/index.html) is a beautiful
