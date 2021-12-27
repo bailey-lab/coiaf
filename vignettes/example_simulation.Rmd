@@ -11,9 +11,7 @@ vignette: >
 # Here, we set default options for our markdown file
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>",
-  tidy = TRUE,
-  tidy.opts = list(width.cutoff = 80)
+  comment = "#>"
 )
 
 library(coiaf)
@@ -25,15 +23,9 @@ coverage <- 100
 alpha <- 1
 overdispersion <- 0
 epsilon <- 0
-
-# Must define some functions because they are internal in the package
-rdirichlet <- function(shape = rep(1, 3)) {
-  x <- rgamma(length(shape), shape = shape, rate = max(shape))
-  return(x / sum(x))
-}
 ```
 
-# Theory
+## Theory
 
 In this package, synthetic sequencing data are generated using a simple
 statistical model for a number of individuals in a given population. Each
@@ -72,7 +64,7 @@ allele.
 To determine the number of sequence reads related to each strain, we first draw
 the proportion of each strain, $\mathbf{S} = (S_1, \ldots, S_k)$, in an individual
 with $k$ strains, which we assume is described by a Dirichlet distribution with
-concentration parameters $\alpha_1, \ldots, \alpha_k$. The ``true" WSAF of the
+concentration parameters $\alpha_1, \ldots, \alpha_k$. The ``true" WSMAF of the
 minor allele at locus $i$, denoted $\tau_i$, is thus given by the sum of the
 strain proportions for strains with the minor allele. We can express this using
 matrix multiplication:
@@ -85,7 +77,7 @@ In simulations with no assumed sequence error, the number of sequence reads with
 the minor allele at each locus is given by sampling from a Binomial distribution
 $c$ times with probability $\boldsymbol \tau$, where $c$ is the assumed number
 of sequence reads, i.e., the read depth or coverage. However, in simulations
-with sequence error, we perturb the ``true" WSAF by assuming that a number of
+with sequence error, we perturb the ``true" WSMAF by assuming that a number of
 sequence reads are incorrectly sampled. An incorrectly sampled locus with the
 major allele will yield the minor allele and vice versa. In our simulations, we
 assume a fixed sequence error, $\epsilon$, such that the probability of
@@ -101,62 +93,62 @@ Lastly, we may account for overdispersion—additional unexpected variability in
 our data—and sample the number of sequence reads with the minor allele at each
 locus from a Beta-binomial distribution rather than a Binomial distribution.
 Dividing the number of instances of the minor allele by the coverage at each
-locus results in the simulated WSAF.
+locus results in the simulated WSMAF.
 
-# Example
+## Example
 The default values when a simulation is run are detailed in the table below.
 
 | Parameter       | Default Value         |
 |:---------------:|:---------------------:|
 | COI             | `3`                   |
-| PLAF            | `runif(10, 0, 0.5)` |
+| PLMAF           | `runif(10, 0, 0.5)`   |
 | Coverage        | `100`                 |
 | Alpha           | `1`                   |
 | Overdispersion  | `0`                   |
 | Epsilon         | `0`                   |
 
-The PLAF can be generated as follows
-```{r PLAF}
+The PLMAF can be generated as follows
+```{r PLMAF}
 # Set the seed
 set.seed(1)
 
 # Define number of loci, and the distribution of the minor allele frequencies
 L <- 5
-PLAF <- rbeta(L, 1, 5)
-PLAF[PLAF > 0.5] <- 1 - PLAF[PLAF > 0.5]
+plmaf <- rbeta(L, 1, 5)
+plmaf[plmaf > 0.5] <- 1 - plmaf[plmaf > 0.5]
 
-tbl_PLAF <- t(PLAF)
-colnames(tbl_PLAF) <- paste("Locus", 1:5)
+tbl_plmaf <- t(plmaf)
+colnames(tbl_plmaf) <- paste("Locus", 1:5)
 
-knitr::kable(tbl_PLAF, digits = 3, align = "l")
+knitr::kable(tbl_plmaf, digits = 3, align = "l")
 ```
 
 Strain proportions can be generated as follows
 ```{r strain proportions}
-strain_p <- rdirichlet(rep(alpha, COI))
+strain_p <- coiaf:::rdirichlet(rep(alpha, COI))
 names(strain_p) <- paste("Strain", 1:3)
 
-knitr::kable(strain_p, digits = 3, align = "l")
+knitr::kable(strain_p, digits = 3, col.names = "Proportion")
 ```
 
-True WSAF can be found by
-```{r true wsaf}
-true_wsaf <- mapply(function(x) rbinom(COI, 1, x), x = PLAF)
-rownames(true_wsaf) <- paste("Strain", 1:3)
-colnames(true_wsaf) <- paste("Locus", 1:5)
+True WSMAF can be found by
+```{r true WSMAF}
+true_wsmaf <- mapply(function(x) rbinom(COI, 1, x), x = plmaf)
+rownames(true_wsmaf) <- paste("Strain", 1:3)
+colnames(true_wsmaf) <- paste("Locus", 1:5)
 
-knitr::kable(true_wsaf, digits = 3, align = "l")
+knitr::kable(true_wsmaf, digits = 3)
 ```
 
-Simulated WSAF can be found by
-```{r sim wsaf}
+Simulated WSMAF can be found by
+```{r sim wsmaf}
 # Coverage
-L <- length(PLAF)
+L <- length(plmaf)
 if (length(coverage) == 1) {
   coverage <- rep(coverage, L)
 }
 
-p_levels <- colSums(sweep(true_wsaf, 1, strain_p, "*"))
+p_levels <- colSums(sweep(true_wsmaf, 1, strain_p, "*"))
 
 # Rounding errors from multiplying w by m can cause numbers greater than 1
 p_levels[p_levels > 1] <- 1L
@@ -169,10 +161,11 @@ if (overdispersion == 0) {
   counts <- rbinom(L, size = coverage, prob = p_error)
 }
 
-sim_wsaf <- counts / coverage
+sim_wsmaf <- counts / coverage
 
-tbl_sim_wsaf <- t(sim_wsaf)
-colnames(tbl_sim_wsaf) <- paste("Locus", 1:5)
+tbl_sim_wsmaf <- t(sim_wsmaf)
+colnames(tbl_sim_wsmaf) <- paste("Locus", 1:5)
+rownames(tbl_sim_wsmaf) <- "WSMAF"
 
-knitr::kable(tbl_sim_wsaf, digits = 3, align = "l")
+knitr::kable(tbl_sim_wsmaf, digits = 3)
 ```
