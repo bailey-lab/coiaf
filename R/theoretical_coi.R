@@ -42,7 +42,7 @@ theoretical_coi <- function(coi_range,
 
   # Include the PLAF in the final output and return
   curves$plaf <- plaf
-  return(curves)
+  curves
 }
 
 #------------------------------------------------
@@ -79,4 +79,6 @@ single_theoretical_coi <- function(coi,
   } else if (coi_method == "frequency") {
     curve <- (plaf - plaf^coi) / (1 - plaf^coi - (1 - plaf)^coi)
   }
+
+  curve
 }

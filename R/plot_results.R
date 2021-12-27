@@ -126,7 +126,7 @@ sensitivity_plot <- function(data,
     )
   }
 
-  arranged_plots <- ggpubr::annotate_figure(
+  ggpubr::annotate_figure(
     arranged_plots,
     top = ggpubr::text_grob(title, size = 13),
     bottom = ggpubr::text_grob(caption, hjust = 0, x = 0.01, size = 10)
@@ -186,6 +186,8 @@ sensitivity_plot_element <- function(data, loop_num, result_type, sub_title) {
         ggplot2::aes(group = .data$true_coi)
       )
   }
+
+  single_plot
 }
 
 #------------------------------------------------
@@ -308,7 +310,7 @@ error_plot <- function(data,
       ggplot2::facet_wrap(~ plot_data[[second_fill]], ncol = 2)
   }
 
-  return(error_plot)
+  error_plot
 }
 
 #------------------------------------------------
@@ -340,7 +342,7 @@ world_map <- function(data,
   world <- ggplot2::map_data("world")
 
   # Plot world map
-  map <- ggplot2::ggplot() +
+  ggplot2::ggplot() +
     ggplot2::borders("world") +
     ggplot2::geom_polygon(
       data = world,

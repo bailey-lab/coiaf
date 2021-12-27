@@ -60,7 +60,7 @@ single_sensitivity <- function(coi = 3,
   if (is.na(seq_error)) seq_error <- NULL
 
   # Compute COI
-  calc_coi <- compute_coi(
+  compute_coi(
     sim_data,
     "sim",
     max_coi,
@@ -312,7 +312,7 @@ sensitivity <- function(repetitions = 10,
   }
 
   # Return predicted COIs and param_grid
-  ret <- list(
+  list(
     predicted_coi = as.data.frame(extracted_cois),
     probability   = extracted_probs,
     param_grid    = param_grid,
@@ -535,7 +535,7 @@ cont_sensitivity <- function(repetitions = 10,
   }
 
   # Return predicted COIs and param_grid
-  ret <- list(
+  list(
     predicted_coi = as.data.frame(extracted_cois),
     param_grid    = param_grid,
     boot_error    = boot_error
