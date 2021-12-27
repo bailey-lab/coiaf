@@ -3,6 +3,7 @@ CMD
 COI
 COIs
 Dirichlet
+Fira
 FwS
 Kullback
 Lato
@@ -48,6 +49,7 @@ macOS
 mae
 mathbb
 mathbf
+monospace
 nav
 navbar
 ngs

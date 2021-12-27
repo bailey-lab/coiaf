@@ -4,9 +4,21 @@ template:
   bootstrap: 5
   bootswatch: flatly
   bslib:
-    base_font: { google: "Lato" }
-    font-size-base: 1rem
+    base_font: { google: "Lato" } # usually serif fonts
+    heading_font: { google: "Fira Sans" } # usually sans-serif fonts
+    code_font: { google: "Fira Code" } # usually monospace fonts
     pkgdown-nav-height: 75px
+
+navbar:
+  structure:
+    left: [reference, articles, news]
+    right: [search, github]
+  components:
+    news:
+      text: News
+      menu:
+        - text: "Change log"
+          href: news/index.html
 
 development:
   mode: auto
@@ -46,28 +58,19 @@ reference:
       - world_map
       - theme_coiaf
 
-navbar:
-  title: coiaf
-  type: default
-  left:
-    - icon: fa-home fa-lg
-      href: index.html
-    - text: Reference
-      href: reference/index.html
-    - text: News
-      menu:
-        - text: "Change log"
-          href: news/index.html
-  articles: ~
-  # When include the articles in the website, uncomment the below code
-  # - text: Articles
-  #   menu:
-  #   - text: Sensitivity Αnalysis
-  #     href: articles/sensitivity_analysis.html
-  #   - text: Real Data
-  #     href: articles/example_real_data.html
-  #   - text: -------
-  #   - text: COI Prediction
-  #     href: articles/example_coi_prediction.html
-  #   - text: Simulation Example
-  #     href: articles/example_simulation.html
+articles:
+  - title: Use with real data
+    navbar: ~
+    contents:
+      - example_real_data
+
+  - title: Sensitivity analysis
+    navbar: Sensitivity analysis
+    contents:
+      - starts_with("sensitivity_analysis")
+
+  - title: Internals
+    desc: Internal workings of algorithms
+    contents:
+      - example_coi_prediction
+      - example_simulation
