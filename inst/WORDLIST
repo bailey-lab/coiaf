@@ -20,6 +20,7 @@ WSAF
 args
 arispas
 biallelic
+boldsymbol
 bootswatch
 bslib
 coi
@@ -31,6 +32,7 @@ dirichlet
 doi
 env
 falciparum
+frac
 ggplot
 github
 heterozygosity
@@ -38,11 +40,16 @@ href
 http
 https
 io
+ldots
+leq
 macOS
 mae
+mathbb
+mathbf
 nav
 navbar
 ngs
+noindent
 oldrel
 os
 overpredicts

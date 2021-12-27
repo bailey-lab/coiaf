@@ -19,17 +19,17 @@ knitr::opts_chunk$set(
 library(coiaf)
 
 # Default values
-COI = 3
-PLAF = runif(10, 0, 0.5)
-coverage = 100
-alpha = 1
-overdispersion = 0
-epsilon = 0
+COI <- 3
+PLAF <- runif(10, 0, 0.5)
+coverage <- 100
+alpha <- 1
+overdispersion <- 0
+epsilon <- 0
 
 # Must define some functions because they are internal in the package
-rdirichlet <- function(shape = rep(1,3)) {
+rdirichlet <- function(shape = rep(1, 3)) {
   x <- rgamma(length(shape), shape = shape, rate = max(shape))
-  return(x/sum(x))
+  return(x / sum(x))
 }
 ```
 
@@ -40,7 +40,7 @@ statistical model for a number of individuals in a given population. Each
 individual is assigned a COI value, which is used to simulate the number of
 sequence reads mapped to the reference and alternative allele for the biallelic
 SNPs considered. These are then used to derive the within-sample frequency of
-the population-level minor allele, $w_i$, at each locus.    
+the population-level minor allele, $w_i$, at each locus.
 
 We first define the number of loci being simulated, $l$. We assume that the
 distribution of reference allele frequencies for locus $i$, $R_i$, is described
@@ -54,7 +54,7 @@ $\alpha = 1$ and $\beta = 5$ and draw $l$ values of $R_i$. In our methods, we
 have defined relationships with respect to the frequency of the minor allele,
 $p_i$. Recall that $p_i \in [0, 0.5]$. Thus, we define
 $$
-    p_i = \begin{cases} 
+    p_i = \begin{cases}
           r_i & r_i \leq 0.5 \\
           1 - r_i & r_i > 0.5.
        \end{cases}
@@ -152,24 +152,24 @@ Simulated WSAF can be found by
 ```{r sim wsaf}
 # Coverage
 L <- length(PLAF)
-  if (length(coverage) == 1) {
-    coverage <- rep(coverage, L)
-  }
+if (length(coverage) == 1) {
+  coverage <- rep(coverage, L)
+}
 
 p_levels <- colSums(sweep(true_wsaf, 1, strain_p, "*"))
 
 # Rounding errors from multiplying w by m can cause numbers greater than 1
-p_levels[p_levels>1] <- 1L
+p_levels[p_levels > 1] <- 1L
 
 # Add in genotyping error
-p_error <- p_levels*(1-epsilon) + (1-p_levels)*epsilon
+p_error <- p_levels * (1 - epsilon) + (1 - p_levels) * epsilon
 
 # Draw read counts, taking into account overdispersion
 if (overdispersion == 0) {
   counts <- rbinom(L, size = coverage, prob = p_error)
 }
 
-sim_wsaf = counts/coverage
+sim_wsaf <- counts / coverage
 
 tbl_sim_wsaf <- t(sim_wsaf)
 colnames(tbl_sim_wsaf) <- paste("Locus", 1:5)

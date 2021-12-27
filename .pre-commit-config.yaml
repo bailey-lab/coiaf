@@ -53,7 +53,9 @@ repos:
         exclude: >
           (?x)^(
           analysis/.*\.rds|
-          analysis/.*\.Rds
+          analysis/.*\.Rds|
+          vignettes/.*\.rds|
+          vignettes/.*\.Rds
           )$
 
   # Check large files, add newline to end of file, and trim trailing whitespace
