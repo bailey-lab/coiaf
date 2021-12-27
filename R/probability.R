@@ -10,8 +10,8 @@
 #' @family distributions
 #' @keywords internal
 #' @examples
-#' rdirichlet(c(1, 1, 1))
-#' rdirichlet(c(1, 3, 2))
+#' coiaf:::rdirichlet(c(1, 1, 1))
+#' coiaf:::rdirichlet(c(1, 3, 2))
 rdirichlet <- function(shape = rep(1, 3)) {
   # Check input
   assert_pos(shape)
@@ -36,8 +36,8 @@ rdirichlet <- function(shape = rep(1, 3)) {
 #' @family distributions
 #' @keywords internal
 #' @examples
-#' rbetabinom()
-#' rbetabinom(n = 10, k = 10)
+#' coiaf:::rbetabinom()
+#' coiaf:::rbetabinom(n = 10, k = 10)
 rbetabinom <- function(n = 1, k = 10, alpha = 1, beta = 1) {
   # Check inputs
   assert_single_pos_int(n)

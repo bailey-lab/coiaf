@@ -14,8 +14,8 @@ Draw from a Dirichlet distribution given a vector of shape parameters. The
 number of observations is inferred from the length of the shape vector.
 }
 \examples{
-rdirichlet(c(1, 1, 1))
-rdirichlet(c(1, 3, 2))
+coiaf:::rdirichlet(c(1, 1, 1))
+coiaf:::rdirichlet(c(1, 3, 2))
 }
 \seealso{
 \code{\link[=rgamma]{rgamma()}} for additional details.

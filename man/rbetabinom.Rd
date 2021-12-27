@@ -19,8 +19,8 @@ rbetabinom(n = 1, k = 10, alpha = 1, beta = 1)
 Draw from a Beta-binomial distribution.
 }
 \examples{
-rbetabinom()
-rbetabinom(n = 10, k = 10)
+coiaf:::rbetabinom()
+coiaf:::rbetabinom(n = 10, k = 10)
 }
 \seealso{
 \code{\link[=rbeta]{rbeta()}} and \code{\link[=rbinom]{rbinom()}} for additional details.
