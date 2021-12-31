@@ -45,19 +45,20 @@ easily calculated measures to directly estimate the COI from sequence read depth
 data.
 
 ## Installation
-You may install the package from [Github](https://github.com/bailey-lab/coiaf)
-using `devtools`. You may either install the most recent release or the
-development version of the software.
-```{r installation, eval = FALSE}
-# install.packages("devtools")
 
-# Most recent release
+::: .pkgdown-release
+```{r, eval = FALSE}
+# Install most recent released version
 devtools::install_github("bailey-lab/coiaf@v0.1.0")
+```
+:::
 
-# Development version
+::: .pkgdown-devel
+```{r, eval = FALSE}
+# Install development version
 devtools::install_github("bailey-lab/coiaf")
 ```
-
+:::
 
 ## Usage
 Please consult the [example real data
