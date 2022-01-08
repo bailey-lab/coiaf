@@ -5,7 +5,8 @@
 # roxygen namespace tags. Modify with care!
 ## usethis namespace: start
 #' @importFrom stats rbeta rbinom rgamma runif
-#' @importFrom rlang .data
+#' @importFrom rlang abort warn inform
+#' @importFrom glue glue
 ## usethis namespace: end
 NULL
 

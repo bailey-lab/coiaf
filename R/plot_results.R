@@ -34,24 +34,11 @@ sensitivity_plot <- function(data,
                              title = NULL,
                              caption = NULL) {
 
-  # Ensure that ggplot2 and ggpubr are installed
-  if (!requireNamespace("ggplot2", quietly = TRUE) &
-    !requireNamespace("ggpubr", quietly = TRUE)) {
-    stop(
-      "Packages \"ggplot2\" and \"ggpubr\" must be installed in order to plot the tests.",
-      call. = FALSE
-    )
-  } else if (!requireNamespace("ggplot2", quietly = TRUE)) {
-    stop(
-      "Package \"ggplot2\" must be installed in order to plot the tests.",
-      call. = FALSE
-    )
-  } else if (!requireNamespace("ggpubr", quietly = TRUE)) {
-    stop(
-      "Package \"ggpubr\" must be installed in order to plot the tests.",
-      call. = FALSE
-    )
-  }
+  # Ensure package installed
+  rlang::check_installed(
+    pkg = "ggpubr",
+    reason = "to plot sensitivity analysis figures."
+  )
 
   # Check inputs
   assert_in(
@@ -89,12 +76,11 @@ sensitivity_plot <- function(data,
   user_dims <- dims[1] * dims[2]
   needed_dims <- length(num_loops)
   if (!all(user_dims >= needed_dims)) {
-    message <- glue::glue(
-      "Must specify enough plotting panels:",
-      "\n\u2139 {needed_dims} panels are required.",
-      "\n\u2716 User specified {user_dims} panels."
-    )
-    stop(message, call. = FALSE)
+    abort(c(
+      "Must specify enough plotting panels.",
+      i = glue("{needed_dims} panels are required."),
+      x = glue("User specified {user_dims} panels.")
+    ))
   }
 
   # We then call a helper function: sensitivity_plot_element, that creates each
@@ -145,14 +131,6 @@ sensitivity_plot <- function(data,
 #'
 #' @keywords internal
 sensitivity_plot_element <- function(data, loop_num, result_type, sub_title) {
-
-  # Ensure that ggplot2 is installed
-  if (!requireNamespace("ggplot2", quietly = TRUE)) {
-    stop(
-      'Package \"ggplot2\" must be installed in order to plot the test.',
-      call. = FALSE
-    )
-  }
 
   # Plot the figure
   single_plot <- ggplot2::ggplot(
@@ -223,14 +201,6 @@ error_plot <- function(data,
                        legend.position = "right",
                        second_fill = NULL) {
 
-  # Ensure that ggplot2 is installed
-  if (!requireNamespace("ggplot2", quietly = TRUE)) {
-    stop(
-      "Package \"ggplot2\" must be installed in order to plot the test.",
-      call. = FALSE
-    )
-  }
-
   # Check inputs
   assert_in(
     names(data),
@@ -266,12 +236,11 @@ error_plot <- function(data,
     # Ensure that the number of levels input (fill_levels) are the same as the
     # number of levels for the fill variable
     if (length(fill_levels) != nlevels(plot_data[[fill]])) {
-      message <- glue::glue(
-        "Number of levels must match:",
-        "\n\u2139 Variable has {nlevels(plot_data[[fill]])} levels.",
-        "\n\u2716 User specified {length(fill_levels)} levels."
-      )
-      stop(message, call. = FALSE)
+      abort(c(
+        "Number of levels must match.",
+        i = glue("Variable has {nlevels(plot_data[[fill]])} levels."),
+        x = glue("User specified {length(fill_levels)} levels.")
+      ))
     } else {
       # Customize labels
       levels(plot_data[[fill]]) <- fill_levels
