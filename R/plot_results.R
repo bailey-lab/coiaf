@@ -36,7 +36,7 @@ sensitivity_plot <- function(data,
 
   # Ensure package installed
   rlang::check_installed(
-    pkg = "ggpubr",
+    pkg = "patchwork",
     reason = "to plot sensitivity analysis figures."
   )
 
@@ -94,29 +94,22 @@ sensitivity_plot <- function(data,
   )
 
   # Arrange the plots
-  if (dims[1] * dims[2] == 1) {
-    # Do not include a panel label if there is only one plot
-    arranged_plots <- ggpubr::ggarrange(
-      plotlist = myplots,
-      nrow = dims[1],
-      ncol = dims[2]
+  patchwork::wrap_plots(
+    myplots,
+    nrow = dims[1],
+    ncol = dims[2],
+    tag_level = "keep"
+  ) +
+    patchwork::plot_annotation(
+      title = title,
+      caption = caption,
+      tag_levels = "A",
+      theme = ggplot2::theme(
+        plot.title = ggplot2::element_text(size = 13, hjust = 0.5),
+        plot.caption = ggplot2::element_text(size = 10, hjust = 0),
+        plot.tag = ggplot2::element_text(size = 10)
+      )
     )
-  } else {
-    # Include panel labels if there are more than one plots
-    arranged_plots <- ggpubr::ggarrange(
-      plotlist = myplots,
-      labels = "AUTO",
-      font.label = list(size = 10),
-      nrow = dims[1],
-      ncol = dims[2]
-    )
-  }
-
-  ggpubr::annotate_figure(
-    arranged_plots,
-    top = ggpubr::text_grob(title, size = 13),
-    bottom = ggpubr::text_grob(caption, hjust = 0, x = 0.01, size = 10)
-  )
 }
 
 #------------------------------------------------
