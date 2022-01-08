@@ -1,8 +1,8 @@
 ---
-title: "Example COI Prediction"
+title: "Example COI prediction"
 output: rmarkdown::html_vignette
 vignette: >
- %\VignetteIndexEntry{Example COI Prediction}
+ %\VignetteIndexEntry{Example COI prediction}
  %\VignetteEngine{knitr::rmarkdown}
  %\VignetteEncoding{UTF-8}
 ---

@@ -1,8 +1,8 @@
 ---
-title: "Continuous Sensitivity Analysis"
+title: "Continuous sensitivity analysis"
 output: rmarkdown::html_vignette
 vignette: >
- %\VignetteIndexEntry{Continuous Sensitivity Analysis}
+ %\VignetteIndexEntry{Continuous sensitivity analysis}
  %\VignetteEngine{knitr::rmarkdown}
  %\VignetteEncoding{UTF-8}
 ---
@@ -60,7 +60,7 @@ The first method uses the mean number of variant sites, binned in groups of
 increasing PLAF to infer COI. The second method compares the WSAF to the PLAF
 for only the sites that are heterogeneous.
 
-### Default Parameters
+### Default parameters
 
 | Parameter       | Default Value         |
 |:---------------:|:---------------------:|
@@ -89,7 +89,7 @@ p <- rbeta(L, 1, 5)
 p[p > 0.5] <- 1 - p[p > 0.5]
 ```
 
-### Overall Performance
+### Overall performance
 ```{r overall, eval = eval_tests}
 toverall <- cont_sensitivity(
   coi = 1:25,
@@ -131,7 +131,7 @@ toverall_fig
 knitr::include_graphics("figures/continuous/toverall.png")
 ```
 
-## Sensitivity Analysis
+## Sensitivity analysis
 
 ### COI
 ```{r coi, eval = eval_tests}
@@ -693,7 +693,7 @@ tepsilon_fig
 knitr::include_graphics("figures/continuous/tepsilon.png")
 ```
 
-### Sequencing Error
+### Sequencing error
 ```{r seq error, eval = eval_tests}
 tseq <- cont_sensitivity(
   coi = 2:20,
@@ -737,7 +737,7 @@ tseq_fig
 knitr::include_graphics("figures/continuous/tseq.png")
 ```
 
-### Bin Size
+### Bin size
 ```{r bin size, eval = eval_tests}
 tbin <- cont_sensitivity(
   coi = 2:20,

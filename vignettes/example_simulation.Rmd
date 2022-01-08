@@ -1,8 +1,8 @@
 ---
-title: "Simulation Details"
+title: "Simulation details"
 output: rmarkdown::html_vignette
 vignette: >
- %\VignetteIndexEntry{Simulation Details}
+ %\VignetteIndexEntry{Simulation details}
  %\VignetteEngine{knitr::rmarkdown}
  %\VignetteEncoding{UTF-8}
 ---
