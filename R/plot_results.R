@@ -217,7 +217,7 @@ error_plot <- function(data,
   plot_data <- plot_data %>%
     dplyr::mutate(dplyr::across(
       where(function(x) dplyr::n_distinct(x) > 1) &
-        !tidyselect::all_of(c("mae", "lower", "upper", "bias")),
+        !dplyr::all_of(c("mae", "lower", "upper", "bias")),
       as.factor
     )) %>%
     dplyr::mutate(mae = dplyr::na_if(.data$mae, 0)) %>%

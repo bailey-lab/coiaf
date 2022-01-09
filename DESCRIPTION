@@ -33,26 +33,20 @@ Imports:
     mathjaxr,
     rlang (>= 0.4.11),
     stringr,
+    tibble,
     tidyr,
     utils
 Suggests:
     bench,
     cli,
-    countrycode,
-    ggridges,
-    ggsci,
-    ggtext,
+    here,
     knitr,
-    malariaAtlas,
     patchwork,
     pbapply,
-    raster,
     rmarkdown,
     roxygen2,
     spelling,
     testthat (>= 3.0.0),
-    tibble,
-    tidyselect,
     vdiffr
 VignetteBuilder:
     knitr
