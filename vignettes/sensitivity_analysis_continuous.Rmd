@@ -12,9 +12,7 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  tidy = TRUE,
-  tidy.opts = list(width.cutoff = 80),
-  warning = FALSE,
+  tidy = "styler",
   fig.width = 7,
   fig.height = 7
 )
@@ -25,11 +23,6 @@ knitr::opts_chunk$set(
 # images, set eval_tests to FALSE.
 eval_tests <- FALSE
 eval_images <- !eval_tests
-
-# N.B. to save the plots, we can use the following code. Write this after the
-# call to sensitivity_plot().
-# %>% ggpubr::ggexport(filename = "analysis/vignettes/figures/sensitivity_plots/toverall_image.png")
-# %>% ggpubr::ggexport(filename = "analysis/vignettes/figures/error_images/toverall_error.png")
 
 library(coiaf)
 ```
@@ -92,8 +85,7 @@ p[p > 0.5] <- 1 - p[p > 0.5]
 ### Overall performance
 ```{r overall, eval = eval_tests}
 toverall <- cont_sensitivity(
-  coi = 1:25,
-  max_coi = 30,
+  coi = 1:20,
   repetitions = 100,
   plaf = p,
   coverage = 400,
@@ -117,18 +109,20 @@ toverall_error <- error_plot(
   fill_levels = c("Variant Method", "Frequency Method")
 )
 
-toverall_fig <- ggpubr::ggarrange(
-  toverall_image,
-  toverall_error,
-  labels = c("", "C"),
-  nrow = 2,
-  font.label = list(size = 10)
-)
+toverall_fig <- toverall_image / toverall_error +
+  patchwork::plot_annotation(
+    tag_levels = "A",
+    theme = ggplot2::theme(plot.tag = ggplot2::element_text(size = 10))
+  ) +
+  ggplot2::theme(legend.position = "bottom")
+
 toverall_fig
 ```
 
 ```{r overall image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics("figures/continuous/toverall.png")
+knitr::include_graphics(
+  here::here("vignettes", "figures", "continuous", "toverall.png")
+)
 ```
 
 ## Sensitivity analysis
@@ -160,18 +154,20 @@ tcoi_error <- error_plot(
   fill_levels = c("Variant Method", "Frequency Method")
 )
 
-tcoi_fig <- ggpubr::ggarrange(
-  tcoi_image,
-  tcoi_error,
-  labels = c("", "C"),
-  nrow = 2,
-  font.label = list(size = 10)
-)
+tcoi_fig <- tcoi_image / tcoi_error +
+  patchwork::plot_annotation(
+    tag_levels = "A",
+    theme = ggplot2::theme(plot.tag = ggplot2::element_text(size = 10))
+  ) +
+  ggplot2::theme(legend.position = "bottom")
+
 tcoi_fig
 ```
 
 ```{r coi image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics("figures/continuous/tcoi.png")
+knitr::include_graphics(
+  here::here("vignettes", "figures", "continuous", "tcoi.png")
+)
 ```
 
 ### Comparison
@@ -201,18 +197,20 @@ tcomparison_error <- error_plot(
   title = "Error"
 )
 
-tcomparison_fig <- ggpubr::ggarrange(
-  tcomparison_image,
-  tcomparison_error,
-  labels = c("", "D"),
-  nrow = 2,
-  font.label = list(size = 10)
-)
+tcomparison_fig <- tcomparison_image / tcomparison_error +
+  patchwork::plot_annotation(
+    tag_levels = "A",
+    theme = ggplot2::theme(plot.tag = ggplot2::element_text(size = 10))
+  ) +
+  ggplot2::theme(legend.position = "bottom")
+
 tcomparison_fig
 ```
 
 ```{r method image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics("figures/continuous/tcomparison.png")
+knitr::include_graphics(
+  here::here("vignettes", "figures", "continuous", "tcomparison.png")
+)
 ```
 
 ### Distance
@@ -248,71 +246,109 @@ tdistance_error <- error_plot(
   second_fill = "coi_method"
 )
 
-tdistance_fig <- ggpubr::ggarrange(
-  tdistance_image,
-  tdistance_error,
-  labels = c("", "G"),
-  heights = c(5, 2),
-  nrow = 2,
-  font.label = list(size = 10)
-)
+tdistance_fig <- tdistance_image / tdistance_error +
+  patchwork::plot_annotation(
+    tag_levels = "A",
+    theme = ggplot2::theme(plot.tag = ggplot2::element_text(size = 10))
+  ) +
+  patchwork::plot_layout(heights = c(3, 1)) +
+  ggplot2::theme(legend.position = "bottom")
+
 tdistance_fig
 ```
 
 ```{r distance image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics("figures/continuous/tdistance.png")
+knitr::include_graphics(
+  here::here("vignettes", "figures", "continuous", "tdistance.png")
+)
 ```
 
 ### Coverage
-```{r coverage, eval = eval_tests}
-tcoverage <- cont_sensitivity(
+```{r coverage method 1, eval = eval_tests}
+tcoverage_1 <- cont_sensitivity(
   coi = 2:20,
-  coverage = c(25, 50, 100, 200, 400, 800),
+  coverage = c(50, 100, 250, 500, 1000, 2000),
   repetitions = 100,
   seq_error = 0.01,
   plaf = p,
-  coi_method = c("variant", "frequency")
+  coi_method = "variant"
 )
 
-tcoverage_image <- sensitivity_plot(
-  data = tcoverage,
+tcoverage_image_1 <- sensitivity_plot(
+  data = tcoverage_1,
   result_type = "cont",
   title = "Predicted COI",
-  dims = c(4, 3),
-  sub_title = paste(
-    paste0("Coverage ", c(25, 50, 100, 200, 400, 800)),
-    rep(c("Variant Method", "Frequency Method"), each = 6),
-    sep = ", "
-  )
+  dims = c(2, 3),
+  sub_title = paste0("Coverage = ", c(50, 100, 250, 500, 1000, 2000))
 )
 
-tcoverage_error <- error_plot(
-  tcoverage,
+tcoverage_error_1 <- error_plot(
+  tcoverage_1,
   fill = "coverage",
   legend_title = "Coverage",
-  title = "Error",
-  second_fill = "coi_method"
+  title = "Error"
 )
 
-tcoverage_fig <- ggpubr::ggarrange(
-  tcoverage_image,
-  tcoverage_error,
-  labels = c("", "M"),
-  heights = c(5, 2),
-  nrow = 2,
-  font.label = list(size = 10)
+tcoverage_fig_1 <- tcoverage_image_1 / tcoverage_error_1 +
+  patchwork::plot_annotation(
+    tag_levels = "A",
+    theme = ggplot2::theme(plot.tag = ggplot2::element_text(size = 10))
+  ) +
+  patchwork::plot_layout(heights = c(2, 1)) +
+  ggplot2::theme(legend.position = "bottom")
+
+tcoverage_fig_1
+```
+
+```{r coverage method 2, eval = eval_tests}
+tcoverage_2 <- cont_sensitivity(
+  coi = 2:20,
+  coverage = c(50, 100, 250, 500, 1000, 2000),
+  repetitions = 100,
+  seq_error = 0.01,
+  plaf = p, coi_method = "frequency"
 )
-tcoverage_fig
+
+tcoverage_image_2 <- sensitivity_plot(
+  data = tcoverage_2,
+  result_type = "cont",
+  title = "Predicted COI",
+  dims = c(2, 3),
+  sub_title = paste0("Coverage = ", c(50, 100, 250, 500, 1000, 2000))
+)
+
+tcoverage_error_2 <- error_plot(
+  tcoverage_2,
+  fill = "coverage",
+  legend_title = "Coverage",
+  title = "Error"
+)
+
+tcoverage_fig_2 <- tcoverage_image_2 / tcoverage_error_2 +
+  patchwork::plot_annotation(
+    tag_levels = "A",
+    theme = ggplot2::theme(plot.tag = ggplot2::element_text(size = 10))
+  ) +
+  patchwork::plot_layout(heights = c(2, 1)) +
+  ggplot2::theme(legend.position = "bottom")
+
+tcoverage_fig_2
 ```
 
 ```{r coverage image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics("figures/continuous/tcoverage.png")
+knitr::include_graphics(
+  here::here("vignettes", "figures", "continuous", "tcoverage_1.png")
+)
+
+knitr::include_graphics(
+  here::here("vignettes", "figures", "continuous", "tcoverage_2.png")
+)
 ```
 
 ### Loci
 ```{r loci method 1, eval = eval_tests}
 # Set the range over which we will iterate
-loci <- c(1e3, 1e4)
+loci <- c(1e2, 1e3, 1e4)
 
 # For each loci, reset the PLAF and then run
 bloci <- lapply(loci, function(new_L) {
@@ -368,38 +404,35 @@ tloci_image_1 <- sensitivity_plot(
   data = tloci_1,
   result_type = "cont",
   title = "Predicted COI",
-  dims = c(1, 2),
-  sub_title = paste0("Loci = ", c(1e3, 1e4))
+  dims = c(1, 3),
+  sub_title = paste0("Loci = ", c(1e2, 1e3, 1e4))
 )
 
 # Add a loci column
 tloci_1$boot_error$loci <- rep(
-  c(1e3, 1e4),
+  c(1e2, 1e3, 1e4),
   each = length(unique(tloci_1$boot_error$coi))
 )
-tloci_error_1 <- error_plot(tloci_1,
+tloci_error_1 <- error_plot(
+  tloci_1,
   fill = "loci",
   legend_title = "Loci",
   title = "Error"
 )
 
-tloci_fig_1 <- ggpubr::ggarrange(
-  tloci_image_1,
-  tloci_error_1,
-  labels = c("", "C"),
-  nrow = 2,
-  font.label = list(size = 10)
-)
-tloci_fig_1
-```
+tloci_fig_1 <- tloci_image_1 / tloci_error_1 +
+  patchwork::plot_annotation(
+    tag_levels = "A",
+    theme = ggplot2::theme(plot.tag = ggplot2::element_text(size = 10))
+  ) +
+  ggplot2::theme(legend.position = "bottom")
 
-```{r loci image method 1, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics("figures/continuous/tloci_1.png")
+tloci_fig_1
 ```
 
 ```{r loci method 2, eval = eval_tests}
 # Set the range over which we will iterate
-loci <- c(1e3, 1e4)
+loci <- c(1e2, 1e3, 1e4)
 
 # For each loci, reset the PLAF and then run
 bloci <- lapply(loci, function(new_L) {
@@ -455,13 +488,13 @@ tloci_image_2 <- sensitivity_plot(
   data = tloci_2,
   result_type = "cont",
   title = "Predicted COI",
-  dims = c(1, 2),
-  sub_title = paste0("Loci = ", c(1e3, 1e4))
+  dims = c(1, 3),
+  sub_title = paste0("Loci = ", c(1e2, 1e3, 1e4))
 )
 
 # Add a loci column
 tloci_2$boot_error$loci <- rep(
-  c(1e3, 1e4),
+  c(1e2, 1e3, 1e4),
   each = length(unique(tloci_2$boot_error$coi))
 )
 tloci_error_2 <- error_plot(
@@ -471,18 +504,24 @@ tloci_error_2 <- error_plot(
   title = "Error"
 )
 
-tloci_fig_2 <- ggpubr::ggarrange(
-  tloci_image_2,
-  tloci_error_2,
-  labels = c("", "C"),
-  nrow = 2,
-  font.label = list(size = 10)
-)
+tloci_fig_2 <- tloci_image_2 / tloci_error_2 +
+  patchwork::plot_annotation(
+    tag_levels = "A",
+    theme = ggplot2::theme(plot.tag = ggplot2::element_text(size = 10))
+  ) +
+  ggplot2::theme(legend.position = "bottom")
+
 tloci_fig_2
 ```
 
-```{r loci image method 2, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics("figures/continuous/tloci_2.png")
+```{r loci image, eval = eval_images, echo = F, out.width = "75%"}
+knitr::include_graphics(
+  here::here("vignettes", "figures", "continuous", "tloci_1.png")
+)
+
+knitr::include_graphics(
+  here::here("vignettes", "figures", "continuous", "tloci_2.png")
+)
 ```
 
 ### Alpha
@@ -510,19 +549,15 @@ talpha_error_1 <- error_plot(
   title = "Error"
 )
 
-talpha_fig_1 <- ggpubr::ggarrange(
-  talpha_image_1,
-  talpha_error_1,
-  labels = c("", "M"),
-  heights = c(5, 2),
-  nrow = 2,
-  font.label = list(size = 10)
-)
-talpha_fig_1
-```
+talpha_fig_1 <- talpha_image_1 / talpha_error_1 +
+  patchwork::plot_annotation(
+    tag_levels = "A",
+    theme = ggplot2::theme(plot.tag = ggplot2::element_text(size = 10))
+  ) +
+  patchwork::plot_layout(heights = c(5, 1)) +
+  ggplot2::theme(legend.position = "bottom")
 
-```{r alpha image method 1, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics("figures/continuous/talpha_1.png")
+talpha_fig_1
 ```
 
 ```{r alpha method 2, eval = eval_tests}
@@ -549,19 +584,25 @@ talpha_error_2 <- error_plot(
   title = "Error"
 )
 
-talpha_fig_2 <- ggpubr::ggarrange(
-  talpha_image_2,
-  talpha_error_2,
-  labels = c("", "M"),
-  heights = c(5, 2),
-  nrow = 2,
-  font.label = list(size = 10)
-)
+talpha_fig_2 <- talpha_image_2 / talpha_error_2 +
+  patchwork::plot_annotation(
+    tag_levels = "A",
+    theme = ggplot2::theme(plot.tag = ggplot2::element_text(size = 10))
+  ) +
+  patchwork::plot_layout(heights = c(5, 1)) +
+  ggplot2::theme(legend.position = "bottom")
+
 talpha_fig_2
 ```
 
 ```{r alpha image method 2, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics("figures/continuous/talpha_2.png")
+knitr::include_graphics(
+  here::here("vignettes", "figures", "continuous", "talpha_1.png")
+)
+
+knitr::include_graphics(
+  here::here("vignettes", "figures", "continuous", "talpha_2.png")
+)
 ```
 
 ### Overdispersion
@@ -595,19 +636,21 @@ tover_error <- error_plot(
   second_fill = "coi_method"
 )
 
-tover_fig <- ggpubr::ggarrange(
-  tover_image,
-  tover_error,
-  labels = c("", "K"),
-  heights = c(5, 2),
-  nrow = 2,
-  font.label = list(size = 10)
-)
+tover_fig <- tover_image / tover_error +
+  patchwork::plot_annotation(
+    tag_levels = "A",
+    theme = ggplot2::theme(plot.tag = ggplot2::element_text(size = 10))
+  ) +
+  patchwork::plot_layout(heights = c(5, 1)) +
+  ggplot2::theme(legend.position = "bottom")
+
 tover_fig
 ```
 
 ```{r overdispersion image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics("figures/continuous/tover.png")
+knitr::include_graphics(
+  here::here("vignettes", "figures", "continuous", "tover.png")
+)
 ```
 
 ### Relatedness
@@ -641,34 +684,39 @@ trelated_error <- error_plot(
   second_fill = "coi_method"
 )
 
-trelated_fig <- ggpubr::ggarrange(
-  trelated_image,
-  trelated_error,
-  nrow = 2,
-  labels = c("", "M"),
-  heights = c(5, 2),
-  font.label = list(size = 10)
-)
+trelated_fig <- trelated_image / trelated_error +
+  patchwork::plot_annotation(
+    tag_levels = "A",
+    theme = ggplot2::theme(plot.tag = ggplot2::element_text(size = 10))
+  ) +
+  patchwork::plot_layout(heights = c(6, 1)) +
+  ggplot2::theme(legend.position = "bottom")
+
 trelated_fig
 ```
 
 ```{r relatedness image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics("figures/discrete/trelated.png")
+knitr::include_graphics(
+  here::here("vignettes", "figures", "continuous", "trelated.png")
+)
 ```
 
 ### Epsilon
 ```{r epsilon, eval = eval_tests}
 tepsilon <- cont_sensitivity(
-  coi = 2:20, epsilon = seq(0, 0.008, 0.001),
-  repetitions = 100, seq_error = 0.01, plaf = p
+  coi = 2:20,
+  epsilon = seq(0, 0.025, 0.005),
+  repetitions = 100,
+  seq_error = 0.01,
+  plaf = p
 )
 
 tepsilon_image <- sensitivity_plot(
   data = tepsilon,
   result_type = "cont",
   title = "Predicted COI",
-  dims = c(3, 3),
-  sub_title = paste0("Epsilon = ", seq(0, 0.008, 0.001))
+  sub_title = paste0("Epsilon = ", seq(0, 0.025, 0.005)),
+  dims = c(2, 3)
 )
 
 tepsilon_error <- error_plot(
@@ -678,41 +726,40 @@ tepsilon_error <- error_plot(
   title = "Error"
 )
 
-tepsilon_fig <- ggpubr::ggarrange(
-  tepsilon_image,
-  tepsilon_error,
-  nrow = 2,
-  labels = c("", "J"),
-  heights = c(5, 2),
-  font.label = list(size = 10)
-)
+tepsilon_fig <- tepsilon_image / tepsilon_error +
+  patchwork::plot_annotation(
+    tag_levels = "A",
+    theme = ggplot2::theme(plot.tag = ggplot2::element_text(size = 10))
+  ) +
+  patchwork::plot_layout(heights = c(3, 1)) +
+  ggplot2::theme(legend.position = "bottom")
+
 tepsilon_fig
 ```
 
 ```{r epsilon image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics("figures/continuous/tepsilon.png")
+knitr::include_graphics(
+  here::here("vignettes", "figures", "continuous", "tepsilon.png")
+)
 ```
 
 ### Sequencing error
 ```{r seq error, eval = eval_tests}
 tseq <- cont_sensitivity(
   coi = 2:20,
-  epsilon = 0.1,
-  seq_error = seq(0.1, 0.16, 0.02),
+  epsilon = 0.01,
+  seq_error = seq(0, 0.10, 0.02),
   repetitions = 100,
   plaf = p,
-  coi_method = "2"
+  coi_method = "frequency"
 )
-
-# ep_title <- rep(paste0("Epsilon=", seq(0, 0.008, 0.004)), 2)
-# seq_title <- rep(paste0("Sequence Error = ", seq(0, 0.04, 0.01)[-1]), each = 3)
 
 tseq_image <- sensitivity_plot(
   data = tseq,
   result_type = "cont",
   title = "Predicted COI",
-  dims = c(2, 2),
-  sub_title = paste0("Sequence Error = ", seq(0.1, 0.16, 0.02))
+  dims = c(2, 3),
+  sub_title = paste0("Sequence Error = ", seq(0, 0.12, 0.02))
 )
 
 tseq_error <- error_plot(
@@ -722,19 +769,21 @@ tseq_error <- error_plot(
   title = "Error"
 )
 
-tseq_fig <- ggpubr::ggarrange(
-  tseq_image,
-  tseq_error,
-  labels = c("", "M"),
-  heights = c(5, 2),
-  nrow = 2,
-  font.label = list(size = 10)
-)
+tseq_fig <- tseq_image / tseq_error +
+  patchwork::plot_annotation(
+    tag_levels = "A",
+    theme = ggplot2::theme(plot.tag = ggplot2::element_text(size = 10))
+  ) +
+  patchwork::plot_layout(heights = c(2, 1)) +
+  ggplot2::theme(legend.position = "bottom")
+
 tseq_fig
 ```
 
 ```{r seq error image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics("figures/continuous/tseq.png")
+knitr::include_graphics(
+  here::here("vignettes", "figures", "continuous", "tseq.png")
+)
 ```
 
 ### Bin size
@@ -765,53 +814,59 @@ tbin_error <- error_plot(
   title = "Error"
 )
 
-tbin_fig <- ggpubr::ggarrange(
-  tbin_image,
-  tbin_error,
-  labels = c("", "C"),
-  nrow = 2,
-  font.label = list(size = 10)
-)
+tbin_fig <- tbin_image / tbin_error +
+  patchwork::plot_annotation(
+    tag_levels = "A",
+    theme = ggplot2::theme(plot.tag = ggplot2::element_text(size = 10))
+  ) +
+  patchwork::plot_layout(heights = c(3, 1)) +
+  ggplot2::theme(legend.position = "bottom")
+
 tbin_fig
 ```
 
-```{r weight image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics("figures/continuous/tbin.png")
+```{r bin image, eval = eval_images, echo = F, out.width = "75%"}
+knitr::include_graphics(
+  here::here("vignettes", "figures", "continuous", "tbin.png")
+)
 ```
 
 ```{r save results, eval = eval_tests, echo = FALSE}
 # Below, we save the runs we performed for future use
 saved_analysis <- list(
-  toverall, tcoi, tcomparison, tdistance, tcoverage,
-  tloci_1, tloci_2, talpha_1, talpha_2, tover,
-  trelated, tepsilon, tseq, tbin
+  toverall, tcoi, tcomparison, tdistance, tcoverage_1, tcoverage_2,
+  tloci_1, tloci_2, talpha_1, talpha_2, tover, trelated, tepsilon, tseq, tbin
 )
 
 names(saved_analysis) <- list(
-  "toverall", "tcoi", "tcomparison", "tdistance",
-  "tcoverage", "tloci_1", "tloci_2",
-  "talpha_1", "talpha_2", "tover", "trelated",
-  "tepsilon", "tseq", "tbin"
+  "toverall", "tcoi", "tcomparison", "tdistance", "tcoverage_1", "tcoverage_2",
+  "tloci_1", "tloci_2", "talpha_1", "talpha_2", "tover", "trelated", "tepsilon",
+  "tseq", "tbin"
 )
 
-saveRDS(saved_analysis, file = "saved_analysis_continuous.rds")
+saveRDS(
+  saved_analysis,
+  file = here::here("vignettes", "saved_analysis_continuous.rds")
+)
 
 # Here, we update all the stored images
 update_images <- list(
-  toverall_fig, tcoi_fig, tcomparison_fig, tdistance_fig,
-  tcoverage_fig, tloci_fig_1, tloci_fig_2,
-  talpha_fig_1, talpha_fig_2, tover_fig, trelated_fig,
-  tepsilon_fig, tseq_fig, tbin_fig
+  toverall_fig, tcoi_fig, tcomparison_fig, tdistance_fig, tcoverage_fig_1,
+  tcoverage_fig_2, tloci_fig_1, tloci_fig_2, talpha_fig_1,
+  talpha_fig_2, tover_fig, trelated_fig, tepsilon_fig, tseq_fig, tbin_fig
 )
-names(update_images) <- list(
-  "toverall", "tcoi", "tcomparison", "tdistance",
-  "tcoverage", "tloci_1", "tloci_2",
-  "talpha_1", "talpha_2", "tover", "trelated",
-  "tepsilon", "tseq", "tbin"
-)
+names(update_images) <- names(saved_analysis)
 
 for (i in seq_len(length(update_images))) {
-  filename <- paste0("figures/continuous/", names(update_images)[i], ".png")
-  suppressMessages(update_images[i] %>% ggpubr::ggexport(filename = filename))
+  ggplot2::ggsave(
+    plot = update_images[[i]],
+    filename = here::here(
+      "vignettes",
+      "figures",
+      "continuous",
+      glue::glue("{ names(update_images)[i] }.png")
+    ),
+    dpi = "screen"
+  )
 }
 ```
