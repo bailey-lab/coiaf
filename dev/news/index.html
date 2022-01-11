@@ -24,11 +24,11 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/example_real_data.html">Real Data Example</a>
+    <a class="dropdown-item" href="../articles/example_real_data.html">Real data example</a>
     <div class="dropdown-divider"></div>
     <h6 class="dropdown-header" data-toc-skip>Sensitivity analysis</h6>
-    <a class="dropdown-item" href="../articles/sensitivity_analysis_continuous.html">Continuous Sensitivity Analysis</a>
-    <a class="dropdown-item" href="../articles/sensitivity_analysis_discrete.html">Discrete Sensitivity Analysis</a>
+    <a class="dropdown-item" href="../articles/sensitivity_analysis_continuous.html">Continuous sensitivity analysis</a>
+    <a class="dropdown-item" href="../articles/sensitivity_analysis_discrete.html">Discrete sensitivity analysis</a>
     <div class="dropdown-divider"></div>
     <a class="dropdown-item" href="../articles/index.html">More articles...</a>
   </div>
@@ -64,8 +64,8 @@
 <div class="section level3">
 <h3 id="new-vignettes-development-version">New vignettes<a class="anchor" aria-label="anchor" href="#new-vignettes-development-version"></a></h3>
 <ul><li>New <code><a href="../articles/example_real_data.html">vignette("example_real_data")</a></code> illustrates how to use the package on your own real data sets.</li>
-<li>New <code><a href="../articles/sensitivity_analysis_discrete.html">vignette("sensitivity_analysis_discrete")</a></code> describes the sensitivity analysis for the continuous methods.</li>
-<li>New <code><a href="../articles/sensitivity_analysis_continuous.html">vignette("sensitivity_analysis_continuous")</a></code> describes the sensitivity analysis for the discrete methods.</li>
+<li>New <code><a href="../articles/sensitivity_analysis_discrete.html">vignette("sensitivity_analysis_discrete")</a></code> describes the sensitivity analysis for the discrete methods.</li>
+<li>New <code><a href="../articles/sensitivity_analysis_continuous.html">vignette("sensitivity_analysis_continuous")</a></code> describes the sensitivity analysis for the continuous methods.</li>
 <li>New <code><a href="../articles/example_coi_prediction.html">vignette("example_coi_prediction")</a></code> explains the internal prediction methods.</li>
 <li>New <code><a href="../articles/example_simulation.html">vignette("example_simulation")</a></code> explains how data is simulated.</li>
 </ul></div>
@@ -75,7 +75,14 @@
 </ul></div>
 <div class="section level3">
 <h3 id="maintenance-development-version">Maintenance<a class="anchor" aria-label="anchor" href="#maintenance-development-version"></a></h3>
-<ul><li>Internal documentation has been improved.</li>
+<ul><li>The number of dependencies has been reduced.</li>
+<li>
+<a href="https://patchwork.data-imaginist.com" class="external-link">patchwork</a> is used instead of <a href="https://rpkgs.datanovia.com/ggpubr/" class="external-link">ggpubr</a> for combining plots.</li>
+<li>
+<a href="https://rlang.r-lib.org" class="external-link">rlang</a> is now used for messages, warnings, and errors.</li>
+<li>Superseded functions have been replaced with their alternatives (<a href="https://github.com/bailey-lab/coiaf/issues/6" class="external-link">#6</a>).</li>
+<li>Functions now exit implicitly and visibly (<a href="https://github.com/bailey-lab/coiaf/issues/8" class="external-link">#8</a>).</li>
+<li>Internal documentation has been improved.</li>
 <li>COI methods have been renamed for improved clarity. <code>"Method 1"</code> has been renamed to <code>"Variant Method"</code> and <code>"Method 2"</code> has been renamed to <code>"Frequency Method"</code> (<a href="https://github.com/bailey-lab/coiaf/issues/9" class="external-link">#9</a>).</li>
 </ul></div>
 </div>
