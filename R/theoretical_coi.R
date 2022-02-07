@@ -18,9 +18,8 @@
 #' @return The theoretical COI curves for the specified COIs and PLAF.
 #'
 #' @export
-
 theoretical_coi <- function(coi_range,
-                            plaf = seq(0, 0.5, l = 101),
+                            plaf = seq(0, 0.5, length.out = 101),
                             coi_method = "variant") {
   # Check inputs
   assert_pos(coi_range, zero_allowed = FALSE)
@@ -61,9 +60,8 @@ theoretical_coi <- function(coi_range,
 #' @return The theoretical COI curve for the specified PLAF.
 #'
 #' @keywords internal
-
 single_theoretical_coi <- function(coi,
-                                   plaf = seq(0, 0.5, l = 101),
+                                   plaf = seq(0, 0.5, length.out = 101),
                                    coi_method = "variant") {
   # Check inputs
   assert_single_pos(coi)
