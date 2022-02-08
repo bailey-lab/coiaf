@@ -264,7 +264,7 @@ sensitivity <- function(repetitions = 10,
     invisible(utils::capture.output(CI <- boot::boot.ci(
       results,
       type = "norm"
-    )$norm))
+    )$normal))
 
     # Store the mean absolute error and confidence interval bounds
     extract <- list(mae = results$t0, lower = CI[2], upper = CI[3])
@@ -486,7 +486,7 @@ cont_sensitivity <- function(repetitions = 10,
     invisible(utils::capture.output(CI <- boot::boot.ci(
       results,
       type = "norm"
-    )$norm))
+    )$normal))
 
     # Store the mean absolute error and confidence interval bounds
     extract <- list(mae = results$t0, lower = CI[2], upper = CI[3])
