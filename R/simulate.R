@@ -96,7 +96,11 @@ sim_biallelic <- function(coi,
 
   # Generate true WSAF levels by summing binomial draws over strain proportions
   m <- mapply(function(x) rbinom(coi, 1, x), x = plaf)
-  colnames(m) <- paste0("locus_", seq_len(ncol(m)))
+  if (coi == 1) {
+    names(m) <- paste0("locus_", seq_len(length(m)))
+  } else {
+    colnames(m) <- paste0("locus_", seq_len(ncol(m)))
+  }
 
   ## Handle relatedness
   if (relatedness > 0 && coi > 1) {
@@ -152,8 +156,8 @@ sim_biallelic <- function(coi,
         parameter = c("coi", "alpha", "overdispersion", "relatedness", "epsilon"),
         value = c(coi, alpha, overdispersion, relatedness, epsilon)
       ),
-      strain_proportions = tibble::as_tibble_col(w, "proportion"),
-      phased_haplotypes = as_tibble(m),
+      strain_proportions = as_tibble_col(w, "proportion"),
+      phased_haplotypes = if (coi == 1) as_tibble_row(m) else as_tibble(m),
       data = tibble(
         plaf     = plaf,
         coverage = coverage,
