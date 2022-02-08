@@ -44,34 +44,7 @@ theoretical_coi <- function(coi_range,
   curves
 }
 
-#------------------------------------------------
-#' Single Theoretical COI
-#'
-#' Generate the theoretical COI curve for a particular COI value.
-#'
-#' \loadmathjax
-#' The theoretical curve can be visualized as the WSAF of an individual at
-#' various PLAFs. At each locus, the theoretical COI is defined as:
-#' \mjsdeqn{1-p^{coi}-q^{coi}}
-#'
-#' @param coi The COI for which the curve will be calculated.
-#' @inheritParams theoretical_coi
-#'
-#' @return The theoretical COI curve for the specified PLAF.
-#'
-#' @keywords internal
-single_theoretical_coi <- function(coi,
-                                   plaf = seq(0, 0.5, length.out = 101),
-                                   coi_method = "variant") {
-  # Check inputs
-  assert_single_pos(coi)
-  assert_vector(plaf)
-  assert_bounded(plaf, left = 0, right = 0.5)
-  assert_increasing(plaf)
-  assert_single_string(coi_method)
-  assert_in(coi_method, c("variant", "frequency"))
-
-  # Determine the curve
+single_theoretical_coi <- function(coi, plaf, coi_method) {
   switch(coi_method,
     variant = 1 - plaf^coi - (1 - plaf)^coi,
     frequency = (plaf - plaf^coi) / (1 - plaf^coi - (1 - plaf)^coi)
