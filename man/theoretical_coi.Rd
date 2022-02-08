@@ -4,7 +4,11 @@
 \alias{theoretical_coi}
 \title{Theoretical COI}
 \usage{
-theoretical_coi(coi_range, plaf = seq(0, 0.5, l = 101), coi_method = "variant")
+theoretical_coi(
+  coi_range,
+  plaf = seq(0, 0.5, length.out = 101),
+  coi_method = "variant"
+)
 }
 \arguments{
 \item{coi_range}{The COIs for which the curve will be calculated.}

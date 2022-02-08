@@ -6,7 +6,7 @@
 \usage{
 single_theoretical_coi(
   coi,
-  plaf = seq(0, 0.5, l = 101),
+  plaf = seq(0, 0.5, length.out = 101),
   coi_method = "variant"
 )
 }
