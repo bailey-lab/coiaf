@@ -147,18 +147,21 @@ sim_biallelic <- function(coi = 3,
   }
 
   # Return list of class sim
-  list(
-    parameters = tibble(
-      parameter = c("coi", "alpha", "overdispersion", "relatedness", "epsilon"),
-      value = c(coi, alpha, overdispersion, relatedness, epsilon)
+  structure(
+    list(
+      parameters = tibble(
+        parameter = c("coi", "alpha", "overdispersion", "relatedness", "epsilon"),
+        value = c(coi, alpha, overdispersion, relatedness, epsilon)
+      ),
+      strain_proportions = tibble::as_tibble_col(w, "proportion"),
+      phased_haplotypes = as_tibble(m),
+      derived_data = tibble(
+        plaf     = plaf,
+        coverage = coverage,
+        counts   = counts,
+        wsaf     = counts / coverage
+      )
     ),
-    strain_proportions = tibble::as_tibble_col(w, "proportion"),
-    phased_haplotypes = as_tibble(m),
-    derived_data = tibble(
-      plaf     = plaf,
-      coverage = coverage,
-      counts   = counts,
-      wsaf     = counts / coverage
-    )
+    class = "sim"
   )
 }
