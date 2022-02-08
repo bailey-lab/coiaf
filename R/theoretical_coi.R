@@ -16,18 +16,21 @@
 #'   "variant".
 #'
 #' @return The theoretical COI curves for the specified COIs and PLAF.
-#'
 #' @export
+#' @examples
+#' theoretical_coi(1:5)
+#' theoretical_coi(1:5, coi_method = "frequency")
 theoretical_coi <- function(coi_range,
                             plaf = seq(0, 0.5, length.out = 101),
-                            coi_method = "variant") {
+                            coi_method = c("variant", "frequency")) {
   # Check inputs
   assert_pos(coi_range, zero_allowed = FALSE)
   assert_vector(plaf)
   assert_bounded(plaf, left = 0, right = 0.5)
   assert_increasing(plaf)
-  assert_single_string(coi_method)
-  assert_in(coi_method, c("variant", "frequency"))
+
+  # Argument match coi_method
+  coi_method <- rlang::arg_match(coi_method)
 
   # Compute curve for the COIs
   for (i in coi_range) {

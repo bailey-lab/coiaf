@@ -7,7 +7,7 @@
 theoretical_coi(
   coi_range,
   plaf = seq(0, 0.5, length.out = 101),
-  coi_method = "variant"
+  coi_method = c("variant", "frequency")
 )
 }
 \arguments{
@@ -31,4 +31,8 @@ The theoretical curve can be visualized as the WSAF of an individual at
 various PLAFs. At each locus, the theoretical COI is defined as:
 \mjsdeqn{1-p^{coi}-q^{coi}} where \mjseqn{p} is the PLAF and \mjseqn{q} is
 1 - PLAF.
+}
+\examples{
+theoretical_coi(1:5)
+theoretical_coi(1:5, coi_method = "frequency")
 }
