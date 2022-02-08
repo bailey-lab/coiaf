@@ -196,7 +196,7 @@ autoplot.sim <- function(object, ...) {
       y = .data$wsaf,
     )
   ) +
-    ggplot2::geom_point() +
+    ggplot2::geom_point(...) +
     ggplot2::labs(
       x = "Population Level Allele Frequency",
       y = "Within Sample Allele Frequency",
