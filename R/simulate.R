@@ -54,7 +54,7 @@
 #' * `strain_proportions` contains the proportion of each strain.
 #' * `phased_haplotypes` contains the phased haplotype for each strain at each
 #' locus.
-#' * `derived_data` contains the following columns:
+#' * `data` contains the following columns:
 #'   + `plaf`: The population-level allele frequency.
 #'   + `coverage`: The coverage at each locus.
 #'   + `counts`: The count at each locus.
@@ -154,7 +154,7 @@ sim_biallelic <- function(coi,
       ),
       strain_proportions = tibble::as_tibble_col(w, "proportion"),
       phased_haplotypes = as_tibble(m),
-      derived_data = tibble(
+      data = tibble(
         plaf     = plaf,
         coverage = coverage,
         counts   = counts,
@@ -190,7 +190,7 @@ autoplot.sim <- function(object, ...) {
     dplyr::pull(value)
 
   ggplot2::ggplot(
-    data = object$derived_data,
+    data = object$data,
     mapping = ggplot2::aes(
       x = .data$plaf,
       y = .data$wsaf,

@@ -49,7 +49,7 @@ An object of class \code{sim}. Contains a list of
 \item \code{strain_proportions} contains the proportion of each strain.
 \item \code{phased_haplotypes} contains the phased haplotype for each strain at each
 locus.
-\item \code{derived_data} contains the following columns:
+\item \code{data} contains the following columns:
 \itemize{
 \item \code{plaf}: The population-level allele frequency.
 \item \code{coverage}: The coverage at each locus.
