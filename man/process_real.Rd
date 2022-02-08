@@ -5,17 +5,17 @@
 \title{Process real data}
 \usage{
 process_real(
-  wsaf,
-  plaf,
+  wsmaf,
+  plmaf,
   seq_error = NULL,
   bin_size = 20,
   coi_method = "variant"
 )
 }
 \arguments{
-\item{wsaf}{The within-sample allele frequency.}
+\item{wsmaf}{The within-sample allele frequency.}
 
-\item{plaf}{The population-level allele frequency.}
+\item{plmaf}{The population-level allele frequency.}
 
 \item{seq_error}{The level of sequencing error that is assumed. If no value
 is inputted, then we infer the level of sequence error.}
@@ -32,9 +32,9 @@ A list of the following:
 \item \code{data}: A tibble with
 }
 \itemize{
-\item \code{plaf_cut}: Breaks of the form \verb{[a, b)}.
-\item \code{m_variant}: The average WSAF or proportion of variant sites in each
-segment defined by \code{plaf_cut}.
+\item \code{plmaf_cut}: Breaks of the form \verb{[a, b)}.
+\item \code{m_variant}: The average WSMAF or proportion of variant sites in each
+segment defined by \code{plmaf_cut}.
 \item \code{bucket_size}: The number of loci in each bucket.
 \item \code{midpoints}: The midpoint of each bucket.
 }
@@ -50,7 +50,7 @@ Generate the COI curve for real data.
 }
 \details{
 The function computes whether a SNP is a variant site or not, based on the
-simulated WSAF at that SNP. This process additionally accounts for potential
+simulated WSMAF at that SNP. This process additionally accounts for potential
 sequencing error.
 }
 \seealso{
