@@ -28,44 +28,43 @@
 #'
 #' @param coi Complexity of infection.
 #' @param plaf Vector of population-level allele frequencies at each locus.
-#' @param coverage Coverage at each locus. If a single value then the same
-#'   coverage is applied over all loci.
+#' @param coverage Coverage at each locus. If a single value is supplied then
+#'   the same coverage is applied over all loci.
 #' @param alpha Shape parameter of the symmetric Dirichlet prior on strain
 #'   proportions.
 #' @param overdispersion The extent to which counts are over-dispersed relative
-#'   to the binomial distribution. Counts are Beta-binomially distributed, with
+#'   to the binomial distribution. Counts are Beta-Binomially distributed, with
 #'   the beta distribution having shape parameters
 #'   \mjseqn{\frac{p}{overdispersion}} and
 #'   \mjseqn{\frac{1-p}{overdispersion}}.
 #' @param epsilon The probability of a single read being miscalled as the other
-#'   allele. Applies in both directions.
+#'   allele. This error is applied in both directions.
 #' @param relatedness The probability that a strain in mixed infections is
-#'   related to another. Default = 0 (unrelated). The implementation is similar
-#'   to relatedness as defined in THE REAL McCOIL simulations. In the original
-#'   paper (https://doi.org/10.1371/journal.pcbi.1005348) this is defined as:
+#'   related to another. The implementation is similar to relatedness as defined
+#'   in THE REAL McCOIL simulations. In the [original
+#'   paper](https://doi.org/10.1371/journal.pcbi.1005348) this is defined as:
 #'   "... simulated relatedness (r) among lineages within the same host by
-#'   sampling alleles either from an existing lineage within the same host
-#'   (with probability r) or from the population (with probability (1-r))."
+#'   sampling alleles either from an existing lineage within the same host (with
+#'   probability r) or from the population (with probability (1-r))."
 #'
-#' @return A list of:
-#' * `coi`: The COI used to simulate the data.
-#' * `strain_proportions`: The strain proportion of each strain.
-#' * `phased`: The phased haplotype.
-#' * `data`: A dataframe of:
+#' @return
+#' An object of class `sim`. Contains a list of
+#' [tibbles][tibble::tibble-package]:
+#' * `parameters` contains each parameter and the value used to simulate data.
+#' * `strain_proportions` contains the proportion of each strain.
+#' * `phased_haplotypes` contains the phased haplotype for each strain at each
+#' locus.
+#' * `derived_data` contains the following columns:
 #'   + `plaf`: The population-level allele frequency.
 #'   + `coverage`: The coverage at each locus.
 #'   + `counts`: The count at each locus.
 #'   + `wsaf`: The within-sample allele frequency.
-#' * `inputs`: A dataframe of function input arguments:
-#'   + `alpha`: Shape parameters of Dirichlet controlling strain proportions.
-#'   + `overdispersion`: Overdispersion in count data.
-#'   + `relatedness`: Within sample relatedness between strains.
-#'   + `epsilon`: Probability of a single read being miscalled.
 #'
 #' @family simulated data functions
 #' @export
-
-sim_biallelic <- function(coi = 3,
+#' @examples
+#' sim_biallelic(coi = 5)
+sim_biallelic <- function(coi,
                           plaf = runif(10, 0, 0.5),
                           coverage = 200,
                           alpha = 1,
