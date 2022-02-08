@@ -165,3 +165,50 @@ sim_biallelic <- function(coi = 3,
     class = "sim"
   )
 }
+
+#------------------------------------------------
+#' Plot simulated data
+#'
+#' Generate a simple plot visualizing simulated data. Compares the derived WSAF
+#' to the PLAF.
+#'
+#' @param object,x An object of class `sim`. Derived from the output of
+#'   [sim_biallelic()].
+#'
+#' @name plot-simulation
+#' @family simulated data functions
+#' @examples
+#' plot(sim_biallelic(coi = 2))
+#' plot(sim_biallelic(coi = 5))
+NULL
+
+#' @importFrom ggplot2 autoplot
+#' @rdname plot-simulation
+#' @export
+autoplot.sim <- function(object, ...) {
+  sim_coi <- object$parameters %>%
+    dplyr::filter(parameter == "coi") %>%
+    dplyr::pull(value)
+
+  ggplot2::ggplot(
+    data = object$derived_data,
+    mapping = ggplot2::aes(
+      x = .data$plaf,
+      y = .data$wsaf,
+    )
+  ) +
+    ggplot2::geom_point() +
+    ggplot2::labs(
+      x = "Population Level Allele Frequency",
+      y = "Within Sample Allele Frequency",
+      title = glue("Simulated COI of {sim_coi}")
+    ) +
+    default_theme()
+}
+
+#' @importFrom graphics plot
+#' @rdname plot-simulation
+#' @export
+plot.sim <- function(x, ...) {
+  print(autoplot(x, ...))
+}
