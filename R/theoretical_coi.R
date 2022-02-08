@@ -72,11 +72,8 @@ single_theoretical_coi <- function(coi,
   assert_in(coi_method, c("variant", "frequency"))
 
   # Determine the curve
-  if (coi_method == "variant") {
-    curve <- 1 - plaf^coi - (1 - plaf)^coi
-  } else if (coi_method == "frequency") {
-    curve <- (plaf - plaf^coi) / (1 - plaf^coi - (1 - plaf)^coi)
-  }
-
-  curve
+  switch(coi_method,
+    variant = 1 - plaf^coi - (1 - plaf)^coi,
+    frequency = (plaf - plaf^coi) / (1 - plaf^coi - (1 - plaf)^coi)
+  )
 }
