@@ -19,6 +19,7 @@
 ## Maintenance
 
 - Fix partial argument match warnings.
+- Update license year.
 - The number of dependencies has been reduced.
 - `{patchwork}` is used instead of `{ggpubr}` for combining plots.
 - `{rlang}` is now used for messages, warnings, and errors.
