@@ -7,6 +7,7 @@
 #' @importFrom stats rbeta rbinom rgamma runif
 #' @importFrom rlang abort warn inform
 #' @importFrom glue glue
+#' @importFrom tibble tibble as_tibble
 ## usethis namespace: end
 NULL
 
