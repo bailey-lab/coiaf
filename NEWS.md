@@ -18,6 +18,8 @@
 
 ## Maintenance
 
+- PLAF has been renamed to PLMAF to indicate the focus is the minor allele.
+- WSAF has been renamed to WSMAF to indicate the focus is the minor allele.
 - Fix partial argument match warnings.
 - Update license year.
 - The number of dependencies has been reduced.
