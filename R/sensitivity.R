@@ -12,7 +12,7 @@
 
 single_sensitivity <- function(coi = 3,
                                max_coi = 25,
-                               plaf = runif(1000, 0, 0.5),
+                               plmaf = runif(1000, 0, 0.5),
                                coverage = 200,
                                alpha = 1,
                                overdispersion = 0,
@@ -27,8 +27,8 @@ single_sensitivity <- function(coi = 3,
   # Check inputs
   assert_single_pos_int(coi)
   assert_single_pos_int(max_coi)
-  assert_vector(plaf)
-  assert_bounded(plaf, left = 0, right = 0.5)
+  assert_vector(plmaf)
+  assert_bounded(plmaf, left = 0, right = 0.5)
   assert_single_pos_int(coverage)
   assert_single_pos(alpha, zero_allowed = FALSE)
   assert_single_pos(overdispersion)
@@ -46,7 +46,7 @@ single_sensitivity <- function(coi = 3,
   # Simulate data
   sim_data <- sim_biallelic(
     coi,
-    plaf,
+    plmaf,
     coverage,
     alpha,
     overdispersion,
@@ -104,7 +104,7 @@ single_sensitivity <- function(coi = 3,
 sensitivity <- function(repetitions = 10,
                         coi = 3,
                         max_coi = 25,
-                        plaf = runif(1000, 0, 0.5),
+                        plmaf = runif(1000, 0, 0.5),
                         coverage = 200,
                         alpha = 1,
                         overdispersion = 0,
@@ -120,8 +120,8 @@ sensitivity <- function(repetitions = 10,
   assert_pos_int(repetitions)
   assert_pos_int(coi)
   assert_single_pos_int(max_coi)
-  assert_vector(plaf)
-  assert_bounded(plaf, left = 0, right = 0.5)
+  assert_vector(plmaf)
+  assert_bounded(plmaf, left = 0, right = 0.5)
   assert_pos_int(coverage)
   assert_pos(alpha, zero_allowed = FALSE)
   assert_pos(overdispersion)
@@ -175,7 +175,7 @@ sensitivity <- function(repetitions = 10,
       test_result <- single_sensitivity(
         param_grid$coi[x],
         param_grid$max_coi[x],
-        plaf,
+        plmaf,
         param_grid$coverage[x],
         param_grid$alpha[x],
         param_grid$overdispersion[x],
@@ -349,7 +349,7 @@ sensitivity <- function(repetitions = 10,
 cont_sensitivity <- function(repetitions = 10,
                              coi = 3,
                              max_coi = 25,
-                             plaf = runif(1000, 0, 0.5),
+                             plmaf = runif(1000, 0, 0.5),
                              coverage = 200,
                              alpha = 1,
                              overdispersion = 0,
@@ -365,8 +365,8 @@ cont_sensitivity <- function(repetitions = 10,
   assert_pos_int(repetitions)
   assert_pos_int(coi)
   assert_single_pos_int(max_coi)
-  assert_vector(plaf)
-  assert_bounded(plaf, left = 0, right = 0.5)
+  assert_vector(plmaf)
+  assert_bounded(plmaf, left = 0, right = 0.5)
   assert_pos_int(coverage)
   assert_pos(alpha, zero_allowed = FALSE)
   assert_pos(overdispersion)
@@ -415,7 +415,7 @@ cont_sensitivity <- function(repetitions = 10,
     repeats <- lapply(seq_len(repetitions), function(y) {
       test_sim <- sim_biallelic(
         param_grid$coi[x],
-        plaf,
+        plmaf,
         param_grid$coverage[x],
         param_grid$alpha[x],
         param_grid$overdispersion[x],

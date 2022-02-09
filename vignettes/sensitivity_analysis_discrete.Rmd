@@ -50,7 +50,7 @@ Applies in both directions.
 
 In addition, we will compare two different methods of determining the COI.
 The first method uses the mean number of variant sites, binned in groups of
-increasing PLAF to infer COI. The second method compares the WSAF to the PLAF
+increasing PLMAF to infer COI. The second method compares the WSMAF to the PLMAF
 for only the sites that are heterogeneous.
 
 ### Default parameters
@@ -59,7 +59,7 @@ for only the sites that are heterogeneous.
 |:---------------:|:---------------------:|
 | COI             | `3`                   |
 | Max COI         | `25`                  |
-| PLAF            | `runif(1000, 0, 0.5)` |
+| PLMAF            | `runif(1000, 0, 0.5)` |
 | Coverage        | `200`                 |
 | Alpha           | `1`                   |
 | Overdispersion  | `0`                   |
@@ -71,7 +71,7 @@ for only the sites that are heterogeneous.
 | COI Method      | `"1"`                 |
 
 
-### Setting our PLAF
+### Setting our PLMAF
 ```{r initialization, eval = eval_tests}
 # Set the seed
 set.seed(1)
@@ -87,7 +87,7 @@ p[p > 0.5] <- 1 - p[p > 0.5]
 toverall <- sensitivity(
   coi = 1:20,
   repetitions = 100,
-  plaf = p,
+  plmaf = p,
   coverage = 1000,
   seq_error = 0,
   coi_method = c("variant", "frequency")
@@ -133,7 +133,7 @@ tcoi <- sensitivity(
   coi = 2:40,
   max_coi = 40,
   repetitions = 100,
-  plaf = p,
+  plmaf = p,
   seq_error = 0.01,
   coi_method = c("variant", "frequency")
 )
@@ -174,7 +174,7 @@ knitr::include_graphics(
 ```{r comparison, eval = eval_tests}
 tcomparison <- sensitivity(
   coi = 2:20,
-  plaf = p,
+  plmaf = p,
   comparison = c("end", "ideal", "overall"),
   distance = "squared",
   repetitions = 100,
@@ -216,7 +216,7 @@ knitr::include_graphics(
 ```{r distance, eval = eval_tests}
 tdistance <- sensitivity(
   coi = 2:20,
-  plaf = p,
+  plmaf = p,
   comparison = "overall",
   distance = c("abs_sum", "sum_abs", "squared"),
   repetitions = 100,
@@ -269,7 +269,7 @@ tcoverage_1 <- sensitivity(
   coverage = c(50, 100, 250, 500, 1000, 2000),
   repetitions = 100,
   seq_error = 0.01,
-  plaf = p,
+  plmaf = p,
   coi_method = "variant"
 )
 
@@ -305,7 +305,7 @@ tcoverage_2 <- sensitivity(
   coverage = c(50, 100, 250, 500, 1000, 2000),
   repetitions = 100,
   seq_error = 0.01,
-  plaf = p, coi_method = "frequency"
+  plmaf = p, coi_method = "frequency"
 )
 
 tcoverage_image_2 <- sensitivity_plot(
@@ -349,7 +349,7 @@ knitr::include_graphics(
 # Set the range over which we will iterate
 loci <- c(1e2, 1e3, 1e4)
 
-# For each loci, reset the PLAF and then run
+# For each loci, reset the PLMAF and then run
 bloci <- lapply(loci, function(new_L) {
   new_p <- rbeta(new_L, 1, 5)
   new_p[new_p > 0.5] <- 1 - new_p[new_p > 0.5]
@@ -357,7 +357,7 @@ bloci <- lapply(loci, function(new_L) {
   inner_tloci <- sensitivity(
     coi = 2:20,
     repetitions = 100,
-    plaf = new_p,
+    plmaf = new_p,
     seq_error = 0.01,
     coi_method = "variant"
   )
@@ -433,7 +433,7 @@ tloci_fig_1
 # Set the range over which we will iterate
 loci <- c(1e2, 1e3, 1e4)
 
-# For each loci, reset the PLAF and then run
+# For each loci, reset the PLMAF and then run
 bloci <- lapply(loci, function(new_L) {
   new_p <- rbeta(new_L, 1, 5)
   new_p[new_p > 0.5] <- 1 - new_p[new_p > 0.5]
@@ -441,7 +441,7 @@ bloci <- lapply(loci, function(new_L) {
   inner_tloci <- sensitivity(
     coi = 2:20,
     repetitions = 100,
-    plaf = new_p,
+    plmaf = new_p,
     seq_error = 0.01,
     coi_method = "frequency"
   )
@@ -530,7 +530,7 @@ talpha_1 <- sensitivity(
   alpha = seq(0.01, 5.51, 0.5),
   repetitions = 100,
   seq_error = 0.01,
-  plaf = p
+  plmaf = p
 )
 
 talpha_image_1 <- sensitivity_plot(
@@ -565,7 +565,7 @@ talpha_2 <- sensitivity(
   alpha = seq(0.01, 5.51, 0.5),
   repetitions = 100,
   seq_error = 0.01,
-  plaf = p
+  plmaf = p
 )
 
 talpha_image_2 <- sensitivity_plot(
@@ -611,7 +611,7 @@ tover <- sensitivity(
   overdispersion = seq(0, 0.2, 0.05),
   repetitions = 100,
   seq_error = 0.01,
-  plaf = p,
+  plmaf = p,
   coi_method = c("variant", "frequency")
 )
 
@@ -659,7 +659,7 @@ trelated <- sensitivity(
   relatedness = seq(0, 0.5, 0.1),
   repetitions = 100,
   seq_error = 0.01,
-  plaf = p,
+  plmaf = p,
   coi_method = c("variant", "frequency")
 )
 
@@ -707,7 +707,7 @@ tepsilon <- sensitivity(
   epsilon = seq(0, 0.025, 0.005),
   repetitions = 100,
   seq_error = 0.01,
-  plaf = p
+  plmaf = p
 )
 
 tepsilon_image <- sensitivity_plot(
@@ -749,7 +749,7 @@ tseq <- sensitivity(
   epsilon = 0.01,
   seq_error = seq(0, 0.10, 0.02),
   repetitions = 100,
-  plaf = p,
+  plmaf = p,
   coi_method = "frequency"
 )
 
@@ -791,7 +791,7 @@ tbin <- sensitivity(
   coi = 2:20,
   bin_size = seq(10, 100, 30),
   distance = "squared",
-  plaf = p,
+  plmaf = p,
   repetitions = 100,
   seq_error = 0.01,
   coi_method = c("variant", "frequency")

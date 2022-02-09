@@ -59,7 +59,7 @@ likelihood <- function(coi,
     gap <- colSums(gap^2)
   }
 
-  # Gap is a named list with two entries: the coi and the PLAF. We want to
+  # Gap is a named list with two entries: the coi and the PLMAF. We want to
   # return only the coi
   gap[1]
 }
@@ -118,7 +118,7 @@ optimize_coi <- function(data,
     bin_size <- processed$bin_size
     cuts <- processed$cuts
   } else if (data_type == "real") {
-    processed <- process_real(data$wsaf, data$plaf, seq_error, bin_size, coi_method)
+    processed <- process_real(data$wsmaf, data$plmaf, seq_error, bin_size, coi_method)
     processed_data <- processed$data
     seq_error <- processed$seq_error
     bin_size <- processed$bin_size

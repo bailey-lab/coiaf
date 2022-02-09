@@ -2,7 +2,7 @@ test_that("helper returns a vector", {
   expect_vector(
     single_theoretical_coi(
       coi = 2,
-      plaf = seq(0, 0.5, 0.01),
+      plmaf = seq(0, 0.5, 0.01),
       coi_method = "variant"
     ),
     ptype = double(),
@@ -33,5 +33,8 @@ test_that("theoretical_coi returns a data frane", {
 })
 
 test_that("theoretical_coi column names are correct", {
-  expect_equal(colnames(theoretical_coi(1:10)), c(paste0("coi_", 1:10), "plaf"))
+  expect_equal(
+    colnames(theoretical_coi(1:10)),
+    c(paste0("coi_", 1:10), "plmaf")
+  )
 })
