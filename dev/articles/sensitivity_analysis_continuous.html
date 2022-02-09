@@ -124,7 +124,7 @@
 <li>
 <code>seq_error</code>: The level of sequencing error that is assumed.</li>
 </ul>
-<p>In addition, we will compare two different methods of determining the COI. The first method uses the mean number of variant sites, binned in groups of increasing PLAF to infer COI. The second method compares the WSAF to the PLAF for only the sites that are heterogeneous.</p>
+<p>In addition, we will compare two different methods of determining the COI. The first method uses the mean number of variant sites, binned in groups of increasing PLMAF to infer COI. The second method compares the WSMAF to the PLMAF for only the sites that are heterogeneous.</p>
 <div class="section level3">
 <h3 id="default-parameters">Default parameters<a class="anchor" aria-label="anchor" href="#default-parameters"></a>
 </h3>
@@ -143,7 +143,7 @@
 <td align="center"><code>25</code></td>
 </tr>
 <tr class="odd">
-<td align="center">PLAF</td>
+<td align="center">PLMAF</td>
 <td align="center"><code>runif(1000, 0, 0.5)</code></td>
 </tr>
 <tr class="even">
@@ -186,7 +186,7 @@
 </table>
 </div>
 <div class="section level3">
-<h3 id="setting-our-plaf">Setting our PLAF<a class="anchor" aria-label="anchor" href="#setting-our-plaf"></a>
+<h3 id="setting-our-plmaf">Setting our PLMAF<a class="anchor" aria-label="anchor" href="#setting-our-plmaf"></a>
 </h3>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Set the seed</span>
@@ -204,7 +204,7 @@
 <code class="sourceCode R"><span class="va">toverall</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cont_sensitivity.html">cont_sensitivity</a></span><span class="op">(</span>
   coi <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">20</span>,
   repetitions <span class="op">=</span> <span class="fl">100</span>,
-  plaf <span class="op">=</span> <span class="va">p</span>,
+  plmaf <span class="op">=</span> <span class="va">p</span>,
   coverage <span class="op">=</span> <span class="fl">400</span>,
   seq_error <span class="op">=</span> <span class="fl">0</span>,
   coi_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"variant"</span>, <span class="st">"frequency"</span><span class="op">)</span>
@@ -248,7 +248,7 @@
   coi <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">40</span>,
   max_coi <span class="op">=</span> <span class="fl">40</span>,
   repetitions <span class="op">=</span> <span class="fl">100</span>,
-  plaf <span class="op">=</span> <span class="va">p</span>,
+  plmaf <span class="op">=</span> <span class="va">p</span>,
   seq_error <span class="op">=</span> <span class="fl">0.01</span>,
   coi_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"variant"</span>, <span class="st">"frequency"</span><span class="op">)</span>
 <span class="op">)</span>
@@ -285,7 +285,7 @@
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tcomparison</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cont_sensitivity.html">cont_sensitivity</a></span><span class="op">(</span>
   coi <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">20</span>,
-  plaf <span class="op">=</span> <span class="va">p</span>,
+  plmaf <span class="op">=</span> <span class="va">p</span>,
   comparison <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"end"</span>, <span class="st">"ideal"</span>, <span class="st">"overall"</span><span class="op">)</span>,
   distance <span class="op">=</span> <span class="st">"squared"</span>,
   repetitions <span class="op">=</span> <span class="fl">100</span>,
@@ -324,7 +324,7 @@
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tdistance</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cont_sensitivity.html">cont_sensitivity</a></span><span class="op">(</span>
   coi <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">20</span>,
-  plaf <span class="op">=</span> <span class="va">p</span>,
+  plmaf <span class="op">=</span> <span class="va">p</span>,
   comparison <span class="op">=</span> <span class="st">"overall"</span>,
   distance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"abs_sum"</span>, <span class="st">"sum_abs"</span>, <span class="st">"squared"</span><span class="op">)</span>,
   repetitions <span class="op">=</span> <span class="fl">100</span>,
@@ -373,7 +373,7 @@
   coverage <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">100</span>, <span class="fl">250</span>, <span class="fl">500</span>, <span class="fl">1000</span>, <span class="fl">2000</span><span class="op">)</span>,
   repetitions <span class="op">=</span> <span class="fl">100</span>,
   seq_error <span class="op">=</span> <span class="fl">0.01</span>,
-  plaf <span class="op">=</span> <span class="va">p</span>,
+  plmaf <span class="op">=</span> <span class="va">p</span>,
   coi_method <span class="op">=</span> <span class="st">"variant"</span>
 <span class="op">)</span>
 
@@ -407,7 +407,7 @@
   coverage <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">100</span>, <span class="fl">250</span>, <span class="fl">500</span>, <span class="fl">1000</span>, <span class="fl">2000</span><span class="op">)</span>,
   repetitions <span class="op">=</span> <span class="fl">100</span>,
   seq_error <span class="op">=</span> <span class="fl">0.01</span>,
-  plaf <span class="op">=</span> <span class="va">p</span>, coi_method <span class="op">=</span> <span class="st">"frequency"</span>
+  plmaf <span class="op">=</span> <span class="va">p</span>, coi_method <span class="op">=</span> <span class="st">"frequency"</span>
 <span class="op">)</span>
 
 <span class="va">tcoverage_image_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sensitivity_plot.html">sensitivity_plot</a></span><span class="op">(</span>
@@ -443,7 +443,7 @@
 <code class="sourceCode R"><span class="co"># Set the range over which we will iterate</span>
 <span class="va">loci</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1e2</span>, <span class="fl">1e3</span>, <span class="fl">1e4</span><span class="op">)</span>
 
-<span class="co"># For each loci, reset the PLAF and then run</span>
+<span class="co"># For each loci, reset the PLMAF and then run</span>
 <span class="va">bloci</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">loci</span>, <span class="kw">function</span><span class="op">(</span><span class="va">new_L</span><span class="op">)</span> <span class="op">{</span>
   <span class="va">new_p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Beta.html" class="external-link">rbeta</a></span><span class="op">(</span><span class="va">new_L</span>, <span class="fl">1</span>, <span class="fl">5</span><span class="op">)</span>
   <span class="va">new_p</span><span class="op">[</span><span class="va">new_p</span> <span class="op">&gt;</span> <span class="fl">0.5</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="op">-</span> <span class="va">new_p</span><span class="op">[</span><span class="va">new_p</span> <span class="op">&gt;</span> <span class="fl">0.5</span><span class="op">]</span>
@@ -451,7 +451,7 @@
   <span class="va">inner_tloci</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cont_sensitivity.html">cont_sensitivity</a></span><span class="op">(</span>
     coi <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">20</span>,
     repetitions <span class="op">=</span> <span class="fl">100</span>,
-    plaf <span class="op">=</span> <span class="va">new_p</span>,
+    plmaf <span class="op">=</span> <span class="va">new_p</span>,
     seq_error <span class="op">=</span> <span class="fl">0.01</span>,
     coi_method <span class="op">=</span> <span class="st">"variant"</span>
   <span class="op">)</span>
@@ -525,7 +525,7 @@
 <code class="sourceCode R"><span class="co"># Set the range over which we will iterate</span>
 <span class="va">loci</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1e2</span>, <span class="fl">1e3</span>, <span class="fl">1e4</span><span class="op">)</span>
 
-<span class="co"># For each loci, reset the PLAF and then run</span>
+<span class="co"># For each loci, reset the PLMAF and then run</span>
 <span class="va">bloci</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">loci</span>, <span class="kw">function</span><span class="op">(</span><span class="va">new_L</span><span class="op">)</span> <span class="op">{</span>
   <span class="va">new_p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Beta.html" class="external-link">rbeta</a></span><span class="op">(</span><span class="va">new_L</span>, <span class="fl">1</span>, <span class="fl">5</span><span class="op">)</span>
   <span class="va">new_p</span><span class="op">[</span><span class="va">new_p</span> <span class="op">&gt;</span> <span class="fl">0.5</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="op">-</span> <span class="va">new_p</span><span class="op">[</span><span class="va">new_p</span> <span class="op">&gt;</span> <span class="fl">0.5</span><span class="op">]</span>
@@ -533,7 +533,7 @@
   <span class="va">inner_tloci</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cont_sensitivity.html">cont_sensitivity</a></span><span class="op">(</span>
     coi <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">20</span>,
     repetitions <span class="op">=</span> <span class="fl">100</span>,
-    plaf <span class="op">=</span> <span class="va">new_p</span>,
+    plmaf <span class="op">=</span> <span class="va">new_p</span>,
     seq_error <span class="op">=</span> <span class="fl">0.01</span>,
     coi_method <span class="op">=</span> <span class="st">"frequency"</span>
   <span class="op">)</span>
@@ -614,7 +614,7 @@
   alpha <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0.01</span>, <span class="fl">5.51</span>, <span class="fl">0.5</span><span class="op">)</span>,
   repetitions <span class="op">=</span> <span class="fl">100</span>,
   seq_error <span class="op">=</span> <span class="fl">0.01</span>,
-  plaf <span class="op">=</span> <span class="va">p</span>
+  plmaf <span class="op">=</span> <span class="va">p</span>
 <span class="op">)</span>
 
 <span class="va">talpha_image_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sensitivity_plot.html">sensitivity_plot</a></span><span class="op">(</span>
@@ -647,7 +647,7 @@
   alpha <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0.01</span>, <span class="fl">5.51</span>, <span class="fl">0.5</span><span class="op">)</span>,
   repetitions <span class="op">=</span> <span class="fl">100</span>,
   seq_error <span class="op">=</span> <span class="fl">0.01</span>,
-  plaf <span class="op">=</span> <span class="va">p</span>
+  plmaf <span class="op">=</span> <span class="va">p</span>
 <span class="op">)</span>
 
 <span class="va">talpha_image_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sensitivity_plot.html">sensitivity_plot</a></span><span class="op">(</span>
@@ -685,7 +685,7 @@
   overdispersion <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.2</span>, <span class="fl">0.05</span><span class="op">)</span>,
   repetitions <span class="op">=</span> <span class="fl">100</span>,
   seq_error <span class="op">=</span> <span class="fl">0.01</span>,
-  plaf <span class="op">=</span> <span class="va">p</span>,
+  plmaf <span class="op">=</span> <span class="va">p</span>,
   coi_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"variant"</span>, <span class="st">"frequency"</span><span class="op">)</span>
 <span class="op">)</span>
 
@@ -729,7 +729,7 @@
   relatedness <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.5</span>, <span class="fl">0.1</span><span class="op">)</span>,
   repetitions <span class="op">=</span> <span class="fl">100</span>,
   seq_error <span class="op">=</span> <span class="fl">0.01</span>,
-  plaf <span class="op">=</span> <span class="va">p</span>,
+  plmaf <span class="op">=</span> <span class="va">p</span>,
   coi_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"variant"</span>, <span class="st">"frequency"</span><span class="op">)</span>
 <span class="op">)</span>
 
@@ -773,7 +773,7 @@
   epsilon <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.025</span>, <span class="fl">0.005</span><span class="op">)</span>,
   repetitions <span class="op">=</span> <span class="fl">100</span>,
   seq_error <span class="op">=</span> <span class="fl">0.01</span>,
-  plaf <span class="op">=</span> <span class="va">p</span>
+  plmaf <span class="op">=</span> <span class="va">p</span>
 <span class="op">)</span>
 
 <span class="va">tepsilon_image</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sensitivity_plot.html">sensitivity_plot</a></span><span class="op">(</span>
@@ -811,7 +811,7 @@
   epsilon <span class="op">=</span> <span class="fl">0.01</span>,
   seq_error <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.10</span>, <span class="fl">0.02</span><span class="op">)</span>,
   repetitions <span class="op">=</span> <span class="fl">100</span>,
-  plaf <span class="op">=</span> <span class="va">p</span>,
+  plmaf <span class="op">=</span> <span class="va">p</span>,
   coi_method <span class="op">=</span> <span class="st">"frequency"</span>
 <span class="op">)</span>
 
@@ -849,7 +849,7 @@
   coi <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">20</span>,
   bin_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">100</span>, <span class="fl">30</span><span class="op">)</span>,
   distance <span class="op">=</span> <span class="st">"squared"</span>,
-  plaf <span class="op">=</span> <span class="va">p</span>,
+  plmaf <span class="op">=</span> <span class="va">p</span>,
   repetitions <span class="op">=</span> <span class="fl">100</span>,
   seq_error <span class="op">=</span> <span class="fl">0.01</span>,
   coi_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"variant"</span>, <span class="st">"frequency"</span><span class="op">)</span>

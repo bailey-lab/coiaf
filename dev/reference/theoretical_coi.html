@@ -68,7 +68,7 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">theoretical_coi</span><span class="op">(</span>
   <span class="va">coi_range</span>,
-  plaf <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.5</span>, length.out <span class="op">=</span> <span class="fl">101</span><span class="op">)</span>,
+  plmaf <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.5</span>, length.out <span class="op">=</span> <span class="fl">101</span><span class="op">)</span>,
   coi_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"variant"</span>, <span class="st">"frequency"</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
     </div>
@@ -77,8 +77,8 @@
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>coi_range</dt>
 <dd><p>The COIs for which the curve will be calculated.</p></dd>
-<dt>plaf</dt>
-<dd><p>The PLAF over which the curve will be calculated.</p></dd>
+<dt>plmaf</dt>
+<dd><p>The PLMAF over which the curve will be calculated.</p></dd>
 <dt>coi_method</dt>
 <dd><p>The method we will use to calculate the theoretical COI.
 The method is either "variant" or "frequency". The default value is
@@ -86,22 +86,22 @@ The method is either "variant" or "frequency". The default value is
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>The theoretical COI curves for the specified COIs and PLAF.</p>
+    <p>The theoretical COI curves for the specified COIs and PLMAF.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p><script id="MathJax-script" async src="../../mathjaxr/doc/mathjax/es5/tex-chtml-full.js"></script>
 
-The theoretical curve can be visualized as the WSAF of an individual at
-various PLAFs. At each locus, the theoretical COI is defined as:
-\[1-p^{coi}-q^{coi}\] where \(p\) is the PLAF and \(q\) is
-1 - PLAF.</p>
+The theoretical curve can be visualized as the WSMAF of an individual at
+various PLMAFs. At each locus, the theoretical COI is defined as:
+\[1-p^{coi}-q^{coi}\] where \(p\) is the PLMAF and \(q\) is
+1 - PLMAF.</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu">theoretical_coi</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     coi_1   coi_2    coi_3      coi_4      coi_5  plaf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     coi_1   coi_2    coi_3      coi_4      coi_5 plmaf</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1       0 0.00000 0.000000 0.00000000 0.00000000 0.000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2       0 0.00995 0.014925 0.01985050 0.02475125 0.005</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3       0 0.01980 0.029700 0.03940398 0.04900995 0.010</span>
@@ -204,7 +204,7 @@ various PLAFs. At each locus, the theoretical COI is defined as:
 <span class="r-out co"><span class="r-pr">#&gt;</span> 100     0 0.49995 0.749925 0.87492500 0.93743750 0.495</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 101     0 0.50000 0.750000 0.87500000 0.93750000 0.500</span>
 <span class="r-in"><span class="fu">theoretical_coi</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, coi_method <span class="op">=</span> <span class="st">"frequency"</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     coi_1 coi_2     coi_3     coi_4     coi_5  plaf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     coi_1 coi_2     coi_3     coi_4     coi_5 plmaf</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1     NaN   NaN       NaN       NaN       NaN 0.000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2     NaN   0.5 0.3350000 0.2518828 0.2020100 0.005</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3     NaN   0.5 0.3366667 0.2537812 0.2040402 0.010</span>

@@ -100,7 +100,7 @@
 
     
     
-<p>In this analysis the two COI estimation methods are demonstrated. In these we will simulate 1000 loci for an individual. We first initialize the population level allele frequency (PLAF) using a beta distribution.</p>
+<p>In this analysis the two COI estimation methods are demonstrated. In these we will simulate 1000 loci for an individual. We first initialize the population level allele frequency (PLMAF) using a beta distribution.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Set seed</span>
 <span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
@@ -112,7 +112,7 @@
 <div class="section level2">
 <h2 id="method-1">Method 1<a class="anchor" aria-label="anchor" href="#method-1"></a>
 </h2>
-<p>The first approach in the manuscript document for estimating COI is shown below. This works by using the mean number of variant sites, binned in groups of increasing PLAF to infer COI.</p>
+<p>The first approach in the manuscript document for estimating COI is shown below. This works by using the mean number of variant sites, binned in groups of increasing PLMAF to infer COI.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Loop over range of COIs</span>
 <span class="va">end_coi</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>
@@ -123,12 +123,12 @@
 
   <span class="co"># Simulate data and subset to heterozygous sites only</span>
   <span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
-  <span class="va">sim1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_biallelic.html">sim_biallelic</a></span><span class="op">(</span>coi <span class="op">=</span> <span class="va">k</span>, plaf <span class="op">=</span> <span class="va">p</span><span class="op">)</span>
+  <span class="va">sim1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_biallelic.html">sim_biallelic</a></span><span class="op">(</span>coi <span class="op">=</span> <span class="va">k</span>, plmaf <span class="op">=</span> <span class="va">p</span><span class="op">)</span>
 
-  <span class="co"># Plot raw WSAF as gray dots</span>
-  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sim1</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">plaf</span>, <span class="va">sim1</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">wsaf</span>,
+  <span class="co"># Plot raw WSMAF as gray dots</span>
+  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sim1</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">plmaf</span>, <span class="va">sim1</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">wsmaf</span>,
     pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">0.5</span>, col <span class="op">=</span> <span class="st">"gray"</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>,
-    xlab <span class="op">=</span> <span class="st">"PLAF"</span>, ylab <span class="op">=</span> <span class="st">"WSAF"</span>, main <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"COI ="</span>, <span class="va">k</span><span class="op">)</span>
+    xlab <span class="op">=</span> <span class="st">"PLMAF"</span>, ylab <span class="op">=</span> <span class="st">"WSMAF"</span>, main <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"COI ="</span>, <span class="va">k</span><span class="op">)</span>
   <span class="op">)</span>
 
   <span class="co"># Overlay analytical expectations for COI of 2:7</span>
@@ -144,7 +144,7 @@
     col <span class="op">=</span> <span class="st">"red"</span>, cex <span class="op">=</span> <span class="fl">0.6</span>
   <span class="op">)</span>
 
-  <span class="co"># Compute windowed averages over WSAF and overlay in blue</span>
+  <span class="co"># Compute windowed averages over WSMAF and overlay in blue</span>
   <span class="va">df_grouped</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/process_sim.html">process_sim</a></span><span class="op">(</span><span class="va">sim1</span><span class="op">)</span>
 
   <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">df_grouped</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">midpoints</span>, <span class="va">df_grouped</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">m_variant</span>,
@@ -160,7 +160,7 @@
   <span class="va">opt_coi</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">opt_coi</span>, <span class="va">add</span><span class="op">)</span><span class="op">)</span>
 <span class="op">}</span></code></pre></div>
 <p><img src="example_coi_prediction_files/figure-html/method%201-1.png" width="672"></p>
-<p>In this, the intercept at <code>PLAF = 0.5</code> gives us an easy way to estimate COI, with <code>COI = 1 + log_0.5(1-WSAF)</code>, or <code>WSAF = 1 - 0.5^(COI-1)</code>. However, the differences between each COI at PLAF = 0.5 become geometrically smaller. Larger gaps can be found at different COI, with smaller PLAF:</p>
+<p>In this, the intercept at <code>PLMAF = 0.5</code> gives us an easy way to estimate COI, with <code>COI = 1 + log_0.5(1-WSMAF)</code>, or <code>WSMAF = 1 - 0.5^(COI-1)</code>. However, the differences between each COI at PLMAF = 0.5 become geometrically smaller. Larger gaps can be found at different COI, with smaller PLMAF:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>
@@ -173,7 +173,7 @@
     <span class="va">new_y</span> <span class="op">&lt;-</span> <span class="va">y</span><span class="op">[[</span><span class="va">k</span><span class="op">]</span><span class="op">]</span> <span class="op">-</span> <span class="va">y</span><span class="op">[[</span><span class="va">k</span> <span class="op">-</span> <span class="fl">1</span><span class="op">]</span><span class="op">]</span>
     <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">p_vec</span>, <span class="va">new_y</span>,
       ylab <span class="op">=</span> <span class="fu">glue</span><span class="fu">::</span><span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html" class="external-link">glue</a></span><span class="op">(</span><span class="st">"Difference between COI {k-1} and {k}"</span><span class="op">)</span>,
-      xlab <span class="op">=</span> <span class="st">"PLAF"</span>,
+      xlab <span class="op">=</span> <span class="st">"PLMAF"</span>,
       main <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"COI = "</span>, <span class="va">k</span><span class="op">)</span>
     <span class="op">)</span>
     <span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="va">p_vec</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.min.html" class="external-link">which.max</a></span><span class="op">(</span><span class="va">new_y</span><span class="op">)</span><span class="op">]</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
@@ -183,12 +183,12 @@
     <span class="op">)</span>
   <span class="op">}</span>
 <span class="op">}</span></code></pre></div>
-<p><img src="example_coi_prediction_files/figure-html/ideal%20PLAF-1.png" width="672"></p>
+<p><img src="example_coi_prediction_files/figure-html/ideal%20PLMAF-1.png" width="672"></p>
 </div>
 <div class="section level2">
 <h2 id="method-2">Method 2<a class="anchor" aria-label="anchor" href="#method-2"></a>
 </h2>
-<p>In method 2, we plot WSAF against PLAF for only the sites that are heterogeneous, i.e. not all REF or ALT calls.</p>
+<p>In method 2, we plot WSMAF against PLMAF for only the sites that are heterogeneous, i.e. not all REF or ALT calls.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># loop over range of COIs</span>
 <span class="va">disc_coi</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>
@@ -199,12 +199,12 @@
 
   <span class="co"># simulate data and subset to heterozygous sites only</span>
   <span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span>
-  <span class="va">sim1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_biallelic.html">sim_biallelic</a></span><span class="op">(</span>coi <span class="op">=</span> <span class="va">k</span>, plaf <span class="op">=</span> <span class="va">p</span><span class="op">)</span>
+  <span class="va">sim1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_biallelic.html">sim_biallelic</a></span><span class="op">(</span>coi <span class="op">=</span> <span class="va">k</span>, plmaf <span class="op">=</span> <span class="va">p</span><span class="op">)</span>
 
-  <span class="co"># plot raw WSAF as grey dots</span>
-  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sim1</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">plaf</span>, <span class="va">sim1</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">wsaf</span>,
+  <span class="co"># plot raw WSMAF as grey dots</span>
+  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sim1</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">plmaf</span>, <span class="va">sim1</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">wsmaf</span>,
     pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">0.5</span>, col <span class="op">=</span> <span class="st">"gray"</span>,
-    ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>, xlab <span class="op">=</span> <span class="st">"PLAF"</span>, ylab <span class="op">=</span> <span class="st">"WSAF"</span>, main <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"COI ="</span>, <span class="va">k</span><span class="op">)</span>
+    ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>, xlab <span class="op">=</span> <span class="st">"PLMAF"</span>, ylab <span class="op">=</span> <span class="st">"WSMAF"</span>, main <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"COI ="</span>, <span class="va">k</span><span class="op">)</span>
   <span class="op">)</span>
 
   <span class="co"># overlay analytical expectations for COI=2:7</span>
@@ -215,7 +215,7 @@
   <span class="op">}</span>
   <span class="fu"><a href="https://rdrr.io/r/graphics/text.html" class="external-link">text</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="op">-</span><span class="fl">0.005</span>, <span class="fl">6</span><span class="op">)</span>, y <span class="op">=</span> <span class="fl">1</span> <span class="op">/</span> <span class="fl">2</span><span class="op">:</span><span class="fl">7</span>, labels <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">7</span>, col <span class="op">=</span> <span class="st">"red"</span>, cex <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span>
 
-  <span class="co"># compute sliding-window averages over WSAF and overlay in blue</span>
+  <span class="co"># compute sliding-window averages over WSMAF and overlay in blue</span>
   <span class="va">df_grouped</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/process_sim.html">process_sim</a></span><span class="op">(</span><span class="va">sim1</span>, coi_method <span class="op">=</span> <span class="st">"frequency"</span><span class="op">)</span>
   <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">df_grouped</span><span class="op">$</span><span class="va">seq_error</span><span class="op">)</span>
 
@@ -238,7 +238,7 @@
 <span class="co">#&gt; [1] 0.225</span></code></pre></div>
 <p><img src="example_coi_prediction_files/figure-html/method%202-1.png" width="672"></p>
 <pre><code><span class="co">#&gt; [1] 0.1812</span></code></pre>
-<p>In this case, COI is found as 1/WSAF when PLAF = 0 (i.e. the y-axis intercept).</p>
+<p>In this case, COI is found as 1/WSMAF when PLMAF = 0 (i.e. the y-axis intercept).</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

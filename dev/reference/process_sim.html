@@ -86,9 +86,9 @@ The method is either "variant" or "frequency". The default value is
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A list of the following:</p><ul><li><p><code>data</code>: A tibble with</p></li>
-</ul><ul><li><p><code>plaf_cut</code>: Breaks of the form <code>[a, b)</code>.</p></li>
-<li><p><code>m_variant</code>: The average WSAF or proportion of variant sites in each
-segment defined by <code>plaf_cut</code>.</p></li>
+</ul><ul><li><p><code>plmaf_cut</code>: Breaks of the form <code>[a, b)</code>.</p></li>
+<li><p><code>m_variant</code>: The average WSMAF or proportion of variant sites in each
+segment defined by <code>plmaf_cut</code>.</p></li>
 <li><p><code>bucket_size</code>: The number of loci in each bucket.</p></li>
 <li><p><code>midpoints</code>: The midpoint of each bucket.</p></li>
 </ul><ul><li><p><code>seq_error</code>: The sequence error inferred.</p></li>
@@ -99,10 +99,10 @@ of each COI.</p></li>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Utilize the output of <code><a href="sim_biallelic.html">sim_biallelic()</a></code>, which creates simulated
-data. The PLAF is kept, and the function computes whether a SNP is a
-variant site or not, based on the simulated WSAF at that SNP. This process
+data. The PLMAF is kept, and the function computes whether a SNP is a
+variant site or not, based on the simulated WSMAF at that SNP. This process
 additionally accounts for potential sequencing error. To check whether the
-simulated WSAF correctly indicated a variant site or not, the phased
+simulated WSMAF correctly indicated a variant site or not, the phased
 haplotype of the parasites is computed.</p>
     </div>
     <div class="section level2">
