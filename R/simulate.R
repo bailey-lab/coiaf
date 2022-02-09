@@ -196,15 +196,15 @@ autoplot.sim <- function(object, ...) {
   ggplot2::ggplot(
     data = object$data,
     mapping = ggplot2::aes(
-      x = .data$plaf,
-      y = .data$wsaf,
+      x = .data$plmaf,
+      y = .data$wsmaf,
     )
   ) +
     ggplot2::geom_point(...) +
     ggplot2::labs(
-      x = "Population Level Allele Frequency",
-      y = "Within Sample Allele Frequency",
-      title = glue("Simulated COI of {sim_coi}")
+      title = glue("Simulated COI of {sim_coi}"),
+      x = "Population Level Minor Allele Frequency",
+      y = "Within Sample Minor Allele Frequency"
     ) +
     default_theme()
 }
