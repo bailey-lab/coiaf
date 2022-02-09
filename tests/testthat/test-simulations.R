@@ -1,35 +1,107 @@
-test_that("sim_biallelic works", {
-  set.seed(1)
+# A simple simulation we will leverage to test our function
+simple_sim <- sim_biallelic(3)
 
-  # define number of loci, and distribution of minor allele frequencies
-  L <- 1e5
-  p <- rbeta(L, 1, 5)
-  p[p > 0.5] <- 1 - p[p > 0.5]
-  k <- 2
-
-  sim1 <- sim_biallelic(coi = k, plmaf = p, overdispersion = 0.01)
-  expect_identical(names(sim1), c("coi", "strain_proportions", "phased", "data", "inputs"))
-  expect_equal(round(sim1$strain_proportions, 2), c(0.62, 0.38))
+test_that("if coverage is a single number, expand across all loci", {
+  sim <- sim_biallelic(coi = 5, coverage = 75)
+  coverage <- sim$data$coverage
+  expect_true(unique(coverage) == 75)
 })
 
-test_that("sim_biallelic relatedness works", {
+test_that("simulator returns object of correct class", {
+  expect_type(simple_sim, "list")
+  expect_s3_class(simple_sim, "sim", exact = TRUE)
+})
+
+test_that("simulator returns a list of tibbles", {
+  expect_s3_class(simple_sim$parameters, c("tbl_df", "tbl", "dta.frame"))
+  expect_s3_class(
+    simple_sim$strain_proportions,
+    c("tbl_df", "tbl", "dta.frame")
+  )
+  expect_s3_class(simple_sim$phased_haplotypes, c("tbl_df", "tbl", "dta.frame"))
+  expect_s3_class(simple_sim$data, c("tbl_df", "tbl", "dta.frame"))
+})
+
+test_that("parameter tibble reflects inputs", {
+  expect_equal(
+    sim_biallelic(
+      coi = 3,
+      alpha = 0.5,
+      overdispersion = 0.7,
+      relatedness = 0.2,
+      epsilon = 0.1
+    )$parameters,
+    tibble::tribble(
+      ~parameter, ~value,
+      "coi", 3,
+      "alpha", 0.5,
+      "overdispersion", 0.7,
+      "relatedness", 0.2,
+      "epsilon", 0.1
+    )
+  )
+})
+
+test_that("length of strain proportions is the COI", {
+  coi <- 10
+  sim <- sim_biallelic(coi)
+  expect_length(sim$strain_proportions$proportion, coi)
+})
+
+test_that("strain proporitons sum to 1", {
+  expect_true(sum(sim_biallelic(5)$strain_proportions$proportion) == 1)
+  expect_true(sum(sim_biallelic(15)$strain_proportions$proportion) == 1)
+})
+
+test_that("phased haplotypes dimensions are correct", {
+  sim <- sim_biallelic(coi = 5, plmaf = runif(20, 0, 0.5))
+  expect_equal(dim(sim$phased_haplotypes), c(5, 20))
+})
+
+test_that("data columns are correct", {
+  expect_equal(
+    colnames(simple_sim$data),
+    c("plmaf", "coverage", "counts", "wsmaf")
+  )
+
+  plmaf <- runif(20, 0, 0.5)
+  expect_identical(sim_biallelic(coi = 2, plmaf = plmaf)$data$plmaf, plmaf)
+})
+
+test_that("relatedness works as expected", {
   set.seed(1)
 
-  # define number of loci, and distribution of minor allele frequencies
+  # Define number of loci, and PLMAF
   L <- 1e3
   p <- rbeta(L, 1, 5)
   p[p > 0.5] <- 1 - p[p > 0.5]
   k <- 3
 
-  # two sims one with and one without relatedness
-  sim1 <- sim_biallelic(coi = k, plmaf = p)
-  sim2 <- sim_biallelic(coi = k, plmaf = p, relatedness = 0.75)
+  # Two simulations: one with and one without relatedness
+  nonrelated_sim <- sim_biallelic(coi = k, plmaf = p)
+  related_sim <- sim_biallelic(coi = k, plmaf = p, relatedness = 0.75)
 
-  # table up the phased counts
-  tbl1 <- table(colMeans(sim1$phased))
-  tbl2 <- table(colMeans(sim2$phased))
+  # Table up the phased counts
+  nonrelated_tbl <- table(colMeans(nonrelated_sim$phased_haplotypes))
+  related_tbl <- table(colMeans(related_sim$phased_haplotypes))
 
-  # we would expect in related samples there will be more homozyogous calls
-  expect_gt(tbl2[1], tbl1[1])
-  expect_gt(tbl2[4], tbl1[4])
+  # We would expect in related samples there will be more homozyogous calls
+  expect_gt(related_tbl[1], nonrelated_tbl[1])
+  expect_gt(related_tbl[4], nonrelated_tbl[4])
+})
+
+# Plotting test cases ----------------------------------------------------------
+set.seed(500)
+plot_sim <- sim_biallelic(3, runif(100, 0, 0.5))
+
+test_that("plot and autoplot methods work", {
+  vdiffr::expect_doppelganger("plot method works", plot(plot_sim))
+  vdiffr::expect_doppelganger("autoplot method works", autoplot(plot_sim))
+})
+
+test_that("can pass along ggplot2 parameters", {
+  vdiffr::expect_doppelganger(
+    "can pass additional params",
+    plot(plot_sim, color = "red")
+  )
 })
