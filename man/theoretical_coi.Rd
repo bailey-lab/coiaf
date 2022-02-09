@@ -6,31 +6,31 @@
 \usage{
 theoretical_coi(
   coi_range,
-  plaf = seq(0, 0.5, length.out = 101),
+  plmaf = seq(0, 0.5, length.out = 101),
   coi_method = c("variant", "frequency")
 )
 }
 \arguments{
 \item{coi_range}{The COIs for which the curve will be calculated.}
 
-\item{plaf}{The PLAF over which the curve will be calculated.}
+\item{plmaf}{The PLMAF over which the curve will be calculated.}
 
 \item{coi_method}{The method we will use to calculate the theoretical COI.
 The method is either "variant" or "frequency". The default value is
 "variant".}
 }
 \value{
-The theoretical COI curves for the specified COIs and PLAF.
+The theoretical COI curves for the specified COIs and PLMAF.
 }
 \description{
 Generate theoretical COI curves.
 }
 \details{
 \loadmathjax
-The theoretical curve can be visualized as the WSAF of an individual at
-various PLAFs. At each locus, the theoretical COI is defined as:
-\mjsdeqn{1-p^{coi}-q^{coi}} where \mjseqn{p} is the PLAF and \mjseqn{q} is
-1 - PLAF.
+The theoretical curve can be visualized as the WSMAF of an individual at
+various PLMAFs. At each locus, the theoretical COI is defined as:
+\mjsdeqn{1-p^{coi}-q^{coi}} where \mjseqn{p} is the PLMAF and \mjseqn{q} is
+1 - PLMAF.
 }
 \examples{
 theoretical_coi(1:5)

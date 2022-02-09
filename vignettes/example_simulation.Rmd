@@ -18,7 +18,7 @@ library(coiaf)
 
 # Default values
 COI <- 3
-PLAF <- runif(10, 0, 0.5)
+PLMAF <- runif(10, 0, 0.5)
 coverage <- 100
 alpha <- 1
 overdispersion <- 0

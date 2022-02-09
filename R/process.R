@@ -4,16 +4,16 @@
 #' Helper function to process data
 #'
 #' The function computes whether a SNP is a variant site or not, based on the
-#' simulated WSAF at that SNP. This process additionally accounts for potential
+#' simulated WSMAF at that SNP. This process additionally accounts for potential
 #' sequencing error.
 #'
 #' @inheritParams process_real
 #'
 #' @return A list of the following:
 #' * `data`: A tibble with
-#'  + `plaf_cut`: Breaks of the form `[a, b)`.
-#'  + `m_variant`: The average WSAF or proportion of variant sites in each
-#'  segment defined by `plaf_cut`.
+#'  + `plmaf_cut`: Breaks of the form `[a, b)`.
+#'  + `m_variant`: The average WSMAF or proportion of variant sites in each
+#'  segment defined by `plmaf_cut`.
 #'  + `bucket_size`: The number of loci in each bucket.
 #'  + `midpoints`: The midpoint of each bucket.
 #' * `seq_error`: The sequence error inferred.
@@ -22,8 +22,8 @@
 #'  of each COI.
 #' @keywords internal
 
-process <- function(wsaf,
-                    plaf,
+process <- function(wsmaf,
+                    plmaf,
                     seq_error = NULL,
                     bin_size = 20,
                     coi_method = "variant") {
@@ -32,22 +32,22 @@ process <- function(wsaf,
   if (is.null(seq_error)) {
     # Cut the data. We define error break to allow for flexible bucket sizes.
     error_break <- 0.02
-    bins <- cut(plaf, seq(0, 0.5, error_break), include.lowest = TRUE)
+    bins <- cut(plmaf, seq(0, 0.5, error_break), include.lowest = TRUE)
 
     # We want to ensure that we have at least bin_size points in the first bin
     while (table(bins)[1] < bin_size) {
       error_break <- error_break * 1.25
-      bins <- cut(plaf, seq(0, 0.5, error_break), include.lowest = TRUE)
+      bins <- cut(plmaf, seq(0, 0.5, error_break), include.lowest = TRUE)
     }
 
     # Data points in the lowest bin that are likely sequence error
-    low_wsafs <- wsaf[which(bins == levels(bins)[1])]
-    error <- low_wsafs[low_wsafs > 0 & low_wsafs < 0.5]
+    low_wsmafs <- wsmaf[which(bins == levels(bins)[1])]
+    error <- low_wsmafs[low_wsmafs > 0 & low_wsmafs < 0.5]
 
     # If wanted to do mixture models, would fit something to error
 
     # Expected number of points
-    expected <- round(length(low_wsafs) * (error_break / 2), 4)
+    expected <- round(length(low_wsmafs) * (error_break / 2), 4)
 
     # Remove expected number of points from true points
     error_dist <- utils::head(sort(error), -expected)
@@ -60,25 +60,25 @@ process <- function(wsaf,
   }
 
   if (coi_method == "variant") {
-    # Isolate PLAF, determine the PLAF cuts, and whether a site is a variant,
+    # Isolate PLMAF, determine the PLMAF cuts, and whether a site is a variant,
     # accounting for sequence error
     df <- data.frame(
-      plaf_cut = suppressWarnings(Hmisc::cut2(plaf, m = bin_size)),
-      variant = ifelse(wsaf <= seq_error | wsaf >= (1 - seq_error), 0, 1)
+      plmaf_cut = suppressWarnings(Hmisc::cut2(plmaf, m = bin_size)),
+      variant = ifelse(wsmaf <= seq_error | wsmaf >= (1 - seq_error), 0, 1)
     )
   } else if (coi_method == "frequency") {
     # Subset to heterozygous sites
-    data <- data.frame(wsaf = wsaf, plaf = plaf) %>%
-      dplyr::filter(wsaf > seq_error & wsaf < (1 - seq_error))
-    wsaf <- data$wsaf
-    plaf <- data$plaf
+    data <- data.frame(wsmaf = wsmaf, plmaf = plmaf) %>%
+      dplyr::filter(wsmaf > seq_error & wsmaf < (1 - seq_error))
+    wsmaf <- data$wsmaf
+    plmaf <- data$plmaf
 
     # If remove all data, need to return a pseudo result to not induce errors.
     # Additionally, in order to define a cut, need at least 2 data points
-    if (length(plaf) <= 1) {
+    if (length(plmaf) <= 1) {
       vec <- stats::setNames(
         rep("", 4),
-        c("plaf_cut", "m_variant", "bucket_size", "midpoints")
+        c("plmaf_cut", "m_variant", "bucket_size", "midpoints")
       )
       df_grouped <- dplyr::bind_rows(vec)[0, ]
       res <- list(
@@ -90,10 +90,10 @@ process <- function(wsaf,
       return(res)
     }
 
-    # Isolate PLAF, and keep WSAF as is
+    # Isolate PLMAF, and keep WSMAF as is
     df <- data.frame(
-      plaf_cut = suppressWarnings(Hmisc::cut2(plaf, m = bin_size)),
-      variant = wsaf
+      plmaf_cut = suppressWarnings(Hmisc::cut2(plmaf, m = bin_size)),
+      variant = wsmaf
     )
   }
 
@@ -101,7 +101,7 @@ process <- function(wsaf,
   # If this happens and we try to group our data, this can mess up our data.
   # Therefore, to account for this, we find all instances where this occurs
   # and combine these factors with the previous factor.
-  one_point <- !stringr::str_starts(levels(df$plaf_cut), "\\[")
+  one_point <- !stringr::str_starts(levels(df$plmaf_cut), "\\[")
 
   # We find all places where we only have one point. But, we ignore the case
   # where the one point is the first break (0).
@@ -117,14 +117,14 @@ process <- function(wsaf,
     # We make a list of the factor names of all the points we want to remove. We
     # name the list with the previous factor, and combine the two together. This
     # effectively puts the points in the single factor into the previous one.
-    point_list <- c(levels(df$plaf_cut)[points])
-    names(point_list) <- levels(df$plaf_cut)[points - 1]
-    df$plaf_cut <- forcats::fct_recode(df$plaf_cut, !!!point_list)
+    point_list <- c(levels(df$plmaf_cut)[points])
+    names(point_list) <- levels(df$plmaf_cut)[points - 1]
+    df$plmaf_cut <- forcats::fct_recode(df$plmaf_cut, !!!point_list)
   }
 
-  # Average over intervals of PLAF
+  # Average over intervals of PLMAF
   df_grouped <- df %>%
-    dplyr::group_by(.data$plaf_cut, .drop = FALSE) %>%
+    dplyr::group_by(.data$plmaf_cut, .drop = FALSE) %>%
     dplyr::summarise(
       m_variant   = mean(.data$variant),
       bucket_size = dplyr::n()
@@ -132,7 +132,7 @@ process <- function(wsaf,
     stats::na.omit()
 
   # Find the cuts for our data
-  cuts <- suppressWarnings(Hmisc::cut2(plaf, m = bin_size, onlycuts = TRUE))
+  cuts <- suppressWarnings(Hmisc::cut2(plmaf, m = bin_size, onlycuts = TRUE))
   if (sum(one_point) > 1 | (sum(one_point) == 1 & which(one_point)[1] != 1)) {
     cuts <- cuts[-points]
   }
@@ -155,10 +155,10 @@ process <- function(wsaf,
 #' Generate the simulated COI curve.
 #'
 #' Utilize the output of [sim_biallelic()], which creates simulated
-#' data. The PLAF is kept, and the function computes whether a SNP is a
-#' variant site or not, based on the simulated WSAF at that SNP. This process
+#' data. The PLMAF is kept, and the function computes whether a SNP is a
+#' variant site or not, based on the simulated WSMAF at that SNP. This process
 #' additionally accounts for potential sequencing error. To check whether the
-#' simulated WSAF correctly indicated a variant site or not, the phased
+#' simulated WSMAF correctly indicated a variant site or not, the phased
 #' haplotype of the parasites is computed.
 #'
 #' @param sim Output of [sim_biallelic()].
@@ -169,9 +169,9 @@ process <- function(wsaf,
 #'
 #' @return A list of the following:
 #' * `data`: A tibble with
-#'  + `plaf_cut`: Breaks of the form `[a, b)`.
-#'  + `m_variant`: The average WSAF or proportion of variant sites in each
-#'  segment defined by `plaf_cut`.
+#'  + `plmaf_cut`: Breaks of the form `[a, b)`.
+#'  + `m_variant`: The average WSMAF or proportion of variant sites in each
+#'  segment defined by `plmaf_cut`.
 #'  + `bucket_size`: The number of loci in each bucket.
 #'  + `midpoints`: The midpoint of each bucket.
 #' * `seq_error`: The sequence error inferred.
@@ -192,10 +192,10 @@ process_sim <- function(sim,
 
   # Run helper to process
   process(
-    wsaf       = sim$data$wsaf,
-    plaf       = sim$data$plaf,
-    seq_error  = seq_error,
-    bin_size   = bin_size,
+    wsmaf = sim$data$wsmaf,
+    plmaf = sim$data$plmaf,
+    seq_error = seq_error,
+    bin_size = bin_size,
     coi_method = coi_method
   )
 }
@@ -206,18 +206,18 @@ process_sim <- function(sim,
 #' Generate the COI curve for real data.
 #'
 #' The function computes whether a SNP is a variant site or not, based on the
-#' simulated WSAF at that SNP. This process additionally accounts for potential
+#' simulated WSMAF at that SNP. This process additionally accounts for potential
 #' sequencing error.
 #'
-#' @param wsaf The within-sample allele frequency.
-#' @param plaf The population-level allele frequency.
+#' @param wsmaf The within-sample allele frequency.
+#' @param plmaf The population-level allele frequency.
 #' @inheritParams process_sim
 #'
 #' @return A list of the following:
 #' * `data`: A tibble with
-#'  + `plaf_cut`: Breaks of the form `[a, b)`.
-#'  + `m_variant`: The average WSAF or proportion of variant sites in each
-#'  segment defined by `plaf_cut`.
+#'  + `plmaf_cut`: Breaks of the form `[a, b)`.
+#'  + `m_variant`: The average WSMAF or proportion of variant sites in each
+#'  segment defined by `plmaf_cut`.
 #'  + `bucket_size`: The number of loci in each bucket.
 #'  + `midpoints`: The midpoint of each bucket.
 #' * `seq_error`: The sequence error inferred.
@@ -228,28 +228,28 @@ process_sim <- function(sim,
 #' @seealso [process_sim()] to process simulated data.
 #' @export
 
-process_real <- function(wsaf, plaf,
+process_real <- function(wsmaf, plmaf,
                          seq_error = NULL,
                          bin_size = 20,
                          coi_method = "variant") {
   # Check inputs
-  assert_vector(wsaf)
-  assert_bounded(wsaf)
-  assert_vector(plaf)
-  assert_bounded(plaf)
+  assert_vector(wsmaf)
+  assert_bounded(wsmaf)
+  assert_vector(plmaf)
+  assert_bounded(plmaf)
   if (!is.null(seq_error)) assert_single_bounded(seq_error)
   assert_single_pos_int(bin_size)
 
-  # Ensure that the PLAF is at most 0.5
-  plaf[plaf > 0.5] <- 1 - plaf[plaf > 0.5]
-  assert_bounded(plaf, left = 0, right = 0.5)
+  # Ensure that the PLMAF is at most 0.5
+  plmaf[plmaf > 0.5] <- 1 - plmaf[plmaf > 0.5]
+  assert_bounded(plmaf, left = 0, right = 0.5)
 
   # Run helper to process
   process(
-    wsaf       = wsaf,
-    plaf       = plaf,
-    seq_error  = seq_error,
-    bin_size   = bin_size,
+    wsmaf = wsmaf,
+    plmaf = plmaf,
+    seq_error = seq_error,
+    bin_size = bin_size,
     coi_method = coi_method
   )
 }

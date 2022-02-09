@@ -7,7 +7,7 @@ test_that("sim_biallelic works", {
   p[p > 0.5] <- 1 - p[p > 0.5]
   k <- 2
 
-  sim1 <- sim_biallelic(coi = k, plaf = p, overdispersion = 0.01)
+  sim1 <- sim_biallelic(coi = k, plmaf = p, overdispersion = 0.01)
   expect_identical(names(sim1), c("coi", "strain_proportions", "phased", "data", "inputs"))
   expect_equal(round(sim1$strain_proportions, 2), c(0.62, 0.38))
 })
@@ -22,8 +22,8 @@ test_that("sim_biallelic relatedness works", {
   k <- 3
 
   # two sims one with and one without relatedness
-  sim1 <- sim_biallelic(coi = k, plaf = p)
-  sim2 <- sim_biallelic(coi = k, plaf = p, relatedness = 0.75)
+  sim1 <- sim_biallelic(coi = k, plmaf = p)
+  sim2 <- sim_biallelic(coi = k, plmaf = p, relatedness = 0.75)
 
   # table up the phased counts
   tbl1 <- table(colMeans(sim1$phased))

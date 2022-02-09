@@ -3,7 +3,7 @@
 #'
 #' Simulate biallelic data from a simple statistical model. Inputs
 #' include the complexity of infection (COI), population-level allele
-#' frequencies (PLAF), and some parameters dictating skew and error
+#' frequencies (PLMAF), and some parameters dictating skew and error
 #' distributions. Outputs include the phased haplotypes and the unphased read
 #' count and coverage data.
 #'
@@ -13,12 +13,12 @@
 #'    distribution with shape parameter `alpha`.
 #' 2. Phased haplotypes are drawn at every locus, one for each
 #'    `coi`. The allele at each locus is drawn from a Bernoulli
-#'    distribution with probability given by the `plaf`.
+#'    distribution with probability given by the `plmaf`.
 #' 3. The "true" within-sample allele frequency at every locus is
 #'    obtained by multiplying haplotypes by their strain proportions, and
 #'    summing over haplotypes. Errors are introduced through the equation
-#'    \mjsdeqn{wsaf_{error} = wsaf(1-e) + (1-wsaf)e}
-#'    where \mjseqn{wsaf} is the WSAF without error and \mjseqn{e} is
+#'    \mjsdeqn{wsmaf_{error} = wsmaf(1-e) + (1-wsmaf)e}
+#'    where \mjseqn{wsmaf} is the WSMAF without error and \mjseqn{e} is
 #'    the error parameter `epsilon`.
 #' 4. Final read counts are drawn from a beta-binomial distribution with
 #'    expectation \mjseqn{w_{error}}. The raw number of draws is given by the
@@ -27,7 +27,7 @@
 #'    zero, then the distribution is binomial, rather than beta-binomial.
 #'
 #' @param coi Complexity of infection.
-#' @param plaf Vector of population-level allele frequencies at each locus.
+#' @param plmaf Vector of population-level allele frequencies at each locus.
 #' @param coverage Coverage at each locus. If a single value is supplied then
 #'   the same coverage is applied over all loci.
 #' @param alpha Shape parameter of the symmetric Dirichlet prior on strain
@@ -55,7 +55,7 @@
 #' * `phased_haplotypes` contains the phased haplotype for each strain at each
 #' locus.
 #' * `data` contains the following columns:
-#'   + `plaf`: The population-level allele frequency.
+#'   + `plmaf`: The population-level allele frequency.
 #'   + `coverage`: The coverage at each locus.
 #'   + `counts`: The count at each locus.
 #'   + `wsaf`: The within-sample allele frequency.
@@ -65,7 +65,7 @@
 #' @examples
 #' sim_biallelic(coi = 5)
 sim_biallelic <- function(coi,
-                          plaf = runif(10, 0, 0.5),
+                          plmaf = runif(10, 0, 0.5),
                           coverage = 200,
                           alpha = 1,
                           overdispersion = 0,
@@ -74,18 +74,18 @@ sim_biallelic <- function(coi,
 
   # Check inputs
   assert_single_pos_int(coi)
-  assert_vector(plaf)
-  assert_bounded(plaf)
+  assert_vector(plmaf)
+  assert_bounded(plmaf)
 
   # If a single value was input, then repeat coverage so that coverage is
   # applied over all loci.
-  L <- length(plaf)
+  L <- length(plmaf)
   if (length(coverage) == 1) coverage <- rep(coverage, L)
 
   # Continue to check inputs
   assert_vector(coverage)
   assert_pos_int(coverage)
-  assert_same_length(plaf, coverage)
+  assert_same_length(plmaf, coverage)
   assert_single_pos(alpha, zero_allowed = FALSE)
   assert_single_pos(overdispersion, zero_allowed = TRUE)
   assert_single_bounded(relatedness)
@@ -95,7 +95,7 @@ sim_biallelic <- function(coi,
   w <- rdirichlet(rep(alpha, coi))
 
   # Generate true WSAF levels by summing binomial draws over strain proportions
-  m <- mapply(function(x) rbinom(coi, 1, x), x = plaf)
+  m <- mapply(function(x) rbinom(coi, 1, x), x = plmaf)
   if (coi == 1) {
     names(m) <- paste0("locus_", seq_len(length(m)))
   } else {
@@ -159,10 +159,10 @@ sim_biallelic <- function(coi,
       strain_proportions = as_tibble_col(w, "proportion"),
       phased_haplotypes = if (coi == 1) as_tibble_row(m) else as_tibble(m),
       data = tibble(
-        plaf     = plaf,
+        plmaf = plmaf,
         coverage = coverage,
-        counts   = counts,
-        wsaf     = counts / coverage
+        counts = counts,
+        wsmaf = counts / coverage
       )
     ),
     class = "sim"

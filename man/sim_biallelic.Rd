@@ -6,7 +6,7 @@
 \usage{
 sim_biallelic(
   coi,
-  plaf = runif(10, 0, 0.5),
+  plmaf = runif(10, 0, 0.5),
   coverage = 200,
   alpha = 1,
   overdispersion = 0,
@@ -17,7 +17,7 @@ sim_biallelic(
 \arguments{
 \item{coi}{Complexity of infection.}
 
-\item{plaf}{Vector of population-level allele frequencies at each locus.}
+\item{plmaf}{Vector of population-level allele frequencies at each locus.}
 
 \item{coverage}{Coverage at each locus. If a single value is supplied then
 the same coverage is applied over all loci.}
@@ -51,7 +51,7 @@ An object of class \code{sim}. Contains a list of
 locus.
 \item \code{data} contains the following columns:
 \itemize{
-\item \code{plaf}: The population-level allele frequency.
+\item \code{plmaf}: The population-level allele frequency.
 \item \code{coverage}: The coverage at each locus.
 \item \code{counts}: The count at each locus.
 \item \code{wsaf}: The within-sample allele frequency.
@@ -61,7 +61,7 @@ locus.
 \description{
 Simulate biallelic data from a simple statistical model. Inputs
 include the complexity of infection (COI), population-level allele
-frequencies (PLAF), and some parameters dictating skew and error
+frequencies (PLMAF), and some parameters dictating skew and error
 distributions. Outputs include the phased haplotypes and the unphased read
 count and coverage data.
 }
@@ -73,12 +73,12 @@ Simulated data are drawn from a simple statistical model:
 distribution with shape parameter \code{alpha}.
 \item Phased haplotypes are drawn at every locus, one for each
 \code{coi}. The allele at each locus is drawn from a Bernoulli
-distribution with probability given by the \code{plaf}.
+distribution with probability given by the \code{plmaf}.
 \item The "true" within-sample allele frequency at every locus is
 obtained by multiplying haplotypes by their strain proportions, and
 summing over haplotypes. Errors are introduced through the equation
-\mjsdeqn{wsaf_{error} = wsaf(1-e) + (1-wsaf)e}
-where \mjseqn{wsaf} is the WSAF without error and \mjseqn{e} is
+\mjsdeqn{wsmaf_{error} = wsmaf(1-e) + (1-wsmaf)e}
+where \mjseqn{wsmaf} is the WSMAF without error and \mjseqn{e} is
 the error parameter \code{epsilon}.
 \item Final read counts are drawn from a beta-binomial distribution with
 expectation \mjseqn{w_{error}}. The raw number of draws is given by the

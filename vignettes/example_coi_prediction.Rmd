@@ -20,9 +20,9 @@ library(coiaf)
 
 In this analysis the two COI estimation methods are demonstrated. In these we
 will simulate 1000 loci for an individual. We first initialize the population
-level allele frequency (PLAF) using a beta distribution.
+level allele frequency (PLMAF) using a beta distribution.
 
-```{r initialize PLAF}
+```{r initialize PLMAF}
 # Set seed
 set.seed(1)
 
@@ -37,7 +37,7 @@ p[p > 0.5] <- 1 - p[p > 0.5]
 
 The first approach in the manuscript document for estimating COI is shown below.
 This works by using the mean number of variant sites, binned in groups of
-increasing PLAF to infer COI.
+increasing PLMAF to infer COI.
 
 ```{r method 1}
 # Loop over range of COIs
@@ -49,16 +49,16 @@ for (k in 2:7) {
 
   # Simulate data and subset to heterozygous sites only
   set.seed(1)
-  sim1 <- sim_biallelic(coi = k, plaf = p)
+  sim1 <- sim_biallelic(coi = k, plmaf = p)
 
-  # Plot raw WSAF as gray dots
-  plot(sim1$data$plaf, sim1$data$wsaf,
+  # Plot raw WSMAF as gray dots
+  plot(sim1$data$plmaf, sim1$data$wsmaf,
     pch = 20, cex = 0.5, col = "gray", ylim = c(0, 1),
-    xlab = "PLAF", ylab = "WSAF", main = paste("COI =", k)
+    xlab = "PLMAF", ylab = "WSMAF", main = paste("COI =", k)
   )
 
   # Overlay analytical expectations for COI of 2:7
-  p_vec <- seq(0, 0.5, l = 101)
+  p_vec <- seq(0, 0.5, length.out = 101)
   theory_cois <- theoretical_coi(seq(1, 7), p_vec)
   for (i in 1:7) {
     lines(p_vec, theory_cois[[paste("coi_", i, sep = "")]],
@@ -70,7 +70,7 @@ for (k in 2:7) {
     col = "red", cex = 0.6
   )
 
-  # Compute windowed averages over WSAF and overlay in blue
+  # Compute windowed averages over WSMAF and overlay in blue
   df_grouped <- process_sim(sim1)
 
   lines(df_grouped$data$midpoints, df_grouped$data$m_variant,
@@ -87,15 +87,15 @@ for (k in 2:7) {
 }
 ```
 
-In this, the intercept at `PLAF = 0.5` gives us an easy way to estimate COI,
-with `COI = 1 + log_0.5(1-WSAF)`, or `WSAF = 1 - 0.5^(COI-1)`. However, the
-differences between each COI at PLAF = 0.5 become geometrically smaller. Larger
-gaps can be found at different COI, with smaller PLAF:
+In this, the intercept at `PLMAF = 0.5` gives us an easy way to estimate COI,
+with `COI = 1 + log_0.5(1-WSMAF)`, or `WSMAF = 1 - 0.5^(COI-1)`. However, the
+differences between each COI at PLMAF = 0.5 become geometrically smaller. Larger
+gaps can be found at different COI, with smaller PLMAF:
 
-```{r ideal PLAF}
+```{r ideal PLMAF}
 par(mar = c(4, 4, 4, 4))
 par(mfrow = c(3, 3))
-p_vec <- seq(0, 0.5, l = 101)
+p_vec <- seq(0, 0.5, length.out = 101)
 y <- list()
 for (k in 1:10) {
   y[[k]] <- theoretical_coi(k, p_vec)[[1]]
@@ -104,7 +104,7 @@ for (k in 1:10) {
     new_y <- y[[k]] - y[[k - 1]]
     plot(p_vec, new_y,
       ylab = glue::glue("Difference between COI {k-1} and {k}"),
-      xlab = "PLAF",
+      xlab = "PLMAF",
       main = paste("COI = ", k)
     )
     abline(v = p_vec[which.max(new_y)], lty = 2)
@@ -118,7 +118,7 @@ for (k in 1:10) {
 
 ## Method 2
 
-In method 2, we plot WSAF against PLAF for only the sites that are
+In method 2, we plot WSMAF against PLMAF for only the sites that are
 heterogeneous, i.e. not all REF or ALT calls.
 
 ```{r method 2}
@@ -131,23 +131,23 @@ for (k in 2:7) {
 
   # simulate data and subset to heterozygous sites only
   set.seed(10)
-  sim1 <- sim_biallelic(coi = k, plaf = p)
+  sim1 <- sim_biallelic(coi = k, plmaf = p)
 
-  # plot raw WSAF as grey dots
-  plot(sim1$data$plaf, sim1$data$wsaf,
+  # plot raw WSMAF as grey dots
+  plot(sim1$data$plmaf, sim1$data$wsmaf,
     pch = 20, cex = 0.5, col = "gray",
-    ylim = c(0, 1), xlab = "PLAF", ylab = "WSAF", main = paste("COI =", k)
+    ylim = c(0, 1), xlab = "PLMAF", ylab = "WSMAF", main = paste("COI =", k)
   )
 
   # overlay analytical expectations for COI=2:7
-  p_vec <- seq(0, 0.5, l = 101)
+  p_vec <- seq(0, 0.5, length.out = 101)
   theory_cois <- theoretical_coi(seq(1, 7), p_vec, coi_method = "frequency")
   for (i in 2:7) {
     lines(p_vec, theory_cois[[paste("coi_", i, sep = "")]], col = 2, lwd = 2)
   }
   text(x = rep(-0.005, 6), y = 1 / 2:7, labels = 2:7, col = "red", cex = 0.6)
 
-  # compute sliding-window averages over WSAF and overlay in blue
+  # compute sliding-window averages over WSMAF and overlay in blue
   df_grouped <- process_sim(sim1, coi_method = "frequency")
   print(df_grouped$seq_error)
 
@@ -165,4 +165,4 @@ for (k in 2:7) {
 }
 ```
 
-In this case, COI is found as 1/WSAF when PLAF = 0 (i.e. the y-axis intercept).
+In this case, COI is found as 1/WSMAF when PLMAF = 0 (i.e. the y-axis intercept).

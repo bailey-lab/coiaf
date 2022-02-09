@@ -8,7 +8,7 @@ sensitivity(
   repetitions = 10,
   coi = 3,
   max_coi = 25,
-  plaf = runif(1000, 0, 0.5),
+  plmaf = runif(1000, 0, 0.5),
   coverage = 200,
   alpha = 1,
   overdispersion = 0,
@@ -29,7 +29,7 @@ sensitivity(
 \item{max_coi}{A number indicating the maximum COI to compare the
 simulated data to.}
 
-\item{plaf}{Vector of population-level allele frequencies at each locus.}
+\item{plmaf}{Vector of population-level allele frequencies at each locus.}
 
 \item{coverage}{Coverage at each locus. If a single value is supplied then
 the same coverage is applied over all loci.}

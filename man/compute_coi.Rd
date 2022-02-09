@@ -53,25 +53,25 @@ Predict the COI of the sample.
 }
 \details{
 \loadmathjax
-Compare the within sample allele frequency (WSAF) and the population level
-allele frequency (PLAF) of the sample to what a theoretical WSAF and PLAF
-should look like. By examining the sample's WSAF and PLAF to the theoretical
-WSAF and PLAF, an estimation can be made about what the COI of the sample is.
-We refer to the sample's WSAF vs PLAF as the "sample curve" and refer to the
-theoretical WSAF vs PLAF as the "theoretical curve." To determine the
+Compare the within sample allele frequency (WSMAF) and the population level
+allele frequency (PLMAF) of the sample to what a theoretical WSMAF and PLMAF
+should look like. By examining the sample's WSMAF and PLMAF to the theoretical
+WSMAF and PLMAF, an estimation can be made about what the COI of the sample is.
+We refer to the sample's WSMAF vs PLMAF as the "sample curve" and refer to the
+theoretical WSMAF vs PLMAF as the "theoretical curve." To determine the
 predicted COI value, one of three different methods can be selected:
 \describe{
 \item{\code{end}}{Determines the distance between the theoretical and
-sample curve at a PLAF of 0.5. The COI is whichever theoretical COI
+sample curve at a PLMAF of 0.5. The COI is whichever theoretical COI
 curve has the smallest distance to the simulated data.}
 \item{\code{ideal}}{Determines the distance between the theoretical and
-sample curve at the ideal PLAF. The ideal PLAF is calculated by looking
+sample curve at the ideal PLMAF. The ideal PLMAF is calculated by looking
 at the change between the COI of \mjseqn{i} and the COI of \mjseqn{i-1} and
-finding the PLAF for which this distance is maximized. The COI is whichever
+finding the PLMAF for which this distance is maximized. The COI is whichever
 theoretical COI curve has the smallest distance to the simulated data at
-the ideal PLAF.}
+the ideal PLMAF.}
 \item{\code{overall}}{Determines the distance between the theoretical and
-simulated curve for all PLAFs. Computes the distance between the
+simulated curve for all PLMAFs. Computes the distance between the
 theoretical curves and the simulated curve. The COI is whichever
 theoretical curve has the smallest distance to the simulated curve.
 There is an option to choose one of several distance metrics:

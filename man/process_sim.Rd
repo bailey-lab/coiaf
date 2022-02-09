@@ -24,9 +24,9 @@ A list of the following:
 \item \code{data}: A tibble with
 }
 \itemize{
-\item \code{plaf_cut}: Breaks of the form \verb{[a, b)}.
-\item \code{m_variant}: The average WSAF or proportion of variant sites in each
-segment defined by \code{plaf_cut}.
+\item \code{plmaf_cut}: Breaks of the form \verb{[a, b)}.
+\item \code{m_variant}: The average WSMAF or proportion of variant sites in each
+segment defined by \code{plmaf_cut}.
 \item \code{bucket_size}: The number of loci in each bucket.
 \item \code{midpoints}: The midpoint of each bucket.
 }
@@ -42,10 +42,10 @@ Generate the simulated COI curve.
 }
 \details{
 Utilize the output of \code{\link[=sim_biallelic]{sim_biallelic()}}, which creates simulated
-data. The PLAF is kept, and the function computes whether a SNP is a
-variant site or not, based on the simulated WSAF at that SNP. This process
+data. The PLMAF is kept, and the function computes whether a SNP is a
+variant site or not, based on the simulated WSMAF at that SNP. This process
 additionally accounts for potential sequencing error. To check whether the
-simulated WSAF correctly indicated a variant site or not, the phased
+simulated WSMAF correctly indicated a variant site or not, the phased
 haplotype of the parasites is computed.
 }
 \seealso{

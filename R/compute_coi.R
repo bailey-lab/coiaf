@@ -4,25 +4,25 @@
 #' Predict the COI of the sample.
 #'
 #' \loadmathjax
-#' Compare the within sample allele frequency (WSAF) and the population level
-#' allele frequency (PLAF) of the sample to what a theoretical WSAF and PLAF
-#' should look like. By examining the sample's WSAF and PLAF to the theoretical
-#' WSAF and PLAF, an estimation can be made about what the COI of the sample is.
-#' We refer to the sample's WSAF vs PLAF as the "sample curve" and refer to the
-#' theoretical WSAF vs PLAF as the "theoretical curve." To determine the
+#' Compare the within sample allele frequency (WSMAF) and the population level
+#' allele frequency (PLMAF) of the sample to what a theoretical WSMAF and PLMAF
+#' should look like. By examining the sample's WSMAF and PLMAF to the theoretical
+#' WSMAF and PLMAF, an estimation can be made about what the COI of the sample is.
+#' We refer to the sample's WSMAF vs PLMAF as the "sample curve" and refer to the
+#' theoretical WSMAF vs PLMAF as the "theoretical curve." To determine the
 #' predicted COI value, one of three different methods can be selected:
 #' \describe{
 #'   \item{`end`}{Determines the distance between the theoretical and
-#'   sample curve at a PLAF of 0.5. The COI is whichever theoretical COI
+#'   sample curve at a PLMAF of 0.5. The COI is whichever theoretical COI
 #'   curve has the smallest distance to the simulated data.}
 #'   \item{`ideal`}{Determines the distance between the theoretical and
-#'   sample curve at the ideal PLAF. The ideal PLAF is calculated by looking
+#'   sample curve at the ideal PLMAF. The ideal PLMAF is calculated by looking
 #'   at the change between the COI of \mjseqn{i} and the COI of \mjseqn{i-1} and
-#'   finding the PLAF for which this distance is maximized. The COI is whichever
+#'   finding the PLMAF for which this distance is maximized. The COI is whichever
 #'   theoretical COI curve has the smallest distance to the simulated data at
-#'   the ideal PLAF.}
+#'   the ideal PLMAF.}
 #'   \item{`overall`}{Determines the distance between the theoretical and
-#'   simulated curve for all PLAFs. Computes the distance between the
+#'   simulated curve for all PLMAFs. Computes the distance between the
 #'   theoretical curves and the simulated curve. The COI is whichever
 #'   theoretical curve has the smallest distance to the simulated curve.
 #'   There is an option to choose one of several distance metrics:
@@ -97,8 +97,8 @@ compute_coi <- function(data,
     cuts <- processed$cuts
   } else if (data_type == "real") {
     processed <- process_real(
-      data$wsaf,
-      data$plaf,
+      data$wsmaf,
+      data$plmaf,
       seq_error,
       bin_size,
       coi_method
@@ -123,21 +123,21 @@ compute_coi <- function(data,
     # We want to first get all the data that we initially submitted to our
     # function
     if (data_type == "sim") {
-      size_plaf <- data$data$plaf
-      size_wsaf <- data$data$wsaf
+      size_plmaf <- data$data$plmaf
+      size_wsmaf <- data$data$wsmaf
     } else if (data_type == "real") {
-      size_plaf <- data$plaf
-      size_wsaf <- data$wsaf
+      size_plmaf <- data$plmaf
+      size_wsmaf <- data$wsmaf
     }
 
     # We then want to group our data using our established cuts and determine
-    # how many loci are in each bucket and the midpoint of each bucket (the PLAF
+    # how many loci are in each bucket and the midpoint of each bucket (the PLMAF
     # for each bucket).
     size <- data.frame(
-      plaf_cut = Hmisc::cut2(size_plaf, cuts = processed$cuts, minmax = F),
-      variant = size_wsaf
+      plmaf_cut = Hmisc::cut2(size_plmaf, cuts = processed$cuts, minmax = F),
+      variant = size_wsmaf
     ) %>%
-      dplyr::group_by(.data$plaf_cut, .drop = FALSE) %>%
+      dplyr::group_by(.data$plmaf_cut, .drop = FALSE) %>%
       dplyr::summarise(bucket_size = dplyr::n()) %>%
       stats::na.omit()
 
@@ -171,7 +171,7 @@ compute_coi <- function(data,
   }
 
   # Calculate theoretical COI curves for the interval specified. Since we want
-  # the theoretical curves and the simulated curves to have the PLAF values, we
+  # the theoretical curves and the simulated curves to have the PLMAF values, we
   # compute the theoretical COI curves at processed_data$midpoints
   theory_cois <- theoretical_coi(
     1:max_coi,
@@ -179,16 +179,16 @@ compute_coi <- function(data,
     coi_method
   )
 
-  # To check that PLAFs are the same
-  assert_eq(theory_cois$plaf, processed_data$midpoints)
+  # To check that PLMAFs are the same
+  assert_eq(theory_cois$plmaf, processed_data$midpoints)
 
-  # Minus 1 because theory_cois now includes the PLAF at the end
+  # Minus 1 because theory_cois now includes the PLMAF at the end
   bound_coi <- ncol(theory_cois) - 1
 
   if (comparison == "end") {
     ## Method 1: Compare last value
-    # Get last row of theoretical COI curves and simulated data (PLAF of 0.5)
-    # Last column is removed because it contains the PLAF
+    # Get last row of theoretical COI curves and simulated data (PLMAF of 0.5)
+    # Last column is removed because it contains the PLMAF
     last_theory <- theory_cois[nrow(theory_cois), 1:bound_coi]
     last_sim <- processed_data$m_variant[nrow(processed_data)]
 
@@ -196,34 +196,34 @@ compute_coi <- function(data,
     dist <- abs(last_theory - last_sim)
     coi <- unlist(stringr::str_split(names(which.min(dist)), "_"))[2]
   } else if (comparison == "ideal") {
-    ## Method 2: Compute ideal PLAF
-    # For each COI, find best PLAF and get theoretical and simulated values at
-    # that PLAF
+    ## Method 2: Compute ideal PLMAF
+    # For each COI, find best PLMAF and get theoretical and simulated values at
+    # that PLMAF
     dist <- list()
     for (i in 1:bound_coi) {
       if (i != 1) {
         # Find difference between i and i-1 curve
         diff <- theory_cois[i] - theory_cois[i - 1]
 
-        # Get max value and determine the PLAF
-        ideal_plaf <- theory_cois$plaf[which.max(diff[[1]])]
+        # Get max value and determine the PLMAF
+        ideal_plmaf <- theory_cois$plmaf[which.max(diff[[1]])]
 
-        # Get max value and determine the theory WSAF
-        theory_wsaf <- theory_cois[which.max(diff[[1]]), i]
+        # Get max value and determine the theory WSMAF
+        theory_wsmaf <- theory_cois[which.max(diff[[1]]), i]
       } else {
-        # Determine ideal PLAF and WSAF
-        ideal_plaf <- theory_cois$plaf[length(theory_cois$plaf)]
-        theory_wsaf <- theory_cois[length(theory_cois$plaf), i]
+        # Determine ideal PLMAF and WSMAF
+        ideal_plmaf <- theory_cois$plmaf[length(theory_cois$plmaf)]
+        theory_wsmaf <- theory_cois[length(theory_cois$plmaf), i]
       }
 
-      # Using ideal PLAF, determine which cut it would be part of
+      # Using ideal PLMAF, determine which cut it would be part of
       # and then figure out m_variant value at this cut
       m_var <- processed_data$m_variant[
-        Hmisc::cut2(ideal_plaf, cuts = processed$cuts, minmax = F)
+        Hmisc::cut2(ideal_plmaf, cuts = processed$cuts, minmax = F)
       ]
 
       # Find distance between theoretical and simulated curves
-      dist[i] <- abs(theory_wsaf - m_var)
+      dist[i] <- abs(theory_wsmaf - m_var)
     }
     # Name the distance vector so can extract COI information
     names(dist) <- colnames(theory_cois)[1:bound_coi]
@@ -276,11 +276,11 @@ distance_curves <- function(processed_data, theory_cois, distance = "squared") {
   assert_single_string(distance)
   assert_in(distance, c("abs_sum", "sum_abs", "squared"))
 
-  # Find bound of COIs. Subtract 1 because theory_cois includes the PLAF at
+  # Find bound of COIs. Subtract 1 because theory_cois includes the PLMAF at
   # the end
   bound_coi <- ncol(theory_cois) - 1
 
-  # Remove COI that indicates the PLAF
+  # Remove COI that indicates the PLMAF
   match_theory_cois <- theory_cois[, 1:bound_coi]
 
   # First find difference between theoretical and simulate curve. Weigh
