@@ -240,14 +240,24 @@ process_real <- function(wsmaf, plmaf,
   if (!is.null(seq_error)) assert_single_bounded(seq_error)
   assert_single_pos_int(bin_size)
 
-  # Ensure that the PLMAF is at most 0.5
-  plmaf[plmaf > 0.5] <- 1 - plmaf[plmaf > 0.5]
-  assert_bounded(plmaf, left = 0, right = 0.5)
+  input <- tibble::tibble(wsmaf = wsmaf, plmaf = plmaf) %>%
+    tidyr::drop_na()
+
+  # In some cases we are fed in the major allele so we ensure we only examine
+  # the minor allele. If the PLAF is > 0.5, we know it is the major allele so
+  # we look at 1 - WSAF and 1 - PLAF.
+  minor <- input %>%
+    dplyr::mutate(
+      wsmaf = ifelse(plmaf > 0.5, 1 - wsmaf, wsmaf),
+      plmaf = ifelse(plmaf > 0.5, 1 - plmaf, plmaf)
+    )
+
+  assert_bounded(minor$plmaf, left = 0, right = 0.5)
 
   # Run helper to process
   process(
-    wsmaf = wsmaf,
-    plmaf = plmaf,
+    wsmaf = minor$wsmaf,
+    plmaf = minor$plmaf,
     seq_error = seq_error,
     bin_size = bin_size,
     coi_method = coi_method
