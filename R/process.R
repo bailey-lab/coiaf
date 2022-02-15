@@ -216,6 +216,7 @@ process_sim <- function(sim,
 #'
 #' @param wsmaf The within-sample allele frequency.
 #' @param plmaf The population-level allele frequency.
+#' @param coverage The read coverage at each locus.
 #' @inheritParams process_sim
 #'
 #' @return A list of the following:
