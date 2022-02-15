@@ -48,6 +48,9 @@ likelihood <- function(coi,
   # Distance
   gap <- theory_coi - processed_data$m_variant
 
+  # Weigh the buckets by the number of points in each bucket
+  gap <- gap * processed_data$bucket_size
+
   if (distance == "abs_sum") {
     # Find sum of differences
     gap <- abs(colSums(gap))
@@ -143,9 +146,20 @@ optimize_coi <- function(data,
     cuts <- processed$cuts
   }
 
-  # Special case where there are no heterozygous sites
-  if (nrow(processed_data) == 0) {
-    return(coi <- 1)
+  # Special cases for the Frequency Method where COI = 1
+  if (coi_method == "frequency") {
+    check <- switch(data_type,
+      "sim" = check_freq_method(data$data$wsmaf, data$data$plmaf, seq_error),
+      "real" = check_freq_method(data$wsmaf, data$plmaf, seq_error)
+    )
+
+    # If the check returns FALSE, it means that the COI is likely 1
+    if (!check) {
+      return(structure(
+        1,
+        notes = "Too few variant loci suggesting that the COI is 1 based on the Variant Method."
+      ))
+    }
   }
 
   # Compute COI

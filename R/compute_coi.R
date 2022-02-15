@@ -129,63 +129,20 @@ compute_coi <- function(data,
     cuts <- processed$cuts
   }
 
-  ## Special cases for Method 2 where COI = 1
-  # If there is no heterozygous data, it means that the COI = 1. Otherwise, we
-  # can compare the expected number of loci and the number of loci our
-  # simulation gives us.
+  # Special cases for the Frequency Method where COI = 1
   if (coi_method == "frequency") {
-    # No heterozygous data present
-    if (dim(processed_data)[1] == 0) {
-      ret <- list(coi = 1, probability = c(1, rep(0, max_coi - 1)))
-      return(ret)
-    }
+    check <- switch(data_type,
+      "sim" = check_freq_method(data$data$wsmaf, data$data$plmaf, seq_error),
+      "real" = check_freq_method(data$wsmaf, data$plmaf, seq_error)
+    )
 
-    # We want to first get all the data that we initially submitted to our
-    # function
-    if (data_type == "sim") {
-      size_plmaf <- data$data$plmaf
-      size_wsmaf <- data$data$wsmaf
-    } else if (data_type == "real") {
-      size_plmaf <- data$plmaf
-      size_wsmaf <- data$wsmaf
-    }
-
-    # We then want to group our data using our established cuts and determine
-    # how many loci are in each bucket and the midpoint of each bucket (the PLMAF
-    # for each bucket).
-    size <- data.frame(
-      plmaf_cut = Hmisc::cut2(size_plmaf, cuts = processed$cuts, minmax = F),
-      variant = size_wsmaf
-    ) %>%
-      dplyr::group_by(.data$plmaf_cut, .drop = FALSE) %>%
-      dplyr::summarise(bucket_size = dplyr::n()) %>%
-      stats::na.omit()
-
-    size$midpoints <- processed_data$midpoints
-
-    mid <- size$midpoints
-    nloci <- size$bucket_size
-
-    # Using the midpoints of each bucket, we can determine the 95% CI for the
-    # expected number of heterozygous loci if the COI was 2. The number of
-    # strains containing the minor allele can be defined using a binomial
-    # distribution. If the COI = 2 and we have 1 strain with a minor allele,
-    # then the locus is heterozygous -- this is shown in the next line.
-    CI <- Hmisc::binconf((2 * mid * (1 - mid)) * nloci, nloci) * nloci
-    expectation <- tibble::tibble(cbind(size, CI))
-
-    # If the number of loci in our simulated data is less than the expected
-    # value, we predict that our COI will be 1
-    combined <- dplyr::left_join(
-      expectation,
-      processed_data,
-      by = "midpoints",
-      suffix = c("_expect", "_data")
-    ) %>%
-      tidyr::replace_na(list(bucket_size_data = 0))
-
-    if (sum(combined$Lower - combined$bucket_size_data, na.rm = T) >= 0) {
-      ret <- list(coi = 1, probability = c(1, rep(0, max_coi - 1)))
+    # If the check returns FALSE, it means that the COI is likely 1
+    if (!check) {
+      ret <- list(
+        coi = 1,
+        probability = c(1, rep(0, max_coi - 1)),
+        notes = "Too few variant loci suggesting that the COI is 1 based on the Variant Method."
+      )
       return(ret)
     }
   }
@@ -303,9 +260,11 @@ distance_curves <- function(processed_data, theory_cois, distance = "squared") {
   # Remove COI that indicates the PLMAF
   match_theory_cois <- theory_cois[, 1:bound_coi]
 
-  # First find difference between theoretical and simulate curve. Weigh
-  # difference if wanted
+  # Find the difference between the theoretical and simulated curves
   gap <- match_theory_cois - processed_data$m_variant
+
+  # Weigh the buckets by the number of points in each bucket
+  gap <- gap * processed_data$bucket_size
 
   if (distance == "abs_sum") {
     # Find sum of differences
