@@ -30,33 +30,7 @@ process <- function(wsmaf,
 
   # Infer value of seq_error if NULL
   if (is.null(seq_error)) {
-    # Cut the data. We define error break to allow for flexible bucket sizes.
-    error_break <- 0.02
-    bins <- cut(plmaf, seq(0, 0.5, error_break), include.lowest = TRUE)
-
-    # We want to ensure that we have at least bin_size points in the first bin
-    while (table(bins)[1] < bin_size) {
-      error_break <- error_break * 1.25
-      bins <- cut(plmaf, seq(0, 0.5, error_break), include.lowest = TRUE)
-    }
-
-    # Data points in the lowest bin that are likely sequence error
-    low_wsmafs <- wsmaf[which(bins == levels(bins)[1])]
-    error <- low_wsmafs[low_wsmafs > 0 & low_wsmafs < 0.5]
-
-    # If wanted to do mixture models, would fit something to error
-
-    # Expected number of points
-    expected <- round(length(low_wsmafs) * (error_break / 2), 4)
-
-    # Remove expected number of points from true points
-    error_dist <- utils::head(sort(error), -expected)
-
-    # Find 95% error
-    seq_error <- as.numeric(stats::quantile(error_dist, 0.95, na.rm = T))
-
-    # Ensure that seq_error is greater than 1%
-    seq_error <- round(max(seq_error, 0.01, na.rm = T), 4)
+    seq_error <- estimate_seq_error(wsmaf, plmaf, bin_size)
   }
 
   if (coi_method == "variant") {
@@ -262,4 +236,64 @@ process_real <- function(wsmaf, plmaf,
     bin_size = bin_size,
     coi_method = coi_method
   )
+}
+
+#' @noRd
+check_real_data <- function(wsmaf, plaf) {
+
+  # Check inputs
+  assert_vector(wsmaf)
+  assert_bounded(wsmaf)
+  assert_vector(plmaf)
+  assert_bounded(plmaf)
+
+  input <- tibble::tibble(wsmaf = wsmaf, plmaf = plmaf) %>%
+    tidyr::drop_na()
+
+  # In some cases we are fed in the major allele so we ensure we only examine
+  # the minor allele. If the PLAF is > 0.5, we know it is the major allele so
+  # we look at 1 - WSAF and 1 - PLAF.
+  minor <- input %>%
+    dplyr::mutate(
+      wsmaf = ifelse(plmaf > 0.5, 1 - wsmaf, wsmaf),
+      plmaf = ifelse(plmaf > 0.5, 1 - plmaf, plmaf)
+    )
+
+  return(minor)
+
+}
+
+#' @noRd
+estimate_seq_error <- function(wsmaf, plmaf, bin_size) {
+
+  # Cut the data. We define error break to allow for flexible bucket sizes.
+  error_break <- 0.02
+  bins <- cut(plmaf, seq(0, 0.5, error_break), include.lowest = TRUE)
+
+  # We want to ensure that we have at least bin_size points in the first bin
+  while (table(bins)[1] < bin_size) {
+    error_break <- error_break * 1.25
+    bins <- cut(plmaf, seq(0, 0.5, error_break), include.lowest = TRUE)
+  }
+
+  # Data points in the lowest bin that are likely sequence error
+  low_wsmafs <- wsmaf[which(bins == levels(bins)[1])]
+  error <- low_wsmafs[low_wsmafs > 0 & low_wsmafs < 0.5]
+
+  # If wanted to do mixture models, would fit something to error
+
+  # Expected number of points
+  expected <- round(length(low_wsmafs) * (error_break / 2), 4)
+
+  # Remove expected number of points from true points
+  error_dist <- utils::head(sort(error), -expected)
+
+  # Find 95% error
+  seq_error <- as.numeric(stats::quantile(error_dist, 0.95, na.rm = T))
+
+  # Ensure that seq_error is greater than 1%
+  seq_error <- round(max(seq_error, 0.01, na.rm = T), 4)
+
+  return(seq_error)
+
 }
