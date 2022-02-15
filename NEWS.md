@@ -16,6 +16,13 @@
 
 - New `theme_coiaf()` creates a custom theme for this package.
 
+## Bug Fixes
+
+- In our estimation methods, each bucket is now weighed by the number of points
+  in each bucket (#15).
+- The Frequency Method is undefined for a COI less than two. When we suspect the
+  COI should be less than two, we return a COI of one with a note (#14).
+
 ## Maintenance
 
 - PLAF has been renamed to PLMAF to indicate the focus is the minor allele.
