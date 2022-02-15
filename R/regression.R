@@ -164,6 +164,8 @@ process_data_for_regression <- function(data, data_type, max_coi, seq_error, dis
 
   }
 
+  df$bucket_size <- 1
+
   return(df)
 
 }
