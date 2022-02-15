@@ -11,5 +11,5 @@ check_freq_method <- function(wsmaf, plmaf, seq_error) {
 
   # If the actual number of variant sites is less than the lower bound of the CI
   # return FALSE, otherwise return FALSE
-  if (n_variant < bin_ci[2]) FALSE else TRUE
+  if (n_variant < bin_ci[1, "Lower"]) FALSE else TRUE
 }
