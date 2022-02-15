@@ -74,6 +74,11 @@
 <ul><li>New <code><a href="../reference/theme_coiaf.html">theme_coiaf()</a></code> creates a custom theme for this package.</li>
 </ul></div>
 <div class="section level3">
+<h3 id="bug-fixes-development-version">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-development-version"></a></h3>
+<ul><li>In our estimation methods, each bucket is now weighed by the number of points in each bucket (<a href="https://github.com/bailey-lab/coiaf/issues/15" class="external-link">#15</a>).</li>
+<li>The Frequency Method is undefined for a COI less than two. When we suspect the COI should be less than two, we return a COI of one with a note (<a href="https://github.com/bailey-lab/coiaf/issues/14" class="external-link">#14</a>).</li>
+</ul></div>
+<div class="section level3">
 <h3 id="maintenance-development-version">Maintenance<a class="anchor" aria-label="anchor" href="#maintenance-development-version"></a></h3>
 <ul><li>PLAF has been renamed to PLMAF to indicate the focus is the minor allele.</li>
 <li>WSAF has been renamed to WSMAF to indicate the focus is the minor allele.</li>
