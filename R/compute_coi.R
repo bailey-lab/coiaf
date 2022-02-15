@@ -96,9 +96,16 @@ compute_coi <- function(data,
     bin_size <- processed$bin_size
     cuts <- processed$cuts
   } else if (data_type == "real") {
+    # If no coverage is provided, we assume that the coverage is uniform across
+    # all loci
+    if (!"coverage" %in% colnames(data)) {
+      data$coverage <- rep(100, length(data$wsmaf))
+    }
+
     processed <- process_real(
       data$wsmaf,
       data$plmaf,
+      data$coverage,
       seq_error,
       bin_size,
       coi_method
