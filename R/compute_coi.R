@@ -240,9 +240,11 @@ distance_curves <- function(processed_data, theory_cois, distance = "squared") {
   # Remove COI that indicates the PLMAF
   match_theory_cois <- theory_cois[, 1:bound_coi]
 
-  # First find difference between theoretical and simulate curve. Weigh
-  # difference if wanted
+  # Find the difference between the theoretical and simulated curves
   gap <- match_theory_cois - processed_data$m_variant
+
+  # Weigh the buckets by the number of points in each bucket
+  gap <- gap * processed_data$bucket_size
 
   if (distance == "abs_sum") {
     # Find sum of differences

@@ -48,6 +48,9 @@ likelihood <- function(coi,
   # Distance
   gap <- theory_coi - processed_data$m_variant
 
+  # Weigh the buckets by the number of points in each bucket
+  gap <- gap * processed_data$bucket_size
+
   if (distance == "abs_sum") {
     # Find sum of differences
     gap <- abs(colSums(gap))
