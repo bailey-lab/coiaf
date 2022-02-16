@@ -14,6 +14,9 @@
 
 ## New features
 
+- Within sample minor allele frequencies are now weighed by read coverage. If no
+  coverage is supplied, the coverage is assumed to be uniform across all loci
+  (#16.)
 - New `theme_coiaf()` creates a custom theme for this package.
 
 ## Bug Fixes
