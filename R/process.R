@@ -239,7 +239,7 @@ process_real <- function(wsmaf, plmaf,
 }
 
 #' @noRd
-check_real_data <- function(wsmaf, plaf) {
+check_real_data <- function(wsmaf, plmaf) {
 
   # Check inputs
   assert_vector(wsmaf)

@@ -1,4 +1,9 @@
 check_freq_method <- function(wsmaf, plmaf, seq_error) {
+
+  if (Sys.getenv("COIAF_CHECK_FREQ_METHOD") == "FALSE") {
+    return(TRUE)
+  }
+
   # Compute number of variant sites
   variant <- ifelse(wsmaf <= seq_error | wsmaf >= (1 - seq_error), 0, 1)
   n_variant <- sum(variant)

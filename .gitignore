@@ -4,10 +4,11 @@
 .Rdata
 .Rhistory
 .Rproj.user
-
 # Docs
 docs
 inst/doc
-
 # Internal
 internal
+fordebug.rds
+fordebug.rds.zip
+scripts

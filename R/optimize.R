@@ -106,6 +106,8 @@ optimize_coi <- function(data,
   assert_in(coi_method, c("variant", "frequency"))
   assert_single_pos_int(bin_size)
 
+  # removes NA from our data frame
+  data <- tidyr::drop_na(data)
 
   # Are we using bins or not
   if (!use_bins) {

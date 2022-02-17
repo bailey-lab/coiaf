@@ -1,6 +1,7 @@
-#' Compute COI based on all points regressed against theoretical curves
+#' Compute COI based on residauals of all loci against theoretical curves
 #' @inheritParams compute_coi
-#' @param seq_error_bin_size
+#' @param seq_error_bin_size Number of loci in smallest bin for estimating
+#'   sequence error
 #' @return A list of the following:
 #' * `coi`: The predicted COI of the sample.
 #' * `probability`: A probability density function representing the probability
@@ -15,7 +16,15 @@ compute_coi_regression <- function(data,
                                    coi_method = "variant",
                                    seq_error_bin_size = 20) {
 
-  processed_data <- process_data_for_regression(data, data_type, max_coi, seq_error, distance, coi_method, seq_error_bin_size)
+  processed_data <- process_data_for_regression(
+    data, data_type, max_coi, seq_error,
+    distance, coi_method, seq_error_bin_size
+  )
+
+  # was this deemed to be COI = 1
+  if ("coi" %in% names(processed_data)) {
+    return(processed_data)
+  }
 
   # Calculate theoretical COI curves for the interval specified. Since we want
   # the theoretical curves and the simulated curves to have the PLMAF values, we
@@ -46,7 +55,8 @@ compute_coi_regression <- function(data,
 
 #' Compute COI based on all points fitted to best fitting curve for COI
 #' @inheritParams optimize_coi
-#' @param seq_error_bin_size
+#' @param seq_error_bin_size Number of loci in smallest bin for estimating
+#'   sequence error
 #' @return The predicted COI value.
 #' @seealso [stats::optim()] for the complete documentation on the optimization
 #' function.
@@ -61,8 +71,18 @@ optimize_coi_regression <- function(data,
                                     seq_error_bin_size = 20) {
 
 
-  processed_data <- process_data_for_regression(data, data_type, max_coi, seq_error, distance, coi_method, seq_error_bin_size)
-  names(processed_data) <- c("midpoints", "m_variant")
+  processed_data <- process_data_for_regression(
+    data, data_type, max_coi, seq_error,
+    distance, coi_method, seq_error_bin_size
+  )
+
+  # was this deemed to be COI = 1
+  if ("coi" %in% names(processed_data)) {
+    return(processed_data)
+  }
+
+
+  names(processed_data) <- c("midpoints", "m_variant", "bucket_size")
 
   # Compute COI
   # Details:
@@ -104,15 +124,18 @@ optimize_coi_regression <- function(data,
   }
 
   # Return COI
-  round(fit$par, 4)
-
-  # List to return
-  return(list(coi = as.numeric(coi), probability = dist))
+  return(round(fit$par, 4))
 
 }
 
 #' @noRd
-process_data_for_regression <- function(data, data_type, max_coi, seq_error, distance, coi_method, seq_error_bin_size) {
+process_data_for_regression <- function(data,
+                                        data_type,
+                                        max_coi,
+                                        seq_error,
+                                        distance,
+                                        coi_method,
+                                        seq_error_bin_size) {
 
   # Process data to get the wsmaf and plmaf
   if (data_type == "sim") {
@@ -159,7 +182,7 @@ process_data_for_regression <- function(data, data_type, max_coi, seq_error, dis
     }
 
     # Subset to heterozygous sites
-    df <- data.frame(m_variant = wsmaf, plmaf = plmaf) %>%
+    df <- data.frame(plmaf = plmaf, m_variant = wsmaf) %>%
       dplyr::filter(wsmaf > seq_error & wsmaf < (1 - seq_error))
 
   }
