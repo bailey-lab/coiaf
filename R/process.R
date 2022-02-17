@@ -118,7 +118,7 @@ process <- function(wsmaf,
     data = df_grouped_mid,
     seq_error = seq_error,
     bin_size = bin_size,
-    cuts = cuts
+    cuts = suppressWarnings(Hmisc::cut2(plmaf, m = bin_size, onlycuts = TRUE))
   )
 }
 
