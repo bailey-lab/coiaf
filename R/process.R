@@ -281,7 +281,7 @@ check_input_data <- function(data, data_type) {
 
     # add coverage if somehow missing
     if(!"coverage" %in% names(data$data)) {
-      data$data$covearage <- rep(100, length(data$data$plmaf))
+      data$data$coverage <- rep(100, length(data$data$plmaf))
     }
 
   } else {
@@ -291,7 +291,7 @@ check_input_data <- function(data, data_type) {
 
     # add coverage if somehow missing
     if(!"coverage" %in% names(data)) {
-      data$covearage <- rep(100, length(data$plmaf))
+      data$coverage <- rep(100, length(data$plmaf))
     }
 
   }

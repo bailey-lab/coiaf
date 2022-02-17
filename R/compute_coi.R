@@ -304,7 +304,7 @@ weighted_colSums <- function(x, w) {
 
   # weighted colsum
   apply(x, 2, function(y) {
-    weighted.mean(y, w) * sum(w)
+    stats::weighted.mean(y, w) * sum(w)
   })
 
 }

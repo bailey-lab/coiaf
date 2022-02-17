@@ -75,12 +75,14 @@ optimize_coi_regression <- function(data,
     data, data_type, max_coi, seq_error,
     distance, coi_method, seq_error_bin_size
   )
-  names(processed_data) <- c("midpoints", "m_variant", "coverage", "bucket_size")
 
   # was this deemed to be COI = 1
   if ("coi" %in% names(processed_data)) {
     return(processed_data)
   }
+
+  # correct names for likelihood function
+  names(processed_data) <- c("midpoints", "m_variant", "coverage", "bucket_size")
 
   # Compute COI
   # Details:
