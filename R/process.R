@@ -24,6 +24,7 @@
 
 process <- function(wsmaf,
                     plmaf,
+                    coverage,
                     seq_error = NULL,
                     bin_size = 20,
                     coi_method = "variant") {
@@ -38,14 +39,16 @@ process <- function(wsmaf,
     # accounting for sequence error
     df <- data.frame(
       plmaf_cut = suppressWarnings(Hmisc::cut2(plmaf, m = bin_size)),
-      variant = ifelse(wsmaf <= seq_error | wsmaf >= (1 - seq_error), 0, 1)
+      variant = ifelse(wsmaf <= seq_error | wsmaf >= (1 - seq_error), 0, 1),
+      coverage = coverage
     )
   } else if (coi_method == "frequency") {
     # Subset to heterozygous sites
-    data <- data.frame(wsmaf = wsmaf, plmaf = plmaf) %>%
+    data <- data.frame(wsmaf = wsmaf, plmaf = plmaf, coverage = coverage) %>%
       dplyr::filter(wsmaf > seq_error & wsmaf < (1 - seq_error))
     wsmaf <- data$wsmaf
     plmaf <- data$plmaf
+    coverage <- data$coverage
 
     # If remove all data, need to return a pseudo result to not induce errors.
     # Additionally, in order to define a cut, need at least 2 data points
@@ -67,7 +70,8 @@ process <- function(wsmaf,
     # Isolate PLMAF, and keep WSMAF as is
     df <- data.frame(
       plmaf_cut = suppressWarnings(Hmisc::cut2(plmaf, m = bin_size)),
-      variant = wsmaf
+      variant = wsmaf,
+      coverage = coverage
     )
   }
 
@@ -100,7 +104,7 @@ process <- function(wsmaf,
   df_grouped <- df %>%
     dplyr::group_by(.data$plmaf_cut, .drop = FALSE) %>%
     dplyr::summarise(
-      m_variant   = mean(.data$variant),
+      m_variant   = stats::weighted.mean(.data$variant, .data$coverage),
       bucket_size = dplyr::n()
     ) %>%
     stats::na.omit()
@@ -168,6 +172,7 @@ process_sim <- function(sim,
   process(
     wsmaf = sim$data$wsmaf,
     plmaf = sim$data$plmaf,
+    coverage = sim$data$coverage,
     seq_error = seq_error,
     bin_size = bin_size,
     coi_method = coi_method
@@ -185,6 +190,7 @@ process_sim <- function(sim,
 #'
 #' @param wsmaf The within-sample allele frequency.
 #' @param plmaf The population-level allele frequency.
+#' @param coverage The read coverage at each locus.
 #' @inheritParams process_sim
 #'
 #' @return A list of the following:
@@ -202,7 +208,9 @@ process_sim <- function(sim,
 #' @seealso [process_sim()] to process simulated data.
 #' @export
 
-process_real <- function(wsmaf, plmaf,
+process_real <- function(wsmaf,
+                         plmaf,
+                         coverage,
                          seq_error = NULL,
                          bin_size = 20,
                          coi_method = "variant") {
@@ -214,7 +222,7 @@ process_real <- function(wsmaf, plmaf,
   if (!is.null(seq_error)) assert_single_bounded(seq_error)
   assert_single_pos_int(bin_size)
 
-  input <- tibble::tibble(wsmaf = wsmaf, plmaf = plmaf) %>%
+  input <- tibble::tibble(wsmaf = wsmaf, plmaf = plmaf, coverage = coverage) %>%
     tidyr::drop_na()
 
   # In some cases we are fed in the major allele so we ensure we only examine
@@ -232,6 +240,7 @@ process_real <- function(wsmaf, plmaf,
   process(
     wsmaf = minor$wsmaf,
     plmaf = minor$plmaf,
+    coverage = minor$coverage,
     seq_error = seq_error,
     bin_size = bin_size,
     coi_method = coi_method
