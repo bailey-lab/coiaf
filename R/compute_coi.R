@@ -72,8 +72,8 @@ compute_coi <- function(data,
   assert_single_string(coi_method)
   assert_in(coi_method, c("variant", "frequency"))
 
-  # removes NA from our data frame
-  data <- remove_na_data(data, data_type)
+  # removes NA from our data frame and adds coverage if missing
+  data <- check_input_data(data, data_type)
 
   # Are we using bins or not
   if (!use_bins) {
@@ -278,13 +278,13 @@ distance_curves <- function(processed_data, theory_cois, distance = "squared") {
 
   if (distance == "abs_sum") {
     # Find sum of differences
-    gap <- abs(colSums(gap))
+    gap <- abs(weighted_colSums(gap, processed_data$coverage))
   } else if (distance == "sum_abs") {
     # Find absolute value of differences
-    gap <- colSums(abs(gap))
+    gap <- weighted_colSums(abs(gap), processed_data$coverage)
   } else if (distance == "squared") {
     # Squared distance
-    gap <- colSums(gap^2)
+    gap <- weighted_colSums(gap^2, processed_data$coverage)
   }
 
   # Find COI by looking at minimum distance
@@ -292,4 +292,19 @@ distance_curves <- function(processed_data, theory_cois, distance = "squared") {
 
   # Prepare list to return
   list(coi = coi, dist = gap)
+}
+
+#' @noRd
+weighted_colSums <- function(x, w) {
+
+  # if weights all the same just do colsum
+  if(all(w == w[1])) {
+    return(colSums(x))
+  }
+
+  # weighted colsum
+  apply(x, 2, function(y) {
+    weighted.mean(y, w) * sum(w)
+  })
+
 }

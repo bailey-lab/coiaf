@@ -117,6 +117,7 @@ process <- function(wsmaf,
 
   # We then find our midpoints
   df_grouped$midpoints <- cuts[-length(cuts)] + diff(cuts) / 2
+  df_grouped$coverage <- 1
 
   # Return data, seq_error, and cuts
   list(
@@ -256,12 +257,10 @@ check_real_data <- function(wsmaf, plmaf) {
   assert_vector(plmaf)
   assert_bounded(plmaf)
 
-  input <- tibble::tibble(wsmaf = wsmaf, plmaf = plmaf) %>%
-    tidyr::drop_na()
-
   # In some cases we are fed in the major allele so we ensure we only examine
   # the minor allele. If the PLAF is > 0.5, we know it is the major allele so
   # we look at 1 - WSAF and 1 - PLAF.
+  input <- data.frame("wsmaf" = wsmaf, "plmaf" = plmaf)
   minor <- input %>%
     dplyr::mutate(
       wsmaf = ifelse(plmaf > 0.5, 1 - wsmaf, wsmaf),
@@ -273,17 +272,28 @@ check_real_data <- function(wsmaf, plmaf) {
 }
 
 #' @noRd
-remove_na_data <- function(data, data_type) {
+check_input_data <- function(data, data_type) {
 
   if (data_type == "sim") {
 
     # removes NA from our data frame
     data$data <- tidyr::drop_na(data$data)
 
+    # add coverage if somehow missing
+    if(!"coverage" %in% names(data$data)) {
+      data$data$covearage <- rep(100, length(data$data$plmaf))
+    }
+
   } else {
 
     # removes NA from our data frame
     data <- tidyr::drop_na(data)
+
+    # add coverage if somehow missing
+    if(!"coverage" %in% names(data)) {
+      data$covearage <- rep(100, length(data$plmaf))
+    }
+
   }
 
   return(data)

@@ -75,14 +75,12 @@ optimize_coi_regression <- function(data,
     data, data_type, max_coi, seq_error,
     distance, coi_method, seq_error_bin_size
   )
+  names(processed_data) <- c("midpoints", "m_variant", "coverage", "bucket_size")
 
   # was this deemed to be COI = 1
   if ("coi" %in% names(processed_data)) {
     return(processed_data)
   }
-
-
-  names(processed_data) <- c("midpoints", "m_variant", "bucket_size")
 
   # Compute COI
   # Details:
@@ -142,12 +140,14 @@ process_data_for_regression <- function(data,
 
     wsmaf <- data$data$wsmaf
     plmaf <- data$data$plmaf
+    coverage <- data$data$coverage
 
   } else if (data_type == "real") {
 
     minor <- check_real_data(data$wsmaf, data$plmaf)
     wsmaf <- minor$wsmaf
     plmaf <- minor$plmaf
+    coverage <- data$coverage
 
   }
 
@@ -163,7 +163,8 @@ process_data_for_regression <- function(data,
     # accounting for sequence error
     df <- data.frame(
       plmaf = plmaf,
-      m_variant = ifelse(wsmaf <= seq_error | wsmaf >= (1 - seq_error), 0, 1)
+      m_variant = ifelse(wsmaf <= seq_error | wsmaf >= (1 - seq_error), 0, 1),
+      coverage = coverage
     )
 
   } else if (coi_method == "frequency") {
@@ -182,7 +183,7 @@ process_data_for_regression <- function(data,
     }
 
     # Subset to heterozygous sites
-    df <- data.frame(plmaf = plmaf, m_variant = wsmaf) %>%
+    df <- data.frame(plmaf = plmaf, m_variant = wsmaf, coverage = coverage) %>%
       dplyr::filter(wsmaf > seq_error & wsmaf < (1 - seq_error))
 
   }

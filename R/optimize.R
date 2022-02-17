@@ -53,13 +53,13 @@ likelihood <- function(coi,
 
   if (distance == "abs_sum") {
     # Find sum of differences
-    gap <- abs(colSums(gap))
+    gap <- abs(weighted_colSums(gap, processed_data$coverage))
   } else if (distance == "sum_abs") {
     # Find absolute value of differences
-    gap <- colSums(abs(gap))
+    gap <- weighted_colSums(abs(gap), processed_data$coverage)
   } else if (distance == "squared") {
     # Squared distance
-    gap <- colSums(gap^2)
+    gap <- weighted_colSums(gap^2, processed_data$coverage)
   }
 
   # Gap is a named list with two entries: the coi and the PLMAF. We want to
@@ -107,7 +107,7 @@ optimize_coi <- function(data,
   assert_single_pos_int(bin_size)
 
   # removes NA from our data frame
-  data <- remove_na_data(data, data_type)
+  data <- check_input_data(data, data_type)
 
   # Are we using bins or not
   if (!use_bins) {
