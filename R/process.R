@@ -111,7 +111,7 @@ process <- function(wsmaf,
     stats::na.omit()
 
   # Compute midpoints
-  df_grouped_mid <- find_cut_midpoints(df_grouped, plmaf_cut)
+  df_grouped_mid <- find_cut_midpoints(df_grouped, .data$plmaf_cut)
 
   # Return data, seq_error, and cuts
   list(
@@ -128,16 +128,16 @@ find_cut_midpoints <- function(data, cuts) {
     data,
     fixed_cuts = as.character({{ cuts }}),
     fixed_cuts = ifelse(
-      !stringr::str_starts(fixed_cuts, "\\["),
-      glue::glue("[{fixed_cuts},{fixed_cuts})"),
-      fixed_cuts
+      !stringr::str_starts(.data$fixed_cuts, "\\["),
+      glue::glue("[{.data$fixed_cuts},{.data$fixed_cuts})"),
+      .data$fixed_cuts
     )
   )
 
   # Find lower and upper bounds
   extract_bounds <- tidyr::extract(
     data = fix_single_cuts,
-    col = fixed_cuts,
+    col = .data$fixed_cuts,
     into = c("lower", "upper"),
     regex = "([[:alnum:]].+),([[:alnum:]].+)[\\]\\)]",
     convert = TRUE
@@ -146,7 +146,7 @@ find_cut_midpoints <- function(data, cuts) {
   # Determine cut midpoints
   dplyr::mutate(
     extract_bounds,
-    midpoints = (upper + lower) / 2,
+    midpoints = (.data$upper + .data$lower) / 2,
     .keep = "unused"
   )
 }
