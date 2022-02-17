@@ -37,6 +37,8 @@ reference:
       - optimize_coi
       - likelihood
       - compute_coi
+      - compute_coi_regression
+      - optimize_coi_regression
       - theoretical_coi
   - title: Real Data
     desc: >
