@@ -139,7 +139,7 @@ find_cut_midpoints <- function(data, cuts) {
     data = fix_single_cuts,
     col = fixed_cuts,
     into = c("lower", "upper"),
-    regex = "([[:alnum:]].+),([[:alnum:]].+)\\)",
+    regex = "([[:alnum:]].+),([[:alnum:]].+)[\\]\\)]",
     convert = TRUE
   )
 
