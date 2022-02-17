@@ -73,7 +73,7 @@ compute_coi <- function(data,
   assert_in(coi_method, c("variant", "frequency"))
 
   # removes NA from our data frame
-  data <- tidyr::drop_na(data)
+  data <- remove_na_data(data, data_type)
 
   # Are we using bins or not
   if (!use_bins) {

@@ -107,7 +107,7 @@ optimize_coi <- function(data,
   assert_single_pos_int(bin_size)
 
   # removes NA from our data frame
-  data <- tidyr::drop_na(data)
+  data <- remove_na_data(data, data_type)
 
   # Are we using bins or not
   if (!use_bins) {

@@ -273,6 +273,24 @@ check_real_data <- function(wsmaf, plmaf) {
 }
 
 #' @noRd
+remove_na_data <- function(data, data_type) {
+
+  if (data_type == "sim") {
+
+    # removes NA from our data frame
+    data$data <- tidyr::drop_na(data$data)
+
+  } else {
+
+    # removes NA from our data frame
+    data <- tidyr::drop_na(data)
+  }
+
+  return(data)
+
+}
+
+#' @noRd
 estimate_seq_error <- function(wsmaf, plmaf, bin_size) {
 
   # Cut the data. We define error break to allow for flexible bucket sizes.
