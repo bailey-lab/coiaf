@@ -80,5 +80,6 @@ repos:
 exclude: >
   (?x)^(
   tests/testthat/_snaps/.*|
-  .*\.Rd
+  .*\.Rd|
+  tests/testthat/issue_18.rds|
   )$

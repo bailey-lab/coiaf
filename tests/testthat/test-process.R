@@ -30,6 +30,19 @@ test_that("can find cut midpoints even if there is a cut with one value", {
 
 test_that("cuts can end with a `(` or a `[`", {
   data <- data.frame(cuts = as.factor(c("[0.1861,0.311)", "[0.0219,0.186]")))
-
   expect_equal(computed_midpoints(data, cuts), c(0.10395, 0.24855))
+})
+
+test_that("cut midpoints work for a large data set (#18)", {
+  # The data set we use here used to fail when running our algorithms
+  data <- readRDS("issue_18.rds")
+  expect_snapshot(
+    compute_coi(
+      data,
+      "real",
+      seq_error = data$seq_error,
+      bin_size = data$bin_size,
+      coi_method = data$coi_method
+    )
+  )
 })
