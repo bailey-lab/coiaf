@@ -14,6 +14,7 @@
 
 ## New features
 
+- The default sequence error threshold has been set to 1%.
 - Our methods now can estimate the COI without grouping data points into
   buckets (#17).
 - Within sample minor allele frequencies are now weighed by read coverage. If no

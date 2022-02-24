@@ -11,7 +11,7 @@
 compute_coi_regression <- function(data,
                                    data_type,
                                    max_coi = 25,
-                                   seq_error = NULL,
+                                   seq_error = 0.01,
                                    distance = "squared",
                                    coi_method = "variant",
                                    seq_error_bin_size = 20) {
@@ -63,7 +63,7 @@ compute_coi_regression <- function(data,
 optimize_coi_regression <- function(data,
                                     data_type,
                                     max_coi = 25,
-                                    seq_error = NULL,
+                                    seq_error = 0.01,
                                     distance = "squared",
                                     coi_method = "variant",
                                     seq_error_bin_size = 20) {

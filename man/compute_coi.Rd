@@ -8,7 +8,7 @@ compute_coi(
   data,
   data_type,
   max_coi = 25,
-  seq_error = NULL,
+  seq_error = 0.01,
   bin_size = 20,
   comparison = "overall",
   distance = "squared",
