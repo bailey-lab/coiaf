@@ -42,6 +42,8 @@
 #' @param distance The distance method used to determine the distance between
 #' the theoretical and simulated curves for the `"overall"` method. One of
 #' `"abs_sum"`, `"sum_abs"`, `"squared"`.
+#' @param use_bins Do we calculate COI by comparing against the data grouped
+#'   into bins of changing `plaf` or not. Default = FALSE.
 #'
 #' @return A list of the following:
 #' * `coi`: The predicted COI of the sample.
@@ -56,19 +58,39 @@ compute_coi <- function(data,
                         bin_size = 20,
                         comparison = "overall",
                         distance = "squared",
-                        coi_method = "variant") {
-  ## Check inputs
+                        coi_method = "variant",
+                        use_bins = FALSE) {
+
+
+  ## Check inputs specific for both bin and regression comparison
   assert_in(data_type, c("sim", "real"))
   assert_single_string(data_type)
   assert_single_pos_int(max_coi)
   if (!is.null(seq_error)) assert_single_bounded(seq_error)
-  assert_single_pos_int(bin_size)
-  assert_single_string(comparison)
-  assert_in(comparison, c("end", "ideal", "overall"))
   assert_single_string(distance)
   assert_in(distance, c("abs_sum", "sum_abs", "squared"))
   assert_single_string(coi_method)
   assert_in(coi_method, c("variant", "frequency"))
+
+  # removes NA from our data frame and adds coverage if missing
+  data <- check_input_data(data, data_type)
+
+  # Are we using bins or not
+  if (!use_bins) {
+    ret <- compute_coi_regression(data,
+      data_type,
+      max_coi = max_coi,
+      seq_error = seq_error,
+      distance = distance,
+      coi_method = coi_method,
+      seq_error_bin_size = bin_size
+    )
+    return(ret)
+  }
+
+  assert_single_pos_int(bin_size)
+  assert_single_string(comparison)
+  assert_in(comparison, c("end", "ideal", "overall"))
 
   # Warnings
   if (comparison != "overall") {
@@ -96,9 +118,16 @@ compute_coi <- function(data,
     bin_size <- processed$bin_size
     cuts <- processed$cuts
   } else if (data_type == "real") {
+    # If no coverage is provided, we assume that the coverage is uniform across
+    # all loci
+    if (!"coverage" %in% colnames(data)) {
+      data$coverage <- rep(100, length(data$wsmaf))
+    }
+
     processed <- process_real(
       data$wsmaf,
       data$plmaf,
+      data$coverage,
       seq_error,
       bin_size,
       coi_method
@@ -109,65 +138,14 @@ compute_coi <- function(data,
     cuts <- processed$cuts
   }
 
-  ## Special cases for Method 2 where COI = 1
-  # If there is no heterozygous data, it means that the COI = 1. Otherwise, we
-  # can compare the expected number of loci and the number of loci our
-  # simulation gives us.
-  if (coi_method == "frequency") {
-    # No heterozygous data present
-    if (dim(processed_data)[1] == 0) {
-      ret <- list(coi = 1, probability = c(1, rep(0, max_coi - 1)))
-      return(ret)
-    }
-
-    # We want to first get all the data that we initially submitted to our
-    # function
-    if (data_type == "sim") {
-      size_plmaf <- data$data$plmaf
-      size_wsmaf <- data$data$wsmaf
-    } else if (data_type == "real") {
-      size_plmaf <- data$plmaf
-      size_wsmaf <- data$wsmaf
-    }
-
-    # We then want to group our data using our established cuts and determine
-    # how many loci are in each bucket and the midpoint of each bucket (the PLMAF
-    # for each bucket).
-    size <- data.frame(
-      plmaf_cut = Hmisc::cut2(size_plmaf, cuts = processed$cuts, minmax = F),
-      variant = size_wsmaf
-    ) %>%
-      dplyr::group_by(.data$plmaf_cut, .drop = FALSE) %>%
-      dplyr::summarise(bucket_size = dplyr::n()) %>%
-      stats::na.omit()
-
-    size$midpoints <- processed_data$midpoints
-
-    mid <- size$midpoints
-    nloci <- size$bucket_size
-
-    # Using the midpoints of each bucket, we can determine the 95% CI for the
-    # expected number of heterozygous loci if the COI was 2. The number of
-    # strains containing the minor allele can be defined using a binomial
-    # distribution. If the COI = 2 and we have 1 strain with a minor allele,
-    # then the locus is heterozygous -- this is shown in the next line.
-    CI <- Hmisc::binconf((2 * mid * (1 - mid)) * nloci, nloci) * nloci
-    expectation <- tibble::tibble(cbind(size, CI))
-
-    # If the number of loci in our simulated data is less than the expected
-    # value, we predict that our COI will be 1
-    combined <- dplyr::left_join(
-      expectation,
-      processed_data,
-      by = "midpoints",
-      suffix = c("_expect", "_data")
-    ) %>%
-      tidyr::replace_na(list(bucket_size_data = 0))
-
-    if (sum(combined$Lower - combined$bucket_size_data, na.rm = T) >= 0) {
-      ret <- list(coi = 1, probability = c(1, rep(0, max_coi - 1)))
-      return(ret)
-    }
+  # Special case for the Frequency Method where there is no data
+  if (coi_method == "frequency" & nrow(processed_data) == 0) {
+    return(list(
+      coi = NaN,
+      probability = c(1, rep(0, max_coi - 1)),
+      notes = "Too few variant loci suggesting that the COI is 1 based on the Variant Method.",
+      estimated_coi = 1
+    ))
   }
 
   # Calculate theoretical COI curves for the interval specified. Since we want
@@ -246,6 +224,25 @@ compute_coi <- function(data,
   dist <- dist / sum(dist, na.rm = T)
   dist[is.nan(dist)] <- 0
 
+  # Special case for the Frequency Method
+  if (coi_method == "frequency") {
+    check <- switch(data_type,
+      "sim" = check_freq_method(data$data$wsmaf, data$data$plmaf, seq_error),
+      "real" = check_freq_method(data$wsmaf, data$plmaf, seq_error)
+    )
+
+    # If the check returns FALSE, it means that the COI is likely 1
+    if (!check) {
+      ret <- list(
+        coi = NaN,
+        probability = c(1, rep(0, max_coi - 1)),
+        notes = "Too few variant loci suggesting that the COI is 1 based on the Variant Method.",
+        estimated_coi = as.numeric(coi)
+      )
+      return(ret)
+    }
+  }
+
   # List to return
   list(coi = as.numeric(coi), probability = dist)
 }
@@ -283,19 +280,21 @@ distance_curves <- function(processed_data, theory_cois, distance = "squared") {
   # Remove COI that indicates the PLMAF
   match_theory_cois <- theory_cois[, 1:bound_coi]
 
-  # First find difference between theoretical and simulate curve. Weigh
-  # difference if wanted
+  # Find the difference between the theoretical and simulated curves
   gap <- match_theory_cois - processed_data$m_variant
+
+  # Weigh the buckets by the number of points in each bucket
+  gap <- gap * processed_data$bucket_size
 
   if (distance == "abs_sum") {
     # Find sum of differences
-    gap <- abs(colSums(gap))
+    gap <- abs(weighted_colSums(gap, processed_data$coverage))
   } else if (distance == "sum_abs") {
     # Find absolute value of differences
-    gap <- colSums(abs(gap))
+    gap <- weighted_colSums(abs(gap), processed_data$coverage)
   } else if (distance == "squared") {
     # Squared distance
-    gap <- colSums(gap^2)
+    gap <- weighted_colSums(gap^2, processed_data$coverage)
   }
 
   # Find COI by looking at minimum distance
@@ -303,4 +302,18 @@ distance_curves <- function(processed_data, theory_cois, distance = "squared") {
 
   # Prepare list to return
   list(coi = coi, dist = gap)
+}
+
+#' @noRd
+weighted_colSums <- function(x, w) {
+
+  # if weights all the same just do colsum
+  if (all(w == w[1])) {
+    return(colSums(x))
+  }
+
+  # weighted colsum
+  apply(x, 2, function(y) {
+    stats::weighted.mean(y, w) * sum(w)
+  })
 }

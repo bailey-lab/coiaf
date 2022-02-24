@@ -39,6 +39,7 @@ implemented to compute the distance between two curves:
 }
 \seealso{
 Other optimization functions: 
+\code{\link{optimize_coi_regression}()},
 \code{\link{optimize_coi}()}
 }
 \concept{optimization functions}

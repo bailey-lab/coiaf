@@ -7,6 +7,7 @@
 process_real(
   wsmaf,
   plmaf,
+  coverage,
   seq_error = NULL,
   bin_size = 20,
   coi_method = "variant"
@@ -16,6 +17,8 @@ process_real(
 \item{wsmaf}{The within-sample allele frequency.}
 
 \item{plmaf}{The population-level allele frequency.}
+
+\item{coverage}{The read coverage at each locus.}
 
 \item{seq_error}{The level of sequencing error that is assumed. If no value
 is inputted, then we infer the level of sequence error.}

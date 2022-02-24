@@ -12,7 +12,8 @@ compute_coi(
   bin_size = 20,
   comparison = "overall",
   distance = "squared",
-  coi_method = "variant"
+  coi_method = "variant",
+  use_bins = FALSE
 )
 }
 \arguments{
@@ -39,6 +40,9 @@ the theoretical and simulated curves for the \code{"overall"} method. One of
 \item{coi_method}{The method we will use to calculate the theoretical COI.
 The method is either "variant" or "frequency". The default value is
 "variant".}
+
+\item{use_bins}{Do we calculate COI by comparing against the data grouped
+into bins of changing \code{plaf} or not. Default = FALSE.}
 }
 \value{
 A list of the following:

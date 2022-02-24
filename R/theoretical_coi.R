@@ -27,7 +27,7 @@ theoretical_coi <- function(coi_range,
   assert_pos(coi_range, zero_allowed = FALSE)
   assert_vector(plmaf)
   assert_bounded(plmaf, left = 0, right = 0.5)
-  assert_increasing(plmaf)
+  # assert_increasing(plmaf)
 
   # Argument match coi_method
   coi_method <- rlang::arg_match(coi_method)

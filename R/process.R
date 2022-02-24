@@ -24,39 +24,14 @@
 
 process <- function(wsmaf,
                     plmaf,
+                    coverage,
                     seq_error = NULL,
                     bin_size = 20,
                     coi_method = "variant") {
 
   # Infer value of seq_error if NULL
   if (is.null(seq_error)) {
-    # Cut the data. We define error break to allow for flexible bucket sizes.
-    error_break <- 0.02
-    bins <- cut(plmaf, seq(0, 0.5, error_break), include.lowest = TRUE)
-
-    # We want to ensure that we have at least bin_size points in the first bin
-    while (table(bins)[1] < bin_size) {
-      error_break <- error_break * 1.25
-      bins <- cut(plmaf, seq(0, 0.5, error_break), include.lowest = TRUE)
-    }
-
-    # Data points in the lowest bin that are likely sequence error
-    low_wsmafs <- wsmaf[which(bins == levels(bins)[1])]
-    error <- low_wsmafs[low_wsmafs > 0 & low_wsmafs < 0.5]
-
-    # If wanted to do mixture models, would fit something to error
-
-    # Expected number of points
-    expected <- round(length(low_wsmafs) * (error_break / 2), 4)
-
-    # Remove expected number of points from true points
-    error_dist <- utils::head(sort(error), -expected)
-
-    # Find 95% error
-    seq_error <- as.numeric(stats::quantile(error_dist, 0.95, na.rm = T))
-
-    # Ensure that seq_error is greater than 1%
-    seq_error <- round(max(seq_error, 0.01, na.rm = T), 4)
+    seq_error <- estimate_seq_error(wsmaf, plmaf, bin_size)
   }
 
   if (coi_method == "variant") {
@@ -64,14 +39,16 @@ process <- function(wsmaf,
     # accounting for sequence error
     df <- data.frame(
       plmaf_cut = suppressWarnings(Hmisc::cut2(plmaf, m = bin_size)),
-      variant = ifelse(wsmaf <= seq_error | wsmaf >= (1 - seq_error), 0, 1)
+      variant = ifelse(wsmaf <= seq_error | wsmaf >= (1 - seq_error), 0, 1),
+      coverage = coverage
     )
   } else if (coi_method == "frequency") {
     # Subset to heterozygous sites
-    data <- data.frame(wsmaf = wsmaf, plmaf = plmaf) %>%
+    data <- data.frame(wsmaf = wsmaf, plmaf = plmaf, coverage = coverage) %>%
       dplyr::filter(wsmaf > seq_error & wsmaf < (1 - seq_error))
     wsmaf <- data$wsmaf
     plmaf <- data$plmaf
+    coverage <- data$coverage
 
     # If remove all data, need to return a pseudo result to not induce errors.
     # Additionally, in order to define a cut, need at least 2 data points
@@ -93,59 +70,59 @@ process <- function(wsmaf,
     # Isolate PLMAF, and keep WSMAF as is
     df <- data.frame(
       plmaf_cut = suppressWarnings(Hmisc::cut2(plmaf, m = bin_size)),
-      variant = wsmaf
+      variant = wsmaf,
+      coverage = coverage
     )
-  }
-
-  # In some instances, Hmisc::cut2 assigns a cut with only 1 number in it.
-  # If this happens and we try to group our data, this can mess up our data.
-  # Therefore, to account for this, we find all instances where this occurs
-  # and combine these factors with the previous factor.
-  one_point <- !stringr::str_starts(levels(df$plmaf_cut), "\\[")
-
-  # We find all places where we only have one point. But, we ignore the case
-  # where the one point is the first break (0).
-  if (sum(one_point) > 1 | (sum(one_point) == 1 & which(one_point)[1] != 1)) {
-    if (which(one_point)[1] == 1) {
-      # When 0 is its own break, we ignore it and store all the other locations
-      points <- which(one_point)[-1]
-    } else {
-      # When 0 is not its own break, we store all locations
-      points <- which(one_point)
-    }
-
-    # We make a list of the factor names of all the points we want to remove. We
-    # name the list with the previous factor, and combine the two together. This
-    # effectively puts the points in the single factor into the previous one.
-    point_list <- c(levels(df$plmaf_cut)[points])
-    names(point_list) <- levels(df$plmaf_cut)[points - 1]
-    df$plmaf_cut <- forcats::fct_recode(df$plmaf_cut, !!!point_list)
   }
 
   # Average over intervals of PLMAF
   df_grouped <- df %>%
     dplyr::group_by(.data$plmaf_cut, .drop = FALSE) %>%
     dplyr::summarise(
-      m_variant   = mean(.data$variant),
+      m_variant   = stats::weighted.mean(.data$variant, .data$coverage),
       bucket_size = dplyr::n()
     ) %>%
     stats::na.omit()
 
-  # Find the cuts for our data
-  cuts <- suppressWarnings(Hmisc::cut2(plmaf, m = bin_size, onlycuts = TRUE))
-  if (sum(one_point) > 1 | (sum(one_point) == 1 & which(one_point)[1] != 1)) {
-    cuts <- cuts[-points]
-  }
-
-  # We then find our midpoints
-  df_grouped$midpoints <- cuts[-length(cuts)] + diff(cuts) / 2
+  # Compute midpoints and set coverage to be uniform across each bucket
+  df_grouped_mid <- find_cut_midpoints(df_grouped, .data$plmaf_cut) %>%
+    tibble::add_column(coverage = rep(100, nrow(.)))
 
   # Return data, seq_error, and cuts
   list(
-    data = df_grouped,
+    data = df_grouped_mid,
     seq_error = seq_error,
     bin_size = bin_size,
-    cuts = cuts
+    cuts = suppressWarnings(Hmisc::cut2(plmaf, m = bin_size, onlycuts = TRUE))
+  )
+}
+
+find_cut_midpoints <- function(data, cuts) {
+  # Convert single cuts to the standard format: "[lower,upper)"
+  fix_single_cuts <- dplyr::mutate(
+    data,
+    fixed_cuts = as.character({{ cuts }}),
+    fixed_cuts = ifelse(
+      !stringr::str_starts(.data$fixed_cuts, "\\["),
+      glue::glue("[{.data$fixed_cuts},{.data$fixed_cuts})"),
+      .data$fixed_cuts
+    )
+  )
+
+  # Find lower and upper bounds
+  extract_bounds <- tidyr::extract(
+    data = fix_single_cuts,
+    col = .data$fixed_cuts,
+    into = c("lower", "upper"),
+    regex = "([[:alnum:]].+),([[:alnum:]].+)[\\]\\)]",
+    convert = TRUE
+  )
+
+  # Determine cut midpoints
+  dplyr::mutate(
+    extract_bounds,
+    midpoints = (.data$upper + .data$lower) / 2,
+    .keep = "unused"
   )
 }
 
@@ -194,6 +171,7 @@ process_sim <- function(sim,
   process(
     wsmaf = sim$data$wsmaf,
     plmaf = sim$data$plmaf,
+    coverage = sim$data$coverage,
     seq_error = seq_error,
     bin_size = bin_size,
     coi_method = coi_method
@@ -211,6 +189,7 @@ process_sim <- function(sim,
 #'
 #' @param wsmaf The within-sample allele frequency.
 #' @param plmaf The population-level allele frequency.
+#' @param coverage The read coverage at each locus.
 #' @inheritParams process_sim
 #'
 #' @return A list of the following:
@@ -228,7 +207,9 @@ process_sim <- function(sim,
 #' @seealso [process_sim()] to process simulated data.
 #' @export
 
-process_real <- function(wsmaf, plmaf,
+process_real <- function(wsmaf,
+                         plmaf,
+                         coverage,
                          seq_error = NULL,
                          bin_size = 20,
                          coi_method = "variant") {
@@ -240,16 +221,61 @@ process_real <- function(wsmaf, plmaf,
   if (!is.null(seq_error)) assert_single_bounded(seq_error)
   assert_single_pos_int(bin_size)
 
-  # Ensure that the PLMAF is at most 0.5
-  plmaf[plmaf > 0.5] <- 1 - plmaf[plmaf > 0.5]
-  assert_bounded(plmaf, left = 0, right = 0.5)
+  input <- tibble::tibble(wsmaf = wsmaf, plmaf = plmaf, coverage = coverage) %>%
+    tidyr::drop_na()
+
+  # In some cases we are fed in the major allele so we ensure we only examine
+  # the minor allele. If the PLAF is > 0.5, we know it is the major allele so
+  # we look at 1 - WSAF and 1 - PLAF.
+  minor <- input %>%
+    dplyr::mutate(
+      wsmaf = ifelse(plmaf > 0.5, 1 - wsmaf, wsmaf),
+      plmaf = ifelse(plmaf > 0.5, 1 - plmaf, plmaf)
+    )
+
+  assert_bounded(minor$plmaf, left = 0, right = 0.5)
 
   # Run helper to process
   process(
-    wsmaf = wsmaf,
-    plmaf = plmaf,
+    wsmaf = minor$wsmaf,
+    plmaf = minor$plmaf,
+    coverage = minor$coverage,
     seq_error = seq_error,
     bin_size = bin_size,
     coi_method = coi_method
   )
+}
+
+#' @noRd
+estimate_seq_error <- function(wsmaf, plmaf, bin_size) {
+
+  # Cut the data. We define error break to allow for flexible bucket sizes.
+  error_break <- 0.02
+  bins <- cut(plmaf, seq(0, 0.5, error_break), include.lowest = TRUE)
+
+  # We want to ensure that we have at least bin_size points in the first bin
+  while (table(bins)[1] < bin_size) {
+    error_break <- error_break * 1.25
+    bins <- cut(plmaf, seq(0, 0.5, error_break), include.lowest = TRUE)
+  }
+
+  # Data points in the lowest bin that are likely sequence error
+  low_wsmafs <- wsmaf[which(bins == levels(bins)[1])]
+  error <- low_wsmafs[low_wsmafs > 0 & low_wsmafs < 0.5]
+
+  # If wanted to do mixture models, would fit something to error
+
+  # Expected number of points
+  expected <- round(length(low_wsmafs) * (error_break / 2), 4)
+
+  # Remove expected number of points from true points
+  error_dist <- utils::head(sort(error), -expected)
+
+  # Find 95% error
+  seq_error <- as.numeric(stats::quantile(error_dist, 0.95, na.rm = T))
+
+  # Ensure that seq_error is greater than 1%
+  seq_error <- round(max(seq_error, 0.01, na.rm = T), 4)
+
+  return(seq_error)
 }

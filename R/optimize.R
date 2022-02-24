@@ -48,21 +48,26 @@ likelihood <- function(coi,
   # Distance
   gap <- theory_coi - processed_data$m_variant
 
+  # Weigh the buckets by the number of points in each bucket
+  gap <- gap * processed_data$bucket_size
+
   if (distance == "abs_sum") {
     # Find sum of differences
-    gap <- abs(colSums(gap))
+    gap <- abs(weighted_colSums(gap, processed_data$coverage))
   } else if (distance == "sum_abs") {
     # Find absolute value of differences
-    gap <- colSums(abs(gap))
+    gap <- weighted_colSums(abs(gap), processed_data$coverage)
   } else if (distance == "squared") {
     # Squared distance
-    gap <- colSums(gap^2)
+    gap <- weighted_colSums(gap^2, processed_data$coverage)
   }
 
   # Gap is a named list with two entries: the coi and the PLMAF. We want to
   # return only the coi
   gap[1]
 }
+
+
 
 #------------------------------------------------
 #' Optimize the COI
@@ -87,18 +92,35 @@ optimize_coi <- function(data,
                          seq_error = NULL,
                          bin_size = 20,
                          distance = "squared",
-                         coi_method = "variant") {
+                         coi_method = "variant",
+                         use_bins = FALSE) {
 
   # Check inputs
   assert_in(data_type, c("sim", "real"))
   assert_single_string(data_type)
   assert_single_pos_int(max_coi)
   if (!is.null(seq_error)) assert_single_bounded(seq_error)
-  assert_single_pos_int(bin_size)
   assert_single_string(distance)
   assert_in(distance, c("abs_sum", "sum_abs", "squared"))
   assert_single_string(coi_method)
   assert_in(coi_method, c("variant", "frequency"))
+  assert_single_pos_int(bin_size)
+
+  # removes NA from our data frame
+  data <- check_input_data(data, data_type)
+
+  # Are we using bins or not
+  if (!use_bins) {
+    ret <- optimize_coi_regression(data,
+      data_type,
+      max_coi = max_coi,
+      seq_error = seq_error,
+      distance = distance,
+      coi_method = coi_method,
+      seq_error_bin_size = bin_size
+    )
+    return(ret)
+  }
 
   # Warnings
   if (distance != "squared") {
@@ -118,16 +140,33 @@ optimize_coi <- function(data,
     bin_size <- processed$bin_size
     cuts <- processed$cuts
   } else if (data_type == "real") {
-    processed <- process_real(data$wsmaf, data$plmaf, seq_error, bin_size, coi_method)
+    # If no coverage is provided, we assume that the coverage is uniform across
+    # all loci
+    if (!"coverage" %in% colnames(data)) {
+      data$coverage <- rep(100, length(data$wsmaf))
+    }
+
+    processed <- process_real(
+      data$wsmaf,
+      data$plmaf,
+      data$coverage,
+      seq_error,
+      bin_size,
+      coi_method
+    )
     processed_data <- processed$data
     seq_error <- processed$seq_error
     bin_size <- processed$bin_size
     cuts <- processed$cuts
   }
 
-  # Special case where there are no heterozygous sites
-  if (nrow(processed_data) == 0) {
-    return(coi <- 1)
+  # Special case for the Frequency Method where there is no data
+  if (coi_method == "frequency" & nrow(processed_data) == 0) {
+    return(structure(
+      NaN,
+      notes = "Too few variant loci suggesting that the COI is 1 based on the Variant Method.",
+      estimated_coi = 1
+    ))
   }
 
   # Compute COI
@@ -169,6 +208,25 @@ optimize_coi <- function(data,
     warning(message, call. = FALSE)
   }
 
-  # Return COI
-  round(fit$par, 4)
+  # Estimated COI
+  estimated_coi <- round(fit$par, 4)
+
+  # Special case for the Frequency Method
+  if (coi_method == "frequency") {
+    check <- switch(data_type,
+      "sim" = check_freq_method(data$data$wsmaf, data$data$plmaf, seq_error),
+      "real" = check_freq_method(data$wsmaf, data$plmaf, seq_error)
+    )
+
+    # If the check returns FALSE, it means that the COI is likely 1
+    if (!check) {
+      return(structure(
+        NaN,
+        notes = "Too few variant loci suggesting that the COI is 1 based on the Variant Method.",
+        estimated_coi = estimated_coi
+      ))
+    }
+  }
+
+  estimated_coi
 }
