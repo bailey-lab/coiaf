@@ -14,6 +14,9 @@
 
 ## New features
 
+- An `autoplot` and `plot` method have been written for simulated data (#22).
+- Simulated data have been restructured and are now assigned a class `sim`
+  (#22).
 - The default sequence error threshold has been set to 1%.
 - Our methods now can estimate the COI without grouping data points into
   buckets (#17).
