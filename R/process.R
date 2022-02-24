@@ -25,7 +25,7 @@
 process <- function(wsmaf,
                     plmaf,
                     coverage,
-                    seq_error = NULL,
+                    seq_error = 0.01,
                     bin_size = 20,
                     coi_method = "variant") {
 
@@ -160,7 +160,7 @@ find_cut_midpoints <- function(data, cuts) {
 #' @export
 
 process_sim <- function(sim,
-                        seq_error = NULL,
+                        seq_error = 0.01,
                         bin_size = 20,
                         coi_method = "variant") {
   # Check inputs
@@ -210,7 +210,7 @@ process_sim <- function(sim,
 process_real <- function(wsmaf,
                          plmaf,
                          coverage,
-                         seq_error = NULL,
+                         seq_error = 0.01,
                          bin_size = 20,
                          coi_method = "variant") {
   # Check inputs

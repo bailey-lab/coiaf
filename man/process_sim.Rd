@@ -4,7 +4,7 @@
 \alias{process_sim}
 \title{Process simulated data}
 \usage{
-process_sim(sim, seq_error = NULL, bin_size = 20, coi_method = "variant")
+process_sim(sim, seq_error = 0.01, bin_size = 20, coi_method = "variant")
 }
 \arguments{
 \item{sim}{Output of \code{\link[=sim_biallelic]{sim_biallelic()}}.}

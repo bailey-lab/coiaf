@@ -8,7 +8,7 @@ process(
   wsmaf,
   plmaf,
   coverage,
-  seq_error = NULL,
+  seq_error = 0.01,
   bin_size = 20,
   coi_method = "variant"
 )

@@ -13,7 +13,7 @@ single_sensitivity(
   overdispersion = 0,
   relatedness = 0,
   epsilon = 0,
-  seq_error = NULL,
+  seq_error = 0.01,
   bin_size = 20,
   comparison = "overall",
   distance = "squared",
