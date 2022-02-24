@@ -25,7 +25,9 @@ NULL
 #' @name example_real_data
 NULL
 
-# Silence the R CMD check notes on the where function
-# This function comes from the tidyselect package but has not yet been exported
-# causing R to throw notes at the user.
-utils::globalVariables("where")
+# Silence the R CMD check notes on the where function and the magrittr dot
+# The where function comes from the tidyselect package but has not yet been
+# exported causing R to throw notes at the user.
+# The dot comes from magrittr and is used to pass data into the RHS of an
+# expression
+utils::globalVariables(c("where", "."))

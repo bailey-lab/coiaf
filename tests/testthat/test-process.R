@@ -38,11 +38,12 @@ test_that("cut midpoints work for a large data set (#18)", {
   data <- readRDS("issue_18.rds")
   expect_snapshot(
     compute_coi(
-      data,
+      tibble::as_tibble(data),
       "real",
       seq_error = data$seq_error,
       bin_size = data$bin_size,
-      coi_method = data$coi_method
+      coi_method = data$coi_method,
+      use_bins = TRUE
     )
   )
 })

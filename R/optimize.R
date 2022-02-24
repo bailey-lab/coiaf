@@ -53,19 +53,21 @@ likelihood <- function(coi,
 
   if (distance == "abs_sum") {
     # Find sum of differences
-    gap <- abs(colSums(gap))
+    gap <- abs(weighted_colSums(gap, processed_data$coverage))
   } else if (distance == "sum_abs") {
     # Find absolute value of differences
-    gap <- colSums(abs(gap))
+    gap <- weighted_colSums(abs(gap), processed_data$coverage)
   } else if (distance == "squared") {
     # Squared distance
-    gap <- colSums(gap^2)
+    gap <- weighted_colSums(gap^2, processed_data$coverage)
   }
 
   # Gap is a named list with two entries: the coi and the PLMAF. We want to
   # return only the coi
   gap[1]
 }
+
+
 
 #------------------------------------------------
 #' Optimize the COI
@@ -90,18 +92,36 @@ optimize_coi <- function(data,
                          seq_error = NULL,
                          bin_size = 20,
                          distance = "squared",
-                         coi_method = "variant") {
+                         coi_method = "variant",
+                         use_bins = FALSE) {
 
   # Check inputs
   assert_in(data_type, c("sim", "real"))
   assert_single_string(data_type)
   assert_single_pos_int(max_coi)
   if (!is.null(seq_error)) assert_single_bounded(seq_error)
-  assert_single_pos_int(bin_size)
   assert_single_string(distance)
   assert_in(distance, c("abs_sum", "sum_abs", "squared"))
   assert_single_string(coi_method)
   assert_in(coi_method, c("variant", "frequency"))
+  assert_single_pos_int(bin_size)
+
+  # removes NA from our data frame
+  data <- check_input_data(data, data_type)
+
+  # Are we using bins or not
+  if (!use_bins) {
+
+    ret <- optimize_coi_regression(data,
+                                  data_type,
+                                  max_coi = max_coi,
+                                  seq_error = seq_error,
+                                  distance = distance,
+                                  coi_method = coi_method,
+                                  seq_error_bin_size = bin_size)
+    return(ret)
+
+  }
 
   # Warnings
   if (distance != "squared") {

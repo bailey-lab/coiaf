@@ -1,8 +1,8 @@
-# cut midpoints work for a large data set
+# cut midpoints work for a large data set (#18)
 
     Code
-      compute_coi(data, "real", seq_error = data$seq_error, bin_size = data$bin_size,
-      coi_method = data$coi_method)
+      compute_coi(tibble::as_tibble(data), "real", seq_error = data$seq_error,
+      bin_size = data$bin_size, coi_method = data$coi_method, use_bins = TRUE)
     Output
       $coi
       [1] 1
