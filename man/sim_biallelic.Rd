@@ -17,7 +17,8 @@ sim_biallelic(
 \arguments{
 \item{coi}{Complexity of infection.}
 
-\item{plmaf}{Vector of population-level allele frequencies at each locus.}
+\item{plmaf}{Vector of population-level minor allele frequencies at each
+locus.}
 
 \item{coverage}{Coverage at each locus. If a single value is supplied then
 the same coverage is applied over all loci.}
@@ -51,10 +52,10 @@ An object of class \code{sim}. Contains a list of
 locus.
 \item \code{data} contains the following columns:
 \itemize{
-\item \code{plmaf}: The population-level allele frequency.
+\item \code{plmaf}: The population-level minor allele frequency.
 \item \code{coverage}: The coverage at each locus.
 \item \code{counts}: The count at each locus.
-\item \code{wsaf}: The within-sample allele frequency.
+\item \code{wsaf}: The within-sample minor allele frequency.
 }
 }
 }

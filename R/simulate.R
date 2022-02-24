@@ -27,7 +27,8 @@
 #'    zero, then the distribution is binomial, rather than beta-binomial.
 #'
 #' @param coi Complexity of infection.
-#' @param plmaf Vector of population-level allele frequencies at each locus.
+#' @param plmaf Vector of population-level minor allele frequencies at each
+#'   locus.
 #' @param coverage Coverage at each locus. If a single value is supplied then
 #'   the same coverage is applied over all loci.
 #' @param alpha Shape parameter of the symmetric Dirichlet prior on strain
@@ -55,10 +56,10 @@
 #' * `phased_haplotypes` contains the phased haplotype for each strain at each
 #' locus.
 #' * `data` contains the following columns:
-#'   + `plmaf`: The population-level allele frequency.
+#'   + `plmaf`: The population-level minor allele frequency.
 #'   + `coverage`: The coverage at each locus.
 #'   + `counts`: The count at each locus.
-#'   + `wsaf`: The within-sample allele frequency.
+#'   + `wsaf`: The within-sample minor allele frequency.
 #'
 #' @family simulated data functions
 #' @export
