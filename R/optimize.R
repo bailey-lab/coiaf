@@ -111,16 +111,15 @@ optimize_coi <- function(data,
 
   # Are we using bins or not
   if (!use_bins) {
-
     ret <- optimize_coi_regression(data,
-                                  data_type,
-                                  max_coi = max_coi,
-                                  seq_error = seq_error,
-                                  distance = distance,
-                                  coi_method = coi_method,
-                                  seq_error_bin_size = bin_size)
+      data_type,
+      max_coi = max_coi,
+      seq_error = seq_error,
+      distance = distance,
+      coi_method = coi_method,
+      seq_error_bin_size = bin_size
+    )
     return(ret)
-
   }
 
   # Warnings
@@ -161,20 +160,13 @@ optimize_coi <- function(data,
     cuts <- processed$cuts
   }
 
-  # Special cases for the Frequency Method where COI = 1
-  if (coi_method == "frequency") {
-    check <- switch(data_type,
-      "sim" = check_freq_method(data$data$wsmaf, data$data$plmaf, seq_error),
-      "real" = check_freq_method(data$wsmaf, data$plmaf, seq_error)
-    )
-
-    # If the check returns FALSE, it means that the COI is likely 1
-    if (!check) {
-      return(structure(
-        1,
-        notes = "Too few variant loci suggesting that the COI is 1 based on the Variant Method."
-      ))
-    }
+  # Special case for the Frequency Method where there is no data
+  if (coi_method == "frequency" & nrow(processed_data) == 0) {
+    return(structure(
+      NaN,
+      notes = "Too few variant loci suggesting that the COI is 1 based on the Variant Method.",
+      estimated_coi = 1
+    ))
   }
 
   # Compute COI
@@ -216,6 +208,25 @@ optimize_coi <- function(data,
     warning(message, call. = FALSE)
   }
 
-  # Return COI
-  round(fit$par, 4)
+  # Estimated COI
+  estimated_coi <- round(fit$par, 4)
+
+  # Special case for the Frequency Method
+  if (coi_method == "frequency") {
+    check <- switch(data_type,
+      "sim" = check_freq_method(data$data$wsmaf, data$data$plmaf, seq_error),
+      "real" = check_freq_method(data$wsmaf, data$plmaf, seq_error)
+    )
+
+    # If the check returns FALSE, it means that the COI is likely 1
+    if (!check) {
+      return(structure(
+        NaN,
+        notes = "Too few variant loci suggesting that the COI is 1 based on the Variant Method.",
+        estimated_coi = estimated_coi
+      ))
+    }
+  }
+
+  estimated_coi
 }

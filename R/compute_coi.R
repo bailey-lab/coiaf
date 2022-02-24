@@ -77,16 +77,15 @@ compute_coi <- function(data,
 
   # Are we using bins or not
   if (!use_bins) {
-
     ret <- compute_coi_regression(data,
-                                  data_type,
-                                  max_coi = max_coi,
-                                  seq_error = seq_error,
-                                  distance = distance,
-                                  coi_method = coi_method,
-                                  seq_error_bin_size = bin_size)
+      data_type,
+      max_coi = max_coi,
+      seq_error = seq_error,
+      distance = distance,
+      coi_method = coi_method,
+      seq_error_bin_size = bin_size
+    )
     return(ret)
-
   }
 
   assert_single_pos_int(bin_size)
@@ -139,22 +138,14 @@ compute_coi <- function(data,
     cuts <- processed$cuts
   }
 
-  # Special cases for the Frequency Method where COI = 1
-  if (coi_method == "frequency") {
-    check <- switch(data_type,
-      "sim" = check_freq_method(data$data$wsmaf, data$data$plmaf, seq_error),
-      "real" = check_freq_method(data$wsmaf, data$plmaf, seq_error)
-    )
-
-    # If the check returns FALSE, it means that the COI is likely 1
-    if (!check) {
-      ret <- list(
-        coi = 1,
-        probability = c(1, rep(0, max_coi - 1)),
-        notes = "Too few variant loci suggesting that the COI is 1 based on the Variant Method."
-      )
-      return(ret)
-    }
+  # Special case for the Frequency Method where there is no data
+  if (coi_method == "frequency" & nrow(processed_data) == 0) {
+    return(list(
+      coi = NaN,
+      probability = c(1, rep(0, max_coi - 1)),
+      notes = "Too few variant loci suggesting that the COI is 1 based on the Variant Method.",
+      estimated_coi = 1
+    ))
   }
 
   # Calculate theoretical COI curves for the interval specified. Since we want
@@ -233,6 +224,25 @@ compute_coi <- function(data,
   dist <- dist / sum(dist, na.rm = T)
   dist[is.nan(dist)] <- 0
 
+  # Special case for the Frequency Method
+  if (coi_method == "frequency") {
+    check <- switch(data_type,
+      "sim" = check_freq_method(data$data$wsmaf, data$data$plmaf, seq_error),
+      "real" = check_freq_method(data$wsmaf, data$plmaf, seq_error)
+    )
+
+    # If the check returns FALSE, it means that the COI is likely 1
+    if (!check) {
+      ret <- list(
+        coi = NaN,
+        probability = c(1, rep(0, max_coi - 1)),
+        notes = "Too few variant loci suggesting that the COI is 1 based on the Variant Method.",
+        estimated_coi = as.numeric(coi)
+      )
+      return(ret)
+    }
+  }
+
   # List to return
   list(coi = as.numeric(coi), probability = dist)
 }
@@ -298,7 +308,7 @@ distance_curves <- function(processed_data, theory_cois, distance = "squared") {
 weighted_colSums <- function(x, w) {
 
   # if weights all the same just do colsum
-  if(all(w == w[1])) {
+  if (all(w == w[1])) {
     return(colSums(x))
   }
 
@@ -306,5 +316,4 @@ weighted_colSums <- function(x, w) {
   apply(x, 2, function(y) {
     stats::weighted.mean(y, w) * sum(w)
   })
-
 }
