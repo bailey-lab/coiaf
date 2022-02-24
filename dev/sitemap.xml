@@ -40,6 +40,9 @@
     <loc>https://bailey-lab.github.io/coiaf/dev/reference/compute_coi.html</loc>
   </url>
   <url>
+    <loc>https://bailey-lab.github.io/coiaf/dev/reference/compute_coi_regression.html</loc>
+  </url>
+  <url>
     <loc>https://bailey-lab.github.io/coiaf/dev/reference/cont_sensitivity.html</loc>
   </url>
   <url>
@@ -59,6 +62,9 @@
   </url>
   <url>
     <loc>https://bailey-lab.github.io/coiaf/dev/reference/optimize_coi.html</loc>
+  </url>
+  <url>
+    <loc>https://bailey-lab.github.io/coiaf/dev/reference/optimize_coi_regression.html</loc>
   </url>
   <url>
     <loc>https://bailey-lab.github.io/coiaf/dev/reference/pipe.html</loc>
