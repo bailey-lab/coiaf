@@ -186,7 +186,7 @@ process_data_for_regression <- function(data,
 
     # Subset to heterozygous sites
     df <- data.frame(plmaf = plmaf, m_variant = wsmaf, coverage = coverage) %>%
-      dplyr::filter(wsmaf > seq_error & wsmaf < (1 - seq_error))
+      dplyr::filter(m_variant > seq_error & m_variant < (1 - seq_error))
 
   }
 
