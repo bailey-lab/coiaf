@@ -91,30 +91,30 @@
 <dd><p>A number indicating the maximum COI to compare the
 simulated data to.</p></dd>
 <dt>plmaf</dt>
-<dd><p>Vector of population-level allele frequencies at each locus.</p></dd>
+<dd><p>Vector of population-level minor allele frequencies at each
+locus.</p></dd>
 <dt>coverage</dt>
-<dd><p>Coverage at each locus. If a single value then the same
-coverage is applied over all loci.</p></dd>
+<dd><p>Coverage at each locus. If a single value is supplied then
+the same coverage is applied over all loci.</p></dd>
 <dt>alpha</dt>
 <dd><p>Shape parameter of the symmetric Dirichlet prior on strain
 proportions.</p></dd>
 <dt>overdispersion</dt>
 <dd><p>The extent to which counts are over-dispersed relative
-to the binomial distribution. Counts are Beta-binomially distributed, with
+to the binomial distribution. Counts are Beta-Binomially distributed, with
 the beta distribution having shape parameters
 \(\frac{p}{overdispersion}\) and
 \(\frac{1-p}{overdispersion}\).</p></dd>
 <dt>relatedness</dt>
 <dd><p>The probability that a strain in mixed infections is
-related to another. Default = 0 (unrelated). The implementation is similar
-to relatedness as defined in THE REAL McCOIL simulations. In the original
-paper (https://doi.org/10.1371/journal.pcbi.1005348) this is defined as:
+related to another. The implementation is similar to relatedness as defined
+in THE REAL McCOIL simulations. In the <a href="https://doi.org/10.1371/journal.pcbi.1005348" class="external-link">original paper</a> this is defined as:
 "... simulated relatedness (r) among lineages within the same host by
-sampling alleles either from an existing lineage within the same host
-(with probability r) or from the population (with probability (1-r))."</p></dd>
+sampling alleles either from an existing lineage within the same host (with
+probability r) or from the population (with probability (1-r))."</p></dd>
 <dt>epsilon</dt>
 <dd><p>The probability of a single read being miscalled as the other
-allele. Applies in both directions.</p></dd>
+allele. This error is applied in both directions.</p></dd>
 <dt>seq_error</dt>
 <dd><p>The level of sequencing error that is assumed. If no value
 is inputted, then we infer the level of sequence error.</p></dd>
