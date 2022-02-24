@@ -32,7 +32,7 @@ check_input_data <- function(data, data_type) {
 check_minor_allele <- function(data) {
   dplyr::mutate(
     data,
-    wsmaf = ifelse(plmaf > 0.5, 1 - wsmaf, wsmaf),
-    plmaf = ifelse(plmaf > 0.5, 1 - plmaf, plmaf)
+    wsmaf = ifelse(.data$plmaf > 0.5, 1 - .data$wsmaf, .data$wsmaf),
+    plmaf = ifelse(.data$plmaf > 0.5, 1 - .data$plmaf, .data$plmaf)
   )
 }
