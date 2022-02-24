@@ -246,51 +246,40 @@ process_real <- function(wsmaf,
   )
 }
 
-#' @noRd
-check_real_data <- function(wsmaf, plmaf) {
-
-  # Check inputs
-  assert_vector(wsmaf)
-  assert_bounded(wsmaf)
-  assert_vector(plmaf)
-  assert_bounded(plmaf)
-
-  # In some cases we are fed in the major allele so we ensure we only examine
-  # the minor allele. If the PLAF is > 0.5, we know it is the major allele so
-  # we look at 1 - WSAF and 1 - PLAF.
-  input <- data.frame("wsmaf" = wsmaf, "plmaf" = plmaf)
-  minor <- input %>%
-    dplyr::mutate(
-      wsmaf = ifelse(plmaf > 0.5, 1 - wsmaf, wsmaf),
-      plmaf = ifelse(plmaf > 0.5, 1 - plmaf, plmaf)
-    )
-
-  return(minor)
-}
-
-#' @noRd
 check_input_data <- function(data, data_type) {
   if (data_type == "sim") {
-
-    # removes NA from our data frame
+    # Remove NA from our data frame
     data$data <- tidyr::drop_na(data$data)
 
-    # add coverage if somehow missing
+    # Add coverage if it is missing
     if (!"coverage" %in% names(data$data)) {
       data$data$coverage <- rep(100, length(data$data$plmaf))
     }
-  } else {
-
-    # removes NA from our data frame
+  } else if (data_type == "real") {
+    # Remove NA from our data frame
     data <- tidyr::drop_na(data)
 
-    # add coverage if somehow missing
+    # Add coverage if it is missing
     if (!"coverage" %in% names(data)) {
       data$coverage <- rep(100, length(data$plmaf))
     }
+
+    # Ensure we are calling the minor allele
+    data <- check_minor_allele(data)
   }
 
-  return(data)
+  data
+}
+
+check_minor_allele <- function(data) {
+  # In some cases we are fed in the major allele so we ensure we only examine
+  # the minor allele. If the PLAF is > 0.5, we know it is the major allele so
+  # we look at 1 - WSAF and 1 - PLAF.
+  dplyr::mutate(
+    data,
+    wsmaf = ifelse(plmaf > 0.5, 1 - wsmaf, wsmaf),
+    plmaf = ifelse(plmaf > 0.5, 1 - plmaf, plmaf)
+  )
 }
 
 #' @noRd

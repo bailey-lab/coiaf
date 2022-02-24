@@ -15,7 +15,6 @@ compute_coi_regression <- function(data,
                                    distance = "squared",
                                    coi_method = "variant",
                                    seq_error_bin_size = 20) {
-
   processed_data <- process_data_for_regression(
     data, data_type, max_coi, seq_error,
     distance, coi_method, seq_error_bin_size
@@ -50,7 +49,6 @@ compute_coi_regression <- function(data,
 
   # List to return
   return(list(coi = as.numeric(coi), probability = dist))
-
 }
 
 #' Compute COI based on all points fitted to best fitting curve for COI
@@ -69,8 +67,6 @@ optimize_coi_regression <- function(data,
                                     distance = "squared",
                                     coi_method = "variant",
                                     seq_error_bin_size = 20) {
-
-
   processed_data <- process_data_for_regression(
     data, data_type, max_coi, seq_error,
     distance, coi_method, seq_error_bin_size
@@ -125,7 +121,6 @@ optimize_coi_regression <- function(data,
 
   # Return COI
   return(round(fit$par, 4))
-
 }
 
 #' @noRd
@@ -139,18 +134,14 @@ process_data_for_regression <- function(data,
 
   # Process data to get the wsmaf and plmaf
   if (data_type == "sim") {
-
     wsmaf <- data$data$wsmaf
     plmaf <- data$data$plmaf
     coverage <- data$data$coverage
-
   } else if (data_type == "real") {
-
-    minor <- check_real_data(data$wsmaf, data$plmaf)
-    wsmaf <- minor$wsmaf
-    plmaf <- minor$plmaf
+    data <- check_input_data(data, "real")
+    wsmaf <- data$wsmaf
+    plmaf <- data$plmaf
     coverage <- data$coverage
-
   }
 
   # Infer value of seq_error if NULL
@@ -168,7 +159,6 @@ process_data_for_regression <- function(data,
       m_variant = ifelse(wsmaf <= seq_error | wsmaf >= (1 - seq_error), 0, 1),
       coverage = coverage
     )
-
   } else if (coi_method == "frequency") {
 
     # do a variant number check here
@@ -187,11 +177,9 @@ process_data_for_regression <- function(data,
     # Subset to heterozygous sites
     df <- data.frame(plmaf = plmaf, m_variant = wsmaf, coverage = coverage) %>%
       dplyr::filter(m_variant > seq_error & m_variant < (1 - seq_error))
-
   }
 
   df$bucket_size <- 1
 
   return(df)
-
 }
