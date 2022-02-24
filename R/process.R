@@ -101,31 +101,6 @@ process <- function(wsmaf,
     )
   }
 
-  # In some instances, Hmisc::cut2 assigns a cut with only 1 number in it.
-  # If this happens and we try to group our data, this can mess up our data.
-  # Therefore, to account for this, we find all instances where this occurs
-  # and combine these factors with the previous factor.
-  one_point <- !stringr::str_starts(levels(df$plmaf_cut), "\\[")
-
-  # We find all places where we only have one point. But, we ignore the case
-  # where the one point is the first break (0).
-  if (sum(one_point) > 1 | (sum(one_point) == 1 & which(one_point)[1] != 1)) {
-    if (which(one_point)[1] == 1) {
-      # When 0 is its own break, we ignore it and store all the other locations
-      points <- which(one_point)[-1]
-    } else {
-      # When 0 is not its own break, we store all locations
-      points <- which(one_point)
-    }
-
-    # We make a list of the factor names of all the points we want to remove. We
-    # name the list with the previous factor, and combine the two together. This
-    # effectively puts the points in the single factor into the previous one.
-    point_list <- c(levels(df$plmaf_cut)[points])
-    names(point_list) <- levels(df$plmaf_cut)[points - 1]
-    df$plmaf_cut <- forcats::fct_recode(df$plmaf_cut, !!!point_list)
-  }
-
   # Average over intervals of PLMAF
   df_grouped <- df %>%
     dplyr::group_by(.data$plmaf_cut, .drop = FALSE) %>%
@@ -135,21 +110,44 @@ process <- function(wsmaf,
     ) %>%
     stats::na.omit()
 
-  # Find the cuts for our data
-  cuts <- suppressWarnings(Hmisc::cut2(plmaf, m = bin_size, onlycuts = TRUE))
-  if (sum(one_point) > 1 | (sum(one_point) == 1 & which(one_point)[1] != 1)) {
-    cuts <- cuts[-points]
-  }
-
-  # We then find our midpoints
-  df_grouped$midpoints <- cuts[-length(cuts)] + diff(cuts) / 2
+  # Compute midpoints
+  df_grouped_mid <- find_cut_midpoints(df_grouped, .data$plmaf_cut)
 
   # Return data, seq_error, and cuts
   list(
-    data = df_grouped,
+    data = df_grouped_mid,
     seq_error = seq_error,
     bin_size = bin_size,
-    cuts = cuts
+    cuts = suppressWarnings(Hmisc::cut2(plmaf, m = bin_size, onlycuts = TRUE))
+  )
+}
+
+find_cut_midpoints <- function(data, cuts) {
+  # Convert single cuts to the standard format: "[lower,upper)"
+  fix_single_cuts <- dplyr::mutate(
+    data,
+    fixed_cuts = as.character({{ cuts }}),
+    fixed_cuts = ifelse(
+      !stringr::str_starts(.data$fixed_cuts, "\\["),
+      glue::glue("[{.data$fixed_cuts},{.data$fixed_cuts})"),
+      .data$fixed_cuts
+    )
+  )
+
+  # Find lower and upper bounds
+  extract_bounds <- tidyr::extract(
+    data = fix_single_cuts,
+    col = .data$fixed_cuts,
+    into = c("lower", "upper"),
+    regex = "([[:alnum:]].+),([[:alnum:]].+)[\\]\\)]",
+    convert = TRUE
+  )
+
+  # Determine cut midpoints
+  dplyr::mutate(
+    extract_bounds,
+    midpoints = (.data$upper + .data$lower) / 2,
+    .keep = "unused"
   )
 }
 
