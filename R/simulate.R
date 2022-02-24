@@ -177,6 +177,7 @@ sim_biallelic <- function(coi,
 #'
 #' @param object,x An object of class `sim`. Derived from the output of
 #'   [sim_biallelic()].
+#' @param ... Other arguments passed on to methods.
 #'
 #' @name plot-simulation
 #' @family simulated data functions
@@ -190,8 +191,8 @@ NULL
 #' @export
 autoplot.sim <- function(object, ...) {
   sim_coi <- object$parameters %>%
-    dplyr::filter(parameter == "coi") %>%
-    dplyr::pull(value)
+    dplyr::filter(.data$parameter == "coi") %>%
+    dplyr::pull(.data$value)
 
   ggplot2::ggplot(
     data = object$data,

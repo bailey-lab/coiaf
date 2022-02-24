@@ -13,6 +13,8 @@
 \arguments{
 \item{object, x}{An object of class \code{sim}. Derived from the output of
 \code{\link[=sim_biallelic]{sim_biallelic()}}.}
+
+\item{...}{Other arguments passed on to methods.}
 }
 \description{
 Generate a simple plot visualizing simulated data. Compares the derived WSAF
