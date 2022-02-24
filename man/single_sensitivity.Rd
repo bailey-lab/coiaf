@@ -26,30 +26,30 @@ single_sensitivity(
 \item{max_coi}{A number indicating the maximum COI to compare the
 simulated data to.}
 
-\item{plmaf}{Vector of population-level allele frequencies at each locus.}
+\item{plmaf}{Vector of population-level minor allele frequencies at each
+locus.}
 
-\item{coverage}{Coverage at each locus. If a single value then the same
-coverage is applied over all loci.}
+\item{coverage}{Coverage at each locus. If a single value is supplied then
+the same coverage is applied over all loci.}
 
 \item{alpha}{Shape parameter of the symmetric Dirichlet prior on strain
 proportions.}
 
 \item{overdispersion}{The extent to which counts are over-dispersed relative
-to the binomial distribution. Counts are Beta-binomially distributed, with
+to the binomial distribution. Counts are Beta-Binomially distributed, with
 the beta distribution having shape parameters
 \mjseqn{\frac{p}{overdispersion}} and
 \mjseqn{\frac{1-p}{overdispersion}}.}
 
 \item{relatedness}{The probability that a strain in mixed infections is
-related to another. Default = 0 (unrelated). The implementation is similar
-to relatedness as defined in THE REAL McCOIL simulations. In the original
-paper (https://doi.org/10.1371/journal.pcbi.1005348) this is defined as:
+related to another. The implementation is similar to relatedness as defined
+in THE REAL McCOIL simulations. In the \href{https://doi.org/10.1371/journal.pcbi.1005348}{original paper} this is defined as:
 "... simulated relatedness (r) among lineages within the same host by
-sampling alleles either from an existing lineage within the same host
-(with probability r) or from the population (with probability (1-r))."}
+sampling alleles either from an existing lineage within the same host (with
+probability r) or from the population (with probability (1-r))."}
 
 \item{epsilon}{The probability of a single read being miscalled as the other
-allele. Applies in both directions.}
+allele. This error is applied in both directions.}
 
 \item{seq_error}{The level of sequencing error that is assumed. If no value
 is inputted, then we infer the level of sequence error.}

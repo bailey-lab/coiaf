@@ -5,7 +5,7 @@
 \title{Simulate biallelic data}
 \usage{
 sim_biallelic(
-  coi = 3,
+  coi,
   plmaf = runif(10, 0, 0.5),
   coverage = 200,
   alpha = 1,
@@ -17,50 +17,45 @@ sim_biallelic(
 \arguments{
 \item{coi}{Complexity of infection.}
 
-\item{plmaf}{Vector of population-level allele frequencies at each locus.}
+\item{plmaf}{Vector of population-level minor allele frequencies at each
+locus.}
 
-\item{coverage}{Coverage at each locus. If a single value then the same
-coverage is applied over all loci.}
+\item{coverage}{Coverage at each locus. If a single value is supplied then
+the same coverage is applied over all loci.}
 
 \item{alpha}{Shape parameter of the symmetric Dirichlet prior on strain
 proportions.}
 
 \item{overdispersion}{The extent to which counts are over-dispersed relative
-to the binomial distribution. Counts are Beta-binomially distributed, with
+to the binomial distribution. Counts are Beta-Binomially distributed, with
 the beta distribution having shape parameters
 \mjseqn{\frac{p}{overdispersion}} and
 \mjseqn{\frac{1-p}{overdispersion}}.}
 
 \item{relatedness}{The probability that a strain in mixed infections is
-related to another. Default = 0 (unrelated). The implementation is similar
-to relatedness as defined in THE REAL McCOIL simulations. In the original
-paper (https://doi.org/10.1371/journal.pcbi.1005348) this is defined as:
+related to another. The implementation is similar to relatedness as defined
+in THE REAL McCOIL simulations. In the \href{https://doi.org/10.1371/journal.pcbi.1005348}{original paper} this is defined as:
 "... simulated relatedness (r) among lineages within the same host by
-sampling alleles either from an existing lineage within the same host
-(with probability r) or from the population (with probability (1-r))."}
+sampling alleles either from an existing lineage within the same host (with
+probability r) or from the population (with probability (1-r))."}
 
 \item{epsilon}{The probability of a single read being miscalled as the other
-allele. Applies in both directions.}
+allele. This error is applied in both directions.}
 }
 \value{
-A list of:
+An object of class \code{sim}. Contains a list of
+\link[tibble:tibble-package]{tibbles}:
 \itemize{
-\item \code{coi}: The COI used to simulate the data.
-\item \code{strain_proportions}: The strain proportion of each strain.
-\item \code{phased}: The phased haplotype.
-\item \code{data}: A dataframe of:
+\item \code{parameters} contains each parameter and the value used to simulate data.
+\item \code{strain_proportions} contains the proportion of each strain.
+\item \code{phased_haplotypes} contains the phased haplotype for each strain at each
+locus.
+\item \code{data} contains the following columns:
 \itemize{
-\item \code{plmaf}: The population-level allele frequency.
+\item \code{plmaf}: The population-level minor allele frequency.
 \item \code{coverage}: The coverage at each locus.
 \item \code{counts}: The count at each locus.
-\item \code{wsmaf}: The within-sample allele frequency.
-}
-\item \code{inputs}: A dataframe of function input arguments:
-\itemize{
-\item \code{alpha}: Shape parameters of Dirichlet controlling strain proportions.
-\item \code{overdispersion}: Overdispersion in count data.
-\item \code{relatedness}: Within sample relatedness between strains.
-\item \code{epsilon}: Probability of a single read being miscalled.
+\item \code{wsaf}: The within-sample minor allele frequency.
 }
 }
 }
@@ -93,8 +88,12 @@ expectation \mjseqn{w_{error}}. The raw number of draws is given by the
 zero, then the distribution is binomial, rather than beta-binomial.
 }
 }
+\examples{
+sim_biallelic(coi = 5)
+}
 \seealso{
 Other simulated data functions: 
+\code{\link{plot-simulation}},
 \code{\link{process_sim}()}
 }
 \concept{simulated data functions}

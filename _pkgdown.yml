@@ -56,7 +56,9 @@ reference:
       - cont_sensitivity
   - title: Visualize
     contents:
-      - matches("plot")
+      - plot-simulation
+      - error_plot
+      - sensitivity_plot
       - world_map
       - theme_coiaf
 

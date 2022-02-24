@@ -52,6 +52,7 @@ haplotype of the parasites is computed.
 \code{\link[=process_real]{process_real()}} to process real data.
 
 Other simulated data functions: 
+\code{\link{plot-simulation}},
 \code{\link{sim_biallelic}()}
 }
 \concept{simulated data functions}

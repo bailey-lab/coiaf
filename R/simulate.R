@@ -27,45 +27,45 @@
 #'    zero, then the distribution is binomial, rather than beta-binomial.
 #'
 #' @param coi Complexity of infection.
-#' @param plmaf Vector of population-level allele frequencies at each locus.
-#' @param coverage Coverage at each locus. If a single value then the same
-#'   coverage is applied over all loci.
+#' @param plmaf Vector of population-level minor allele frequencies at each
+#'   locus.
+#' @param coverage Coverage at each locus. If a single value is supplied then
+#'   the same coverage is applied over all loci.
 #' @param alpha Shape parameter of the symmetric Dirichlet prior on strain
 #'   proportions.
 #' @param overdispersion The extent to which counts are over-dispersed relative
-#'   to the binomial distribution. Counts are Beta-binomially distributed, with
+#'   to the binomial distribution. Counts are Beta-Binomially distributed, with
 #'   the beta distribution having shape parameters
 #'   \mjseqn{\frac{p}{overdispersion}} and
 #'   \mjseqn{\frac{1-p}{overdispersion}}.
 #' @param epsilon The probability of a single read being miscalled as the other
-#'   allele. Applies in both directions.
+#'   allele. This error is applied in both directions.
 #' @param relatedness The probability that a strain in mixed infections is
-#'   related to another. Default = 0 (unrelated). The implementation is similar
-#'   to relatedness as defined in THE REAL McCOIL simulations. In the original
-#'   paper (https://doi.org/10.1371/journal.pcbi.1005348) this is defined as:
+#'   related to another. The implementation is similar to relatedness as defined
+#'   in THE REAL McCOIL simulations. In the [original
+#'   paper](https://doi.org/10.1371/journal.pcbi.1005348) this is defined as:
 #'   "... simulated relatedness (r) among lineages within the same host by
-#'   sampling alleles either from an existing lineage within the same host
-#'   (with probability r) or from the population (with probability (1-r))."
+#'   sampling alleles either from an existing lineage within the same host (with
+#'   probability r) or from the population (with probability (1-r))."
 #'
-#' @return A list of:
-#' * `coi`: The COI used to simulate the data.
-#' * `strain_proportions`: The strain proportion of each strain.
-#' * `phased`: The phased haplotype.
-#' * `data`: A dataframe of:
-#'   + `plmaf`: The population-level allele frequency.
+#' @return
+#' An object of class `sim`. Contains a list of
+#' [tibbles][tibble::tibble-package]:
+#' * `parameters` contains each parameter and the value used to simulate data.
+#' * `strain_proportions` contains the proportion of each strain.
+#' * `phased_haplotypes` contains the phased haplotype for each strain at each
+#' locus.
+#' * `data` contains the following columns:
+#'   + `plmaf`: The population-level minor allele frequency.
 #'   + `coverage`: The coverage at each locus.
 #'   + `counts`: The count at each locus.
-#'   + `wsmaf`: The within-sample allele frequency.
-#' * `inputs`: A dataframe of function input arguments:
-#'   + `alpha`: Shape parameters of Dirichlet controlling strain proportions.
-#'   + `overdispersion`: Overdispersion in count data.
-#'   + `relatedness`: Within sample relatedness between strains.
-#'   + `epsilon`: Probability of a single read being miscalled.
+#'   + `wsaf`: The within-sample minor allele frequency.
 #'
 #' @family simulated data functions
 #' @export
-
-sim_biallelic <- function(coi = 3,
+#' @examples
+#' sim_biallelic(coi = 5)
+sim_biallelic <- function(coi,
                           plmaf = runif(10, 0, 0.5),
                           coverage = 200,
                           alpha = 1,
@@ -95,8 +95,13 @@ sim_biallelic <- function(coi = 3,
   # Generate strain proportions
   w <- rdirichlet(rep(alpha, coi))
 
-  # Generate true WSMAF levels by summing binomial draws over strain proportions
+  # Generate true WSAF levels by summing binomial draws over strain proportions
   m <- mapply(function(x) rbinom(coi, 1, x), x = plmaf)
+  if (coi == 1) {
+    names(m) <- paste0("locus_", seq_len(length(m)))
+  } else {
+    colnames(m) <- paste0("locus_", seq_len(ncol(m)))
+  }
 
   ## Handle relatedness
   if (relatedness > 0 && coi > 1) {
@@ -145,22 +150,70 @@ sim_biallelic <- function(coi = 3,
     )
   }
 
-  # Return list
-  list(
-    coi = coi,
-    strain_proportions = w,
-    phased = m,
-    data = data.frame(
-      plmaf = plmaf,
-      coverage = coverage,
-      counts = counts,
-      wsmaf = counts / coverage
+  # Return list of class sim
+  structure(
+    list(
+      parameters = tibble(
+        parameter = c("coi", "alpha", "overdispersion", "relatedness", "epsilon"),
+        value = c(coi, alpha, overdispersion, relatedness, epsilon)
+      ),
+      strain_proportions = as_tibble_col(w, "proportion"),
+      phased_haplotypes = if (coi == 1) as_tibble_row(m) else as_tibble(m),
+      data = tibble(
+        plmaf = plmaf,
+        coverage = coverage,
+        counts = counts,
+        wsmaf = counts / coverage
+      )
     ),
-    inputs = data.frame(
-      alpha          = alpha,
-      overdispersion = overdispersion,
-      relatedness    = relatedness,
-      epsilon        = epsilon
-    )
+    class = "sim"
   )
+}
+
+#------------------------------------------------
+#' Plot simulated data
+#'
+#' Generate a simple plot visualizing simulated data. Compares the derived WSAF
+#' to the PLAF.
+#'
+#' @param object,x An object of class `sim`. Derived from the output of
+#'   [sim_biallelic()].
+#' @param ... Other arguments passed on to methods.
+#'
+#' @name plot-simulation
+#' @family simulated data functions
+#' @examples
+#' plot(sim_biallelic(coi = 2))
+#' plot(sim_biallelic(coi = 5))
+NULL
+
+#' @importFrom ggplot2 autoplot
+#' @rdname plot-simulation
+#' @export
+autoplot.sim <- function(object, ...) {
+  sim_coi <- object$parameters %>%
+    dplyr::filter(.data$parameter == "coi") %>%
+    dplyr::pull(.data$value)
+
+  ggplot2::ggplot(
+    data = object$data,
+    mapping = ggplot2::aes(
+      x = .data$plmaf,
+      y = .data$wsmaf,
+    )
+  ) +
+    ggplot2::geom_point(...) +
+    ggplot2::labs(
+      title = glue("Simulated COI of {sim_coi}"),
+      x = "Population Level Minor Allele Frequency",
+      y = "Within Sample Minor Allele Frequency"
+    ) +
+    default_theme()
+}
+
+#' @importFrom graphics plot
+#' @rdname plot-simulation
+#' @export
+plot.sim <- function(x, ...) {
+  print(autoplot(x, ...))
 }

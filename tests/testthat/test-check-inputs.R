@@ -2,7 +2,7 @@ input <- tibble::tibble(plmaf = c(0.26, NA), wsmaf = c(0.35, NA))
 
 # Simulate data
 set.seed(101)
-sim_input <- sim_biallelic()
+sim_input <- sim_biallelic(coi = 3)
 sim_input$data <- input
 
 test_that("check_input_data drops NAs", {
