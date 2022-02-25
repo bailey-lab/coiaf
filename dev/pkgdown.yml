@@ -7,7 +7,7 @@ articles:
   example_simulation: example_simulation.html
   sensitivity_analysis_continuous: sensitivity_analysis_continuous.html
   sensitivity_analysis_discrete: sensitivity_analysis_discrete.html
-last_built: 2022-02-24T22:25Z
+last_built: 2022-02-25T01:06Z
 urls:
   reference: https://bailey-lab.github.io/coiaf/reference
   article: https://bailey-lab.github.io/coiaf/articles
