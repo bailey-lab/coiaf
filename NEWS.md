@@ -35,7 +35,7 @@
 - The Frequency Method is undefined for a COI less than two. When we suspect the
   COI should be less than two, we return `NaN`. We additionally return a note
   indicating that the COI may be one. If we are able to compute the COI, we also
-  return the COI estimated by our methods (#14, #21).
+  return the COI estimated by our methods (#14, #21, #23).
 
 ## Maintenance
 

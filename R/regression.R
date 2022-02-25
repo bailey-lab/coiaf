@@ -20,9 +20,14 @@ compute_coi_regression <- function(data,
     distance, coi_method, seq_error_bin_size
   )
 
-  # was this deemed to be COI = 1
-  if ("coi" %in% names(processed_data)) {
-    return(processed_data)
+  # Special case for the Frequency Method where there is no data
+  if (coi_method == "frequency" & nrow(processed_data) == 0) {
+    return(list(
+      coi = NaN,
+      probability = c(1, rep(0, max_coi - 1)),
+      notes = "Too few variant loci suggesting that the COI is 1 based on the Variant Method.",
+      estimated_coi = 1
+    ))
   }
 
   # Calculate theoretical COI curves for the interval specified. Since we want
@@ -46,6 +51,25 @@ compute_coi_regression <- function(data,
   dist <- 1 / (dist + 1e-5)
   dist <- dist / sum(dist, na.rm = T)
   dist[is.nan(dist)] <- 0
+
+  # Special case for the Frequency Method
+  if (coi_method == "frequency") {
+    check <- switch(data_type,
+      "sim" = check_freq_method(data$data$wsmaf, data$data$plmaf, seq_error),
+      "real" = check_freq_method(data$wsmaf, data$plmaf, seq_error)
+    )
+
+    # If the check returns FALSE, it means that the COI is likely 1
+    if (!check) {
+      ret <- list(
+        coi = NaN,
+        probability = c(1, rep(0, max_coi - 1)),
+        notes = "Too few variant loci suggesting that the COI is 1 based on the Variant Method.",
+        estimated_coi = as.numeric(coi)
+      )
+      return(ret)
+    }
+  }
 
   # List to return
   return(list(coi = as.numeric(coi), probability = dist))
@@ -72,9 +96,13 @@ optimize_coi_regression <- function(data,
     distance, coi_method, seq_error_bin_size
   )
 
-  # was this deemed to be COI = 1
-  if ("coi" %in% names(processed_data)) {
-    return(processed_data)
+  # Special case for the Frequency Method where there is no data
+  if (coi_method == "frequency" & nrow(processed_data) == 0) {
+    return(structure(
+      NaN,
+      notes = "Too few variant loci suggesting that the COI is 1 based on the Variant Method.",
+      estimated_coi = 1
+    ))
   }
 
   # correct names for likelihood function
@@ -119,8 +147,27 @@ optimize_coi_regression <- function(data,
     warning(message, call. = FALSE)
   }
 
-  # Return COI
-  return(round(fit$par, 4))
+  # Estimated COI
+  estimated_coi <- round(fit$par, 4)
+
+  # Special case for the Frequency Method
+  if (coi_method == "frequency") {
+    check <- switch(data_type,
+      "sim" = check_freq_method(data$data$wsmaf, data$data$plmaf, seq_error),
+      "real" = check_freq_method(data$wsmaf, data$plmaf, seq_error)
+    )
+
+    # If the check returns FALSE, it means that the COI is likely 1
+    if (!check) {
+      return(structure(
+        NaN,
+        notes = "Too few variant loci suggesting that the COI is 1 based on the Variant Method.",
+        estimated_coi = estimated_coi
+      ))
+    }
+  }
+
+  estimated_coi
 }
 
 #' @noRd
@@ -131,7 +178,6 @@ process_data_for_regression <- function(data,
                                         distance,
                                         coi_method,
                                         seq_error_bin_size) {
-
   # Process data to get the wsmaf and plmaf
   if (data_type == "sim") {
     wsmaf <- data$data$wsmaf
@@ -151,37 +197,26 @@ process_data_for_regression <- function(data,
 
   # Process data to get in right format
   if (coi_method == "variant") {
-
-    # Isolate PLMAF and whether a site is a variant,
-    # accounting for sequence error
+    # Isolate PLMAF and whether a site is a variant, accounting for sequence
+    # error
     df <- data.frame(
       plmaf = plmaf,
       m_variant = ifelse(wsmaf <= seq_error | wsmaf >= (1 - seq_error), 0, 1),
-      coverage = coverage
+      coverage = coverage,
+      bucket_size = 1
     )
   } else if (coi_method == "frequency") {
-
-    # do a variant number check here
-    check <- check_freq_method(wsmaf, plmaf, seq_error)
-
-    # if checks out then return 1 here
-    if (!check) {
-      ret <- list(
-        coi = 1,
-        probability = c(1, rep(0, max_coi - 1)),
-        notes = "Too few variant loci suggesting that the COI is 1 based on the Variant Method."
-      )
-      return(ret)
-    }
-
     # Subset to heterozygous sites
-    df <- data.frame(plmaf = plmaf, m_variant = wsmaf, coverage = coverage) %>%
+    df <- data.frame(
+      plmaf = plmaf,
+      m_variant = wsmaf,
+      coverage = coverage,
+      bucket_size = 1
+    ) %>%
       dplyr::filter(
         .data$m_variant > seq_error & .data$m_variant < (1 - seq_error)
       )
   }
 
-  df$bucket_size <- 1
-
-  return(df)
+  df
 }
