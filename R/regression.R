@@ -164,13 +164,13 @@ optimize_coi_regression <- function(data,
 
     # If the actual number of variant sites is less than the lower bound of the
     # CI, the COI may be 1
-    if (check["variant"] < check["lower_ci"]) {
+    if (check[["variant"]] < check[["lower_ci"]]) {
       return(structure(
         NaN,
         notes = "Too few variant loci suggesting that the COI is 1 based on the Variant Method.",
         estimated_coi = estimated_coi,
-        num_variant_loci = check["variant"],
-        expected_num_loci = check["expected"]
+        num_variant_loci = check[["variant"]],
+        expected_num_loci = check[["expected"]]
       ))
     }
   }
