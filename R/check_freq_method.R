@@ -9,8 +9,8 @@ check_freq_method <- function(wsmaf, plmaf, seq_error) {
 
   # Find the 99% confidence interval
   bin_ci <- Hmisc::binconf(sum(hardy_weinberg), n_loci, alpha = 0.01) * n_loci
+  names(bin_ci) <- c("expected", "lower_ci", "uper_ci")
 
-  # If the actual number of variant sites is less than the lower bound of the CI
-  # return FALSE, otherwise return FALSE
-  if (n_variant < bin_ci[1, "Lower"]) FALSE else TRUE
+  # Return number of variant sites and CI info
+  c(variant = n_variant, bin_ci)
 }

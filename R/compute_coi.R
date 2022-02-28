@@ -144,7 +144,8 @@ compute_coi <- function(data,
       coi = NaN,
       probability = c(1, rep(0, max_coi - 1)),
       notes = "Too few variant loci suggesting that the COI is 1 based on the Variant Method.",
-      estimated_coi = 1
+      estimated_coi = 1,
+      num_variant_loci = 0
     ))
   }
 
@@ -231,13 +232,16 @@ compute_coi <- function(data,
       "real" = check_freq_method(data$wsmaf, data$plmaf, seq_error)
     )
 
-    # If the check returns FALSE, it means that the COI is likely 1
-    if (!check) {
+    # If the actual number of variant sites is less than the lower bound of the
+    # CI, the COI may be 1
+    if (check["variant"] < check["lower_ci"]) {
       ret <- list(
         coi = NaN,
         probability = c(1, rep(0, max_coi - 1)),
         notes = "Too few variant loci suggesting that the COI is 1 based on the Variant Method.",
-        estimated_coi = as.numeric(coi)
+        estimated_coi = as.numeric(coi),
+        num_variant_loci = check["variant"],
+        expected_num_loci = check["expected"]
       )
       return(ret)
     }
