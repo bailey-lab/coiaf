@@ -5,6 +5,7 @@
 \title{Single sensitivity analysis}
 \usage{
 single_sensitivity(
+  disc_or_cont,
   coi = 3,
   max_coi = 25,
   plmaf = runif(1000, 0, 0.5),
@@ -21,6 +22,8 @@ single_sensitivity(
 )
 }
 \arguments{
+\item{disc_or_cont}{Whether to run a discrete or continuous COI estimation.}
+
 \item{coi}{Complexity of infection.}
 
 \item{max_coi}{A number indicating the maximum COI to compare the

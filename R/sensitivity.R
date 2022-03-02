@@ -3,6 +3,7 @@
 #'
 #' Runs a single full COI sensitivity analysis.
 #'
+#' @param disc_or_cont Whether to run a discrete or continuous COI estimation.
 #' @inheritParams sim_biallelic
 #' @inheritParams compute_coi
 #'
@@ -10,7 +11,8 @@
 #'
 #' @keywords internal
 
-single_sensitivity <- function(coi = 3,
+single_sensitivity <- function(disc_or_cont,
+                               coi = 3,
                                max_coi = 25,
                                plmaf = runif(1000, 0, 0.5),
                                coverage = 200,
@@ -60,16 +62,28 @@ single_sensitivity <- function(coi = 3,
   if (is.na(seq_error)) seq_error <- NULL
 
   # Compute COI
-  compute_coi(
-    sim_data,
-    "sim",
-    max_coi,
-    seq_error,
-    bin_size,
-    comparison,
-    distance,
-    coi_method
-  )
+  if (disc_or_cont == "disc") {
+    compute_coi(
+      sim_data,
+      "sim",
+      max_coi,
+      seq_error,
+      bin_size,
+      comparison,
+      distance,
+      coi_method
+    )
+  } else if (disc_or_cont == "cont") {
+    optimize_coi(
+      sim_data,
+      "sim",
+      max_coi,
+      seq_error,
+      bin_size,
+      distance,
+      coi_method
+    )
+  }
 }
 
 
@@ -163,19 +177,20 @@ sensitivity <- function(repetitions = 10,
       # Run each sample repetitions times
       lapply(seq_len(repetitions), function(y) {
         single_sensitivity(
-          param_grid$coi[x],
-          param_grid$max_coi[x],
-          plmaf,
-          param_grid$coverage[x],
-          param_grid$alpha[x],
-          param_grid$overdispersion[x],
-          param_grid$relatedness[x],
-          param_grid$epsilon[x],
-          param_grid$seq_error[x],
-          param_grid$bin_size[x],
-          param_grid$comparison[x],
-          param_grid$distance[x],
-          param_grid$coi_method[x]
+          disc_or_cont = "disc",
+          coi = param_grid$coi[x],
+          max_coi = param_grid$max_coi[x],
+          plmaf = plmaf,
+          coverage = param_grid$coverage[x],
+          alpha = param_grid$alpha[x],
+          overdispersion = param_grid$overdispersion[x],
+          relatedness = param_grid$relatedness[x],
+          epsilon = param_grid$epsilon[x],
+          seq_error = param_grid$seq_error[x],
+          bin_size = param_grid$bin_size[x],
+          comparison = param_grid$comparison[x],
+          distance = param_grid$distance[x],
+          coi_method = param_grid$coi_method[x]
         )
       })
     }
@@ -340,26 +355,21 @@ cont_sensitivity <- function(repetitions = 10,
 
       # Run each sample repetitions times
       lapply(seq_len(repetitions), function(y) {
-        test_sim <- sim_biallelic(
-          param_grid$coi[x],
-          plmaf,
-          param_grid$coverage[x],
-          param_grid$alpha[x],
-          param_grid$overdispersion[x],
-          param_grid$relatedness[x],
-          param_grid$epsilon[x]
-        )
-
-        if (is.na(param_grid$seq_error[x])) param_grid$seq_error[x] <- NULL
-
-        optimize_coi(
-          test_sim,
-          "sim",
-          param_grid$max_coi[x],
-          param_grid$seq_error[x],
-          param_grid$bin_size[x],
-          param_grid$distance[x],
-          param_grid$coi_method[x]
+        single_sensitivity(
+          disc_or_cont = "cont",
+          coi = param_grid$coi[x],
+          max_coi = param_grid$max_coi[x],
+          plmaf = plmaf,
+          coverage = param_grid$coverage[x],
+          alpha = param_grid$alpha[x],
+          overdispersion = param_grid$overdispersion[x],
+          relatedness = param_grid$relatedness[x],
+          epsilon = param_grid$epsilon[x],
+          seq_error = param_grid$seq_error[x],
+          bin_size = param_grid$bin_size[x],
+          comparison = param_grid$comparison[x],
+          distance = param_grid$distance[x],
+          coi_method = param_grid$coi_method[x]
         )
       })
     }
