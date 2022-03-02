@@ -89,7 +89,7 @@ single_sensitivity <- function(disc_or_cont,
 
 
 #------------------------------------------------
-#' Sensitivity analysis
+#' Discrete Sensitivity analysis
 #'
 #' Runs several iterations of a full COI sensitivity analysis with varying
 #' parameters.
@@ -115,21 +115,21 @@ single_sensitivity <- function(disc_or_cont,
 #'   the lower and upper bounds of the 95% confidence interval and the bias.
 #'
 #' @export
-sensitivity <- function(repetitions = 10,
-                        coi = 3,
-                        max_coi = 25,
-                        plmaf = runif(1000, 0, 0.5),
-                        coverage = 200,
-                        alpha = 1,
-                        overdispersion = 0,
-                        relatedness = 0,
-                        epsilon = 0,
-                        seq_error = 0.01,
-                        bin_size = 20,
-                        comparison = "overall",
-                        distance = "squared",
-                        coi_method = "variant",
-                        use_bins = FALSE) {
+disc_sensitivity <- function(repetitions = 10,
+                             coi = 3,
+                             max_coi = 25,
+                             plmaf = runif(1000, 0, 0.5),
+                             coverage = 200,
+                             alpha = 1,
+                             overdispersion = 0,
+                             relatedness = 0,
+                             epsilon = 0,
+                             seq_error = 0.01,
+                             bin_size = 20,
+                             comparison = "overall",
+                             distance = "squared",
+                             coi_method = "variant",
+                             use_bins = FALSE) {
   # Check inputs
   assert_pos_int(repetitions)
   assert_pos_int(coi)

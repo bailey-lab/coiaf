@@ -84,7 +84,7 @@ p[p > 0.5] <- 1 - p[p > 0.5]
 
 ### Overall performance
 ```{r overall, eval = eval_tests}
-toverall <- sensitivity(
+toverall <- disc_sensitivity(
   coi = 1:20,
   repetitions = 100,
   plmaf = p,
@@ -129,7 +129,7 @@ knitr::include_graphics(
 
 ### COI
 ```{r coi, eval = eval_tests}
-tcoi <- sensitivity(
+tcoi <- disc_sensitivity(
   coi = 2:40,
   max_coi = 40,
   repetitions = 100,
@@ -172,7 +172,7 @@ knitr::include_graphics(
 
 ### Comparison
 ```{r comparison, eval = eval_tests}
-tcomparison <- sensitivity(
+tcomparison <- disc_sensitivity(
   coi = 2:20,
   plmaf = p,
   comparison = c("end", "ideal", "overall"),
@@ -214,7 +214,7 @@ knitr::include_graphics(
 
 ### Distance
 ```{r distance, eval = eval_tests}
-tdistance <- sensitivity(
+tdistance <- disc_sensitivity(
   coi = 2:20,
   plmaf = p,
   comparison = "overall",
@@ -264,7 +264,7 @@ knitr::include_graphics(
 
 ### Coverage
 ```{r coverage method 1, eval = eval_tests}
-tcoverage_1 <- sensitivity(
+tcoverage_1 <- disc_sensitivity(
   coi = 2:20,
   coverage = c(50, 100, 250, 500, 1000, 2000),
   repetitions = 100,
@@ -300,7 +300,7 @@ tcoverage_fig_1
 ```
 
 ```{r coverage method 2, eval = eval_tests}
-tcoverage_2 <- sensitivity(
+tcoverage_2 <- disc_sensitivity(
   coi = 2:20,
   coverage = c(50, 100, 250, 500, 1000, 2000),
   repetitions = 100,
@@ -354,7 +354,7 @@ bloci <- lapply(loci, function(new_L) {
   new_p <- rbeta(new_L, 1, 5)
   new_p[new_p > 0.5] <- 1 - new_p[new_p > 0.5]
 
-  inner_tloci <- sensitivity(
+  inner_tloci <- disc_sensitivity(
     coi = 2:20,
     repetitions = 100,
     plmaf = new_p,
@@ -438,7 +438,7 @@ bloci <- lapply(loci, function(new_L) {
   new_p <- rbeta(new_L, 1, 5)
   new_p[new_p > 0.5] <- 1 - new_p[new_p > 0.5]
 
-  inner_tloci <- sensitivity(
+  inner_tloci <- disc_sensitivity(
     coi = 2:20,
     repetitions = 100,
     plmaf = new_p,
@@ -525,7 +525,7 @@ knitr::include_graphics(
 
 ### Alpha
 ```{r alpha method 1, eval = eval_tests}
-talpha_1 <- sensitivity(
+talpha_1 <- disc_sensitivity(
   coi = 2:20,
   alpha = seq(0.01, 5.51, 0.5),
   repetitions = 100,
@@ -560,7 +560,7 @@ talpha_fig_1
 ```
 
 ```{r alpha method 2, eval = eval_tests}
-talpha_2 <- sensitivity(
+talpha_2 <- disc_sensitivity(
   coi = 2:20,
   alpha = seq(0.01, 5.51, 0.5),
   repetitions = 100,
@@ -606,7 +606,7 @@ knitr::include_graphics(
 
 ### Overdispersion
 ```{r overdispersion, eval = eval_tests}
-tover <- sensitivity(
+tover <- disc_sensitivity(
   coi = 2:20,
   overdispersion = seq(0, 0.2, 0.05),
   repetitions = 100,
@@ -654,7 +654,7 @@ knitr::include_graphics(
 
 ### Relatedness
 ```{r relatedness, eval = eval_tests}
-trelated <- sensitivity(
+trelated <- disc_sensitivity(
   coi = 2:20,
   relatedness = seq(0, 0.5, 0.1),
   repetitions = 100,
@@ -702,7 +702,7 @@ knitr::include_graphics(
 
 ### Epsilon
 ```{r epsilon, eval = eval_tests}
-tepsilon <- sensitivity(
+tepsilon <- disc_sensitivity(
   coi = 2:20,
   epsilon = seq(0, 0.025, 0.005),
   repetitions = 100,
@@ -744,7 +744,7 @@ knitr::include_graphics(
 
 ### Sequencing error
 ```{r seq error, eval = eval_tests}
-tseq <- sensitivity(
+tseq <- disc_sensitivity(
   coi = 2:20,
   epsilon = 0.01,
   seq_error = seq(0, 0.10, 0.02),
@@ -787,7 +787,7 @@ knitr::include_graphics(
 
 ### Bin size
 ```{r bin size, eval = eval_tests}
-tbin <- sensitivity(
+tbin <- disc_sensitivity(
   coi = 2:20,
   bin_size = seq(10, 100, 30),
   distance = "squared",
