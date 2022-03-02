@@ -151,7 +151,7 @@ disc_sensitivity <- function(repetitions = 10,
   assert_in(coi_method, c("variant", "frequency"))
 
   # Create parameter grid
-  param_grid <- tidyr::expand_grid(
+  param_grid <- expand.grid(
     # Simulation parameters
     coi = coi,
     coverage = coverage,
@@ -168,6 +168,7 @@ disc_sensitivity <- function(repetitions = 10,
     distance = distance,
     coi_method = coi_method,
     use_bins = use_bins,
+    stringsAsFactors = FALSE
   )
 
   # Run each row of param_grid
@@ -333,7 +334,7 @@ cont_sensitivity <- function(repetitions = 10,
   assert_in(coi_method, c("variant", "frequency"))
 
   # Create parameter grid
-  param_grid <- tidyr::expand_grid(
+  param_grid <- expand.grid(
     coi = coi,
     max_coi = max_coi,
     coverage = coverage,
@@ -347,6 +348,7 @@ cont_sensitivity <- function(repetitions = 10,
     distance = distance,
     coi_method = coi_method,
     use_bins = use_bins,
+    stringsAsFactors = FALSE
   )
 
   # Run each row of param_grid
