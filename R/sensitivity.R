@@ -150,6 +150,9 @@ disc_sensitivity <- function(repetitions = 10,
   assert_string(coi_method)
   assert_in(coi_method, c("variant", "frequency"))
 
+  # Workaround for NULL seq_error
+  if (is.null(seq_error)) seq_error <- NA
+
   # Create parameter grid
   param_grid <- expand.grid(
     # Simulation parameters
@@ -162,7 +165,7 @@ disc_sensitivity <- function(repetitions = 10,
 
     # Estimation parameters
     max_coi = max_coi,
-    seq_error = ifelse(is.null(seq_error), NA, seq_error),
+    seq_error = seq_error,
     bin_size = bin_size,
     comparison = comparison,
     distance = distance,
@@ -333,6 +336,9 @@ cont_sensitivity <- function(repetitions = 10,
   assert_string(coi_method)
   assert_in(coi_method, c("variant", "frequency"))
 
+  # Workaround for NULL seq_error
+  if (is.null(seq_error)) seq_error <- NA
+
   # Create parameter grid
   param_grid <- expand.grid(
     coi = coi,
@@ -342,7 +348,7 @@ cont_sensitivity <- function(repetitions = 10,
     overdispersion = overdispersion,
     relatedness = relatedness,
     epsilon = epsilon,
-    seq_error = ifelse(is.null(seq_error), NA, seq_error),
+    seq_error = seq_error,
     bin_size = bin_size,
     comparison = comparison,
     distance = distance,
