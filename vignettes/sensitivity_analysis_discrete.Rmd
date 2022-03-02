@@ -14,7 +14,9 @@ knitr::opts_chunk$set(
   comment = "#>",
   tidy = "styler",
   fig.width = 7,
-  fig.height = 7
+  fig.height = 7,
+  message = FALSE,
+  warning = FALSE
 )
 
 # The following two variables control which chunks are run. Either the tests are
@@ -25,6 +27,8 @@ eval_tests <- FALSE
 eval_images <- !eval_tests
 
 library(coiaf)
+library(ggplot2)
+library(patchwork)
 ```
 
 ## Introduction
@@ -59,12 +63,12 @@ for only the sites that are heterogeneous.
 |:---------------:|:---------------------:|
 | COI             | `3`                   |
 | Max COI         | `25`                  |
-| PLMAF            | `runif(1000, 0, 0.5)` |
+| PLMAF           | `runif(1000, 0, 0.5)` |
 | Coverage        | `200`                 |
 | Alpha           | `1`                   |
 | Overdispersion  | `0`                   |
 | Epsilon         | `0`                   |
-| Sequence Error  | `NULL`                |
+| Sequence Error  | `0.01`                |
 | Bin Size        | `20`                  |
 | Comparison      | `"overall"`           |
 | Distance        | `"squared"`           |
@@ -88,7 +92,7 @@ toverall <- disc_sensitivity(
   coi = 1:20,
   repetitions = 100,
   plmaf = p,
-  coverage = 1000,
+  coverage = 100,
   seq_error = 0,
   coi_method = c("variant", "frequency")
 )
@@ -110,11 +114,11 @@ toverall_error <- error_plot(
 )
 
 toverall_fig <- toverall_image / toverall_error +
-  patchwork::plot_annotation(
+  plot_annotation(
     tag_levels = "A",
-    theme = ggplot2::theme(plot.tag = ggplot2::element_text(size = 10))
+    theme = theme(plot.tag = element_text(size = 10))
   ) +
-  ggplot2::theme(legend.position = "bottom")
+  theme(legend.position = "bottom")
 
 toverall_fig
 ```
@@ -155,11 +159,11 @@ tcoi_error <- error_plot(
 )
 
 tcoi_fig <- tcoi_image / tcoi_error +
-  patchwork::plot_annotation(
+  plot_annotation(
     tag_levels = "A",
-    theme = ggplot2::theme(plot.tag = ggplot2::element_text(size = 10))
+    theme = theme(plot.tag = element_text(size = 10))
   ) +
-  ggplot2::theme(legend.position = "bottom")
+  theme(legend.position = "bottom")
 
 tcoi_fig
 ```
@@ -197,11 +201,11 @@ tcomparison_error <- error_plot(tcomparison,
 )
 
 tcomparison_fig <- tcomparison_image / tcomparison_error +
-  patchwork::plot_annotation(
+  plot_annotation(
     tag_levels = "A",
-    theme = ggplot2::theme(plot.tag = ggplot2::element_text(size = 10))
+    theme = theme(plot.tag = element_text(size = 10))
   ) +
-  ggplot2::theme(legend.position = "bottom")
+  theme(legend.position = "bottom")
 
 tcomparison_fig
 ```
@@ -246,12 +250,12 @@ tdistance_error <- error_plot(
 )
 
 tdistance_fig <- tdistance_image / tdistance_error +
-  patchwork::plot_annotation(
+  plot_annotation(
     tag_levels = "A",
-    theme = ggplot2::theme(plot.tag = ggplot2::element_text(size = 10))
+    theme = theme(plot.tag = element_text(size = 10))
   ) +
-  patchwork::plot_layout(heights = c(3, 1)) +
-  ggplot2::theme(legend.position = "bottom")
+  plot_layout(heights = c(3, 1)) +
+  theme(legend.position = "bottom")
 
 tdistance_fig
 ```
@@ -289,12 +293,12 @@ tcoverage_error_1 <- error_plot(
 )
 
 tcoverage_fig_1 <- tcoverage_image_1 / tcoverage_error_1 +
-  patchwork::plot_annotation(
+  plot_annotation(
     tag_levels = "A",
-    theme = ggplot2::theme(plot.tag = ggplot2::element_text(size = 10))
+    theme = theme(plot.tag = element_text(size = 10))
   ) +
-  patchwork::plot_layout(heights = c(2, 1)) +
-  ggplot2::theme(legend.position = "bottom")
+  plot_layout(heights = c(2, 1)) +
+  theme(legend.position = "bottom")
 
 tcoverage_fig_1
 ```
@@ -324,12 +328,12 @@ tcoverage_error_2 <- error_plot(
 )
 
 tcoverage_fig_2 <- tcoverage_image_2 / tcoverage_error_2 +
-  patchwork::plot_annotation(
+  plot_annotation(
     tag_levels = "A",
-    theme = ggplot2::theme(plot.tag = ggplot2::element_text(size = 10))
+    theme = theme(plot.tag = element_text(size = 10))
   ) +
-  patchwork::plot_layout(heights = c(2, 1)) +
-  ggplot2::theme(legend.position = "bottom")
+  plot_layout(heights = c(2, 1)) +
+  theme(legend.position = "bottom")
 
 tcoverage_fig_2
 ```
@@ -420,11 +424,11 @@ tloci_error_1 <- error_plot(
 )
 
 tloci_fig_1 <- tloci_image_1 / tloci_error_1 +
-  patchwork::plot_annotation(
+  plot_annotation(
     tag_levels = "A",
-    theme = ggplot2::theme(plot.tag = ggplot2::element_text(size = 10))
+    theme = theme(plot.tag = element_text(size = 10))
   ) +
-  ggplot2::theme(legend.position = "bottom")
+  theme(legend.position = "bottom")
 
 tloci_fig_1
 ```
@@ -504,11 +508,11 @@ tloci_error_2 <- error_plot(
 )
 
 tloci_fig_2 <- tloci_image_2 / tloci_error_2 +
-  patchwork::plot_annotation(
+  plot_annotation(
     tag_levels = "A",
-    theme = ggplot2::theme(plot.tag = ggplot2::element_text(size = 10))
+    theme = theme(plot.tag = element_text(size = 10))
   ) +
-  ggplot2::theme(legend.position = "bottom")
+  theme(legend.position = "bottom")
 
 tloci_fig_2
 ```
@@ -530,7 +534,8 @@ talpha_1 <- disc_sensitivity(
   alpha = seq(0.01, 5.51, 0.5),
   repetitions = 100,
   seq_error = 0.01,
-  plmaf = p
+  plmaf = p,
+  coi_method = "variant"
 )
 
 talpha_image_1 <- sensitivity_plot(
@@ -549,12 +554,12 @@ talpha_error_1 <- error_plot(
 )
 
 talpha_fig_1 <- talpha_image_1 / talpha_error_1 +
-  patchwork::plot_annotation(
+  plot_annotation(
     tag_levels = "A",
-    theme = ggplot2::theme(plot.tag = ggplot2::element_text(size = 10))
+    theme = theme(plot.tag = element_text(size = 10))
   ) +
-  patchwork::plot_layout(heights = c(5, 1)) +
-  ggplot2::theme(legend.position = "bottom")
+  plot_layout(heights = c(5, 1)) +
+  theme(legend.position = "bottom")
 
 talpha_fig_1
 ```
@@ -565,7 +570,8 @@ talpha_2 <- disc_sensitivity(
   alpha = seq(0.01, 5.51, 0.5),
   repetitions = 100,
   seq_error = 0.01,
-  plmaf = p
+  plmaf = p,
+  coi_method = "frequency"
 )
 
 talpha_image_2 <- sensitivity_plot(
@@ -584,12 +590,12 @@ talpha_error_2 <- error_plot(
 )
 
 talpha_fig_2 <- talpha_image_2 / talpha_error_2 +
-  patchwork::plot_annotation(
+  plot_annotation(
     tag_levels = "A",
-    theme = ggplot2::theme(plot.tag = ggplot2::element_text(size = 10))
+    theme = theme(plot.tag = element_text(size = 10))
   ) +
-  patchwork::plot_layout(heights = c(5, 1)) +
-  ggplot2::theme(legend.position = "bottom")
+  plot_layout(heights = c(5, 1)) +
+  theme(legend.position = "bottom")
 
 talpha_fig_2
 ```
@@ -608,7 +614,7 @@ knitr::include_graphics(
 ```{r overdispersion, eval = eval_tests}
 tover <- disc_sensitivity(
   coi = 2:20,
-  overdispersion = seq(0, 0.2, 0.05),
+  overdispersion = seq(0, 0.25, 0.05),
   repetitions = 100,
   seq_error = 0.01,
   plmaf = p,
@@ -620,10 +626,10 @@ tover_image <- sensitivity_plot(
   result_type = "disc",
   title = "Predicted COI",
   dims = c(4, 3),
-  sub_title = paste(
-    paste0("Dispersion = ", seq(0, 0.2, 0.05)),
-    rep(c("Variant", "Frequency"), each = 5),
-    sep = ", "
+  sub_title = paste0(
+    rep(c("Var, ", "Freq, "), each = 5),
+    "Dispersion = ",
+    seq(0, 0.25, 0.05)
   )
 )
 
@@ -636,12 +642,12 @@ tover_error <- error_plot(
 )
 
 tover_fig <- tover_image / tover_error +
-  patchwork::plot_annotation(
+  plot_annotation(
     tag_levels = "A",
-    theme = ggplot2::theme(plot.tag = ggplot2::element_text(size = 10))
+    theme = theme(plot.tag = element_text(size = 10))
   ) +
-  patchwork::plot_layout(heights = c(5, 1)) +
-  ggplot2::theme(legend.position = "bottom")
+  plot_layout(heights = c(5, 1)) +
+  theme(legend.position = "bottom")
 
 tover_fig
 ```
@@ -684,12 +690,12 @@ trelated_error <- error_plot(
 )
 
 trelated_fig <- trelated_image / trelated_error +
-  patchwork::plot_annotation(
+  plot_annotation(
     tag_levels = "A",
-    theme = ggplot2::theme(plot.tag = ggplot2::element_text(size = 10))
+    theme = theme(plot.tag = element_text(size = 10))
   ) +
-  patchwork::plot_layout(heights = c(6, 1)) +
-  ggplot2::theme(legend.position = "bottom")
+  plot_layout(heights = c(6, 1)) +
+  theme(legend.position = "bottom")
 
 trelated_fig
 ```
@@ -704,34 +710,40 @@ knitr::include_graphics(
 ```{r epsilon, eval = eval_tests}
 tepsilon <- disc_sensitivity(
   coi = 2:20,
-  epsilon = seq(0, 0.025, 0.005),
+  epsilon = seq(0, 0.02, 0.005),
   repetitions = 100,
   seq_error = 0.01,
-  plmaf = p
+  plmaf = p,
+  coi_method = c("variant", "frequency")
 )
 
 tepsilon_image <- sensitivity_plot(
   data = tepsilon,
   result_type = "disc",
   title = "Predicted COI",
-  sub_title = paste0("Epsilon = ", seq(0, 0.025, 0.005)),
-  dims = c(2, 3)
+  dims = c(4, 3),
+  sub_title = paste0(
+    rep(c("Variant, ", "Frequency, "), each = 5),
+    "Epsilon = ",
+    seq(0, 0.02, 0.005)
+  )
 )
 
 tepsilon_error <- error_plot(
   tepsilon,
   fill = "epsilon",
   legend_title = "Epsilon",
-  title = "Error"
+  title = "Error",
+  second_fill = "coi_method"
 )
 
 tepsilon_fig <- tepsilon_image / tepsilon_error +
-  patchwork::plot_annotation(
+  plot_annotation(
     tag_levels = "A",
-    theme = ggplot2::theme(plot.tag = ggplot2::element_text(size = 10))
+    theme = theme(plot.tag = element_text(size = 10))
   ) +
-  patchwork::plot_layout(heights = c(3, 1)) +
-  ggplot2::theme(legend.position = "bottom")
+  plot_layout(heights = c(3, 1)) +
+  theme(legend.position = "bottom")
 
 tepsilon_fig
 ```
@@ -750,31 +762,36 @@ tseq <- disc_sensitivity(
   seq_error = seq(0, 0.10, 0.02),
   repetitions = 100,
   plmaf = p,
-  coi_method = "frequency"
+  coi_method = c("variant", "frequency")
 )
 
 tseq_image <- sensitivity_plot(
   data = tseq,
   result_type = "disc",
   title = "Predicted COI",
-  dims = c(2, 3),
-  sub_title = paste0("Sequence Error = ", seq(0, 0.12, 0.02))
+  dims = c(4, 3),
+  sub_title = paste0(
+    rep(c("Variant, ", "Frequency, "), each = 6),
+    "Seq Error = ",
+    seq(0, 0.12, 0.02)
+  )
 )
 
 tseq_error <- error_plot(
   tseq,
   fill = "seq_error",
   legend_title = "Sequence Error",
-  title = "Error"
+  title = "Error",
+  second_fill = "coi_method"
 )
 
 tseq_fig <- tseq_image / tseq_error +
-  patchwork::plot_annotation(
+  plot_annotation(
     tag_levels = "A",
-    theme = ggplot2::theme(plot.tag = ggplot2::element_text(size = 10))
+    theme = theme(plot.tag = element_text(size = 10))
   ) +
-  patchwork::plot_layout(heights = c(2, 1)) +
-  ggplot2::theme(legend.position = "bottom")
+  plot_layout(heights = c(5, 1)) +
+  theme(legend.position = "bottom")
 
 tseq_fig
 ```
@@ -785,15 +802,13 @@ knitr::include_graphics(
 )
 ```
 
-### Bin size
-```{r bin size, eval = eval_tests}
+### Bins
+```{r bins, eval = eval_tests}
 tbin <- disc_sensitivity(
   coi = 2:20,
-  bin_size = seq(10, 100, 30),
-  distance = "squared",
+  use_bins = c(TRUE, FALSE),
   plmaf = p,
   repetitions = 100,
-  seq_error = 0.01,
   coi_method = c("variant", "frequency")
 )
 
@@ -801,25 +816,30 @@ tbin_image <- sensitivity_plot(
   data = tbin,
   result_type = "disc",
   title = "Predicted COI",
-  dims = c(2, 4),
-  sub_title = rep(paste("Bin Size =", seq(10, 100, 30)), 2)
+  dims = c(2, 2),
+  sub_title = paste(
+    c("Variant Method,", "Frequency Method,"),
+    "Bins =",
+    rep(c(TRUE, FALSE), each = 2)
+  )
 )
 
 tbin_error <- error_plot(
   tbin,
-  fill = "bin_size",
-  fill_levels = c("10", "40", "70", "100"),
+  fill = "use_bins",
+  fill_levels = as.character(c(TRUE, FALSE)),
   legend_title = "COI Method",
-  title = "Error"
+  title = "Error",
+  second_fill = "coi_method"
 )
 
 tbin_fig <- tbin_image / tbin_error +
-  patchwork::plot_annotation(
+  plot_annotation(
     tag_levels = "A",
-    theme = ggplot2::theme(plot.tag = ggplot2::element_text(size = 10))
+    theme = theme(plot.tag = element_text(size = 10))
   ) +
-  patchwork::plot_layout(heights = c(3, 1)) +
-  ggplot2::theme(legend.position = "bottom")
+  plot_layout(heights = c(3, 1)) +
+  theme(legend.position = "bottom")
 
 tbin_fig
 ```
@@ -830,17 +850,63 @@ knitr::include_graphics(
 )
 ```
 
+### Bin size
+```{r bin size, eval = eval_tests}
+tbin_size <- disc_sensitivity(
+  coi = 2:20,
+  bin_size = seq(10, 100, 30),
+  distance = "squared",
+  plmaf = p,
+  repetitions = 100,
+  seq_error = 0.01,
+  coi_method = c("variant", "frequency")
+)
+
+tbin_size_image <- sensitivity_plot(
+  data = tbin_size,
+  result_type = "disc",
+  title = "Predicted COI",
+  dims = c(2, 4),
+  sub_title = rep(paste("Bin Size =", seq(10, 100, 30)), 2)
+)
+
+tbin_size_error <- error_plot(
+  tbin_size,
+  fill = "bin_size",
+  fill_levels = as.character(seq(10, 100, 30)),
+  legend_title = "COI Method",
+  title = "Error"
+)
+
+tbin_size_fig <- tbin_size_image / tbin_size_error +
+  plot_annotation(
+    tag_levels = "A",
+    theme = theme(plot.tag = element_text(size = 10))
+  ) +
+  plot_layout(heights = c(3, 1)) +
+  theme(legend.position = "bottom")
+
+tbin_size_fig
+```
+
+```{r bin size image, eval = eval_images, echo = F, out.width = "75%"}
+knitr::include_graphics(
+  here::here("vignettes", "figures", "discrete", "tbin_size.png")
+)
+```
+
 ```{r save results, eval = eval_tests, echo = FALSE, inlcude = FALSE, message = FALSE}
 # Below, we save the runs we performed for future use
 saved_analysis <- list(
   toverall, tcoi, tcomparison, tdistance, tcoverage_1, tcoverage_2,
-  tloci_1, tloci_2, talpha_1, talpha_2, tover, trelated, tepsilon, tseq, tbin
+  tloci_1, tloci_2, talpha_1, talpha_2, tover, trelated, tepsilon, tseq,
+  tbin, tbin_size
 )
 
 names(saved_analysis) <- list(
   "toverall", "tcoi", "tcomparison", "tdistance", "tcoverage_1", "tcoverage_2",
   "tloci_1", "tloci_2", "talpha_1", "talpha_2", "tover", "trelated", "tepsilon",
-  "tseq", "tbin"
+  "tseq", "tbin", "tbin_size"
 )
 
 saveRDS(
@@ -852,12 +918,14 @@ saveRDS(
 update_images <- list(
   toverall_fig, tcoi_fig, tcomparison_fig, tdistance_fig, tcoverage_fig_1,
   tcoverage_fig_2, tloci_fig_1, tloci_fig_2, talpha_fig_1,
-  talpha_fig_2, tover_fig, trelated_fig, tepsilon_fig, tseq_fig, tbin_fig
+  talpha_fig_2, tover_fig, trelated_fig, tepsilon_fig, tseq_fig, tbin_fig,
+  tbin_size_fig
 )
 names(update_images) <- names(saved_analysis)
 
 for (i in seq_len(length(update_images))) {
-  ggplot2::ggsave(
+  # Save vignette images
+  ggsave(
     plot = update_images[[i]],
     filename = here::here(
       "vignettes",
