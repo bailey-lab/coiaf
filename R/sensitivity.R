@@ -243,15 +243,7 @@ sensitivity <- function(repetitions = 10,
   boot_error$bias <- unlist(coi_bias)
 
   # Customize warnings for when could not compute CI.
-  warn_tibble <- boot_error %>%
-    tidyr::unchop(cols = tidyr::everything()) %>%
-    dplyr::filter(is.na(.data$lower) | is.na(.data$upper))
-  warn_nan_tibble <- dplyr::filter(warn_tibble, is.nan(.data$mae))
-  cli::cli_warn(c(
-    "Unable to calculate bootstrapped confidence interval.",
-    "x" = "{nrow(warn_tibble) - nrow(warn_nan_tibble)} computation{?s} failed.",
-    "i" = "{nrow(warn_nan_tibble)} computation{?s} {?was/were} not applicable."
-  ))
+  sa_warn(boot_error)
 
   # Return predicted COIs and param_grid
   list(
@@ -411,15 +403,7 @@ cont_sensitivity <- function(repetitions = 10,
   boot_error$bias <- unlist(coi_bias)
 
   # Customize warnings for when could not compute CI.
-  warn_tibble <- boot_error %>%
-    tidyr::unchop(cols = tidyr::everything()) %>%
-    dplyr::filter(is.na(.data$lower) | is.na(.data$upper))
-  warn_nan_tibble <- dplyr::filter(warn_tibble, is.nan(.data$mae))
-  cli::cli_warn(c(
-    "Unable to calculate bootstrapped confidence interval.",
-    "x" = "{nrow(warn_tibble) - nrow(warn_nan_tibble)} computation{?s} failed.",
-    "i" = "{nrow(warn_nan_tibble)} computation{?s} {?was/were} not applicable."
-  ))
+  sa_warn(boot_error)
 
   # Return predicted COIs and param_grid
   list(
@@ -429,6 +413,7 @@ cont_sensitivity <- function(repetitions = 10,
   )
 }
 
+# Calculate boostrapped mean absolute error
 boot_mae <- function(param_grid, extracted_cois) {
   mae_list <- lapply(
     cli::cli_progress_along(seq_len(nrow(param_grid)), "Computing statistics"),
@@ -474,8 +459,22 @@ boot_mae <- function(param_grid, extracted_cois) {
   as.data.frame(do.call(rbind, mae_list))
 }
 
+# Calculate bias (mean error)
 bias <- function(param_grid, extracted_cois) {
   lapply(seq_len(nrow(param_grid)), function(x) {
     sum(extracted_cois[[x]] - param_grid$coi[x]) / length(extracted_cois[[x]])
   })
+}
+
+# Customize warnings for when could not compute CI.
+sa_warn <- function(boot_error) {
+  warn_tibble <- boot_error %>%
+    tidyr::unchop(cols = tidyr::everything()) %>%
+    dplyr::filter(is.na(.data$lower) | is.na(.data$upper))
+  warn_nan_tibble <- dplyr::filter(warn_tibble, is.nan(.data$mae))
+  cli::cli_warn(c(
+    "Unable to calculate bootstrapped confidence interval.",
+    "x" = "{nrow(warn_tibble) - nrow(warn_nan_tibble)} computation{?s} failed.",
+    "i" = "{nrow(warn_nan_tibble)} computation{?s} {?was/were} not applicable."
+  ))
 }
