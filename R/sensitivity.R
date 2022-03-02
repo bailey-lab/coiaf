@@ -231,50 +231,10 @@ sensitivity <- function(repetitions = 10,
 
   ## Calculations
   # Calculate mean absolute error
-  len <- nrow(param_grid)
-  boot_mae <- lapply(seq_len(len), function(x) {
-    # Get the specific row (list of predicted COIs). Note that we convert to a
-    # data frame because the boot package requires this.
-    boot_data <- as.data.frame(extracted_cois[x])
-
-    # If data has NaN in it, return all NaN
-    if (any(is.nan(unlist(boot_data)))) {
-      return(list(mae = NaN, lower = NaN, upper = NaN))
-    }
-
-    # Create function to find mean absolute error for bootstrapping
-    mae <- function(data, true_coi, indices) {
-      # Sample from the data
-      sampled <- data[indices, ]
-
-      # Compute mean absolute error for the sampled data and return
-      sum(abs(sampled - true_coi)) / length(sampled)
-    }
-
-    # Bootstrapping
-    results <- boot::boot(
-      data = boot_data,
-      true_coi = param_grid$coi[x],
-      statistic = mae,
-      R = 1000
-    )
-
-    # Get the normal confidence interval
-    invisible(utils::capture.output(
-      CI <- boot::boot.ci(results, type = "norm")$normal
-    ))
-
-    # Store the mean absolute error and confidence interval bounds
-    list(mae = results$t0, lower = CI[2], upper = CI[3])
-  })
-
-  # Convert output of bootstrapping to data frame structure
-  boot_mae <- as.data.frame(do.call(rbind, boot_mae))
+  boot_mae <- boot_mae(param_grid, extracted_cois)
 
   # Calculate bias (mean error)
-  coi_bias <- lapply(seq_len(len), function(x) {
-    sum(extracted_cois[[x]] - param_grid$coi[x]) / length(extracted_cois[[x]])
-  })
+  coi_bias <- bias(param_grid, extracted_cois)
 
   # Save changing parameters with bootstrapping
   boot_error <- dplyr::select(param_grid, where(~ dplyr::n_distinct(.x) > 1))
@@ -440,79 +400,26 @@ cont_sensitivity <- function(repetitions = 10,
 
   ## Calculations
   # Calculate mean absolute error
-  len <- nrow(param_grid)
-  boot_mae <- lapply(seq_len(len), function(x) {
-    # Get the specific row (list of predicted COIs). Note that we convert to a
-    # data frame because the boot package requires this.
-    boot_data <- as.data.frame(extracted_cois[x])
-
-    # Create function to find mean absolute error for bootstrapping
-    mae <- function(data, true_coi, indices) {
-      # Sample from the data
-      sampled <- data[indices, ]
-
-      # Compute mean absolute error for the sampled data and return
-      sampled_mae <- sum(abs(sampled - true_coi)) / length(sampled)
-      return(sampled_mae)
-    }
-
-    # Bootstrapping
-    results <- boot::boot(
-      data = boot_data,
-      true_coi = param_grid$coi[x],
-      statistic = mae,
-      R = 1000
-    )
-
-    # Get the normal confidence interval
-    invisible(utils::capture.output(CI <- boot::boot.ci(
-      results,
-      type = "norm"
-    )$normal))
-
-    # Store the mean absolute error and confidence interval bounds
-    extract <- list(mae = results$t0, lower = CI[2], upper = CI[3])
-    return(extract)
-  })
-
-  # Convert output of bootstrapping to data frame structure
-  boot_mae <- as.data.frame(do.call(rbind, boot_mae))
+  boot_mae <- boot_mae(param_grid, extracted_cois)
 
   # Calculate bias (mean error)
-  coi_bias <- lapply(seq_len(len), function(x) {
-    sum(extracted_cois[[x]] - param_grid$coi[x]) / length(extracted_cois[[x]])
-  })
+  coi_bias <- bias(param_grid, extracted_cois)
 
   # Save changing parameters with bootstrapping
   boot_error <- dplyr::select(param_grid, where(~ dplyr::n_distinct(.x) > 1))
   boot_error <- dplyr::bind_cols(boot_error, boot_mae)
   boot_error$bias <- unlist(coi_bias)
 
-  # Warnings for when could not compute CI. We want to show at most 5 cases
-  # where there is an issue. Anymore, and the warning message becomes too
-  # confusing.
+  # Customize warnings for when could not compute CI.
   warn_tibble <- boot_error %>%
     tidyr::unchop(cols = tidyr::everything()) %>%
     dplyr::filter(is.na(.data$lower) | is.na(.data$upper))
-  if (nrow(warn_tibble) >= 1) {
-    bullet <- ""
-    if (nrow(warn_tibble) < 5) {
-      for (i in seq(nrow(warn_tibble))) {
-        bullet <- glue::glue("{bullet}\n\u2716 COI of {warn_tibble$coi[i]} failed.")
-      }
-    } else if (nrow(warn_tibble) >= 5) {
-      for (i in seq(5)) {
-        bullet <- glue::glue("{bullet}\n\u2716 COI of {warn_tibble$coi[i]} failed.")
-      }
-      bullet <- glue::glue("{bullet}\n... and {nrow(warn_tibble) - 5} more failed")
-    }
-
-    message <- glue::glue(
-      "Can't calculate bootstrapped confidence interval:",
-      "{bullet}"
-    )
-    warning(message, call. = FALSE)
-  }
+  warn_nan_tibble <- dplyr::filter(warn_tibble, is.nan(.data$mae))
+  cli::cli_warn(c(
+    "Unable to calculate bootstrapped confidence interval.",
+    "x" = "{nrow(warn_tibble) - nrow(warn_nan_tibble)} computation{?s} failed.",
+    "i" = "{nrow(warn_nan_tibble)} computation{?s} {?was/were} not applicable."
+  ))
 
   # Return predicted COIs and param_grid
   list(
@@ -520,4 +427,55 @@ cont_sensitivity <- function(repetitions = 10,
     param_grid    = param_grid,
     boot_error    = boot_error
   )
+}
+
+boot_mae <- function(param_grid, extracted_cois) {
+  mae_list <- lapply(
+    cli::cli_progress_along(seq_len(nrow(param_grid)), "Computing statistics"),
+    function(x) {
+      # Get the specific row (list of predicted COIs). Note that we convert to a
+      # data frame because the boot package requires this.
+      boot_data <- as.data.frame(extracted_cois[x])
+
+      # If data has NaN in it, return all NaN
+      if (any(is.nan(unlist(boot_data)))) {
+        return(list(mae = NaN, lower = NaN, upper = NaN))
+      }
+
+      # Create function to find mean absolute error for bootstrapping
+      mae <- function(data, true_coi, indices) {
+        # Sample from the data
+        sampled <- data[indices, ]
+
+        # Compute mean absolute error for the sampled data and return
+        sampled_mae <- sum(abs(sampled - true_coi)) / length(sampled)
+        return(sampled_mae)
+      }
+
+      # Bootstrapping
+      results <- boot::boot(
+        data = boot_data,
+        true_coi = param_grid$coi[x],
+        statistic = mae,
+        R = 1000
+      )
+
+      # Get the normal confidence interval
+      invisible(utils::capture.output(
+        CI <- boot::boot.ci(results, type = "norm")$normal
+      ))
+
+      # Store the mean absolute error and confidence interval bounds
+      list(mae = results$t0, lower = CI[2], upper = CI[3])
+    }
+  )
+
+  # Convert output of bootstrapping to data frame structure
+  as.data.frame(do.call(rbind, mae_list))
+}
+
+bias <- function(param_grid, extracted_cois) {
+  lapply(seq_len(nrow(param_grid)), function(x) {
+    sum(extracted_cois[[x]] - param_grid$coi[x]) / length(extracted_cois[[x]])
+  })
 }
