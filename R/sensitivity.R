@@ -10,7 +10,6 @@
 #' @return Predicted COI value.
 #'
 #' @keywords internal
-
 single_sensitivity <- function(disc_or_cont,
                                coi = 3,
                                max_coi = 25,
@@ -24,8 +23,8 @@ single_sensitivity <- function(disc_or_cont,
                                bin_size = 20,
                                comparison = "overall",
                                distance = "squared",
-                               coi_method = "variant") {
-
+                               coi_method = "variant",
+                               use_bins = FALSE) {
   # Check inputs
   assert_single_pos_int(coi)
   assert_single_pos_int(max_coi)
@@ -71,7 +70,8 @@ single_sensitivity <- function(disc_or_cont,
       bin_size,
       comparison,
       distance,
-      coi_method
+      coi_method,
+      use_bins
     )
   } else if (disc_or_cont == "cont") {
     optimize_coi(
@@ -81,7 +81,8 @@ single_sensitivity <- function(disc_or_cont,
       seq_error,
       bin_size,
       distance,
-      coi_method
+      coi_method,
+      use_bins
     )
   }
 }
@@ -114,7 +115,6 @@ single_sensitivity <- function(disc_or_cont,
 #'   the lower and upper bounds of the 95% confidence interval and the bias.
 #'
 #' @export
-
 sensitivity <- function(repetitions = 10,
                         coi = 3,
                         max_coi = 25,
@@ -128,8 +128,8 @@ sensitivity <- function(repetitions = 10,
                         bin_size = 20,
                         comparison = "overall",
                         distance = "squared",
-                        coi_method = "variant") {
-
+                        coi_method = "variant",
+                        use_bins = FALSE) {
   # Check inputs
   assert_pos_int(repetitions)
   assert_pos_int(coi)
@@ -167,13 +167,13 @@ sensitivity <- function(repetitions = 10,
     comparison = comparison,
     distance = distance,
     coi_method = coi_method,
+    use_bins = use_bins,
   )
 
   # Run each row of param_grid
   coi_pred <- lapply(
     cli::cli_progress_along(seq_len(nrow(param_grid)), "Estimating the COI"),
     function(x) {
-
       # Run each sample repetitions times
       lapply(seq_len(repetitions), function(y) {
         single_sensitivity(
@@ -190,7 +190,8 @@ sensitivity <- function(repetitions = 10,
           bin_size = param_grid$bin_size[x],
           comparison = param_grid$comparison[x],
           distance = param_grid$distance[x],
-          coi_method = param_grid$coi_method[x]
+          coi_method = param_grid$coi_method[x],
+          use_bins = param_grid$use_bins[x]
         )
       })
     }
@@ -309,8 +310,8 @@ cont_sensitivity <- function(repetitions = 10,
                              bin_size = 20,
                              comparison = "overall",
                              distance = "squared",
-                             coi_method = "variant") {
-
+                             coi_method = "variant",
+                             use_bins = FALSE) {
   # Check inputs
   assert_pos_int(repetitions)
   assert_pos_int(coi)
@@ -345,14 +346,13 @@ cont_sensitivity <- function(repetitions = 10,
     comparison = comparison,
     distance = distance,
     coi_method = coi_method,
-    stringsAsFactors = FALSE
+    use_bins = use_bins,
   )
 
   # Run each row of param_grid
   coi_pred <- lapply(
     cli::cli_progress_along(seq_len(nrow(param_grid)), "Estimating the COI"),
     function(x) {
-
       # Run each sample repetitions times
       lapply(seq_len(repetitions), function(y) {
         single_sensitivity(
@@ -369,7 +369,8 @@ cont_sensitivity <- function(repetitions = 10,
           bin_size = param_grid$bin_size[x],
           comparison = param_grid$comparison[x],
           distance = param_grid$distance[x],
-          coi_method = param_grid$coi_method[x]
+          coi_method = param_grid$coi_method[x],
+          use_bins = param_grid$use_bins[x]
         )
       })
     }
