@@ -491,9 +491,12 @@ sa_warn <- function(boot_error) {
     tidyr::unchop(cols = tidyr::everything()) %>%
     dplyr::filter(is.na(.data$lower) | is.na(.data$upper))
   warn_nan_tibble <- dplyr::filter(warn_tibble, is.nan(.data$mae))
-  cli::cli_warn(c(
-    "Unable to calculate bootstrapped confidence interval.",
-    "x" = "{nrow(warn_tibble) - nrow(warn_nan_tibble)} computation{?s} failed.",
-    "i" = "{nrow(warn_nan_tibble)} computation{?s} {?was/were} not applicable."
-  ))
+
+  if (nrow(warn_tibble) > 0) {
+    cli::cli_warn(c(
+      "Unable to calculate bootstrapped confidence interval.",
+      "x" = "{nrow(warn_tibble) - nrow(warn_nan_tibble)} computation{?s} failed.",
+      "i" = "{nrow(warn_nan_tibble)} computation{?s} {?was/were} not applicable."
+    ))
+  }
 }
