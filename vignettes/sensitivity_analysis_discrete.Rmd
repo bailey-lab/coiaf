@@ -34,45 +34,39 @@ library(patchwork)
 ## Introduction
 
 In this analysis file, we aim to understand the effect of varying parameters on
-our COI framework. The parameters that we will examine are:
+our COI framework. We will examine both simulation and estimation parameters.
+The parameters that we will examine are:
 
-* `comparison`: The method to be employed. One of `"end"`, `"ideal"`, `"overall"`.
-* `distance`: The distance method used to determine the distance between the
-theoretical and simulated curves for the `"overall"` method. One of `"abs_sum"`,
-`"sum_abs"`, `"squared"`.
 * `coverage`: Coverage at each locus.
 * `loci`: The number of loci.
 * `alpha`: Shape parameter of the symmetric Dirichlet prior on strain proportions.
-* `overdispersion`: The extent to which counts are over-dispersed relative to the
-binomial distribution. Counts are Beta-binomially distributed, with the beta
-distribution having shape parameters $p/\text{overdispersion}$ and
-$(1-p) / \text{overdispersion}$.
+* `overdispersion`: The extent to which counts are over-dispersed relative to
+the binomial distribution. Counts are Beta-binomially distributed, with the beta
+distribution having shape parameters $p/\text{overdispersion}$ and $(1-p) /
+\text{overdispersion}$.
+* `relatedness`: The probability that a strain in mixed infections is related to
+another.
 * `epsilon`: The probability of a single read being miscalled as the other allele.
 Applies in both directions.
+* `coi`: The complexity of infection of the sample.
 * `seq_error`: The level of sequencing error that is assumed.
+* `use_bins`: Whether or not to group data before estimating the COI.
 * `bin_size`: The minimum size of each bin of data.
-
-In addition, we will compare two different methods of determining the COI.
-The first method uses the mean number of variant sites, binned in groups of
-increasing PLMAF to infer COI. The second method compares the WSMAF to the PLMAF
-for only the sites that are heterogeneous.
 
 ### Default parameters
 
 | Parameter       | Default Value         |
 |:---------------:|:---------------------:|
 | COI             | `3`                   |
-| Max COI         | `25`                  |
 | PLMAF           | `runif(1000, 0, 0.5)` |
 | Coverage        | `200`                 |
 | Alpha           | `1`                   |
 | Overdispersion  | `0`                   |
+| Relatedness     | `0`                   |
 | Epsilon         | `0`                   |
 | Sequence Error  | `0.01`                |
+| Use Bins        | `FALSE`               |
 | Bin Size        | `20`                  |
-| Comparison      | `"overall"`           |
-| Distance        | `"squared"`           |
-| COI Method      | `"1"`                 |
 
 
 ### Setting our PLMAF
@@ -129,142 +123,7 @@ knitr::include_graphics(
 )
 ```
 
-## Sensitivity analysis
-
-### COI
-```{r coi, eval = eval_tests}
-tcoi <- disc_sensitivity(
-  coi = 2:40,
-  max_coi = 40,
-  repetitions = 100,
-  plmaf = p,
-  seq_error = 0.01,
-  coi_method = c("variant", "frequency")
-)
-
-tcoi_image <- sensitivity_plot(
-  data = tcoi,
-  dims = c(1, 2),
-  result_type = "disc",
-  title = "Predicted COI",
-  sub_title = c("Variant Method", "Frequency Method")
-)
-
-tcoi_error <- error_plot(
-  tcoi,
-  fill = "coi_method",
-  legend_title = "COI Method",
-  title = "Error",
-  fill_levels = c("Variant Method", "Frequency Method")
-)
-
-tcoi_fig <- tcoi_image / tcoi_error +
-  plot_annotation(
-    tag_levels = "A",
-    theme = theme(plot.tag = element_text(size = 10))
-  ) +
-  theme(legend.position = "bottom")
-
-tcoi_fig
-```
-
-```{r coi image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics(
-  here::here("vignettes", "figures", "discrete", "tcoi.png")
-)
-```
-
-### Comparison
-```{r comparison, eval = eval_tests}
-tcomparison <- disc_sensitivity(
-  coi = 2:20,
-  plmaf = p,
-  comparison = c("end", "ideal", "overall"),
-  distance = "squared",
-  repetitions = 100,
-  seq_error = 0.01
-)
-
-tcomparison_image <- sensitivity_plot(
-  data = tcomparison,
-  result_type = "disc",
-  title = "Predicted COI",
-  dims = c(1, 3),
-  sub_title = paste0("Comparison = ", c("End", "Ideal", "Overall"))
-)
-
-tcomparison_error <- error_plot(tcomparison,
-  fill = "comparison",
-  legend_title = "Method",
-  fill_levels = c("End", "Ideal", "Overall"),
-  title = "Error"
-)
-
-tcomparison_fig <- tcomparison_image / tcomparison_error +
-  plot_annotation(
-    tag_levels = "A",
-    theme = theme(plot.tag = element_text(size = 10))
-  ) +
-  theme(legend.position = "bottom")
-
-tcomparison_fig
-```
-
-```{r method image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics(
-  here::here("vignettes", "figures", "discrete", "tcomparison.png")
-)
-```
-
-### Distance
-```{r distance, eval = eval_tests}
-tdistance <- disc_sensitivity(
-  coi = 2:20,
-  plmaf = p,
-  comparison = "overall",
-  distance = c("abs_sum", "sum_abs", "squared"),
-  repetitions = 100,
-  seq_error = 0.01,
-  coi_method = c("variant", "frequency")
-)
-
-tdistance_image <- sensitivity_plot(
-  data = tdistance,
-  result_type = "disc",
-  title = "Predicted COI",
-  dims = c(3, 2),
-  sub_title = paste(
-    rep(c("Absolute Sum", "Sum of Absolute", "Squared Error"), 2),
-    rep(c("Variant Method", "Frequency Method"), each = 3),
-    sep = ", "
-  )
-)
-
-tdistance_error <- error_plot(
-  tdistance,
-  fill = "distance",
-  legend_title = "Distance Method",
-  fill_levels = c("Absolute Sum", "Squared Error", "Sum of Absolute"),
-  title = "Error",
-  second_fill = "coi_method"
-)
-
-tdistance_fig <- tdistance_image / tdistance_error +
-  plot_annotation(
-    tag_levels = "A",
-    theme = theme(plot.tag = element_text(size = 10))
-  ) +
-  plot_layout(heights = c(3, 1)) +
-  theme(legend.position = "bottom")
-
-tdistance_fig
-```
-
-```{r distance image, eval = eval_images, echo = F, out.width = "75%"}
-knitr::include_graphics(
-  here::here("vignettes", "figures", "discrete", "tdistance.png")
-)
-```
+## Simulation parameters
 
 ### Coverage
 ```{r coverage method 1, eval = eval_tests}
@@ -754,6 +613,51 @@ knitr::include_graphics(
 )
 ```
 
+## Estimation parameters
+
+### COI
+```{r coi, eval = eval_tests}
+tcoi <- disc_sensitivity(
+  coi = 2:40,
+  max_coi = 40,
+  repetitions = 100,
+  plmaf = p,
+  seq_error = 0.01,
+  coi_method = c("variant", "frequency")
+)
+
+tcoi_image <- sensitivity_plot(
+  data = tcoi,
+  dims = c(1, 2),
+  result_type = "disc",
+  title = "Predicted COI",
+  sub_title = c("Variant Method", "Frequency Method")
+)
+
+tcoi_error <- error_plot(
+  tcoi,
+  fill = "coi_method",
+  legend_title = "COI Method",
+  title = "Error",
+  fill_levels = c("Variant Method", "Frequency Method")
+)
+
+tcoi_fig <- tcoi_image / tcoi_error +
+  plot_annotation(
+    tag_levels = "A",
+    theme = theme(plot.tag = element_text(size = 10))
+  ) +
+  theme(legend.position = "bottom")
+
+tcoi_fig
+```
+
+```{r coi image, eval = eval_images, echo = F, out.width = "75%"}
+knitr::include_graphics(
+  here::here("vignettes", "figures", "discrete", "tcoi.png")
+)
+```
+
 ### Sequencing error
 ```{r seq error, eval = eval_tests}
 tseq <- disc_sensitivity(
@@ -854,8 +758,8 @@ knitr::include_graphics(
 ```{r bin size, eval = eval_tests}
 tbin_size <- disc_sensitivity(
   coi = 2:20,
+  use_bins = TRUE,
   bin_size = seq(10, 100, 30),
-  distance = "squared",
   plmaf = p,
   repetitions = 100,
   seq_error = 0.01,
@@ -895,17 +799,18 @@ knitr::include_graphics(
 )
 ```
 
-```{r save results, eval = eval_tests, echo = FALSE, inlcude = FALSE, message = FALSE}
+
+
+```{r save results, eval = eval_tests, echo = FALSE, inlcude = FALSE}
 # Below, we save the runs we performed for future use
 saved_analysis <- list(
-  toverall, tcoi, tcomparison, tdistance, tcoverage_1, tcoverage_2,
-  tloci_1, tloci_2, talpha_1, talpha_2, tover, trelated, tepsilon, tseq,
-  tbin, tbin_size
+  toverall, tcoverage_1, tcoverage_2, tloci_1, tloci_2, talpha_1, talpha_2,
+  tover, trelated, tepsilon, tcoi, tseq, tbin, tbin_size
 )
 
 names(saved_analysis) <- list(
-  "toverall", "tcoi", "tcomparison", "tdistance", "tcoverage_1", "tcoverage_2",
-  "tloci_1", "tloci_2", "talpha_1", "talpha_2", "tover", "trelated", "tepsilon",
+  "toverall", "tcoverage_1", "tcoverage_2", "tloci_1", "tloci_2",
+  "talpha_1", "talpha_2", "tover", "trelated", "tepsilon", "tcoi",
   "tseq", "tbin", "tbin_size"
 )
 
@@ -916,10 +821,9 @@ saveRDS(
 
 # Here, we update all the stored images
 update_images <- list(
-  toverall_fig, tcoi_fig, tcomparison_fig, tdistance_fig, tcoverage_fig_1,
-  tcoverage_fig_2, tloci_fig_1, tloci_fig_2, talpha_fig_1,
-  talpha_fig_2, tover_fig, trelated_fig, tepsilon_fig, tseq_fig, tbin_fig,
-  tbin_size_fig
+  toverall_fig, tcoverage_fig_1, tcoverage_fig_2, tloci_fig_1, tloci_fig_2,
+  talpha_fig_1, talpha_fig_2, tover_fig, trelated_fig, tepsilon_fig,
+  tcoi_fig, tseq_fig, tbin_fig, tbin_size_fig
 )
 names(update_images) <- names(saved_analysis)
 
