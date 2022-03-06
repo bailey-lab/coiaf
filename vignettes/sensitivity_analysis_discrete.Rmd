@@ -837,6 +837,10 @@ for (i in seq_len(length(update_images))) {
       "discrete",
       glue::glue("{ names(update_images)[i] }.png")
     ),
+    width = 7,
+    height = 7,
+    units = "in",
+    device = "png",
     dpi = "screen"
   )
 }
