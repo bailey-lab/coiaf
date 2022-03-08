@@ -52,7 +52,7 @@ reference:
     contents:
       - sim_biallelic
       - process_sim
-      - sensitivity
+      - disc_sensitivity
       - cont_sensitivity
   - title: Visualize
     contents:

@@ -33,10 +33,9 @@ Creates a plot of the sensitivity analysis.
 }
 \details{
 \loadmathjax
-The function takes in the output of \code{\link[=sensitivity]{sensitivity()}} and creates a grid of
-plots. Each plot is created using \code{\link[ggplot2:geom_count]{ggplot2::geom_count()}}. The number of
-observations at each location is counted and then the count is mapped to
-point area on the plot.
+Creates a grid of plots. Each plot is created using \code{\link[ggplot2:geom_count]{ggplot2::geom_count()}}.
+The number of observations at each location is counted and then the count is
+mapped to point area on the plot.
 
 The x-axis is the true COI, and the y-axis is the estimated COI. The counts
 are plotted in blue, and red line is drawn with the equation \mjseqn{y = x}.

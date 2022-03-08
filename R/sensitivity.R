@@ -258,8 +258,7 @@ disc_sensitivity <- function(repetitions = 10,
 
   # Save changing parameters with bootstrapping
   boot_error <- dplyr::select(param_grid, where(~ dplyr::n_distinct(.x) > 1))
-  boot_error <- dplyr::bind_cols(boot_error, boot_mae) %>%
-    tidyr::unnest(cols = c(mae, lower, upper))
+  boot_error <- dplyr::bind_cols(boot_error, boot_mae)
   boot_error$bias <- unlist(coi_bias)
 
   # Customize warnings for when could not compute CI.
