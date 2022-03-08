@@ -77,4 +77,4 @@ articles:
     desc: Internal workings of algorithms
     contents:
       - example_coi_prediction
-      - example_simulation
+      - simulator_details
