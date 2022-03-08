@@ -168,7 +168,8 @@ tcoverage_2 <- cont_sensitivity(
   coverage = c(50, 100, 250, 500, 1000, 2000),
   repetitions = 100,
   seq_error = 0.01,
-  plmaf = p, coi_method = "frequency"
+  plmaf = p,
+  coi_method = "frequency"
 )
 
 tcoverage_image_2 <- sensitivity_plot(
@@ -480,11 +481,11 @@ tover <- cont_sensitivity(
 
 tover_image <- sensitivity_plot(
   data = tover,
-  result_type = "disc",
+  result_type = "cont",
   title = "Predicted COI",
   dims = c(4, 3),
   sub_title = paste0(
-    rep(c("Var, ", "Freq, "), each = 5),
+    rep(c("Var, ", "Freq, "), each = 6),
     "Dispersion = ",
     seq(0, 0.25, 0.05)
   )
@@ -706,7 +707,7 @@ tbin <- cont_sensitivity(
 
 tbin_image <- sensitivity_plot(
   data = tbin,
-  result_type = "disc",
+  result_type = "cont",
   title = "Predicted COI",
   dims = c(2, 2),
   sub_title = paste(
@@ -756,7 +757,7 @@ tbin_size <- cont_sensitivity(
 
 tbin_size_image <- sensitivity_plot(
   data = tbin_size,
-  result_type = "disc",
+  result_type = "cont",
   title = "Predicted COI",
   dims = c(2, 4),
   sub_title = rep(paste("Bin Size =", seq(10, 100, 30)), 2)
@@ -816,7 +817,8 @@ update_images <- list(
 names(update_images) <- names(saved_analysis)
 
 for (i in seq_len(length(update_images))) {
-  ggplot2::ggsave(
+  # Save vignette images
+  ggsave(
     plot = update_images[[i]],
     filename = here::here(
       "vignettes",
@@ -824,6 +826,10 @@ for (i in seq_len(length(update_images))) {
       "continuous",
       glue::glue("{ names(update_images)[i] }.png")
     ),
+    width = 7,
+    height = 7,
+    units = "in",
+    device = "png",
     dpi = "screen"
   )
 }
