@@ -103,14 +103,8 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>In this analysis file, we aim to understand the effect of varying parameters on our COI framework. The parameters that we will examine are:</p>
+<p>In this analysis file, we aim to understand the effect of varying parameters on our COI framework. We will examine both simulation and estimation parameters. The parameters that we will examine are:</p>
 <ul>
-<li>
-<code>comparison</code>: The method to be employed. One of <code>"end"</code>, <code>"ideal"</code>, <code>"overall"</code>.</li>
-<li>
-<code>distance</code>: The distance method used to determine the distance between the theoretical and simulated curves for the <code>"overall"</code> method. One of <code>"abs_sum"</code>, <code>"sum_abs"</code>, <code>"squared"</code>.</li>
-<li>
-<code>weighted</code>: An indicator indicating whether to compute weighted distance.</li>
 <li>
 <code>coverage</code>: Coverage at each locus.</li>
 <li>
@@ -120,11 +114,18 @@
 <li>
 <code>overdispersion</code>: The extent to which counts are over-dispersed relative to the binomial distribution. Counts are Beta-binomially distributed, with the beta distribution having shape parameters <span class="math inline">\(p/\text{overdispersion}\)</span> and <span class="math inline">\((1-p) / \text{overdispersion}\)</span>.</li>
 <li>
+<code>relatedness</code>: The probability that a strain in mixed infections is related to another.</li>
+<li>
 <code>epsilon</code>: The probability of a single read being miscalled as the other allele. Applies in both directions.</li>
 <li>
+<code>coi</code>: The complexity of infection of the sample.</li>
+<li>
 <code>seq_error</code>: The level of sequencing error that is assumed.</li>
+<li>
+<code>use_bins</code>: Whether or not to group data before estimating the COI.</li>
+<li>
+<code>bin_size</code>: The minimum size of each bin of data.</li>
 </ul>
-<p>In addition, we will compare two different methods of determining the COI. The first method uses the mean number of variant sites, binned in groups of increasing PLMAF to infer COI. The second method compares the WSMAF to the PLMAF for only the sites that are heterogeneous.</p>
 <div class="section level3">
 <h3 id="default-parameters">Default parameters<a class="anchor" aria-label="anchor" href="#default-parameters"></a>
 </h3>
@@ -139,23 +140,23 @@
 <td align="center"><code>3</code></td>
 </tr>
 <tr class="even">
-<td align="center">Max COI</td>
-<td align="center"><code>25</code></td>
-</tr>
-<tr class="odd">
 <td align="center">PLMAF</td>
 <td align="center"><code>runif(1000, 0, 0.5)</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="center">Coverage</td>
 <td align="center"><code>200</code></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="center">Alpha</td>
 <td align="center"><code>1</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="center">Overdispersion</td>
+<td align="center"><code>0</code></td>
+</tr>
+<tr class="even">
+<td align="center">Relatedness</td>
 <td align="center"><code>0</code></td>
 </tr>
 <tr class="odd">
@@ -167,20 +168,12 @@
 <td align="center"><code>0.01</code></td>
 </tr>
 <tr class="odd">
-<td align="center">Cut</td>
-<td align="center"><code>seq(0, 0.5, 0.01)</code></td>
+<td align="center">Use Bins</td>
+<td align="center"><code>FALSE</code></td>
 </tr>
 <tr class="even">
-<td align="center">Comparison</td>
-<td align="center"><code>"overall"</code></td>
-</tr>
-<tr class="odd">
-<td align="center">Distance</td>
-<td align="center"><code>"squared"</code></td>
-</tr>
-<tr class="even">
-<td align="center">Weighted</td>
-<td align="center"><code>TRUE</code></td>
+<td align="center">Bin Size</td>
+<td align="center"><code>20</code></td>
 </tr>
 </tbody>
 </table>
@@ -194,7 +187,7 @@
 
 <span class="co"># Define number of loci, and distribution of minor allele frequencies</span>
 <span class="va">L</span> <span class="op">&lt;-</span> <span class="fl">1e3</span>
-<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Beta.html" class="external-link">rbeta</a></span><span class="op">(</span><span class="va">L</span>, <span class="fl">1</span>, <span class="fl">5</span><span class="op">)</span>
+<span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Beta.html" class="external-link">rbeta</a></span><span class="op">(</span><span class="va">L</span>, <span class="fl">1</span>, <span class="fl">5</span><span class="op">)</span>
 <span class="va">p</span><span class="op">[</span><span class="va">p</span> <span class="op">&gt;</span> <span class="fl">0.5</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="op">-</span> <span class="va">p</span><span class="op">[</span><span class="va">p</span> <span class="op">&gt;</span> <span class="fl">0.5</span><span class="op">]</span></code></pre></div>
 </div>
 <div class="section level3">
@@ -205,7 +198,7 @@
   coi <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">20</span>,
   repetitions <span class="op">=</span> <span class="fl">100</span>,
   plmaf <span class="op">=</span> <span class="va">p</span>,
-  coverage <span class="op">=</span> <span class="fl">400</span>,
+  coverage <span class="op">=</span> <span class="fl">100</span>,
   seq_error <span class="op">=</span> <span class="fl">0</span>,
   coi_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"variant"</span>, <span class="st">"frequency"</span><span class="op">)</span>
 <span class="op">)</span>
@@ -219,7 +212,7 @@
 <span class="op">)</span>
 
 <span class="va">toverall_error</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/error_plot.html">error_plot</a></span><span class="op">(</span>
-  <span class="va">toverall</span>,
+  data <span class="op">=</span> <span class="va">toverall</span>,
   fill <span class="op">=</span> <span class="st">"coi_method"</span>,
   legend_title <span class="op">=</span> <span class="st">"COI Method"</span>,
   title <span class="op">=</span> <span class="st">"Error"</span>,
@@ -227,147 +220,23 @@
 <span class="op">)</span>
 
 <span class="va">toverall_fig</span> <span class="op">&lt;-</span> <span class="va">toverall_image</span> <span class="op">/</span> <span class="va">toverall_error</span> <span class="op">+</span>
-  <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_annotation.html" class="external-link">plot_annotation</a></span><span class="op">(</span>
+  <span class="fu">plot_annotation</span><span class="op">(</span>
     tag_levels <span class="op">=</span> <span class="st">"A"</span>,
-    theme <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.tag <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
+    theme <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.tag <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
   <span class="op">)</span> <span class="op">+</span>
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span>
 
 <span class="va">toverall_fig</span></code></pre></div>
 <p><img src="figures/continuous/toverall.png" width="75%"></p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="sensitivity-analysis">Sensitivity analysis<a class="anchor" aria-label="anchor" href="#sensitivity-analysis"></a>
+<h2 id="simulation-parameters">Simulation parameters<a class="anchor" aria-label="anchor" href="#simulation-parameters"></a>
 </h2>
-<div class="section level3">
-<h3 id="coi">COI<a class="anchor" aria-label="anchor" href="#coi"></a>
-</h3>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">tcoi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cont_sensitivity.html">cont_sensitivity</a></span><span class="op">(</span>
-  coi <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">40</span>,
-  max_coi <span class="op">=</span> <span class="fl">40</span>,
-  repetitions <span class="op">=</span> <span class="fl">100</span>,
-  plmaf <span class="op">=</span> <span class="va">p</span>,
-  seq_error <span class="op">=</span> <span class="fl">0.01</span>,
-  coi_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"variant"</span>, <span class="st">"frequency"</span><span class="op">)</span>
-<span class="op">)</span>
-
-<span class="va">tcoi_image</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sensitivity_plot.html">sensitivity_plot</a></span><span class="op">(</span>
-  data <span class="op">=</span> <span class="va">tcoi</span>,
-  dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>,
-  result_type <span class="op">=</span> <span class="st">"cont"</span>,
-  title <span class="op">=</span> <span class="st">"Predicted COI"</span>,
-  sub_title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Variant Method"</span>, <span class="st">"Frequency Method"</span><span class="op">)</span>
-<span class="op">)</span>
-
-<span class="va">tcoi_error</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/error_plot.html">error_plot</a></span><span class="op">(</span>
-  <span class="va">tcoi</span>,
-  fill <span class="op">=</span> <span class="st">"coi_method"</span>,
-  legend_title <span class="op">=</span> <span class="st">"COI Method"</span>,
-  title <span class="op">=</span> <span class="st">"Error"</span>,
-  fill_levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Variant Method"</span>, <span class="st">"Frequency Method"</span><span class="op">)</span>
-<span class="op">)</span>
-
-<span class="va">tcoi_fig</span> <span class="op">&lt;-</span> <span class="va">tcoi_image</span> <span class="op">/</span> <span class="va">tcoi_error</span> <span class="op">+</span>
-  <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_annotation.html" class="external-link">plot_annotation</a></span><span class="op">(</span>
-    tag_levels <span class="op">=</span> <span class="st">"A"</span>,
-    theme <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.tag <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
-  <span class="op">)</span> <span class="op">+</span>
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span>
-
-<span class="va">tcoi_fig</span></code></pre></div>
-<p><img src="figures/continuous/tcoi.png" width="75%"></p>
-</div>
-<div class="section level3">
-<h3 id="comparison">Comparison<a class="anchor" aria-label="anchor" href="#comparison"></a>
-</h3>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">tcomparison</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cont_sensitivity.html">cont_sensitivity</a></span><span class="op">(</span>
-  coi <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">20</span>,
-  plmaf <span class="op">=</span> <span class="va">p</span>,
-  comparison <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"end"</span>, <span class="st">"ideal"</span>, <span class="st">"overall"</span><span class="op">)</span>,
-  distance <span class="op">=</span> <span class="st">"squared"</span>,
-  repetitions <span class="op">=</span> <span class="fl">100</span>,
-  seq_error <span class="op">=</span> <span class="fl">0.01</span>
-<span class="op">)</span>
-
-<span class="va">tcomparison_image</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sensitivity_plot.html">sensitivity_plot</a></span><span class="op">(</span>
-  data <span class="op">=</span> <span class="va">tcomparison</span>,
-  result_type <span class="op">=</span> <span class="st">"cont"</span>,
-  title <span class="op">=</span> <span class="st">"Predicted COI"</span>,
-  dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span><span class="op">)</span>,
-  sub_title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Comparison = "</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"End"</span>, <span class="st">"Ideal"</span>, <span class="st">"Overall"</span><span class="op">)</span><span class="op">)</span>
-<span class="op">)</span>
-
-<span class="va">tcomparison_error</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/error_plot.html">error_plot</a></span><span class="op">(</span>
-  <span class="va">tcomparison</span>,
-  fill <span class="op">=</span> <span class="st">"comparison"</span>,
-  legend_title <span class="op">=</span> <span class="st">"Method"</span>,
-  fill_levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"End"</span>, <span class="st">"Ideal"</span>, <span class="st">"Overall"</span><span class="op">)</span>,
-  title <span class="op">=</span> <span class="st">"Error"</span>
-<span class="op">)</span>
-
-<span class="va">tcomparison_fig</span> <span class="op">&lt;-</span> <span class="va">tcomparison_image</span> <span class="op">/</span> <span class="va">tcomparison_error</span> <span class="op">+</span>
-  <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_annotation.html" class="external-link">plot_annotation</a></span><span class="op">(</span>
-    tag_levels <span class="op">=</span> <span class="st">"A"</span>,
-    theme <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.tag <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
-  <span class="op">)</span> <span class="op">+</span>
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span>
-
-<span class="va">tcomparison_fig</span></code></pre></div>
-<p><img src="figures/continuous/tcomparison.png" width="75%"></p>
-</div>
-<div class="section level3">
-<h3 id="distance">Distance<a class="anchor" aria-label="anchor" href="#distance"></a>
-</h3>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">tdistance</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cont_sensitivity.html">cont_sensitivity</a></span><span class="op">(</span>
-  coi <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">20</span>,
-  plmaf <span class="op">=</span> <span class="va">p</span>,
-  comparison <span class="op">=</span> <span class="st">"overall"</span>,
-  distance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"abs_sum"</span>, <span class="st">"sum_abs"</span>, <span class="st">"squared"</span><span class="op">)</span>,
-  repetitions <span class="op">=</span> <span class="fl">100</span>,
-  seq_error <span class="op">=</span> <span class="fl">0.01</span>,
-  coi_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"variant"</span>, <span class="st">"frequency"</span><span class="op">)</span>
-<span class="op">)</span>
-
-<span class="va">tdistance_image</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sensitivity_plot.html">sensitivity_plot</a></span><span class="op">(</span>
-  data <span class="op">=</span> <span class="va">tdistance</span>,
-  result_type <span class="op">=</span> <span class="st">"cont"</span>,
-  title <span class="op">=</span> <span class="st">"Predicted COI"</span>,
-  dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">2</span><span class="op">)</span>,
-  sub_title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Absolute Sum"</span>, <span class="st">"Sum of Absolute"</span>, <span class="st">"Squared Error"</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span>,
-    <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Variant Method"</span>, <span class="st">"Frequency Method"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>,
-    sep <span class="op">=</span> <span class="st">", "</span>
-  <span class="op">)</span>
-<span class="op">)</span>
-
-<span class="va">tdistance_error</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/error_plot.html">error_plot</a></span><span class="op">(</span>
-  <span class="va">tdistance</span>,
-  fill <span class="op">=</span> <span class="st">"distance"</span>,
-  legend_title <span class="op">=</span> <span class="st">"Distance Method"</span>,
-  fill_levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Absolute Sum"</span>, <span class="st">"Squared Error"</span>, <span class="st">"Sum of Absolute"</span><span class="op">)</span>,
-  title <span class="op">=</span> <span class="st">"Error"</span>,
-  second_fill <span class="op">=</span> <span class="st">"coi_method"</span>
-<span class="op">)</span>
-
-<span class="va">tdistance_fig</span> <span class="op">&lt;-</span> <span class="va">tdistance_image</span> <span class="op">/</span> <span class="va">tdistance_error</span> <span class="op">+</span>
-  <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_annotation.html" class="external-link">plot_annotation</a></span><span class="op">(</span>
-    tag_levels <span class="op">=</span> <span class="st">"A"</span>,
-    theme <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.tag <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
-  <span class="op">)</span> <span class="op">+</span>
-  <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_layout.html" class="external-link">plot_layout</a></span><span class="op">(</span>heights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span>
-
-<span class="va">tdistance_fig</span></code></pre></div>
-<p><img src="figures/continuous/tdistance.png" width="75%"></p>
-</div>
 <div class="section level3">
 <h3 id="coverage">Coverage<a class="anchor" aria-label="anchor" href="#coverage"></a>
 </h3>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tcoverage_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cont_sensitivity.html">cont_sensitivity</a></span><span class="op">(</span>
   coi <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">20</span>,
   coverage <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">100</span>, <span class="fl">250</span>, <span class="fl">500</span>, <span class="fl">1000</span>, <span class="fl">2000</span><span class="op">)</span>,
@@ -393,21 +262,22 @@
 <span class="op">)</span>
 
 <span class="va">tcoverage_fig_1</span> <span class="op">&lt;-</span> <span class="va">tcoverage_image_1</span> <span class="op">/</span> <span class="va">tcoverage_error_1</span> <span class="op">+</span>
-  <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_annotation.html" class="external-link">plot_annotation</a></span><span class="op">(</span>
+  <span class="fu">plot_annotation</span><span class="op">(</span>
     tag_levels <span class="op">=</span> <span class="st">"A"</span>,
-    theme <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.tag <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
+    theme <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.tag <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
   <span class="op">)</span> <span class="op">+</span>
-  <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_layout.html" class="external-link">plot_layout</a></span><span class="op">(</span>heights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span>
+  <span class="fu">plot_layout</span><span class="op">(</span>heights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span>
 
 <span class="va">tcoverage_fig_1</span></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tcoverage_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cont_sensitivity.html">cont_sensitivity</a></span><span class="op">(</span>
   coi <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">20</span>,
   coverage <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">100</span>, <span class="fl">250</span>, <span class="fl">500</span>, <span class="fl">1000</span>, <span class="fl">2000</span><span class="op">)</span>,
   repetitions <span class="op">=</span> <span class="fl">100</span>,
   seq_error <span class="op">=</span> <span class="fl">0.01</span>,
-  plmaf <span class="op">=</span> <span class="va">p</span>, coi_method <span class="op">=</span> <span class="st">"frequency"</span>
+  plmaf <span class="op">=</span> <span class="va">p</span>,
+  coi_method <span class="op">=</span> <span class="st">"frequency"</span>
 <span class="op">)</span>
 
 <span class="va">tcoverage_image_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sensitivity_plot.html">sensitivity_plot</a></span><span class="op">(</span>
@@ -426,12 +296,12 @@
 <span class="op">)</span>
 
 <span class="va">tcoverage_fig_2</span> <span class="op">&lt;-</span> <span class="va">tcoverage_image_2</span> <span class="op">/</span> <span class="va">tcoverage_error_2</span> <span class="op">+</span>
-  <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_annotation.html" class="external-link">plot_annotation</a></span><span class="op">(</span>
+  <span class="fu">plot_annotation</span><span class="op">(</span>
     tag_levels <span class="op">=</span> <span class="st">"A"</span>,
-    theme <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.tag <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
+    theme <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.tag <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
   <span class="op">)</span> <span class="op">+</span>
-  <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_layout.html" class="external-link">plot_layout</a></span><span class="op">(</span>heights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span>
+  <span class="fu">plot_layout</span><span class="op">(</span>heights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span>
 
 <span class="va">tcoverage_fig_2</span></code></pre></div>
 <p><img src="figures/continuous/tcoverage_1.png" width="75%"><img src="figures/continuous/tcoverage_2.png" width="75%"></p>
@@ -439,7 +309,7 @@
 <div class="section level3">
 <h3 id="loci">Loci<a class="anchor" aria-label="anchor" href="#loci"></a>
 </h3>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Set the range over which we will iterate</span>
 <span class="va">loci</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1e2</span>, <span class="fl">1e3</span>, <span class="fl">1e4</span><span class="op">)</span>
 
@@ -514,14 +384,14 @@
 <span class="op">)</span>
 
 <span class="va">tloci_fig_1</span> <span class="op">&lt;-</span> <span class="va">tloci_image_1</span> <span class="op">/</span> <span class="va">tloci_error_1</span> <span class="op">+</span>
-  <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_annotation.html" class="external-link">plot_annotation</a></span><span class="op">(</span>
+  <span class="fu">plot_annotation</span><span class="op">(</span>
     tag_levels <span class="op">=</span> <span class="st">"A"</span>,
-    theme <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.tag <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
+    theme <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.tag <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
   <span class="op">)</span> <span class="op">+</span>
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span>
 
 <span class="va">tloci_fig_1</span></code></pre></div>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Set the range over which we will iterate</span>
 <span class="va">loci</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1e2</span>, <span class="fl">1e3</span>, <span class="fl">1e4</span><span class="op">)</span>
 
@@ -596,11 +466,11 @@
 <span class="op">)</span>
 
 <span class="va">tloci_fig_2</span> <span class="op">&lt;-</span> <span class="va">tloci_image_2</span> <span class="op">/</span> <span class="va">tloci_error_2</span> <span class="op">+</span>
-  <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_annotation.html" class="external-link">plot_annotation</a></span><span class="op">(</span>
+  <span class="fu">plot_annotation</span><span class="op">(</span>
     tag_levels <span class="op">=</span> <span class="st">"A"</span>,
-    theme <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.tag <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
+    theme <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.tag <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
   <span class="op">)</span> <span class="op">+</span>
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span>
 
 <span class="va">tloci_fig_2</span></code></pre></div>
 <p><img src="figures/continuous/tloci_1.png" width="75%"><img src="figures/continuous/tloci_2.png" width="75%"></p>
@@ -608,7 +478,7 @@
 <div class="section level3">
 <h3 id="alpha">Alpha<a class="anchor" aria-label="anchor" href="#alpha"></a>
 </h3>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">talpha_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cont_sensitivity.html">cont_sensitivity</a></span><span class="op">(</span>
   coi <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">20</span>,
   alpha <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0.01</span>, <span class="fl">5.51</span>, <span class="fl">0.5</span><span class="op">)</span>,
@@ -633,15 +503,15 @@
 <span class="op">)</span>
 
 <span class="va">talpha_fig_1</span> <span class="op">&lt;-</span> <span class="va">talpha_image_1</span> <span class="op">/</span> <span class="va">talpha_error_1</span> <span class="op">+</span>
-  <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_annotation.html" class="external-link">plot_annotation</a></span><span class="op">(</span>
+  <span class="fu">plot_annotation</span><span class="op">(</span>
     tag_levels <span class="op">=</span> <span class="st">"A"</span>,
-    theme <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.tag <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
+    theme <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.tag <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
   <span class="op">)</span> <span class="op">+</span>
-  <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_layout.html" class="external-link">plot_layout</a></span><span class="op">(</span>heights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span>
+  <span class="fu">plot_layout</span><span class="op">(</span>heights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span>
 
 <span class="va">talpha_fig_1</span></code></pre></div>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">talpha_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cont_sensitivity.html">cont_sensitivity</a></span><span class="op">(</span>
   coi <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">20</span>,
   alpha <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0.01</span>, <span class="fl">5.51</span>, <span class="fl">0.5</span><span class="op">)</span>,
@@ -666,12 +536,12 @@
 <span class="op">)</span>
 
 <span class="va">talpha_fig_2</span> <span class="op">&lt;-</span> <span class="va">talpha_image_2</span> <span class="op">/</span> <span class="va">talpha_error_2</span> <span class="op">+</span>
-  <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_annotation.html" class="external-link">plot_annotation</a></span><span class="op">(</span>
+  <span class="fu">plot_annotation</span><span class="op">(</span>
     tag_levels <span class="op">=</span> <span class="st">"A"</span>,
-    theme <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.tag <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
+    theme <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.tag <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
   <span class="op">)</span> <span class="op">+</span>
-  <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_layout.html" class="external-link">plot_layout</a></span><span class="op">(</span>heights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span>
+  <span class="fu">plot_layout</span><span class="op">(</span>heights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span>
 
 <span class="va">talpha_fig_2</span></code></pre></div>
 <p><img src="figures/continuous/talpha_1.png" width="75%"><img src="figures/continuous/talpha_2.png" width="75%"></p>
@@ -679,10 +549,10 @@
 <div class="section level3">
 <h3 id="overdispersion">Overdispersion<a class="anchor" aria-label="anchor" href="#overdispersion"></a>
 </h3>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tover</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cont_sensitivity.html">cont_sensitivity</a></span><span class="op">(</span>
   coi <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">20</span>,
-  overdispersion <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.2</span>, <span class="fl">0.05</span><span class="op">)</span>,
+  overdispersion <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.25</span>, <span class="fl">0.05</span><span class="op">)</span>,
   repetitions <span class="op">=</span> <span class="fl">100</span>,
   seq_error <span class="op">=</span> <span class="fl">0.01</span>,
   plmaf <span class="op">=</span> <span class="va">p</span>,
@@ -694,10 +564,10 @@
   result_type <span class="op">=</span> <span class="st">"cont"</span>,
   title <span class="op">=</span> <span class="st">"Predicted COI"</span>,
   dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">3</span><span class="op">)</span>,
-  sub_title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Over "</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.2</span>, <span class="fl">0.05</span><span class="op">)</span><span class="op">)</span>,
-    <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Variant Method"</span>, <span class="st">"Frequency Method"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,
-    sep <span class="op">=</span> <span class="st">", "</span>
+  sub_title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Var, "</span>, <span class="st">"Freq, "</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">6</span><span class="op">)</span>,
+    <span class="st">"Dispersion = "</span>,
+    <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.25</span>, <span class="fl">0.05</span><span class="op">)</span>
   <span class="op">)</span>
 <span class="op">)</span>
 
@@ -710,12 +580,12 @@
 <span class="op">)</span>
 
 <span class="va">tover_fig</span> <span class="op">&lt;-</span> <span class="va">tover_image</span> <span class="op">/</span> <span class="va">tover_error</span> <span class="op">+</span>
-  <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_annotation.html" class="external-link">plot_annotation</a></span><span class="op">(</span>
+  <span class="fu">plot_annotation</span><span class="op">(</span>
     tag_levels <span class="op">=</span> <span class="st">"A"</span>,
-    theme <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.tag <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
+    theme <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.tag <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
   <span class="op">)</span> <span class="op">+</span>
-  <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_layout.html" class="external-link">plot_layout</a></span><span class="op">(</span>heights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span>
+  <span class="fu">plot_layout</span><span class="op">(</span>heights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span>
 
 <span class="va">tover_fig</span></code></pre></div>
 <p><img src="figures/continuous/tover.png" width="75%"></p>
@@ -723,7 +593,7 @@
 <div class="section level3">
 <h3 id="relatedness">Relatedness<a class="anchor" aria-label="anchor" href="#relatedness"></a>
 </h3>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">trelated</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cont_sensitivity.html">cont_sensitivity</a></span><span class="op">(</span>
   coi <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">20</span>,
   relatedness <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.5</span>, <span class="fl">0.1</span><span class="op">)</span>,
@@ -754,12 +624,12 @@
 <span class="op">)</span>
 
 <span class="va">trelated_fig</span> <span class="op">&lt;-</span> <span class="va">trelated_image</span> <span class="op">/</span> <span class="va">trelated_error</span> <span class="op">+</span>
-  <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_annotation.html" class="external-link">plot_annotation</a></span><span class="op">(</span>
+  <span class="fu">plot_annotation</span><span class="op">(</span>
     tag_levels <span class="op">=</span> <span class="st">"A"</span>,
-    theme <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.tag <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
+    theme <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.tag <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
   <span class="op">)</span> <span class="op">+</span>
-  <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_layout.html" class="external-link">plot_layout</a></span><span class="op">(</span>heights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span>
+  <span class="fu">plot_layout</span><span class="op">(</span>heights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span>
 
 <span class="va">trelated_fig</span></code></pre></div>
 <p><img src="figures/continuous/trelated.png" width="75%"></p>
@@ -767,7 +637,7 @@
 <div class="section level3">
 <h3 id="epsilon">Epsilon<a class="anchor" aria-label="anchor" href="#epsilon"></a>
 </h3>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tepsilon</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cont_sensitivity.html">cont_sensitivity</a></span><span class="op">(</span>
   coi <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">20</span>,
   epsilon <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.025</span>, <span class="fl">0.005</span><span class="op">)</span>,
@@ -792,20 +662,63 @@
 <span class="op">)</span>
 
 <span class="va">tepsilon_fig</span> <span class="op">&lt;-</span> <span class="va">tepsilon_image</span> <span class="op">/</span> <span class="va">tepsilon_error</span> <span class="op">+</span>
-  <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_annotation.html" class="external-link">plot_annotation</a></span><span class="op">(</span>
+  <span class="fu">plot_annotation</span><span class="op">(</span>
     tag_levels <span class="op">=</span> <span class="st">"A"</span>,
-    theme <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.tag <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
+    theme <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.tag <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
   <span class="op">)</span> <span class="op">+</span>
-  <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_layout.html" class="external-link">plot_layout</a></span><span class="op">(</span>heights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span>
+  <span class="fu">plot_layout</span><span class="op">(</span>heights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span>
 
 <span class="va">tepsilon_fig</span></code></pre></div>
 <p><img src="figures/continuous/tepsilon.png" width="75%"></p>
 </div>
+</div>
+<div class="section level2">
+<h2 id="estimation-parameters">Estimation parameters<a class="anchor" aria-label="anchor" href="#estimation-parameters"></a>
+</h2>
+<div class="section level3">
+<h3 id="coi">COI<a class="anchor" aria-label="anchor" href="#coi"></a>
+</h3>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tcoi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cont_sensitivity.html">cont_sensitivity</a></span><span class="op">(</span>
+  coi <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">40</span>,
+  max_coi <span class="op">=</span> <span class="fl">40</span>,
+  repetitions <span class="op">=</span> <span class="fl">100</span>,
+  plmaf <span class="op">=</span> <span class="va">p</span>,
+  seq_error <span class="op">=</span> <span class="fl">0.01</span>,
+  coi_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"variant"</span>, <span class="st">"frequency"</span><span class="op">)</span>
+<span class="op">)</span>
+
+<span class="va">tcoi_image</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sensitivity_plot.html">sensitivity_plot</a></span><span class="op">(</span>
+  data <span class="op">=</span> <span class="va">tcoi</span>,
+  dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>,
+  result_type <span class="op">=</span> <span class="st">"cont"</span>,
+  title <span class="op">=</span> <span class="st">"Predicted COI"</span>,
+  sub_title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Variant Method"</span>, <span class="st">"Frequency Method"</span><span class="op">)</span>
+<span class="op">)</span>
+
+<span class="va">tcoi_error</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/error_plot.html">error_plot</a></span><span class="op">(</span>
+  <span class="va">tcoi</span>,
+  fill <span class="op">=</span> <span class="st">"coi_method"</span>,
+  legend_title <span class="op">=</span> <span class="st">"COI Method"</span>,
+  title <span class="op">=</span> <span class="st">"Error"</span>,
+  fill_levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Variant Method"</span>, <span class="st">"Frequency Method"</span><span class="op">)</span>
+<span class="op">)</span>
+
+<span class="va">tcoi_fig</span> <span class="op">&lt;-</span> <span class="va">tcoi_image</span> <span class="op">/</span> <span class="va">tcoi_error</span> <span class="op">+</span>
+  <span class="fu">plot_annotation</span><span class="op">(</span>
+    tag_levels <span class="op">=</span> <span class="st">"A"</span>,
+    theme <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.tag <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
+  <span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span>
+
+<span class="va">tcoi_fig</span></code></pre></div>
+<p><img src="figures/continuous/tcoi.png" width="75%"></p>
+</div>
 <div class="section level3">
 <h3 id="sequencing-error">Sequencing error<a class="anchor" aria-label="anchor" href="#sequencing-error"></a>
 </h3>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tseq</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cont_sensitivity.html">cont_sensitivity</a></span><span class="op">(</span>
   coi <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">20</span>,
   epsilon <span class="op">=</span> <span class="fl">0.01</span>,
@@ -831,27 +744,25 @@
 <span class="op">)</span>
 
 <span class="va">tseq_fig</span> <span class="op">&lt;-</span> <span class="va">tseq_image</span> <span class="op">/</span> <span class="va">tseq_error</span> <span class="op">+</span>
-  <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_annotation.html" class="external-link">plot_annotation</a></span><span class="op">(</span>
+  <span class="fu">plot_annotation</span><span class="op">(</span>
     tag_levels <span class="op">=</span> <span class="st">"A"</span>,
-    theme <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.tag <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
+    theme <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.tag <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
   <span class="op">)</span> <span class="op">+</span>
-  <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_layout.html" class="external-link">plot_layout</a></span><span class="op">(</span>heights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span>
+  <span class="fu">plot_layout</span><span class="op">(</span>heights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span>
 
 <span class="va">tseq_fig</span></code></pre></div>
 <p><img src="figures/continuous/tseq.png" width="75%"></p>
 </div>
 <div class="section level3">
-<h3 id="bin-size">Bin size<a class="anchor" aria-label="anchor" href="#bin-size"></a>
+<h3 id="bins">Bins<a class="anchor" aria-label="anchor" href="#bins"></a>
 </h3>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">tbin</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cont_sensitivity.html">cont_sensitivity</a></span><span class="op">(</span>
   coi <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">20</span>,
-  bin_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">100</span>, <span class="fl">30</span><span class="op">)</span>,
-  distance <span class="op">=</span> <span class="st">"squared"</span>,
+  use_bins <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">FALSE</span><span class="op">)</span>,
   plmaf <span class="op">=</span> <span class="va">p</span>,
   repetitions <span class="op">=</span> <span class="fl">100</span>,
-  seq_error <span class="op">=</span> <span class="fl">0.01</span>,
   coi_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"variant"</span>, <span class="st">"frequency"</span><span class="op">)</span>
 <span class="op">)</span>
 
@@ -859,28 +770,74 @@
   data <span class="op">=</span> <span class="va">tbin</span>,
   result_type <span class="op">=</span> <span class="st">"cont"</span>,
   title <span class="op">=</span> <span class="st">"Predicted COI"</span>,
-  dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span><span class="op">)</span>,
-  sub_title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Bin Size ="</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">100</span>, <span class="fl">30</span><span class="op">)</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span>
+  dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span>,
+  sub_title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Variant Method,"</span>, <span class="st">"Frequency Method,"</span><span class="op">)</span>,
+    <span class="st">"Bins ="</span>,
+    <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">FALSE</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
+  <span class="op">)</span>
 <span class="op">)</span>
 
 <span class="va">tbin_error</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/error_plot.html">error_plot</a></span><span class="op">(</span>
   <span class="va">tbin</span>,
+  fill <span class="op">=</span> <span class="st">"use_bins"</span>,
+  fill_levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span>,
+  legend_title <span class="op">=</span> <span class="st">"COI Method"</span>,
+  title <span class="op">=</span> <span class="st">"Error"</span>,
+  second_fill <span class="op">=</span> <span class="st">"coi_method"</span>
+<span class="op">)</span>
+
+<span class="va">tbin_fig</span> <span class="op">&lt;-</span> <span class="va">tbin_image</span> <span class="op">/</span> <span class="va">tbin_error</span> <span class="op">+</span>
+  <span class="fu">plot_annotation</span><span class="op">(</span>
+    tag_levels <span class="op">=</span> <span class="st">"A"</span>,
+    theme <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.tag <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
+  <span class="op">)</span> <span class="op">+</span>
+  <span class="fu">plot_layout</span><span class="op">(</span>heights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span>
+
+<span class="va">tbin_fig</span></code></pre></div>
+<p><img src="figures/continuous/tbin.png" width="75%"></p>
+</div>
+<div class="section level3">
+<h3 id="bin-size">Bin size<a class="anchor" aria-label="anchor" href="#bin-size"></a>
+</h3>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tbin_size</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cont_sensitivity.html">cont_sensitivity</a></span><span class="op">(</span>
+  coi <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">20</span>,
+  use_bins <span class="op">=</span> <span class="cn">TRUE</span>,
+  bin_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">100</span>, <span class="fl">30</span><span class="op">)</span>,
+  plmaf <span class="op">=</span> <span class="va">p</span>,
+  repetitions <span class="op">=</span> <span class="fl">100</span>,
+  seq_error <span class="op">=</span> <span class="fl">0.01</span>,
+  coi_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"variant"</span>, <span class="st">"frequency"</span><span class="op">)</span>
+<span class="op">)</span>
+
+<span class="va">tbin_size_image</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sensitivity_plot.html">sensitivity_plot</a></span><span class="op">(</span>
+  data <span class="op">=</span> <span class="va">tbin_size</span>,
+  result_type <span class="op">=</span> <span class="st">"cont"</span>,
+  title <span class="op">=</span> <span class="st">"Predicted COI"</span>,
+  dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span><span class="op">)</span>,
+  sub_title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Bin Size ="</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">100</span>, <span class="fl">30</span><span class="op">)</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span>
+<span class="op">)</span>
+
+<span class="va">tbin_size_error</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/error_plot.html">error_plot</a></span><span class="op">(</span>
+  <span class="va">tbin_size</span>,
   fill <span class="op">=</span> <span class="st">"bin_size"</span>,
-  fill_levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"10"</span>, <span class="st">"40"</span>, <span class="st">"70"</span>, <span class="st">"100"</span><span class="op">)</span>,
+  fill_levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">100</span>, <span class="fl">30</span><span class="op">)</span><span class="op">)</span>,
   legend_title <span class="op">=</span> <span class="st">"COI Method"</span>,
   title <span class="op">=</span> <span class="st">"Error"</span>
 <span class="op">)</span>
 
-<span class="va">tbin_fig</span> <span class="op">&lt;-</span> <span class="va">tbin_image</span> <span class="op">/</span> <span class="va">tbin_error</span> <span class="op">+</span>
-  <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_annotation.html" class="external-link">plot_annotation</a></span><span class="op">(</span>
+<span class="va">tbin_size_fig</span> <span class="op">&lt;-</span> <span class="va">tbin_size_image</span> <span class="op">/</span> <span class="va">tbin_size_error</span> <span class="op">+</span>
+  <span class="fu">plot_annotation</span><span class="op">(</span>
     tag_levels <span class="op">=</span> <span class="st">"A"</span>,
-    theme <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.tag <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
+    theme <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.tag <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
   <span class="op">)</span> <span class="op">+</span>
-  <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_layout.html" class="external-link">plot_layout</a></span><span class="op">(</span>heights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span>
+  <span class="fu">plot_layout</span><span class="op">(</span>heights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span>
 
-<span class="va">tbin_fig</span></code></pre></div>
-<p><img src="figures/continuous/tbin.png" width="75%"></p>
+<span class="va">tbin_size_fig</span></code></pre></div>
+<p><img src="figures/continuous/tbin_size.png" width="75%"></p>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

@@ -13,9 +13,6 @@
     <loc>https://bailey-lab.github.io/coiaf/dev/articles/example_real_data.html</loc>
   </url>
   <url>
-    <loc>https://bailey-lab.github.io/coiaf/dev/articles/example_simulation.html</loc>
-  </url>
-  <url>
     <loc>https://bailey-lab.github.io/coiaf/dev/articles/index.html</loc>
   </url>
   <url>
@@ -23,6 +20,9 @@
   </url>
   <url>
     <loc>https://bailey-lab.github.io/coiaf/dev/articles/sensitivity_analysis_discrete.html</loc>
+  </url>
+  <url>
+    <loc>https://bailey-lab.github.io/coiaf/dev/articles/simulator_details.html</loc>
   </url>
   <url>
     <loc>https://bailey-lab.github.io/coiaf/dev/authors.html</loc>
@@ -44,6 +44,9 @@
   </url>
   <url>
     <loc>https://bailey-lab.github.io/coiaf/dev/reference/cont_sensitivity.html</loc>
+  </url>
+  <url>
+    <loc>https://bailey-lab.github.io/coiaf/dev/reference/disc_sensitivity.html</loc>
   </url>
   <url>
     <loc>https://bailey-lab.github.io/coiaf/dev/reference/distance_curves.html</loc>
@@ -86,9 +89,6 @@
   </url>
   <url>
     <loc>https://bailey-lab.github.io/coiaf/dev/reference/rdirichlet.html</loc>
-  </url>
-  <url>
-    <loc>https://bailey-lab.github.io/coiaf/dev/reference/sensitivity.html</loc>
   </url>
   <url>
     <loc>https://bailey-lab.github.io/coiaf/dev/reference/sensitivity_plot.html</loc>

@@ -83,7 +83,8 @@ parameters.</p>
   bin_size <span class="op">=</span> <span class="fl">20</span>,
   comparison <span class="op">=</span> <span class="st">"overall"</span>,
   distance <span class="op">=</span> <span class="st">"squared"</span>,
-  coi_method <span class="op">=</span> <span class="st">"variant"</span>
+  coi_method <span class="op">=</span> <span class="st">"variant"</span>,
+  use_bins <span class="op">=</span> <span class="cn">FALSE</span>
 <span class="op">)</span></code></pre></div>
     </div>
 
@@ -109,8 +110,8 @@ proportions.</p></dd>
 <dd><p>The extent to which counts are over-dispersed relative
 to the binomial distribution. Counts are Beta-Binomially distributed, with
 the beta distribution having shape parameters
-\(\frac{p}{overdispersion}\) and
-\(\frac{1-p}{overdispersion}\).</p></dd>
+<em></em>\(\frac{p}{overdispersion}\) and
+<em></em>\(\frac{1-p}{overdispersion}\).</p></dd>
 <dt>relatedness</dt>
 <dd><p>The probability that a strain in mixed infections is
 related to another. The implementation is similar to relatedness as defined
@@ -137,6 +138,9 @@ the theoretical and simulated curves for the <code>"overall"</code> method. One 
 <dd><p>The method we will use to calculate the theoretical COI.
 The method is either "variant" or "frequency". The default value is
 "variant".</p></dd>
+<dt>use_bins</dt>
+<dd><p>Do we calculate COI by comparing against the data grouped
+into bins of changing <code>plaf</code> or not. Default = FALSE.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>

@@ -4,10 +4,10 @@ pkgdown_sha: ~
 articles:
   example_coi_prediction: example_coi_prediction.html
   example_real_data: example_real_data.html
-  example_simulation: example_simulation.html
   sensitivity_analysis_continuous: sensitivity_analysis_continuous.html
   sensitivity_analysis_discrete: sensitivity_analysis_discrete.html
-last_built: 2022-02-28T17:22Z
+  simulator_details: simulator_details.html
+last_built: 2022-03-08T18:41Z
 urls:
   reference: https://bailey-lab.github.io/coiaf/reference
   article: https://bailey-lab.github.io/coiaf/articles
