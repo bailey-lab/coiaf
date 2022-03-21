@@ -725,15 +725,19 @@
   seq_error <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.10</span>, <span class="fl">0.02</span><span class="op">)</span>,
   repetitions <span class="op">=</span> <span class="fl">100</span>,
   plmaf <span class="op">=</span> <span class="va">p</span>,
-  coi_method <span class="op">=</span> <span class="st">"frequency"</span>
+  coi_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"variant"</span>, <span class="st">"frequency"</span><span class="op">)</span>
 <span class="op">)</span>
 
 <span class="va">tseq_image</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sensitivity_plot.html">sensitivity_plot</a></span><span class="op">(</span>
   data <span class="op">=</span> <span class="va">tseq</span>,
   result_type <span class="op">=</span> <span class="st">"cont"</span>,
   title <span class="op">=</span> <span class="st">"Predicted COI"</span>,
-  dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>,
-  sub_title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Sequence Error = "</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.12</span>, <span class="fl">0.02</span><span class="op">)</span><span class="op">)</span>
+  dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">3</span><span class="op">)</span>,
+  sub_title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Variant, "</span>, <span class="st">"Frequency, "</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">6</span><span class="op">)</span>,
+    <span class="st">"Seq Error = "</span>,
+    <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.12</span>, <span class="fl">0.02</span><span class="op">)</span>
+  <span class="op">)</span>
 <span class="op">)</span>
 
 <span class="va">tseq_error</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/error_plot.html">error_plot</a></span><span class="op">(</span>
