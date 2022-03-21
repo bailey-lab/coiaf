@@ -486,7 +486,7 @@ tover_image <- sensitivity_plot(
   title = "Predicted COI",
   dims = c(4, 3),
   sub_title = paste0(
-    rep(c("Var, ", "Freq, "), each = 5),
+    rep(c("Var, ", "Freq, "), each = 6),
     "Dispersion = ",
     seq(0, 0.25, 0.05)
   )

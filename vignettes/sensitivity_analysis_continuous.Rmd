@@ -660,15 +660,19 @@ tseq <- cont_sensitivity(
   seq_error = seq(0, 0.10, 0.02),
   repetitions = 100,
   plmaf = p,
-  coi_method = "frequency"
+  coi_method = c("variant", "frequency")
 )
 
 tseq_image <- sensitivity_plot(
   data = tseq,
   result_type = "cont",
   title = "Predicted COI",
-  dims = c(2, 3),
-  sub_title = paste0("Sequence Error = ", seq(0, 0.12, 0.02))
+  dims = c(4, 3),
+  sub_title = paste0(
+    rep(c("Variant, ", "Frequency, "), each = 6),
+    "Seq Error = ",
+    seq(0, 0.12, 0.02)
+  )
 )
 
 tseq_error <- error_plot(
