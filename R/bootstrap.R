@@ -9,7 +9,21 @@
 #' @param parallel Whether to parallelize the confidence interval calculation.
 #' @param ncpus The number of processes to be used in parallel operation.
 #'
+#' @return
+#' A [`tibble()`][tibble::tibble-package] with columns:
+#' \describe{
+#'   \item{coi}{The mean COI.}
+#'   \item{bias}{Bias of the statistic.}
+#'   \item{std.error}{The standard error of the statistic.}
+#'   \item{conf.low}{The lower 95% confidence interval.}
+#'   \item{conf.high}{The upper 95% confidence interval.}
+#' }
+#'
+#' @seealso [boot::boot()], [boot::boot.ci()], [broom::tidy.boot()]
 #' @export
+#' @examples
+#' sim_data <- sim_biallelic(coi = 5, plmaf = runif(1000, 0, 0.5))
+#' bootstrap_ci(sim_data, solution_method = "continuous")
 bootstrap_ci <- function(data,
                          max_coi = 25,
                          seq_error = 0.01,

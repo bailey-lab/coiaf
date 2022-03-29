@@ -71,6 +71,23 @@ into bins of changing \code{plaf} or not. Default = FALSE.}
 
 \item{ncpus}{The number of processes to be used in parallel operation.}
 }
+\value{
+A \code{\link[tibble:tibble-package]{tibble()}} with columns:
+\describe{
+\item{coi}{The mean COI.}
+\item{bias}{Bias of the statistic.}
+\item{std.error}{The standard error of the statistic.}
+\item{conf.low}{The lower 95\% confidence interval.}
+\item{conf.high}{The upper 95\% confidence interval.}
+}
+}
 \description{
 Generate bootstrapped confidence interval for COI estimates.
+}
+\examples{
+sim_data <- sim_biallelic(coi = 5, plmaf = runif(1000, 0, 0.5))
+bootstrap_ci(sim_data, solution_method = "continuous")
+}
+\seealso{
+\code{\link[boot:boot]{boot::boot()}}, \code{\link[boot:boot.ci]{boot::boot.ci()}}, \code{\link[broom:tidy.boot]{broom::tidy.boot()}}
 }
