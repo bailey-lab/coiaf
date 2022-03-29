@@ -2,6 +2,7 @@
 
 S3method(autoplot,sim)
 S3method(bootstrap_ci,default)
+S3method(bootstrap_ci,sim)
 S3method(plot,sim)
 export("%>%")
 export(":=")

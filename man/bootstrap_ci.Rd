@@ -3,6 +3,7 @@
 \name{bootstrap_ci}
 \alias{bootstrap_ci}
 \alias{bootstrap_ci.default}
+\alias{bootstrap_ci.sim}
 \title{Generate bootstrapped CI}
 \usage{
 bootstrap_ci(
@@ -19,6 +20,19 @@ bootstrap_ci(
 )
 
 \method{bootstrap_ci}{default}(
+  data,
+  max_coi = 25,
+  seq_error = 0.01,
+  coi_method = c("variant", "frequency"),
+  solution_method = c("discrete", "continuous"),
+  use_bins = FALSE,
+  bin_size = 20,
+  replicates = 100,
+  parallel = TRUE,
+  ncpus = 8
+)
+
+\method{bootstrap_ci}{sim}(
   data,
   max_coi = 25,
   seq_error = 0.01,
