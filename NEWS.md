@@ -14,6 +14,8 @@
 
 ## New features
 
+- New `bootstrap_ci()` function can be used to compute a bootstrapped confidence
+  interval for COI estimates (#24).
 - An `autoplot` and `plot` method have been written for simulated data (#22).
 - Simulated data have been restructured and are now assigned a class `sim`
   (#22).

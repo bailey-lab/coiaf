@@ -40,6 +40,7 @@ reference:
       - compute_coi_regression
       - optimize_coi_regression
       - theoretical_coi
+      - bootstrap_ci
   - title: Real Data
     desc: >
       Process and run real data
