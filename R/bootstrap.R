@@ -7,6 +7,7 @@
 #' @param solution_method Whether to estimate discrete or continuous COIs.
 #' @param replicates The number of bootstrap replicates.
 #' @param parallel Whether to parallelize the confidence interval calculation.
+#'   Note that parallelization only works on non-Windows machines.
 #' @param ncpus The number of processes to be used in parallel operation.
 #'
 #' @return
@@ -22,7 +23,7 @@
 #' @seealso [boot::boot()], [boot::boot.ci()], [broom::tidy.boot()]
 #' @export
 #' @examples
-#' sim_data <- sim_biallelic(coi = 5, plmaf = runif(1000, 0, 0.5))
+#' sim_data <- sim_biallelic(coi = 5, plmaf = runif(100, 0, 0.5))
 #' bootstrap_ci(sim_data, solution_method = "continuous")
 bootstrap_ci <- function(data,
                          max_coi = 25,
@@ -32,7 +33,7 @@ bootstrap_ci <- function(data,
                          use_bins = FALSE,
                          bin_size = 20,
                          replicates = 100,
-                         parallel = TRUE,
+                         parallel = FALSE,
                          ncpus = 8) {
   UseMethod("bootstrap_ci")
 }
@@ -47,7 +48,7 @@ bootstrap_ci.default <- function(data,
                                  use_bins = FALSE,
                                  bin_size = 20,
                                  replicates = 100,
-                                 parallel = TRUE,
+                                 parallel = FALSE,
                                  ncpus = 8) {
   # Argument matching
   coi_method <- rlang::arg_match(coi_method)
@@ -100,7 +101,7 @@ bootstrap_ci.sim <- function(data,
                              use_bins = FALSE,
                              bin_size = 20,
                              replicates = 100,
-                             parallel = TRUE,
+                             parallel = FALSE,
                              ncpus = 8) {
   # Argument matching
   coi_method <- rlang::arg_match(coi_method)

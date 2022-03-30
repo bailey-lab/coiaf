@@ -15,7 +15,7 @@ bootstrap_ci(
   use_bins = FALSE,
   bin_size = 20,
   replicates = 100,
-  parallel = TRUE,
+  parallel = FALSE,
   ncpus = 8
 )
 
@@ -28,7 +28,7 @@ bootstrap_ci(
   use_bins = FALSE,
   bin_size = 20,
   replicates = 100,
-  parallel = TRUE,
+  parallel = FALSE,
   ncpus = 8
 )
 
@@ -41,7 +41,7 @@ bootstrap_ci(
   use_bins = FALSE,
   bin_size = 20,
   replicates = 100,
-  parallel = TRUE,
+  parallel = FALSE,
   ncpus = 8
 )
 }
@@ -67,7 +67,8 @@ into bins of changing \code{plaf} or not. Default = FALSE.}
 
 \item{replicates}{The number of bootstrap replicates.}
 
-\item{parallel}{Whether to parallelize the confidence interval calculation.}
+\item{parallel}{Whether to parallelize the confidence interval calculation.
+Note that parallelization only works on non-Windows machines.}
 
 \item{ncpus}{The number of processes to be used in parallel operation.}
 }
@@ -85,7 +86,7 @@ A \code{\link[tibble:tibble-package]{tibble()}} with columns:
 Generate bootstrapped confidence interval for COI estimates.
 }
 \examples{
-sim_data <- sim_biallelic(coi = 5, plmaf = runif(1000, 0, 0.5))
+sim_data <- sim_biallelic(coi = 5, plmaf = runif(100, 0, 0.5))
 bootstrap_ci(sim_data, solution_method = "continuous")
 }
 \seealso{
