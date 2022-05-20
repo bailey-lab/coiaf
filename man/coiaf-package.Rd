@@ -6,7 +6,7 @@
 \alias{coiaf-package}
 \title{coiaf: Complexity of Infection Estimation with Allele Frequencies}
 \description{
-\if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
 Provides a direct method for estimating complexity of infection using easily calculated measures from sequence read depth data.
 }
