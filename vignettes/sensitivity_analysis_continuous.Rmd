@@ -571,22 +571,28 @@ tepsilon <- cont_sensitivity(
   epsilon = seq(0, 0.025, 0.005),
   repetitions = 100,
   seq_error = 0.01,
-  plmaf = p
+  plmaf = p,
+  coi_method = c("variant", "frequency")
 )
 
 tepsilon_image <- sensitivity_plot(
   data = tepsilon,
   result_type = "cont",
   title = "Predicted COI",
-  sub_title = paste0("Epsilon = ", seq(0, 0.025, 0.005)),
-  dims = c(2, 3)
+  dims = c(4, 3),
+  sub_title = paste0(
+    rep(c("Var, ", "Freq, "), each = 6),
+    "Epsilon = ",
+    seq(0, 0.025, 0.005)
+  )
 )
 
 tepsilon_error <- error_plot(
   tepsilon,
   fill = "epsilon",
   legend_title = "Epsilon",
-  title = "Error"
+  title = "Error",
+  second_fill = "coi_method"
 )
 
 tepsilon_fig <- tepsilon_image / tepsilon_error +

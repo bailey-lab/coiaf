@@ -569,7 +569,7 @@ knitr::include_graphics(
 ```{r epsilon, eval = eval_tests}
 tepsilon <- disc_sensitivity(
   coi = 2:20,
-  epsilon = seq(0, 0.02, 0.005),
+  epsilon = seq(0, 0.025, 0.005),
   repetitions = 100,
   seq_error = 0.01,
   plmaf = p,
@@ -582,9 +582,9 @@ tepsilon_image <- sensitivity_plot(
   title = "Predicted COI",
   dims = c(4, 3),
   sub_title = paste0(
-    rep(c("Variant, ", "Frequency, "), each = 5),
+    rep(c("Var, ", "Freq, "), each = 6),
     "Epsilon = ",
-    seq(0, 0.02, 0.005)
+    seq(0, 0.025, 0.005)
   )
 )
 
