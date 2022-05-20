@@ -643,22 +643,28 @@
   epsilon <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.025</span>, <span class="fl">0.005</span><span class="op">)</span>,
   repetitions <span class="op">=</span> <span class="fl">100</span>,
   seq_error <span class="op">=</span> <span class="fl">0.01</span>,
-  plmaf <span class="op">=</span> <span class="va">p</span>
+  plmaf <span class="op">=</span> <span class="va">p</span>,
+  coi_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"variant"</span>, <span class="st">"frequency"</span><span class="op">)</span>
 <span class="op">)</span>
 
 <span class="va">tepsilon_image</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sensitivity_plot.html">sensitivity_plot</a></span><span class="op">(</span>
   data <span class="op">=</span> <span class="va">tepsilon</span>,
   result_type <span class="op">=</span> <span class="st">"cont"</span>,
   title <span class="op">=</span> <span class="st">"Predicted COI"</span>,
-  sub_title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Epsilon = "</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.025</span>, <span class="fl">0.005</span><span class="op">)</span><span class="op">)</span>,
-  dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>
+  dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">3</span><span class="op">)</span>,
+  sub_title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Var, "</span>, <span class="st">"Freq, "</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">6</span><span class="op">)</span>,
+    <span class="st">"Epsilon = "</span>,
+    <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.025</span>, <span class="fl">0.005</span><span class="op">)</span>
+  <span class="op">)</span>
 <span class="op">)</span>
 
 <span class="va">tepsilon_error</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/error_plot.html">error_plot</a></span><span class="op">(</span>
   <span class="va">tepsilon</span>,
   fill <span class="op">=</span> <span class="st">"epsilon"</span>,
   legend_title <span class="op">=</span> <span class="st">"Epsilon"</span>,
-  title <span class="op">=</span> <span class="st">"Error"</span>
+  title <span class="op">=</span> <span class="st">"Error"</span>,
+  second_fill <span class="op">=</span> <span class="st">"coi_method"</span>
 <span class="op">)</span>
 
 <span class="va">tepsilon_fig</span> <span class="op">&lt;-</span> <span class="va">tepsilon_image</span> <span class="op">/</span> <span class="va">tepsilon_error</span> <span class="op">+</span>
@@ -857,7 +863,7 @@
 
 <div class="pkgdown-footer-right">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
     </footer>
