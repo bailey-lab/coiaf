@@ -25,6 +25,7 @@ Depends:
 Imports:
     boot,
     broom,
+    cli,
     dplyr,
     forcats,
     ggplot2,
@@ -40,7 +41,6 @@ Imports:
     utils
 Suggests:
     bench,
-    cli,
     here,
     knitr,
     patchwork,

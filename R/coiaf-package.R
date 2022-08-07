@@ -4,9 +4,9 @@
 # The following block is used by usethis to automatically manage
 # roxygen namespace tags. Modify with care!
 ## usethis namespace: start
-#' @importFrom stats rbeta rbinom rgamma runif
-#' @importFrom rlang abort warn inform
+#' @importFrom cli cli_abort cli_warn cli_inform
 #' @importFrom glue glue
+#' @importFrom stats rbeta rbinom rgamma runif
 #' @importFrom tibble tibble as_tibble as_tibble_col as_tibble_row
 ## usethis namespace: end
 NULL

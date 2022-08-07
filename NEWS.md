@@ -47,7 +47,7 @@
 - Update license year.
 - The number of dependencies has been reduced.
 - `{patchwork}` is used instead of `{ggpubr}` for combining plots.
-- `{rlang}` is now used for messages, warnings, and errors.
+- `{cli}` is now used for messages, warnings, and errors.
 - Superseded functions have been replaced with their alternatives (#6).
 - Functions now exit implicitly and visibly (#8).
 - Internal documentation has been improved.

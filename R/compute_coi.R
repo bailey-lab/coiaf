@@ -94,20 +94,18 @@ compute_coi <- function(data,
 
   # Warnings
   if (comparison != "overall") {
-    message <- glue::glue(
+    cli_warn(c(
       "Please use the recommended method:",
-      '\n\u2139 The recommended method is "overall".',
-      '\n\u2716 User specified the "{comparison}" method.'
-    )
-    warning(message, call. = FALSE)
+      "i" = 'The recommended method is "overall".',
+      "x" = 'User specified the "{comparison}" method.'
+    ))
   }
   if (distance != "squared") {
-    message <- glue::glue(
+    cli_warn(c(
       "Please use the recommended distance metric:",
-      '\n\u2139 The recommended distance metric is "squared".',
-      '\n\u2716 User specified the "{distance}" metric.'
-    )
-    warning(message, call. = FALSE)
+      "i" = 'The recommended distance metric is "squared".',
+      "x" = 'User specified the "{distance}" metric.'
+    ))
   }
 
   # Process data

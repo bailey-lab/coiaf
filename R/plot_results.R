@@ -75,10 +75,10 @@ sensitivity_plot <- function(data,
   user_dims <- dims[1] * dims[2]
   needed_dims <- length(num_loops)
   if (!all(user_dims >= needed_dims)) {
-    abort(c(
+    cli_abort(c(
       "Must specify enough plotting panels.",
-      i = glue("{needed_dims} panels are required."),
-      x = glue("User specified {user_dims} panels.")
+      i = "{needed_dims} panels are required.",
+      x = "User specified {user_dims} panels."
     ))
   }
 
@@ -227,10 +227,10 @@ error_plot <- function(data,
     # Ensure that the number of levels input (fill_levels) are the same as the
     # number of levels for the fill variable
     if (length(fill_levels) != nlevels(plot_data[[fill]])) {
-      abort(c(
+      cli_abort(c(
         "Number of levels must match.",
-        i = glue("Variable has {nlevels(plot_data[[fill]])} levels."),
-        x = glue("User specified {length(fill_levels)} levels.")
+        i = "Variable has {nlevels(plot_data[[fill]])} levels.",
+        x = "User specified {length(fill_levels)} levels."
       ))
     } else {
       # Customize labels

@@ -124,12 +124,11 @@ optimize_coi <- function(data,
 
   # Warnings
   if (distance != "squared") {
-    message <- glue::glue(
+    cli_warn(c(
       "Please use the recommended distance metric:",
-      '\n\u2139 The recommended distance metric is "squared".',
-      '\n\u2716 User specified the "{distance}" metric.'
-    )
-    warning(message, call. = FALSE)
+      "i" = 'The recommended distance metric is "squared".',
+      "x" = 'User specified the "{distance}" metric.'
+    ))
   }
 
   # Process data
@@ -201,12 +200,11 @@ optimize_coi <- function(data,
     } else if (fit$convergence == 52) {
       bullet <- '"L-BFGS-B" method error'
     }
-    message <- glue::glue(
+    cli_warn(c(
       "The model did not converge:",
-      "\n\u2716 {bullet}",
-      "\n\u2716 Output of optim: {fit$message}."
-    )
-    warning(message, call. = FALSE)
+      "x" = "{bullet}",
+      "x" = "Output of optim: {fit$message}."
+    ))
   }
 
   # Estimated COI

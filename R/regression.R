@@ -144,12 +144,11 @@ optimize_coi_regression <- function(data,
     } else if (fit$convergence == 52) {
       bullet <- '"L-BFGS-B" method error'
     }
-    message <- glue::glue(
+    cli_warn(c(
       "The model did not converge:",
-      "\n\u2716 {bullet}",
-      "\n\u2716 Output of optim: {fit$message}."
-    )
-    warning(message, call. = FALSE)
+      "x" = "{bullet}",
+      "x" = "Output of optim: {fit$message}."
+    ))
   }
 
   # Estimated COI
