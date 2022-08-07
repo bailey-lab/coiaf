@@ -30,9 +30,9 @@ is inputted, then we infer the level of sequence error.}
 the theoretical and simulated curves for the \code{"overall"} method. One of
 \code{"abs_sum"}, \code{"sum_abs"}, \code{"squared"}.}
 
-\item{coi_method}{The method we will use to calculate the theoretical COI.
-The method is either "variant" or "frequency". The default value is
-"variant".}
+\item{coi_method}{The method we will use to generate the theoretical
+relationship. The method is either "variant" or "frequency". The default
+value is "variant".}
 
 \item{seq_error_bin_size}{Number of loci in smallest bin for estimating
 sequence error}

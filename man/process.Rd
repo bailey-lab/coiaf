@@ -25,9 +25,9 @@ is inputted, then we infer the level of sequence error.}
 
 \item{bin_size}{The minimum size of each bin of data.}
 
-\item{coi_method}{The method we will use to calculate the theoretical COI.
-The method is either "variant" or "frequency". The default value is
-"variant".}
+\item{coi_method}{The method we will use to generate the theoretical
+relationship. The method is either "variant" or "frequency". The default
+value is "variant".}
 }
 \value{
 A list of the following:

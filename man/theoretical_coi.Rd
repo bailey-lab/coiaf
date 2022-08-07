@@ -11,26 +11,23 @@ theoretical_coi(
 )
 }
 \arguments{
-\item{coi_range}{The COIs for which the curve will be calculated.}
+\item{coi_range}{The COIs for which the relationship will be generated.}
 
-\item{plmaf}{The PLMAF over which the curve will be calculated.}
+\item{plmaf}{The PLMAF over which the relationship will be generated.}
 
-\item{coi_method}{The method we will use to calculate the theoretical COI.
-The method is either "variant" or "frequency". The default value is
-"variant".}
+\item{coi_method}{The method we will use to generate the theoretical
+relationship. The method is either "variant" or "frequency". The default
+value is "variant".}
 }
 \value{
-The theoretical COI curves for the specified COIs and PLMAF.
+A \code{\link[tibble:tibble-package]{tibble()}} containing the generated values. Each
+column is named with the COI used. The last column of the tibble contains the
+PLMAF.
 }
 \description{
-Generate theoretical COI curves.
-}
-\details{
 \loadmathjax
-The theoretical curve can be visualized as the WSMAF of an individual at
-various PLMAFs. At each locus, the theoretical COI is defined as:
-\mjsdeqn{1-p^{coi}-q^{coi}} where \mjseqn{p} is the PLMAF and \mjseqn{q} is
-1 - PLMAF.
+Generate the theoretical relationship between the WSMAF (\mjseqn{\bf{w}}),
+the PLMAF (\mjseqn{\bf{p}}), and the COI (\mjseqn{k}).
 }
 \examples{
 theoretical_coi(1:5)

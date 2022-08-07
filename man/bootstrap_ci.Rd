@@ -54,9 +54,9 @@ simulated data to.}
 \item{seq_error}{The level of sequencing error that is assumed. If no value
 is inputted, then we infer the level of sequence error.}
 
-\item{coi_method}{The method we will use to calculate the theoretical COI.
-The method is either "variant" or "frequency". The default value is
-"variant".}
+\item{coi_method}{The method we will use to generate the theoretical
+relationship. The method is either "variant" or "frequency". The default
+value is "variant".}
 
 \item{solution_method}{Whether to estimate discrete or continuous COIs.}
 

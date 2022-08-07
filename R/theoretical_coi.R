@@ -1,21 +1,22 @@
 #------------------------------------------------
 #' Theoretical COI
 #'
-#' Generate theoretical COI curves.
-#'
+#' @description
 #' \loadmathjax
-#' The theoretical curve can be visualized as the WSMAF of an individual at
-#' various PLMAFs. At each locus, the theoretical COI is defined as:
-#' \mjsdeqn{1-p^{coi}-q^{coi}} where \mjseqn{p} is the PLMAF and \mjseqn{q} is
-#' 1 - PLMAF.
+#' Generate the theoretical relationship between the WSMAF (\mjseqn{\bf{w}}),
+#' the PLMAF (\mjseqn{\bf{p}}), and the COI (\mjseqn{k}).
 #'
-#' @param coi_range The COIs for which the curve will be calculated.
-#' @param plmaf The PLMAF over which the curve will be calculated.
-#' @param coi_method The method we will use to calculate the theoretical COI.
-#'   The method is either "variant" or "frequency". The default value is
-#'   "variant".
+#' @param coi_range The COIs for which the relationship will be generated.
+#' @param plmaf The PLMAF over which the relationship will be generated.
+#' @param coi_method The method we will use to generate the theoretical
+#'   relationship. The method is either "variant" or "frequency". The default
+#'   value is "variant".
 #'
-#' @return The theoretical COI curves for the specified COIs and PLMAF.
+#' @return
+#' A [`tibble()`][tibble::tibble-package] containing the generated values. Each
+#' column is named with the COI used. The last column of the tibble contains the
+#' PLMAF.
+#'
 #' @export
 #' @examples
 #' theoretical_coi(1:5)
