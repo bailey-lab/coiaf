@@ -33,18 +33,10 @@ theoretical_coi <- function(coi_range,
   coi_method <- rlang::arg_match(coi_method)
 
   # Compute curve for the COIs
-  for (i in coi_range) {
-    if (i == coi_range[1]) {
-      curves <- data.frame(first = single_theoretical_coi(i, plmaf, coi_method))
-      colnames(curves) <- paste0("coi_", i)
-    } else {
-      curves[[paste0("coi_", i)]] <- single_theoretical_coi(
-        i,
-        plmaf,
-        coi_method
-      )
-    }
-  }
+  named_coi_range <- rlang::set_names(coi_range, ~ paste0("coi_", coi_range))
+  curves <- purrr::map_dfc(named_coi_range, function(x) {
+    single_theoretical_coi(x, plmaf, coi_method)
+  })
 
   # Include the PLMAF in the final output and return
   curves$plmaf <- plmaf
