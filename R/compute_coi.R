@@ -37,11 +37,12 @@
 #' @param max_coi A number indicating the maximum COI to compare the
 #' simulated data to.
 #' @inheritParams process_real
-#' @param comparison The method to be employed. One of `"end"`, `"ideal"`,
-#' `"overall"`.
-#' @param distance The distance method used to determine the distance between
-#' the theoretical and simulated curves for the `"overall"` method. One of
-#' `"abs_sum"`, `"sum_abs"`, `"squared"`.
+#' @param comparison `r lifecycle::badge("deprecated")` This argument is no
+#'   longer supported; this function will compare the theoretical curve and
+#'   sample curve for all PLMAFs.
+#' @param distance `r lifecycle::badge("deprecated")` This argument is no longer
+#'   supported; this function will solve a weighted least squares minimization
+#'   problem.
 #' @param use_bins Do we calculate COI by comparing against the data grouped
 #'   into bins of changing `plaf` or not. Default = FALSE.
 #'
