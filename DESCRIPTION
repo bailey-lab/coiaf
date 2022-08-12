@@ -27,7 +27,6 @@ Imports:
     broom,
     cli,
     dplyr,
-    forcats,
     ggplot2,
     glue,
     Hmisc,
