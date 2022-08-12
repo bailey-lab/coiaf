@@ -60,9 +60,7 @@ compute_coi <- function(data,
                         distance = "squared",
                         coi_method = "variant",
                         use_bins = FALSE) {
-
-
-  ## Check inputs specific for both bin and regression comparison
+  # Check inputs specific for both bin and regression comparison
   assert_in(data_type, c("sim", "real"))
   assert_single_string(data_type)
   assert_single_pos_int(max_coi)
@@ -92,20 +90,20 @@ compute_coi <- function(data,
   assert_single_string(comparison)
   assert_in(comparison, c("end", "ideal", "overall"))
 
-  # Warnings
+  # Warning for deprecated arguments
   if (comparison != "overall") {
-    cli_warn(c(
-      "Please use the recommended method:",
-      "i" = 'The recommended method is "overall".',
-      "x" = 'User specified the "{comparison}" method.'
-    ))
+    lifecycle::deprecate_warn(
+      when = "0.2.0",
+      what = "compute_coi(comparison)",
+      details = 'The comparison method will be fixed to "overall" in the next release.'
+    )
   }
   if (distance != "squared") {
-    cli_warn(c(
-      "Please use the recommended distance metric:",
-      "i" = 'The recommended distance metric is "squared".',
-      "x" = 'User specified the "{distance}" metric.'
-    ))
+    lifecycle::deprecate_warn(
+      when = "0.2.0",
+      what = "compute_coi(distance)",
+      details = 'The distance method will be fixed to "squared" in the next release.'
+    )
   }
 
   # Process data
