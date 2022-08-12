@@ -7,7 +7,7 @@ template:
     base_font: { google: "Lato" } # usually serif fonts
     heading_font: { google: "Fira Sans" } # usually sans-serif fonts
     code_font: { google: "Fira Code" } # usually monospace fonts
-    pkgdown-nav-height: 75px
+    pkgdown-nav-height: 73.5px
 
 navbar:
   structure:
