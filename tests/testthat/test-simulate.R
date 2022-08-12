@@ -1,5 +1,5 @@
 # A simple simulation we will leverage to test our function
-simple_sim <- sim_biallelic(3)
+simple_sim <- withr::with_preserve_seed(sim_biallelic(3))
 
 test_that("if coverage is a single number, expand across all loci", {
   sim <- sim_biallelic(coi = 5, coverage = 75)
@@ -69,7 +69,7 @@ test_that("data columns are correct", {
 })
 
 test_that("relatedness works as expected", {
-  set.seed(1)
+  withr::local_seed(1)
 
   # Define number of loci, and PLMAF
   L <- 1e3
@@ -91,8 +91,7 @@ test_that("relatedness works as expected", {
 })
 
 # Plotting test cases ----------------------------------------------------------
-set.seed(500)
-plot_sim <- sim_biallelic(3, runif(100, 0, 0.5))
+plot_sim <- withr::with_seed(500, sim_biallelic(3, runif(100, 0, 0.5)))
 
 test_that("plot and autoplot methods work", {
   vdiffr::expect_doppelganger("plot method works", plot(plot_sim))

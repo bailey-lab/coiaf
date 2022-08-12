@@ -6,7 +6,7 @@ computed_midpoints <- function(data, cuts) {
 }
 
 test_that("can find cut midpoints", {
-  set.seed(100)
+  withr::local_seed(100)
   plmaf <- runif(100, 0, 0.5)
   data <- data.frame(cuts = Hmisc::cut2(plmaf, m = 25))
 
