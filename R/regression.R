@@ -1,4 +1,4 @@
-#' Compute COI based on residauals of all loci against theoretical curves
+#' Compute COI based on residuals of all loci against theoretical curves
 #' @inheritParams compute_coi
 #' @param seq_error_bin_size Number of loci in smallest bin for estimating
 #'   sequence error
