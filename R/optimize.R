@@ -130,6 +130,13 @@ optimize_coi <- function(data,
       details = 'The distance method will be fixed to "squared" in the next release.'
     )
   }
+  if (use_bins) {
+    lifecycle::deprecate_warn(
+      when = "0.2.0",
+      what = "optimize_coi(use_bins)",
+      details = "The ability to use bins to estimate the COI will be dropped in the next release."
+    )
+  }
 
   # Process data
   if (data_type == "sim") {
