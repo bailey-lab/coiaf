@@ -78,3 +78,8 @@
     The `distance` argument of `optimize_coi_regression()` is deprecated as of coiaf 0.2.0.
     The distance method will be fixed to "squared" in the next release.
 
+# bootstrap_ci() args deprecated
+
+    The `use_bins` argument of `bootstrap_ci()` is deprecated as of coiaf 0.2.0.
+    The ability to use bins to estimate the COI will be dropped in the next release.
+

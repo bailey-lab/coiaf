@@ -54,6 +54,15 @@ bootstrap_ci.default <- function(data,
   coi_method <- rlang::arg_match(coi_method)
   solution_method <- rlang::arg_match(solution_method)
 
+  # Warning for deprecated arguments
+  if (use_bins) {
+    lifecycle::deprecate_warn(
+      when = "0.2.0",
+      what = "bootstrap_ci(use_bins)",
+      details = "The ability to use bins to estimate the COI will be dropped in the next release."
+    )
+  }
+
   # Define statistic function
   bootstrap_statistic <- function(data, indices, solution_method, ...) {
     data <- data[indices, ]
@@ -107,6 +116,15 @@ bootstrap_ci.sim <- function(data,
   coi_method <- rlang::arg_match(coi_method)
   solution_method <- rlang::arg_match(solution_method)
 
+  # Warning for deprecated arguments
+  if (use_bins) {
+    lifecycle::deprecate_warn(
+      when = "0.2.0",
+      what = "bootstrap_ci(use_bins)",
+      details = "The ability to use bins to estimate the COI will be dropped in the next release."
+    )
+  }
+
   # Define statistic function
   bootstrap_statistic <- function(data,
                                   indices,
@@ -139,8 +157,8 @@ bootstrap_ci.sim <- function(data,
     bin_size = 20
   )
 
-  tryCatch(
-    tidy_boot_out <- broom::tidy(boot_out, conf.int = TRUE),
+  tidy_boot_out <- tryCatch(
+    broom::tidy(boot_out, conf.int = TRUE),
     error = function(e) {
       tidy_boot_out <- broom::tidy(boot_out, conf.int = FALSE) %>%
         tibble::add_column(conf.low = NaN, conf.high = NaN)

@@ -27,3 +27,7 @@ test_that("optimize_coi_regression() args deprecated", {
     optimize_coi_regression(data, "sim", distance = "abs_sum")
   )
 })
+
+test_that("bootstrap_ci() args deprecated", {
+  expect_snapshot_warning(bootstrap_ci(data, use_bins = TRUE, replicates = 50))
+})
