@@ -1,5 +1,5 @@
 pandoc: 2.14.2
-pkgdown: 2.0.3
+pkgdown: 2.0.6
 pkgdown_sha: ~
 articles:
   example_coi_prediction: example_coi_prediction.html
@@ -7,7 +7,7 @@ articles:
   sensitivity_analysis_continuous: sensitivity_analysis_continuous.html
   sensitivity_analysis_discrete: sensitivity_analysis_discrete.html
   simulator_details: simulator_details.html
-last_built: 2022-05-20T23:02Z
+last_built: 2022-10-12T16:27Z
 urls:
   reference: https://bailey-lab.github.io/coiaf/reference
   article: https://bailey-lab.github.io/coiaf/articles
