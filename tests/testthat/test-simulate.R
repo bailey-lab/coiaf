@@ -49,8 +49,8 @@ test_that("length of strain proportions is the COI", {
 })
 
 test_that("strain proporitons sum to 1", {
-  expect_true(sum(sim_biallelic(5)$strain_proportions$proportion) == 1)
-  expect_true(sum(sim_biallelic(15)$strain_proportions$proportion) == 1)
+  expect_equal(sum(sim_biallelic(5)$strain_proportions$proportion), 1)
+  expect_equal(sum(sim_biallelic(15)$strain_proportions$proportion), 1)
 })
 
 test_that("phased haplotypes dimensions are correct", {
