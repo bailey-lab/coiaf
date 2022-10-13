@@ -77,17 +77,19 @@ test_that("relatedness works as expected", {
   p[p > 0.5] <- 1 - p[p > 0.5]
   k <- 3
 
-  # Two simulations: one with and one without relatedness
-  nonrelated_sim <- sim_biallelic(coi = k, plmaf = p)
-  related_sim <- sim_biallelic(coi = k, plmaf = p, relatedness = 0.75)
+  # Create simulations with differing relatedness values
+  no_related_sim <- sim_biallelic(coi = k, plmaf = p)
+  low_related_sim <- sim_biallelic(coi = k, plmaf = p, relatedness = 0.25)
+  high_related_sim <- sim_biallelic(coi = k, plmaf = p, relatedness = 0.75)
 
   # Table up the phased counts
-  nonrelated_tbl <- table(colMeans(nonrelated_sim$phased_haplotypes))
-  related_tbl <- table(colMeans(related_sim$phased_haplotypes))
+  no_related_tbl <- mean(dist(no_related_sim$phased_haplotypes))
+  low_related_tbl <- mean(dist(low_related_sim$phased_haplotypes))
+  high_related_tbl <- mean(dist(high_related_sim$phased_haplotypes))
 
   # We would expect in related samples there will be more homozyogous calls
-  expect_gt(related_tbl[1], nonrelated_tbl[1])
-  expect_gt(related_tbl[4], nonrelated_tbl[4])
+  expect_gt(no_related_tbl, low_related_tbl)
+  expect_gt(low_related_tbl, high_related_tbl)
 })
 
 # Plotting test cases ----------------------------------------------------------
