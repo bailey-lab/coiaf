@@ -43,8 +43,9 @@
 #' @param distance `r lifecycle::badge("deprecated")` This argument is no longer
 #'   supported; this function will solve a weighted least squares minimization
 #'   problem.
-#' @param use_bins Do we calculate COI by comparing against the data grouped
-#'   into bins of changing `plaf` or not. Default = FALSE.
+#' @param use_bins `r lifecycle::badge("deprecated")` This argument is no longer
+#'   supported; to estimate the COI, all data points are used. Data points are
+#'   not grouped in bins of changing `plaf`.
 #'
 #' @return A list of the following:
 #' * `coi`: The predicted COI of the sample.

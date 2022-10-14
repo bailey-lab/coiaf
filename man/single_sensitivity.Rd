@@ -72,8 +72,9 @@ problem.}
 relationship. The method is either "variant" or "frequency". The default
 value is "variant".}
 
-\item{use_bins}{Do we calculate COI by comparing against the data grouped
-into bins of changing \code{plaf} or not. Default = FALSE.}
+\item{use_bins}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} This argument is no longer
+supported; to estimate the COI, all data points are used. Data points are
+not grouped in bins of changing \code{plaf}.}
 }
 \value{
 Predicted COI value.
