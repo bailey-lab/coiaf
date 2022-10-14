@@ -2,7 +2,7 @@
 % Please edit documentation in R/regression.R
 \name{compute_coi_regression}
 \alias{compute_coi_regression}
-\title{Compute COI based on residauals of all loci against theoretical curves}
+\title{Compute COI based on residuals of all loci against theoretical curves}
 \usage{
 compute_coi_regression(
   data,
@@ -46,5 +46,5 @@ of each COI.
 }
 }
 \description{
-Compute COI based on residauals of all loci against theoretical curves
+Compute COI based on residuals of all loci against theoretical curves
 }

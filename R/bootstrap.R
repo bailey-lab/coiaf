@@ -160,7 +160,7 @@ bootstrap_ci.sim <- function(data,
   tidy_boot_out <- tryCatch(
     broom::tidy(boot_out, conf.int = TRUE),
     error = function(e) {
-      tidy_boot_out <- broom::tidy(boot_out, conf.int = FALSE) %>%
+      broom::tidy(boot_out, conf.int = FALSE) %>%
         tibble::add_column(conf.low = NaN, conf.high = NaN)
     }
   )
