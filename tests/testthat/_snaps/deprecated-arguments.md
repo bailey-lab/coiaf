@@ -5,10 +5,10 @@
     Condition
       Warning:
       The `comparison` argument of `compute_coi()` is deprecated as of coiaf 0.2.0.
-      The comparison method will be fixed to "overall" in the next release.
+      i The comparison method will be fixed to "overall" in the next release.
       Warning:
       The `use_bins` argument of `compute_coi()` is deprecated as of coiaf 0.2.0.
-      The ability to use bins to estimate the COI will be dropped in the next release.
+      i The ability to use bins to estimate the COI will be dropped in the next release.
     Output
       $coi
       [1] 6
@@ -28,10 +28,10 @@
     Condition
       Warning:
       The `distance` argument of `compute_coi()` is deprecated as of coiaf 0.2.0.
-      The distance method will be fixed to "squared" in the next release.
+      i The distance method will be fixed to "squared" in the next release.
       Warning:
       The `use_bins` argument of `compute_coi()` is deprecated as of coiaf 0.2.0.
-      The ability to use bins to estimate the COI will be dropped in the next release.
+      i The ability to use bins to estimate the COI will be dropped in the next release.
     Output
       $coi
       [1] 6
@@ -47,7 +47,7 @@
 ---
 
     The `use_bins` argument of `compute_coi()` is deprecated as of coiaf 0.2.0.
-    The ability to use bins to estimate the COI will be dropped in the next release.
+    i The ability to use bins to estimate the COI will be dropped in the next release.
 
 # optimize_coi() args deprecated
 
@@ -56,30 +56,30 @@
     Condition
       Warning:
       The `distance` argument of `optimize_coi()` is deprecated as of coiaf 0.2.0.
-      The distance method will be fixed to "squared" in the next release.
+      i The distance method will be fixed to "squared" in the next release.
       Warning:
       The `use_bins` argument of `optimize_coi()` is deprecated as of coiaf 0.2.0.
-      The ability to use bins to estimate the COI will be dropped in the next release.
+      i The ability to use bins to estimate the COI will be dropped in the next release.
     Output
       [1] 5.6664
 
 ---
 
     The `use_bins` argument of `optimize_coi()` is deprecated as of coiaf 0.2.0.
-    The ability to use bins to estimate the COI will be dropped in the next release.
+    i The ability to use bins to estimate the COI will be dropped in the next release.
 
 # compute_coi_regression() args deprecated
 
     The `distance` argument of `compute_coi_regression()` is deprecated as of coiaf 0.2.0.
-    The distance method will be fixed to "squared" in the next release.
+    i The distance method will be fixed to "squared" in the next release.
 
 # optimize_coi_regression() args deprecated
 
     The `distance` argument of `optimize_coi_regression()` is deprecated as of coiaf 0.2.0.
-    The distance method will be fixed to "squared" in the next release.
+    i The distance method will be fixed to "squared" in the next release.
 
 # bootstrap_ci() args deprecated
 
     The `use_bins` argument of `bootstrap_ci()` is deprecated as of coiaf 0.2.0.
-    The ability to use bins to estimate the COI will be dropped in the next release.
+    i The ability to use bins to estimate the COI will be dropped in the next release.
 

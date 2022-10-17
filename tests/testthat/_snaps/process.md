@@ -6,7 +6,7 @@
     Condition
       Warning:
       The `use_bins` argument of `compute_coi()` is deprecated as of coiaf 0.2.0.
-      The ability to use bins to estimate the COI will be dropped in the next release.
+      i The ability to use bins to estimate the COI will be dropped in the next release.
     Output
       $coi
       [1] 1
