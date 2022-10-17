@@ -137,6 +137,13 @@ optimize_coi <- function(data,
       details = "The ability to use bins to estimate the COI will be dropped in the next release."
     )
   }
+  if (bin_size != 20) {
+    lifecycle::deprecate_warn(
+      when = "0.2.0",
+      what = "optimize_coi(bin_size)",
+      details = "The ability to use bins to estimate the COI will be dropped in the next release."
+    )
+  }
 
   # Process data
   if (data_type == "sim") {

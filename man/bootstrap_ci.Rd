@@ -64,7 +64,9 @@ value is "variant".}
 supported; to estimate the COI, all data points are used. Data points are
 not grouped in bins of changing \code{plaf}.}
 
-\item{bin_size}{The minimum size of each bin of data.}
+\item{bin_size}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} This argument is no longer
+supported; to estimate the COI, all data points are used. Data points are
+not grouped in bins of changing \code{plaf}.}
 
 \item{replicates}{The number of bootstrap replicates.}
 

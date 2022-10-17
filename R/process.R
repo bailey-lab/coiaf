@@ -141,7 +141,9 @@ find_cut_midpoints <- function(data, cuts) {
 #' @param sim Output of [sim_biallelic()].
 #' @param seq_error The level of sequencing error that is assumed. If no value
 #' is inputted, then we infer the level of sequence error.
-#' @param bin_size The minimum size of each bin of data.
+#' @param bin_size `r lifecycle::badge("deprecated")` This argument is no longer
+#'   supported; to estimate the COI, all data points are used. Data points are
+#'   not grouped in bins of changing `plaf`.
 #' @inheritParams theoretical_coi
 #'
 #' @return A list of the following:

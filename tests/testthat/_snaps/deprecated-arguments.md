@@ -49,6 +49,29 @@
     The `use_bins` argument of `compute_coi()` is deprecated as of coiaf 0.2.0.
     i The ability to use bins to estimate the COI will be dropped in the next release.
 
+---
+
+    Code
+      compute_coi(data, "sim", bin_size = 100, use_bins = TRUE)
+    Condition
+      Warning:
+      The `use_bins` argument of `compute_coi()` is deprecated as of coiaf 0.2.0.
+      i The ability to use bins to estimate the COI will be dropped in the next release.
+      Warning:
+      The `bin_size` argument of `compute_coi()` is deprecated as of coiaf 0.2.0.
+      i The ability to use bins to estimate the COI will be dropped in the next release.
+    Output
+      $coi
+      [1] 6
+      
+      $probability
+       [1] 0.0003420419 0.0011977369 0.0037605936 0.0141457645 0.1228295740
+       [6] 0.6605069038 0.0546083217 0.0231831616 0.0145569335 0.0108899679
+      [11] 0.0089732816 0.0078460832 0.0071322633 0.0066574468 0.0063307298
+      [16] 0.0061004773 0.0059353954 0.0058155500 0.0057277436 0.0056629740
+      [21] 0.0056149565 0.0055792249 0.0055525613 0.0055326228 0.0055176898
+      
+
 # optimize_coi() args deprecated
 
     Code
@@ -68,6 +91,20 @@
     The `use_bins` argument of `optimize_coi()` is deprecated as of coiaf 0.2.0.
     i The ability to use bins to estimate the COI will be dropped in the next release.
 
+---
+
+    Code
+      optimize_coi(data, "sim", bin_size = 100, use_bins = TRUE)
+    Condition
+      Warning:
+      The `use_bins` argument of `optimize_coi()` is deprecated as of coiaf 0.2.0.
+      i The ability to use bins to estimate the COI will be dropped in the next release.
+      Warning:
+      The `bin_size` argument of `optimize_coi()` is deprecated as of coiaf 0.2.0.
+      i The ability to use bins to estimate the COI will be dropped in the next release.
+    Output
+      [1] 5.6664
+
 # compute_coi_regression() args deprecated
 
     The `distance` argument of `compute_coi_regression()` is deprecated as of coiaf 0.2.0.
@@ -82,4 +119,26 @@
 
     The `use_bins` argument of `bootstrap_ci()` is deprecated as of coiaf 0.2.0.
     i The ability to use bins to estimate the COI will be dropped in the next release.
+
+---
+
+    Code
+      bootstrap_ci(data, "sim", bin_size = 100, use_bins = TRUE, replicates = 10)
+    Condition
+      Warning:
+      The `use_bins` argument of `bootstrap_ci()` is deprecated as of coiaf 0.2.0.
+      i The ability to use bins to estimate the COI will be dropped in the next release.
+      Warning:
+      The `bin_size` argument of `bootstrap_ci()` is deprecated as of coiaf 0.2.0.
+      i The ability to use bins to estimate the COI will be dropped in the next release.
+      Warning in `norm.inter()`:
+      extreme order statistics used as endpoints
+      Warning:
+      Use of .data in tidyselect expressions was deprecated in tidyselect 1.2.0.
+      i Please use `"statistic"` instead of `.data$statistic`
+    Output
+      # A tibble: 1 x 6
+          coi estimates       bias std.error conf.low conf.high
+        <dbl> <list>         <dbl>     <dbl>    <dbl>     <dbl>
+      1    25 <dbl [10 x 1]> -11.9      9.31        5        25
 

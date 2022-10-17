@@ -28,7 +28,9 @@ simulated data to.}
 \item{seq_error}{The level of sequencing error that is assumed. If no value
 is inputted, then we infer the level of sequence error.}
 
-\item{bin_size}{The minimum size of each bin of data.}
+\item{bin_size}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} This argument is no longer
+supported; to estimate the COI, all data points are used. Data points are
+not grouped in bins of changing \code{plaf}.}
 
 \item{comparison}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} This argument is no
 longer supported; this function will compare the theoretical curve and

@@ -62,6 +62,13 @@ bootstrap_ci.default <- function(data,
       details = "The ability to use bins to estimate the COI will be dropped in the next release."
     )
   }
+  if (bin_size != 20) {
+    lifecycle::deprecate_warn(
+      when = "0.2.0",
+      what = "bootstrap_ci(bin_size)",
+      details = "The ability to use bins to estimate the COI will be dropped in the next release."
+    )
+  }
 
   # Define statistic function
   bootstrap_statistic <- function(data, indices, solution_method, ...) {
@@ -121,6 +128,13 @@ bootstrap_ci.sim <- function(data,
     lifecycle::deprecate_warn(
       when = "0.2.0",
       what = "bootstrap_ci(use_bins)",
+      details = "The ability to use bins to estimate the COI will be dropped in the next release."
+    )
+  }
+  if (bin_size != 20) {
+    lifecycle::deprecate_warn(
+      when = "0.2.0",
+      what = "bootstrap_ci(bin_size)",
       details = "The ability to use bins to estimate the COI will be dropped in the next release."
     )
   }

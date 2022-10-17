@@ -12,7 +12,9 @@ process_sim(sim, seq_error = 0.01, bin_size = 20, coi_method = "variant")
 \item{seq_error}{The level of sequencing error that is assumed. If no value
 is inputted, then we infer the level of sequence error.}
 
-\item{bin_size}{The minimum size of each bin of data.}
+\item{bin_size}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} This argument is no longer
+supported; to estimate the COI, all data points are used. Data points are
+not grouped in bins of changing \code{plaf}.}
 
 \item{coi_method}{The method we will use to generate the theoretical
 relationship. The method is either "variant" or "frequency". The default
