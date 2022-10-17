@@ -133,9 +133,6 @@
       i The ability to use bins to estimate the COI will be dropped in the next release.
       Warning in `norm.inter()`:
       extreme order statistics used as endpoints
-      Warning:
-      Use of .data in tidyselect expressions was deprecated in tidyselect 1.2.0.
-      i Please use `"statistic"` instead of `.data$statistic`
     Output
       # A tibble: 1 x 6
           coi estimates       bias std.error conf.low conf.high
