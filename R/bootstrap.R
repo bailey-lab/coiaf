@@ -98,11 +98,11 @@ bootstrap_ci.default <- function(data,
 
   tryCatch(
     broom::tidy(boot_out, conf.int = TRUE) %>%
-      dplyr::rename(coi = statistic),
+      dplyr::rename(coi = "statistic"),
     error = function(e) {
       broom::tidy(boot_out, conf.int = FALSE) %>%
         tibble::add_column(conf.low = NaN, conf.high = NaN) %>%
-        dplyr::rename(coi = statistic)
+        dplyr::rename(coi = "statistic")
     }
   )
 }
@@ -180,6 +180,6 @@ bootstrap_ci.sim <- function(data,
   )
 
   tidy_boot_out %>%
-    dplyr::rename(coi = statistic) %>%
+    dplyr::rename(coi = "statistic") %>%
     tibble::add_column(estimates = list(boot_out$t), .after = "coi")
 }
