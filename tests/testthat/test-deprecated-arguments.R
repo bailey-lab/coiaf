@@ -1,5 +1,4 @@
-set.seed(375)
-data <- sim_biallelic(7)
+data <- withr::with_seed(seed = 375, code = sim_biallelic(7))
 
 test_that("compute_coi() args deprecated", {
   expect_snapshot(compute_coi(data, "sim", comparison = "end", use_bins = TRUE))
@@ -31,6 +30,7 @@ test_that("optimize_coi_regression() args deprecated", {
 })
 
 test_that("bootstrap_ci() args deprecated", {
+  withr::local_seed(721)
   expect_snapshot_warning(bootstrap_ci(data, use_bins = TRUE, replicates = 50))
   expect_snapshot(
     bootstrap_ci(data, "sim", bin_size = 100, use_bins = TRUE, replicates = 10)

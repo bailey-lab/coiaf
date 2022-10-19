@@ -137,5 +137,5 @@
       # A tibble: 1 x 6
           coi estimates       bias std.error conf.low conf.high
         <dbl> <list>         <dbl>     <dbl>    <dbl>     <dbl>
-      1    25 <dbl [10 x 1]> -11.9      9.31        5        25
+      1    25 <dbl [10 x 1]> -14.9      8.24        4        25
 
