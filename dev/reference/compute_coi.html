@@ -101,18 +101,21 @@ is inputted, then we infer the level of sequence error.</p></dd>
 
 
 <dt>bin_size</dt>
-<dd><p>The minimum size of each bin of data.</p></dd>
+<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a> This argument is no longer
+supported; to estimate the COI, all data points are used. Data points are
+not grouped in bins of changing <code>plaf</code>.</p></dd>
 
 
 <dt>comparison</dt>
-<dd><p>The method to be employed. One of <code>"end"</code>, <code>"ideal"</code>,
-<code>"overall"</code>.</p></dd>
+<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a> This argument is no
+longer supported; this function will compare the theoretical curve and
+sample curve for all PLMAFs.</p></dd>
 
 
 <dt>distance</dt>
-<dd><p>The distance method used to determine the distance between
-the theoretical and simulated curves for the <code>"overall"</code> method. One of
-<code>"abs_sum"</code>, <code>"sum_abs"</code>, <code>"squared"</code>.</p></dd>
+<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a> This argument is no longer
+supported; this function will solve a weighted least squares minimization
+problem.</p></dd>
 
 
 <dt>coi_method</dt>
@@ -122,8 +125,9 @@ value is "variant".</p></dd>
 
 
 <dt>use_bins</dt>
-<dd><p>Do we calculate COI by comparing against the data grouped
-into bins of changing <code>plaf</code> or not. Default = FALSE.</p></dd>
+<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a> This argument is no longer
+supported; to estimate the COI, all data points are used. Data points are
+not grouped in bins of changing <code>plaf</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

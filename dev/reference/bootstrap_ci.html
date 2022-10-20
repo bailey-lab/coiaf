@@ -135,12 +135,15 @@ value is "variant".</p></dd>
 
 
 <dt>use_bins</dt>
-<dd><p>Do we calculate COI by comparing against the data grouped
-into bins of changing <code>plaf</code> or not. Default = FALSE.</p></dd>
+<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a> This argument is no longer
+supported; to estimate the COI, all data points are used. Data points are
+not grouped in bins of changing <code>plaf</code>.</p></dd>
 
 
 <dt>bin_size</dt>
-<dd><p>The minimum size of each bin of data.</p></dd>
+<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a> This argument is no longer
+supported; to estimate the COI, all data points are used. Data points are
+not grouped in bins of changing <code>plaf</code>.</p></dd>
 
 
 <dt>replicates</dt>
@@ -189,7 +192,7 @@ Note that parallelization only works on non-Windows machines.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 1 × 6</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     coi estimates         bias std.error conf.low conf.high</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>  4.17 <span style="color: #949494;">&lt;dbl [100 × 1]&gt;</span> 0.078<span style="text-decoration: underline;">7</span>     0.456     3.45      5.29</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>  4.28 <span style="color: #949494;">&lt;dbl [100 × 1]&gt;</span> 0.041<span style="text-decoration: underline;">7</span>     0.624     3.32      5.78</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
