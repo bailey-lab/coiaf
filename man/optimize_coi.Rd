@@ -27,18 +27,21 @@ simulated data to.}
 \item{seq_error}{The level of sequencing error that is assumed. If no value
 is inputted, then we infer the level of sequence error.}
 
-\item{bin_size}{The minimum size of each bin of data.}
+\item{bin_size}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} This argument is no longer
+supported; to estimate the COI, all data points are used. Data points are
+not grouped in bins of changing \code{plaf}.}
 
-\item{distance}{The distance method used to determine the distance between
-the theoretical and simulated curves for the \code{"overall"} method. One of
-\code{"abs_sum"}, \code{"sum_abs"}, \code{"squared"}.}
+\item{distance}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} This argument is no longer
+supported; this function will solve a weighted least squares minimization
+problem.}
 
 \item{coi_method}{The method we will use to generate the theoretical
 relationship. The method is either "variant" or "frequency". The default
 value is "variant".}
 
-\item{use_bins}{Do we calculate COI by comparing against the data grouped
-into bins of changing \code{plaf} or not. Default = FALSE.}
+\item{use_bins}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} This argument is no longer
+supported; to estimate the COI, all data points are used. Data points are
+not grouped in bins of changing \code{plaf}.}
 }
 \value{
 The predicted COI value.

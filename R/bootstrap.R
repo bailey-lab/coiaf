@@ -54,6 +54,22 @@ bootstrap_ci.default <- function(data,
   coi_method <- rlang::arg_match(coi_method)
   solution_method <- rlang::arg_match(solution_method)
 
+  # Warning for deprecated arguments
+  if (use_bins) {
+    lifecycle::deprecate_warn(
+      when = "0.2.0",
+      what = "bootstrap_ci(use_bins)",
+      details = "The ability to use bins to estimate the COI will be dropped in the next release."
+    )
+  }
+  if (bin_size != 20) {
+    lifecycle::deprecate_warn(
+      when = "0.2.0",
+      what = "bootstrap_ci(bin_size)",
+      details = "The ability to use bins to estimate the COI will be dropped in the next release."
+    )
+  }
+
   # Define statistic function
   bootstrap_statistic <- function(data, indices, solution_method, ...) {
     data <- data[indices, ]
@@ -82,11 +98,11 @@ bootstrap_ci.default <- function(data,
 
   tryCatch(
     broom::tidy(boot_out, conf.int = TRUE) %>%
-      dplyr::rename(coi = .data$statistic),
+      dplyr::rename(coi = "statistic"),
     error = function(e) {
       broom::tidy(boot_out, conf.int = FALSE) %>%
         tibble::add_column(conf.low = NaN, conf.high = NaN) %>%
-        dplyr::rename(coi = .data$statistic)
+        dplyr::rename(coi = "statistic")
     }
   )
 }
@@ -106,6 +122,22 @@ bootstrap_ci.sim <- function(data,
   # Argument matching
   coi_method <- rlang::arg_match(coi_method)
   solution_method <- rlang::arg_match(solution_method)
+
+  # Warning for deprecated arguments
+  if (use_bins) {
+    lifecycle::deprecate_warn(
+      when = "0.2.0",
+      what = "bootstrap_ci(use_bins)",
+      details = "The ability to use bins to estimate the COI will be dropped in the next release."
+    )
+  }
+  if (bin_size != 20) {
+    lifecycle::deprecate_warn(
+      when = "0.2.0",
+      what = "bootstrap_ci(bin_size)",
+      details = "The ability to use bins to estimate the COI will be dropped in the next release."
+    )
+  }
 
   # Define statistic function
   bootstrap_statistic <- function(data,
@@ -148,6 +180,6 @@ bootstrap_ci.sim <- function(data,
   )
 
   tidy_boot_out %>%
-    dplyr::rename(coi = .data$statistic) %>%
+    dplyr::rename(coi = "statistic") %>%
     tibble::add_column(estimates = list(boot_out$t), .after = "coi")
 }

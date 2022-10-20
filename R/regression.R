@@ -15,6 +15,15 @@ compute_coi_regression <- function(data,
                                    distance = "squared",
                                    coi_method = "variant",
                                    seq_error_bin_size = 20) {
+  # Warnings for deprecated arguments
+  if (distance != "squared") {
+    lifecycle::deprecate_warn(
+      when = "0.2.0",
+      what = "compute_coi_regression(distance)",
+      details = 'The distance method will be fixed to "squared" in the next release.'
+    )
+  }
+
   processed_data <- process_data_for_regression(
     data, data_type, max_coi, seq_error,
     distance, coi_method, seq_error_bin_size
@@ -95,6 +104,15 @@ optimize_coi_regression <- function(data,
                                     distance = "squared",
                                     coi_method = "variant",
                                     seq_error_bin_size = 20) {
+  # Warnings for deprecated arguments
+  if (distance != "squared") {
+    lifecycle::deprecate_warn(
+      when = "0.2.0",
+      what = "optimize_coi_regression(distance)",
+      details = 'The distance method will be fixed to "squared" in the next release.'
+    )
+  }
+
   processed_data <- process_data_for_regression(
     data, data_type, max_coi, seq_error,
     distance, coi_method, seq_error_bin_size

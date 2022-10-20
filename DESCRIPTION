@@ -30,6 +30,7 @@ Imports:
     ggplot2,
     glue,
     Hmisc,
+    lifecycle,
     magrittr,
     mathjaxr,
     purrr,

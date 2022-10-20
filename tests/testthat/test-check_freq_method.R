@@ -7,6 +7,7 @@ test_that("check_freq_method catches COI = 1", {
 })
 
 test_that("when no loci return NaN with note and estimated coi of 1", {
+  withr::local_options(lifecycle_verbosity = "quiet")
   withr::local_seed(202)
   data <- sim_biallelic(1, runif(1000, 0, 0.5), coverage = 200)
 
@@ -62,6 +63,7 @@ test_that("when no loci return NaN with note and estimated coi of 1", {
 })
 
 test_that("when too few loci returns NaN with note and estimated coi", {
+  withr::local_options(lifecycle_verbosity = "quiet")
   withr::local_seed(303)
   data <- sim_biallelic(1, runif(1000, 0, 0.5), coverage = 200, epsilon = 0.01)
 

@@ -82,4 +82,5 @@ exclude: >
   tests/testthat/_snaps/.*|
   .*\.Rd|
   tests/testthat/issue_18.rds|
+  man/figures/.*|
   )$

@@ -3,6 +3,10 @@
     Code
       compute_coi(tibble::as_tibble(data), "real", seq_error = data$seq_error,
       bin_size = data$bin_size, coi_method = data$coi_method, use_bins = TRUE)
+    Condition
+      Warning:
+      The `use_bins` argument of `compute_coi()` is deprecated as of coiaf 0.2.0.
+      i The ability to use bins to estimate the COI will be dropped in the next release.
     Output
       $coi
       [1] 1

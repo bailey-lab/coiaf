@@ -1,4 +1,5 @@
 test_that("compute_coi for sims", {
+  withr::local_options(lifecycle_verbosity = "quiet")
   withr::local_seed(11L)
   data <- sim_biallelic(3, runif(1000, 0, 0.5), coverage = 200)
 
@@ -15,6 +16,7 @@ test_that("compute_coi for sims", {
 })
 
 test_that("optimize_coi for sims", {
+  withr::local_options(lifecycle_verbosity = "quiet")
   withr::local_seed(11L)
   data <- sim_biallelic(3, runif(1000, 0, 0.5), coverage = 200)
 
@@ -35,6 +37,7 @@ test_that("optimize_coi for sims", {
 })
 
 test_that("compute_coi for real", {
+  withr::local_options(lifecycle_verbosity = "quiet")
   withr::local_seed(11L)
   data <- readRDS(system.file("testdata", "test_real_data.rds", package = "coiaf"))
 
@@ -51,6 +54,7 @@ test_that("compute_coi for real", {
 })
 
 test_that("optimize_coi for real", {
+  withr::local_options(lifecycle_verbosity = "quiet")
   withr::local_seed(11L)
   data <- readRDS(system.file("testdata", "test_real_data.rds", package = "coiaf"))
 

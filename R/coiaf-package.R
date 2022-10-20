@@ -6,6 +6,7 @@
 ## usethis namespace: start
 #' @importFrom cli cli_abort cli_warn cli_inform
 #' @importFrom glue glue
+#' @importFrom lifecycle deprecated
 #' @import mathjaxr
 #' @importFrom stats rbeta rbinom rgamma runif
 #' @importFrom tibble tibble as_tibble as_tibble_col as_tibble_row
