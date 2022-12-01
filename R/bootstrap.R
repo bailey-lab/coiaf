@@ -72,12 +72,10 @@ bootstrap_ci.default <- function(data,
 
   # Define statistic function
   bootstrap_statistic <- function(data, indices, solution_method, ...) {
-    data <- data[indices, ]
-
     # Determine function call based on solution_method
     switch(solution_method,
-      discrete = compute_coi(data, "real", ...)$coi,
-      continuous = optimize_coi(data, "real", ...)
+      discrete = compute_coi(data[indices, ], "real", ...)$coi,
+      continuous = optimize_coi(data[indices, ], "real", ...)
     )
   }
 
@@ -145,13 +143,13 @@ bootstrap_ci.sim <- function(data,
                                   sim_data,
                                   solution_method,
                                   ...) {
-    data <- sim_data
-    data$data <- data$data[indices, ]
+    # Index data
+    sim_data$data <- sim_data$data[indices, ]
 
     # Determine function call based on solution_method
     switch(solution_method,
-      discrete = compute_coi(data, "sim", ...)$coi,
-      continuous = optimize_coi(data, "sim", ...)
+      discrete = compute_coi(sim_data, "sim", ...)$coi,
+      continuous = optimize_coi(sim_data, "sim", ...)
     )
   }
 
