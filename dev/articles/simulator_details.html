@@ -15,9 +15,9 @@
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.1.3/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.1.3/bootstrap.bundle.min.js"></script><link href="../deps/Lato-0.4.2/font.css" rel="stylesheet">
-<link href="../deps/Fira_Code-0.4.2/font.css" rel="stylesheet">
-<link href="../deps/Fira_Sans-0.4.2/font.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.1.3/bootstrap.bundle.min.js"></script><link href="../deps/Lato-0.4.4/font.css" rel="stylesheet">
+<link href="../deps/Fira_Code-0.4.4/font.css" rel="stylesheet">
+<link href="../deps/Fira_Sans-0.4.4/font.css" rel="stylesheet">
 <!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- bootstrap-toc --><script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Simulator details">
@@ -100,33 +100,93 @@
 
     
     
-<p>In this package, synthetic sequencing data are generated using a statistical model for an individual in a given population. Each individual is assigned a COI value, which is used to simulate the number of sequence reads mapped to the reference and alternative allele for the biallelic SNPs considered. These are then used to derive the within-sample frequency of the population-level minor allele at each locus <span class="math inline">\(i\)</span>, denoted as <span class="math inline">\(w_i\)</span>.</p>
-<p>We first define the number of loci being simulated, <span class="math inline">\(l\)</span>. We assume that the distribution of reference allele frequencies for locus <span class="math inline">\(i\)</span>, <span class="math inline">\(R_i\)</span>, is described by a Beta distribution with shape parameters <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span>: <span class="math display">\[
-    \mathbb{P}(R_i = r_i) = \frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha)\Gamma(\beta)}r_i^{(\alpha-1)}(1-r_i)^{(\beta-1)},
+<p>In this package, synthetic sequencing data are generated using a
+statistical model for an individual in a given population. Each
+individual is assigned a COI value, which is used to simulate the number
+of sequence reads mapped to the reference and alternative allele for the
+biallelic SNPs considered. These are then used to derive the
+within-sample frequency of the population-level minor allele at each
+locus <span class="math inline">\(i\)</span>, denoted as <span class="math inline">\(w_i\)</span>.</p>
+<p>We first define the number of loci being simulated, <span class="math inline">\(l\)</span>. We assume that the distribution of
+reference allele frequencies for locus <span class="math inline">\(i\)</span>, <span class="math inline">\(R_i\)</span>, is described by a Beta distribution
+with shape parameters <span class="math inline">\(\alpha\)</span> and
+<span class="math inline">\(\beta\)</span>: <span class="math display">\[
+    \mathbb{P}(R_i = r_i) =
+\frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha)\Gamma(\beta)}r_i^{(\alpha-1)}(1-r_i)^{(\beta-1)},
 \]</span></p>
-<p>where <span class="math inline">\(\Gamma\)</span> is the Gamma function. In our simulations, we assume <span class="math inline">\(\alpha = 1\)</span> and <span class="math inline">\(\beta = 5\)</span> and draw <span class="math inline">\(l\)</span> values of <span class="math inline">\(R_i\)</span>. In our methods, we have defined relationships with respect to the frequency of the minor allele, <span class="math inline">\(p_i\)</span>. Recall that <span class="math inline">\(p_i \in [0, 0.5]\)</span>. Thus, we define <span class="math display">\[
+<p>where <span class="math inline">\(\Gamma\)</span> is the Gamma
+function. In our simulations, we assume <span class="math inline">\(\alpha = 1\)</span> and <span class="math inline">\(\beta = 5\)</span> and draw <span class="math inline">\(l\)</span> values of <span class="math inline">\(R_i\)</span>. In our methods, we have defined
+relationships with respect to the frequency of the minor allele, <span class="math inline">\(p_i\)</span>. Recall that <span class="math inline">\(p_i \in [0, 0.5]\)</span>. Thus, we define <span class="math display">\[
     p_i = \begin{cases}
           r_i &amp; r_i \leq 0.5 \\
           1 - r_i &amp; r_i &gt; 0.5.
        \end{cases}
 \]</span></p>
-<p>To simulate <span class="math inline">\(w_i\)</span> for each individual, we first assign the COI, <span class="math inline">\(k\)</span>. Next, we simulate the genotype at locus <span class="math inline">\(i\)</span>, drawing <span class="math inline">\(k\)</span> values from a Binomial distribution with probability <span class="math inline">\(p_i\)</span>, i.e., the probability of having the minor allele at locus <span class="math inline">\(i\)</span> is equal to the population-level frequency of the minor allele. This yields the matrix, <span class="math inline">\(\mathbb{G} \in \mathbb{R}^{k \times l}\)</span>, with <span class="math inline">\(k\)</span> rows and <span class="math inline">\(l\)</span> columns defining the phased haplotype of each strain, where <span class="math inline">\(\mathbb{G}_{i,j} = 1\)</span> indicates that strain <span class="math inline">\(j\)</span> at locus <span class="math inline">\(i\)</span> has the minor allele.</p>
-<p>To determine the number of sequence reads related to each strain, we first draw the proportion of each strain, <span class="math inline">\(\mathbf{S} = (S_1, \ldots, S_k)\)</span>, in an individual with <span class="math inline">\(k\)</span> strains, which we assume is described by a Dirichlet distribution with concentration parameters <span class="math inline">\(\alpha_1, \ldots, \alpha_k\)</span>. The “true” WSMAF of the minor allele at locus <span class="math inline">\(i\)</span>, denoted <span class="math inline">\(\tau_i\)</span>, is thus given by the sum of the strain proportions for strains with the minor allele. We can express this using matrix multiplication: <span class="math display">\[
+<p>To simulate <span class="math inline">\(w_i\)</span> for each
+individual, we first assign the COI, <span class="math inline">\(k\)</span>. Next, we simulate the genotype at
+locus <span class="math inline">\(i\)</span>, drawing <span class="math inline">\(k\)</span> values from a Binomial distribution
+with probability <span class="math inline">\(p_i\)</span>, i.e., the
+probability of having the minor allele at locus <span class="math inline">\(i\)</span> is equal to the population-level
+frequency of the minor allele. This yields the matrix, <span class="math inline">\(\mathbb{G} \in \mathbb{R}^{k \times l}\)</span>,
+with <span class="math inline">\(k\)</span> rows and <span class="math inline">\(l\)</span> columns defining the phased haplotype
+of each strain, where <span class="math inline">\(\mathbb{G}_{i,j} =
+1\)</span> indicates that strain <span class="math inline">\(j\)</span>
+at locus <span class="math inline">\(i\)</span> has the minor
+allele.</p>
+<p>To determine the number of sequence reads related to each strain, we
+first draw the proportion of each strain, <span class="math inline">\(\mathbf{S} = (S_1, \ldots, S_k)\)</span>, in an
+individual with <span class="math inline">\(k\)</span> strains, which we
+assume is described by a Dirichlet distribution with concentration
+parameters <span class="math inline">\(\alpha_1, \ldots,
+\alpha_k\)</span>. The “true” WSMAF of the minor allele at locus <span class="math inline">\(i\)</span>, denoted <span class="math inline">\(\tau_i\)</span>, is thus given by the sum of the
+strain proportions for strains with the minor allele. We can express
+this using matrix multiplication: <span class="math display">\[
     \boldsymbol \tau = \mathbf{S} \times \mathbb{G}_i,
-\]</span> where <span class="math inline">\(\boldsymbol \tau \in \mathbb{R}^{1 \times l}\)</span>, <span class="math inline">\(\mathbf{S} \in \mathbb{R}^{1 \times k}\)</span>, and <span class="math inline">\(\mathbb{G} \in \mathbb{R}^{k \times l}\)</span>.</p>
-<p>In simulations with no assumed sequence error, the number of sequence reads with the minor allele at each locus is given by sampling from a Binomial distribution <span class="math inline">\(c\)</span> times with probability <span class="math inline">\(\boldsymbol \tau\)</span>, where <span class="math inline">\(c\)</span> is the assumed number of sequence reads, i.e., the read depth or coverage. However, in simulations with sequence error, we perturb the “true” WSMAF by assuming that a number of sequence reads are incorrectly sampled. An incorrectly sampled locus with the major allele will yield the minor allele and vice versa. In our simulations, we assume a fixed sequence error, <span class="math inline">\(\epsilon\)</span>, such that the probability of correctly sampling the minor allele is <span class="math inline">\(1 - \epsilon\)</span>, and the probability of incorrectly sampling the minor allele is <span class="math inline">\(\epsilon\)</span>. Therefore, we can represent the probability of sampling the minor allele, now denoted as <span class="math inline">\(\boldsymbol{\tau}_\epsilon\)</span> to indicate the added error, as <span class="math display">\[
-    \boldsymbol{\tau}_\epsilon = \boldsymbol \tau(1 - \epsilon) + (1 - \boldsymbol \tau)\epsilon.
+\]</span> where <span class="math inline">\(\boldsymbol \tau \in
+\mathbb{R}^{1 \times l}\)</span>, <span class="math inline">\(\mathbf{S}
+\in \mathbb{R}^{1 \times k}\)</span>, and <span class="math inline">\(\mathbb{G} \in \mathbb{R}^{k \times
+l}\)</span>.</p>
+<p>In simulations with no assumed sequence error, the number of sequence
+reads with the minor allele at each locus is given by sampling from a
+Binomial distribution <span class="math inline">\(c\)</span> times with
+probability <span class="math inline">\(\boldsymbol \tau\)</span>, where
+<span class="math inline">\(c\)</span> is the assumed number of sequence
+reads, i.e., the read depth or coverage. However, in simulations with
+sequence error, we perturb the “true” WSMAF by assuming that a number of
+sequence reads are incorrectly sampled. An incorrectly sampled locus
+with the major allele will yield the minor allele and vice versa. In our
+simulations, we assume a fixed sequence error, <span class="math inline">\(\epsilon\)</span>, such that the probability of
+correctly sampling the minor allele is <span class="math inline">\(1 -
+\epsilon\)</span>, and the probability of incorrectly sampling the minor
+allele is <span class="math inline">\(\epsilon\)</span>. Therefore, we
+can represent the probability of sampling the minor allele, now denoted
+as <span class="math inline">\(\boldsymbol{\tau}_\epsilon\)</span> to
+indicate the added error, as <span class="math display">\[
+    \boldsymbol{\tau}_\epsilon = \boldsymbol \tau(1 - \epsilon) + (1 -
+\boldsymbol \tau)\epsilon.
 \]</span></p>
-<p>Lastly, we may account for overdispersion—additional unexpected variability in our data—and sample the number of sequence reads with the minor allele at each locus from a Beta-binomial distribution rather than a Binomial distribution. Dividing the number of instances of the minor allele by the coverage at each locus results in the simulated WSMAF.</p>
+<p>Lastly, we may account for overdispersion—additional unexpected
+variability in our data—and sample the number of sequence reads with the
+minor allele at each locus from a Beta-binomial distribution rather than
+a Binomial distribution. Dividing the number of instances of the minor
+allele by the coverage at each locus results in the simulated WSMAF.</p>
 <div class="section level2">
 <h2 id="example-simulation">Example simulation<a class="anchor" aria-label="anchor" href="#example-simulation"></a>
 </h2>
-<p>Our package defines a function <code><a href="../reference/sim_biallelic.html">sim_biallelic()</a></code> which can easily be used to simulate data for a given sample. To use it, the user may simply specify the COI of the simulated sample and the population level minor allele frequency (PLMAF). The outputs of this function include the phased haplotypes and the within sample minor allele frequencies (WSMAF) at each locus.</p>
+<p>Our package defines a function <code><a href="../reference/sim_biallelic.html">sim_biallelic()</a></code> which can
+easily be used to simulate data for a given sample. To use it, the user
+may simply specify the COI of the simulated sample and the population
+level minor allele frequency (PLMAF). The outputs of this function
+include the phased haplotypes and the within sample minor allele
+frequencies (WSMAF) at each locus.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">simulation</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_biallelic.html">sim_biallelic</a></span><span class="op">(</span><span class="fl">2</span>, plmaf <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">1000</span>, <span class="fl">0</span>, <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">simulation</span><span class="op">)</span></span></code></pre></div>
 <p><img src="simulator_details_files/figure-html/sim%20biallelic-1.png" width="700"></p>
-<p>Internally, the function goes through several steps to generate the final output. The first step in generating simulated data is to generate the population level minor allele frequency (PLMAF). To do so, we sample from a Beta distribution.</p>
+<p>Internally, the function goes through several steps to generate the
+final output. The first step in generating simulated data is to generate
+the population level minor allele frequency (PLMAF). To do so, we sample
+from a Beta distribution.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Set the seed</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
@@ -151,7 +211,10 @@
 <td align="right">0.435</td>
 </tr></tbody>
 </table>
-<p>In cases in which the COI is greater than 1, we will have multiple strains of differing proportions in our sample. In order to determine the proportion of each strain present in our sample, we sample from a Dirichlet distribution.</p>
+<p>In cases in which the COI is greater than 1, we will have multiple
+strains of differing proportions in our sample. In order to determine
+the proportion of each strain present in our sample, we sample from a
+Dirichlet distribution.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">strain_p</span> <span class="op">&lt;-</span> <span class="fu">coiaf</span><span class="fu">:::</span><span class="fu"><a href="../reference/rdirichlet.html">rdirichlet</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">alpha</span>, <span class="va">COI</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
@@ -174,7 +237,10 @@
 </tr>
 </tbody>
 </table>
-<p>In order to determine the within sample minor allele frequency (WSMAF) at each locus, we must determine the phased haplotype of each strain. To do so, we draw from a Binomial distribution with probabilities given by the PLMAF.</p>
+<p>In order to determine the within sample minor allele frequency
+(WSMAF) at each locus, we must determine the phased haplotype of each
+strain. To do so, we draw from a Binomial distribution with
+probabilities given by the PLMAF.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">haplotype</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mapply.html" class="external-link">mapply</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="va">COI</span>, <span class="fl">1</span>, <span class="va">x</span><span class="op">)</span>, x <span class="op">=</span> <span class="va">plmaf</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
@@ -213,7 +279,9 @@
 </tr>
 </tbody>
 </table>
-<p>To determine the true WSMAF, we can simply combine our haplotype information with our strain proportions—finding the sum of the strain proportions for strains with the minor allele at a particular locus.</p>
+<p>To determine the true WSMAF, we can simply combine our haplotype
+information with our strain proportions—finding the sum of the strain
+proportions for strains with the minor allele at a particular locus.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">true_wsmaf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colSums</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sweep.html" class="external-link">sweep</a></span><span class="op">(</span><span class="va">haplotype</span>, <span class="fl">1</span>, <span class="va">strain_p</span>, <span class="st">"*"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -237,7 +305,10 @@
 <td align="right">0.379</td>
 </tr></tbody>
 </table>
-<p>Lastly, to generate our final simulated WSMAF we account for sequencing error, sample the number of sequence reads with the minor allele at each locus, and determine the WSMAF by dividing the number of reads with the minor allele by the coverage at each locus.</p>
+<p>Lastly, to generate our final simulated WSMAF we account for
+sequencing error, sample the number of sequence reads with the minor
+allele at each locus, and determine the WSMAF by dividing the number of
+reads with the minor allele by the coverage at each locus.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Account for sequencing error</span></span>
 <span><span class="va">true_wsmaf</span> <span class="op">&lt;-</span> <span class="va">true_wsmaf</span> <span class="op">*</span> <span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="va">epsilon</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="va">true_wsmaf</span><span class="op">)</span> <span class="op">*</span> <span class="va">epsilon</span></span>
