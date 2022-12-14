@@ -103,11 +103,20 @@
 <div class="section level2">
 <h2 id="data-structure">Data structure<a class="anchor" aria-label="anchor" href="#data-structure"></a>
 </h2>
-<p>Data is fed into the algorithm as a matrix containing the WSMAF of
-each sample at each examined locus on the genome, with the sample
-represented by the rows and the locus represented by the columns. The
-first 5 rows and 3 columns of the example real data set included with
-this package is shown below:</p>
+<p>The algorithms developed in this package require an input data set
+containing the population-level minor allele frequency (PLMAF), the
+within-sample minor allele frequency (WSMAF), and the within-sample
+coverage across a set of loci. We note that while our package leverages
+the population-level and within-sample minor allele frequencies to run,
+user may also input the population-level and within-sample allele
+frequencies of the reference allele. The package has built-in
+capabilities to convert these values to the allele frequencies for the
+minor allele.</p>
+<p>The example real data set included with this package contains a
+matrix with the WSAFs of multiple samples across several loci, with the
+sample represented by the rows and the locus represented by the columns.
+The first 5 rows and 3 columns of the example real data set included
+with this package is shown below:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">example_real_data</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt;          Pf3D7_01_v3_94422 Pf3D7_01_v3_95518 Pf3D7_01_v3_100608</span></span>
@@ -116,145 +125,44 @@ this package is shown below:</p>
 <span><span class="co">#&gt; FP0028-C         0.7389381        0.48000000          1.0000000</span></span>
 <span><span class="co">#&gt; FP0029-C         1.0000000        1.00000000          1.0000000</span></span>
 <span><span class="co">#&gt; FP0030-C         0.6250000        0.01882353          1.0000000</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="run-the-algorithm">Run the algorithm<a class="anchor" aria-label="anchor" href="#run-the-algorithm"></a>
-</h2>
-<p>Now that we have the data, running the algorithm using either of our
-two methods is quite straightforward.</p>
-<p>First, we must compute the PLMAF by average the WSMAF of our
-samples.</p>
+<p>Given this information, we may determine the PLAF by averaging the
+WSAF of all samples across each locus, as follows:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">plmaf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="va">example_real_data</span>, na.rm <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span></code></pre></div>
-<p>In the dataset provided, <code>example_real_data</code>, there are 10
-unique samples with 1000 loci each. Therefore, to find the COI for each
-sample, we must generate a for loop and iterate over each sample.</p>
-<div class="section level3">
-<h3 id="method-1">Method 1<a class="anchor" aria-label="anchor" href="#method-1"></a>
-</h3>
-<div class="section level4">
-<h4 id="discrete">Discrete<a class="anchor" aria-label="anchor" href="#discrete"></a>
-</h4>
+<code class="sourceCode R"><span><span class="va">plaf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="va">example_real_data</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p>With the WSAF and PLAF, we can generate an input data frame. However,
+as our algorithms work on a per sample basis, we must generate a list of
+input data frames:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">m1_dis</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">example_real_data</span><span class="op">)</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="co"># We first isolate the WSMAF for that sample and then plug the WSMAF and PLMAF</span></span>
-<span>  <span class="co"># into our function</span></span>
-<span>  <span class="va">wsmaf</span> <span class="op">&lt;-</span> <span class="va">example_real_data</span><span class="op">[</span><span class="va">i</span>, <span class="op">]</span></span>
-<span>  <span class="va">input</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>wsmaf <span class="op">=</span> <span class="va">wsmaf</span>, plmaf <span class="op">=</span> <span class="va">plmaf</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/drop_na.html" class="external-link">drop_na</a></span><span class="op">(</span><span class="op">)</span></span>
-<span>  <span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_coi.html">compute_coi</a></span><span class="op">(</span><span class="va">input</span>, <span class="st">"real"</span>, coi_method <span class="op">=</span> <span class="st">"variant"</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># compute_coi returns both the COI and a measure of confidence in our prediction</span></span>
-<span><span class="co"># thus we must isolate each separately</span></span>
-<span><span class="va">m1_dis_cois</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">m1_dis</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">x</span><span class="op">$</span><span class="va">coi</span></span>
-<span><span class="op">}</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># extract the probabilities and assign them names based on what COI was checked</span></span>
-<span><span class="va">m1_dis_probs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">m1_dis</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">probs</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">$</span><span class="va">probability</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">probs</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"COI_"</span>, <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">probs</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">probs</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Assign the name of the sample to the returned vectors</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">m1_dis_cois</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">example_real_data</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">m1_dis_probs</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">example_real_data</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level4">
-<h4 id="continuous">Continuous<a class="anchor" aria-label="anchor" href="#continuous"></a>
-</h4>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">m1_dis_cont</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">example_real_data</span><span class="op">)</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="co"># We first isolate the WSMAF for that sample and then plug the WSMAF and PLMAF</span></span>
-<span>  <span class="co"># into our function</span></span>
-<span>  <span class="va">wsmaf</span> <span class="op">&lt;-</span> <span class="va">example_real_data</span><span class="op">[</span><span class="va">i</span>, <span class="op">]</span></span>
-<span>  <span class="va">input</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>wsmaf <span class="op">=</span> <span class="va">wsmaf</span>, plmaf <span class="op">=</span> <span class="va">plmaf</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/drop_na.html" class="external-link">drop_na</a></span><span class="op">(</span><span class="op">)</span></span>
-<span>  <span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/optimize_coi.html">optimize_coi</a></span><span class="op">(</span><span class="va">input</span>, <span class="st">"real"</span>, coi_method <span class="op">=</span> <span class="st">"variant"</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Assign the name of the sample to the returned vector</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">m1_dis_cont</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">example_real_data</span><span class="op">)</span></span></code></pre></div>
-</div>
-</div>
-<div class="section level3">
-<h3 id="method-2">Method 2<a class="anchor" aria-label="anchor" href="#method-2"></a>
-</h3>
-<div class="section level4">
-<h4 id="discrete-1">Discrete<a class="anchor" aria-label="anchor" href="#discrete-1"></a>
-</h4>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">m2_dis</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">example_real_data</span><span class="op">)</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="co"># We first isolate the WSMAF for that sample and then plug the WSMAF and PLMAF</span></span>
-<span>  <span class="co"># into our function</span></span>
-<span>  <span class="va">wsmaf</span> <span class="op">&lt;-</span> <span class="va">example_real_data</span><span class="op">[</span><span class="va">i</span>, <span class="op">]</span></span>
-<span>  <span class="va">input</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>wsmaf <span class="op">=</span> <span class="va">wsmaf</span>, plmaf <span class="op">=</span> <span class="va">plmaf</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/drop_na.html" class="external-link">drop_na</a></span><span class="op">(</span><span class="op">)</span></span>
-<span>  <span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_coi.html">compute_coi</a></span><span class="op">(</span><span class="va">input</span>, <span class="st">"real"</span>, coi_method <span class="op">=</span> <span class="st">"frequency"</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># compute_coi returns both the COI and a measure of confidence in our prediction</span></span>
-<span><span class="co"># thus we must isolate each separately</span></span>
-<span><span class="va">m2_dis_cois</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">m2_dis</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">x</span><span class="op">$</span><span class="va">coi</span></span>
-<span><span class="op">}</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># extract the probabilities and assign them names based on what COI was checked</span></span>
-<span><span class="va">m2_dis_probs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">m2_dis</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">probs</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">$</span><span class="va">probability</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">probs</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"COI_"</span>, <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">probs</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">probs</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Assign the name of the sample to the returned vectors</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">m2_dis_cois</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">example_real_data</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">m2_dis_probs</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">example_real_data</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level4">
-<h4 id="continuous-1">Continuous<a class="anchor" aria-label="anchor" href="#continuous-1"></a>
-</h4>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">m2_dis_cont</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">example_real_data</span><span class="op">)</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="co"># We first isolate the WSMAF for that sample and then plug the WSMAF and PLMAF</span></span>
-<span>  <span class="co"># into our function</span></span>
-<span>  <span class="va">wsmaf</span> <span class="op">&lt;-</span> <span class="va">example_real_data</span><span class="op">[</span><span class="va">i</span>, <span class="op">]</span></span>
-<span>  <span class="va">input</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>wsmaf <span class="op">=</span> <span class="va">wsmaf</span>, plmaf <span class="op">=</span> <span class="va">plmaf</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/drop_na.html" class="external-link">drop_na</a></span><span class="op">(</span><span class="op">)</span></span>
-<span>  <span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/optimize_coi.html">optimize_coi</a></span><span class="op">(</span><span class="va">input</span>, <span class="st">"real"</span>, coi_method <span class="op">=</span> <span class="st">"frequency"</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Assign the name of the sample to the returned vector</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">m2_dis_cont</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">example_real_data</span><span class="op">)</span></span></code></pre></div>
-</div>
-</div>
+<code class="sourceCode R"><span><span class="va">input_data</span> <span class="op">&lt;-</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">example_real_data</span><span class="op">)</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>wsmaf <span class="op">=</span> <span class="va">example_real_data</span><span class="op">[</span><span class="va">i</span>, <span class="op">]</span>, plmaf <span class="op">=</span> <span class="va">plaf</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/drop_na.html" class="external-link">drop_na</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="progress-bar">Progress bar<a class="anchor" aria-label="anchor" href="#progress-bar"></a>
+<h2 id="estimate-the-coi">Estimate the COI<a class="anchor" aria-label="anchor" href="#estimate-the-coi"></a>
 </h2>
-<p>For roughly 1000 loci and 10 samples, the model will take less than
-0.5 seconds to run. It may be helpful to include a progress bar when
-running additional loci or samples by replacing <code>lapply</code> in
-the above function with a user defined function. We recommend the use of
-the <a href="https://peter.solymos.org/pbapply/" class="external-link"><code>pbapply</code>
-package</a>, which can be used as follows:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Function to determine if pbapply is installed. If it is installed, it will</span></span>
-<span><span class="co"># display a progress bar</span></span>
-<span><span class="va">list_apply</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">fun</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"pbapply"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="fu">pbapply</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pbapply/man/pbapply.html" class="external-link">pblapply</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">fun</span>, <span class="va">...</span><span class="op">)</span></span>
-<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">fun</span>, <span class="va">...</span><span class="op">)</span></span>
-<span>  <span class="op">}</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-<p>All that is left to do is to replace the above <code>lapply</code>
-with the newly defined <code>list_apply</code>.</p>
+<p>With the input data set now generated, to run estimate the COI, users
+can use the <code><a href="../reference/compute_coi.html">compute_coi()</a></code> or <code><a href="../reference/optimize_coi.html">optimize_coi()</a></code>
+function, depending on whether a discrete or continuous value of the COI
+is desired. Below we illustrate estimating the discrete COI:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Estimate the COI of a single sample</span></span>
+<span><span class="fu"><a href="../reference/optimize_coi.html">optimize_coi</a></span><span class="op">(</span><span class="va">input_data</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, data_type <span class="op">=</span> <span class="st">"real"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1.2079</span></span>
+<span></span>
+<span><span class="co"># Estimating the COI of multiple samples</span></span>
+<span><span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_dbl</a></span><span class="op">(</span><span class="va">input_data</span>, <span class="op">~</span> <span class="fu"><a href="../reference/optimize_coi.html">optimize_coi</a></span><span class="op">(</span><span class="va">.x</span>, data_type <span class="op">=</span> <span class="st">"real"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  [1] 1.2079 1.7896 1.1241 1.0550 1.0708 1.1313 1.0500 1.0722 1.9574 1.0143</span></span></code></pre></div>
+<p>The estimation functions will return the estimated COI. In some
+cases, additional information will also be returned.</p>
 </div>
 <div class="section level2">
 <h2 id="data-visualization">Data visualization<a class="anchor" aria-label="anchor" href="#data-visualization"></a>
 </h2>
 <p>We recommend exploring the <a href="https://ggplot2.tidyverse.org/index.html" class="external-link"><code>ggplot2</code></a>
 package to plot results. The <a href="https://www.r-graph-gallery.com/index.html" class="external-link">Graph Gallery</a> is a
-beautiful website with tons of awesome graphs and demos that may provide
-some inspiration.</p>
+beautiful website with graphs and demos that may provide some
+inspiration.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

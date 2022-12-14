@@ -66,12 +66,11 @@
 <ul><li>New <code><a href="../articles/example_real_data.html">vignette("example_real_data")</a></code> illustrates how to use the package on your own real data sets.</li>
 <li>New <code><a href="../articles/sensitivity_analysis_discrete.html">vignette("sensitivity_analysis_discrete")</a></code> describes the sensitivity analysis for the discrete methods.</li>
 <li>New <code><a href="../articles/sensitivity_analysis_continuous.html">vignette("sensitivity_analysis_continuous")</a></code> describes the sensitivity analysis for the continuous methods.</li>
-<li>New <code><a href="../articles/example_coi_prediction.html">vignette("example_coi_prediction")</a></code> explains the internal prediction methods.</li>
 <li>New <code>vignette("example_simulation")</code> explains how data is simulated.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="new-features-development-version">New features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
-<ul><li>New <code><a href="../reference/bootstrap_ci.html">bootstrap_ci()</a></code> function can be used to compute a bootstrapped confidence interval for COI estimates (<a href="https://github.com/bailey-lab/coiaf/issues/24" class="external-link">#24</a>).</li>
+<ul><li>New <code><a href="../reference/bootstrap_ci.html">bootstrap_ci()</a></code> function can be used to compute a bootstrapped confidence interval for COI estimates (<a href="https://github.com/bailey-lab/coiaf/issues/24" class="external-link">#24</a>, <a href="https://github.com/bailey-lab/coiaf/issues/25" class="external-link">#25</a>).</li>
 <li>An <code>autoplot</code> and <code>plot</code> method have been written for simulated data (<a href="https://github.com/bailey-lab/coiaf/issues/22" class="external-link">#22</a>).</li>
 <li>Simulated data have been restructured and are now assigned a class <code>sim</code> (<a href="https://github.com/bailey-lab/coiaf/issues/22" class="external-link">#22</a>).</li>
 <li>The default sequence error threshold has been set to 1%.</li>
@@ -87,8 +86,10 @@
 </ul></div>
 <div class="section level3">
 <h3 id="maintenance-development-version">Maintenance<a class="anchor" aria-label="anchor" href="#maintenance-development-version"></a></h3>
-<ul><li>PLAF has been renamed to PLMAF to indicate the focus is the minor allele.</li>
-<li>WSAF has been renamed to WSMAF to indicate the focus is the minor allele.</li>
+<ul><li>Fix broken links.</li>
+<li>Deprecate arguments in favor of newer methods to estimate the COI. Arguments deprecated include: <code>comparison</code>, <code>distance</code>, <code>use_bins</code>, and <code>bin_size</code> (<a href="https://github.com/bailey-lab/coiaf/issues/26" class="external-link">#26</a>).</li>
+<li>PLAF has been renamed to PLMAF to indicate the focus is the minor allele (<a href="https://github.com/bailey-lab/coiaf/issues/13" class="external-link">#13</a>).</li>
+<li>WSAF has been renamed to WSMAF to indicate the focus is the minor allele (<a href="https://github.com/bailey-lab/coiaf/issues/13" class="external-link">#13</a>).</li>
 <li>Fix partial argument match warnings.</li>
 <li>Update license year.</li>
 <li>The number of dependencies has been reduced.</li>
