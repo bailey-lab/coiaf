@@ -8,8 +8,6 @@
   analysis for the discrete methods.
 - New `vignette("sensitivity_analysis_continuous")` describes the sensitivity
   analysis for the continuous methods.
-- New `vignette("example_coi_prediction")` explains the internal prediction
-  methods.
 - New `vignette("example_simulation")` explains how data is simulated.
 
 ## New features
