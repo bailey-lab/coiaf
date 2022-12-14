@@ -41,6 +41,7 @@
 
 ## Maintenance
 
+- Fix broken links.
 - Deprecate arguments in favor of newer methods to estimate the COI.
   Arguments deprecated include: `comparison`, `distance`, `use_bins`, and
   `bin_size` (#26).

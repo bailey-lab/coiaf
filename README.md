@@ -21,9 +21,8 @@ mean COI in a population have been shown to be informative of changes in
 transmission intensity with a number of probabilistic likelihood and
 Bayesian models now developed to estimate COI. However, rapid, direct
 measures based on heterozygosity or _FwS_ have not been directly related
-to the COI. In this package we present two new methods that use easily
-calculated measures to directly estimate the COI from sequence read
-depth data.
+to the COI. This package features two rapid, direct measures for
+characterizing polyclonal infections.
 
 ## Installation
 
@@ -47,18 +46,11 @@ devtools::install_github("bailey-lab/coiaf")
 
 ## Usage
 
-Please consult the [example real data
-vignette](https://github.com/bailey-lab/coiaf/blob/main/analysis/vignettes/example_real_data.Rmd)
-for a primer on how to run real data using `coiaf`. For a description of
-how the estimation methods work, please consult the [example coi
-prediction
-vignette](https://github.com/bailey-lab/coiaf/blob/main/analysis/vignettes/example_coi_prediction.Rmd).
-
-<!-- In order to run real data, please refer to the Articles drop down menu. Several -->
-<!-- articles are provided which detail how the algorithm works, how data was  -->
-<!-- simulated to test the algorithm, and importantly how to run real data. -->
-<!-- A short example on running real data is included and outlines the necessary -->
-<!-- data structure as well as the commands to run. -->
+In order to run real data, please refer to the Articles drop-down menu.
+Several articles detail how the algorithm works, how data is simulated
+to test the algorithm, and, importantly, how to run real data. A short
+example of running real data is included and outlines the necessary data
+structure and the commands to run.
 
 ### Development
 
