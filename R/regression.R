@@ -1,4 +1,5 @@
 #' Compute COI based on residuals of all loci against theoretical curves
+#'
 #' @inheritParams compute_coi
 #' @param seq_error_bin_size Number of loci in smallest bin for estimating
 #'   sequence error
@@ -89,6 +90,7 @@ compute_coi_regression <- function(data,
 }
 
 #' Compute COI based on all points fitted to best fitting curve for COI
+#'
 #' @inheritParams optimize_coi
 #' @param seq_error_bin_size Number of loci in smallest bin for estimating
 #'   sequence error

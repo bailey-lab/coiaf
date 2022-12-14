@@ -14,9 +14,9 @@ process_real(
 )
 }
 \arguments{
-\item{wsmaf}{The within-sample allele frequency.}
+\item{wsmaf}{The within-sample minor allele frequency.}
 
-\item{plmaf}{The population-level allele frequency.}
+\item{plmaf}{The population-level minor allele frequency.}
 
 \item{coverage}{The read coverage at each locus.}
 
@@ -55,7 +55,7 @@ Generate the COI curve for real data.
 }
 \details{
 The function computes whether a SNP is a variant site or not, based on the
-simulated WSMAF at that SNP. This process additionally accounts for potential
+WSMAF at that SNP. This process additionally accounts for potential
 sequencing error.
 }
 \seealso{

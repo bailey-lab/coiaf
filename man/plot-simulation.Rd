@@ -17,8 +17,8 @@
 \item{...}{Other arguments passed on to methods.}
 }
 \description{
-Generate a simple plot visualizing simulated data. Compares the derived WSAF
-to the PLAF.
+Generate a simple plot visualizing simulated data. Compares the derived WSMAF
+to the PLMAF.
 }
 \examples{
 plot(sim_biallelic(coi = 2))

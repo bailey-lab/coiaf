@@ -7,7 +7,8 @@
 #' the PLMAF (\mjseqn{\bf{p}}), and the COI (\mjseqn{k}).
 #'
 #' @param coi_range The COIs for which the relationship will be generated.
-#' @param plmaf The PLMAF over which the relationship will be generated.
+#' @param plmaf The population-level minor allele frequency over which the
+#'   relationship will be generated.
 #' @param coi_method The method we will use to generate the theoretical
 #'   relationship. The method is either "variant" or "frequency". The default
 #'   value is "variant".

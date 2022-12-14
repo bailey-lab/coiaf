@@ -21,7 +21,6 @@
 #' * `cuts`: The breaks utilized in splitting the data.
 #'  of each COI.
 #' @keywords internal
-
 process <- function(wsmaf,
                     plmaf,
                     coverage,
@@ -160,7 +159,6 @@ find_cut_midpoints <- function(data, cuts) {
 #' @family simulated data functions
 #' @seealso [process_real()] to process real data.
 #' @export
-
 process_sim <- function(sim,
                         seq_error = 0.01,
                         bin_size = 20,
@@ -186,11 +184,11 @@ process_sim <- function(sim,
 #' Generate the COI curve for real data.
 #'
 #' The function computes whether a SNP is a variant site or not, based on the
-#' simulated WSMAF at that SNP. This process additionally accounts for potential
+#' WSMAF at that SNP. This process additionally accounts for potential
 #' sequencing error.
 #'
-#' @param wsmaf The within-sample allele frequency.
-#' @param plmaf The population-level allele frequency.
+#' @param wsmaf The within-sample minor allele frequency.
+#' @param plmaf The population-level minor allele frequency.
 #' @param coverage The read coverage at each locus.
 #' @inheritParams process_sim
 #'
@@ -208,7 +206,6 @@ process_sim <- function(sim,
 #' @family real data functions
 #' @seealso [process_sim()] to process simulated data.
 #' @export
-
 process_real <- function(wsmaf,
                          plmaf,
                          coverage,

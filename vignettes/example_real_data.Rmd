@@ -23,140 +23,58 @@ library(coiaf)
 ```
 
 ## Data structure
-Data is fed into the algorithm as a matrix containing the WSMAF of each sample at
-each examined locus on the genome, with the sample represented by the rows and
-the locus represented by the columns. The first 5 rows and 3 columns of the
-example real data set included with this package is shown below:
+The algorithms developed in this package require an input data set containing
+the population-level minor allele frequency (PLMAF), the within-sample minor
+allele frequency (WSMAF), and the within-sample coverage across a set of loci.
+We note that while our package leverages the population-level and within-sample
+minor allele frequencies to run, user may also input the population-level and
+within-sample allele frequencies of the reference allele. The package has
+built-in capabilities to convert these values to the allele frequencies for the
+minor allele.
+
+The example real data set included with this package contains a matrix with the
+WSAFs of multiple samples across several loci, with the sample represented by
+the rows and the locus represented by the columns. The first 5 rows and 3
+columns of the example real data set included with this package is shown below:
 ```{r print data}
 print(example_real_data[1:5, 1:3])
 ```
 
-
-## Run the algorithm
-Now that we have the data, running the algorithm using either of our two
-methods is quite straightforward.
-
-First, we must compute the PLMAF by average the WSMAF of our samples.
-```{r PLMAF}
-plmaf <- colMeans(example_real_data, na.rm = T)
+Given this information, we may determine the PLAF by averaging the WSAF of all
+samples across each locus, as follows:
+```{r PLAF}
+plaf <- colMeans(example_real_data, na.rm = TRUE)
 ```
 
-In the dataset provided, `example_real_data`, there are
-`r dim(example_real_data)[1]` unique samples with `r dim(example_real_data)[2]`
-loci each. Therefore, to find the COI for each sample, we must generate a for
-loop and iterate over each sample.
-
-### Method 1
-#### Discrete
-```{r method 1 discrete}
-m1_dis <- lapply(seq_len(nrow(example_real_data)), function(i) {
-  # We first isolate the WSMAF for that sample and then plug the WSMAF and PLMAF
-  # into our function
-  wsmaf <- example_real_data[i, ]
-  input <- tibble::tibble(wsmaf = wsmaf, plmaf = plmaf) %>% tidyr::drop_na()
-  res <- compute_coi(input, "real", coi_method = "variant")
+With the WSAF and PLAF, we can generate an input data frame. However, as our
+algorithms work on a per sample basis, we must generate a list of input data
+frames:
+```{r input data}
+input_data <- purrr::map(seq_len(nrow(example_real_data)), function(i) {
+  tibble::tibble(wsmaf = example_real_data[i, ], plmaf = plaf) %>%
+    tidyr::drop_na()
 })
-
-# compute_coi returns both the COI and a measure of confidence in our prediction
-# thus we must isolate each separately
-m1_dis_cois <- lapply(m1_dis, function(x) {
-  x$coi
-}) %>% unlist()
-
-# extract the probabilities and assign them names based on what COI was checked
-m1_dis_probs <- lapply(m1_dis, function(x) {
-  probs <- x$probability
-  names(probs) <- paste0("COI_", 1:length(probs))
-  return(probs)
-})
-
-# Assign the name of the sample to the returned vectors
-names(m1_dis_cois) <- rownames(example_real_data)
-names(m1_dis_probs) <- rownames(example_real_data)
 ```
 
-#### Continuous
-```{r method 1 continuous}
-m1_dis_cont <- lapply(seq_len(nrow(example_real_data)), function(i) {
-  # We first isolate the WSMAF for that sample and then plug the WSMAF and PLMAF
-  # into our function
-  wsmaf <- example_real_data[i, ]
-  input <- tibble::tibble(wsmaf = wsmaf, plmaf = plmaf) %>% tidyr::drop_na()
-  res <- optimize_coi(input, "real", coi_method = "variant")
-}) %>% unlist()
 
-# Assign the name of the sample to the returned vector
-names(m1_dis_cont) <- rownames(example_real_data)
+## Estimate the COI
+With the input data set now generated, to run estimate the COI, users can use
+the `compute_coi()` or `optimize_coi()` function, depending on whether a
+discrete or continuous value of the COI is desired. Below we illustrate
+estimating the discrete COI:
+```{r estimate the COI}
+# Estimate the COI of a single sample
+optimize_coi(input_data[[1]], data_type = "real")
+
+# Estimating the COI of multiple samples
+purrr::map_dbl(input_data, ~ optimize_coi(.x, data_type = "real"))
 ```
 
-### Method 2
-#### Discrete
-```{r method 2 discrete}
-m2_dis <- lapply(seq_len(nrow(example_real_data)), function(i) {
-  # We first isolate the WSMAF for that sample and then plug the WSMAF and PLMAF
-  # into our function
-  wsmaf <- example_real_data[i, ]
-  input <- tibble::tibble(wsmaf = wsmaf, plmaf = plmaf) %>% tidyr::drop_na()
-  res <- compute_coi(input, "real", coi_method = "frequency")
-})
-
-# compute_coi returns both the COI and a measure of confidence in our prediction
-# thus we must isolate each separately
-m2_dis_cois <- lapply(m2_dis, function(x) {
-  x$coi
-}) %>% unlist()
-
-# extract the probabilities and assign them names based on what COI was checked
-m2_dis_probs <- lapply(m2_dis, function(x) {
-  probs <- x$probability
-  names(probs) <- paste0("COI_", 1:length(probs))
-  return(probs)
-})
-
-# Assign the name of the sample to the returned vectors
-names(m2_dis_cois) <- rownames(example_real_data)
-names(m2_dis_probs) <- rownames(example_real_data)
-```
-
-#### Continuous
-```{r method 2 continuous}
-m2_dis_cont <- lapply(seq_len(nrow(example_real_data)), function(i) {
-  # We first isolate the WSMAF for that sample and then plug the WSMAF and PLMAF
-  # into our function
-  wsmaf <- example_real_data[i, ]
-  input <- tibble::tibble(wsmaf = wsmaf, plmaf = plmaf) %>% tidyr::drop_na()
-  res <- optimize_coi(input, "real", coi_method = "frequency")
-}) %>% unlist()
-
-# Assign the name of the sample to the returned vector
-names(m2_dis_cont) <- rownames(example_real_data)
-```
-
-## Progress bar
-For roughly 1000 loci and 10 samples, the model will take less than 0.5 seconds
-to run. It may be helpful to include a progress bar when running additional loci
-or samples by replacing `lapply` in the above function with a user defined
-function. We recommend the use of the
-[`pbapply` package](https://peter.solymos.org/pbapply/), which can be used as
-follows:
-
-```{r progress bar function, eval = F}
-# Function to determine if pbapply is installed. If it is installed, it will
-# display a progress bar
-list_apply <- function(x, fun, ...) {
-  if (requireNamespace("pbapply", quietly = TRUE)) {
-    pbapply::pblapply(x, fun, ...)
-  } else {
-    lapply(x, fun, ...)
-  }
-}
-```
-
-All that is left to do is to replace the above `lapply` with the newly defined
-`list_apply`.
+The estimation functions will return the estimated COI. In some cases,
+additional information will also be returned.
 
 ## Data visualization
 We recommend exploring the [`ggplot2`](https://ggplot2.tidyverse.org/index.html)
-package to plot results. The
-[Graph Gallery](https://www.r-graph-gallery.com/index.html) is a beautiful
-website with tons of awesome graphs and demos that may provide some inspiration.
+package to plot results. The [Graph
+Gallery](https://www.r-graph-gallery.com/index.html) is a beautiful website with
+graphs and demos that may provide some inspiration.

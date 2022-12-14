@@ -6,13 +6,13 @@
 \title{Example real data}
 \format{
 A matrix of data. The rows of the matrix indicate the sample name and
-the columns of the matrix indicate the WSMAF at each locus.
+the columns of the matrix indicate the WSAF at each locus.
 }
 \source{
 ftp://ngs.sanger.ac.uk/production/malaria/pfcommunityproject/Pf6/
 }
 \description{
 A small example dataset that contains within-sample allele frequencies
-(WSMAFs) from a sample of individuals.
+(WSAFs) from a sample of individuals.
 }
 \keyword{datasets}

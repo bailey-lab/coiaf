@@ -74,7 +74,7 @@ likelihood <- function(coi,
 #'
 #' A function to compute the COI of inputted data.
 #'
-#' The function utilizes [stats::optim()] In particular, the function utilizes
+#' The function utilizes [stats::optim()]. In particular, the function utilizes
 #' a quasi-Newton method to compute gradients and build a picture of the
 #' surface to be optimized. The function uses a likelihood function as defined
 #' by [likelihood()].

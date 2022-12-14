@@ -61,7 +61,7 @@ locus.
 }
 \description{
 Simulate biallelic data from a simple statistical model. Inputs
-include the complexity of infection (COI), population-level allele
+include the complexity of infection (COI), population-level minor allele
 frequencies (PLMAF), and some parameters dictating skew and error
 distributions. Outputs include the phased haplotypes and the unphased read
 count and coverage data.

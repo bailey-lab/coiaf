@@ -13,7 +13,8 @@ theoretical_coi(
 \arguments{
 \item{coi_range}{The COIs for which the relationship will be generated.}
 
-\item{plmaf}{The PLMAF over which the relationship will be generated.}
+\item{plmaf}{The population-level minor allele frequency over which the
+relationship will be generated.}
 
 \item{coi_method}{The method we will use to generate the theoretical
 relationship. The method is either "variant" or "frequency". The default

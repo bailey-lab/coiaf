@@ -14,9 +14,9 @@ process(
 )
 }
 \arguments{
-\item{wsmaf}{The within-sample allele frequency.}
+\item{wsmaf}{The within-sample minor allele frequency.}
 
-\item{plmaf}{The population-level allele frequency.}
+\item{plmaf}{The population-level minor allele frequency.}
 
 \item{coverage}{The read coverage at each locus.}
 

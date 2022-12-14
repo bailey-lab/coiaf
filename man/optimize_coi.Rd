@@ -50,7 +50,7 @@ The predicted COI value.
 A function to compute the COI of inputted data.
 }
 \details{
-The function utilizes \code{\link[stats:optim]{stats::optim()}} In particular, the function utilizes
+The function utilizes \code{\link[stats:optim]{stats::optim()}}. In particular, the function utilizes
 a quasi-Newton method to compute gradients and build a picture of the
 surface to be optimized. The function uses a likelihood function as defined
 by \code{\link[=likelihood]{likelihood()}}.
