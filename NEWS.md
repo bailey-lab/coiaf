@@ -15,7 +15,7 @@
 ## New features
 
 - New `bootstrap_ci()` function can be used to compute a bootstrapped confidence
-  interval for COI estimates (#24).
+  interval for COI estimates (#24, #25).
 - An `autoplot` and `plot` method have been written for simulated data (#22).
 - Simulated data have been restructured and are now assigned a class `sim`
   (#22).
@@ -41,8 +41,13 @@
 
 ## Maintenance
 
-- PLAF has been renamed to PLMAF to indicate the focus is the minor allele.
-- WSAF has been renamed to WSMAF to indicate the focus is the minor allele.
+- Deprecate arguments in favor of newer methods to estimate the COI.
+  Arguments deprecated include: `comparison`, `distance`, `use_bins`, and
+  `bin_size` (#26).
+- PLAF has been renamed to PLMAF to indicate the focus is the minor allele
+  (#13).
+- WSAF has been renamed to WSMAF to indicate the focus is the minor allele
+  (#13).
 - Fix partial argument match warnings.
 - Update license year.
 - The number of dependencies has been reduced.
