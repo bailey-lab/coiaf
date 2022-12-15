@@ -1,4 +1,4 @@
-# coiaf (development version)
+# coiaf 0.1.1
 
 ## New vignettes
 
