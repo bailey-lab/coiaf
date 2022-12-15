@@ -51,8 +51,3 @@ Several articles detail how the algorithm works, how data is simulated
 to test the algorithm, and, importantly, how to run real data. A short
 example of running real data is included and outlines the necessary data
 structure and the commands to run.
-
-### Development
-
-Please note that this package is still under development and may be
-missing features.
