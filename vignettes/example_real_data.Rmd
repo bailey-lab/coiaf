@@ -76,5 +76,5 @@ additional information will also be returned.
 ## Data visualization
 We recommend exploring the [`ggplot2`](https://ggplot2.tidyverse.org/index.html)
 package to plot results. The [Graph
-Gallery](https://www.r-graph-gallery.com/index.html) is a beautiful website with
+Gallery](https://r-graph-gallery.com/index.html) is a beautiful website with
 graphs and demos that may provide some inspiration.

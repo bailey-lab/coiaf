@@ -47,10 +47,11 @@ the beta distribution having shape parameters
 
 \item{relatedness}{The probability that a strain in mixed infections is
 related to another. The implementation is similar to relatedness as defined
-in THE REAL McCOIL simulations. In the \href{https://doi.org/10.1371/journal.pcbi.1005348}{original paper} this is defined as:
-"... simulated relatedness (r) among lineages within the same host by
-sampling alleles either from an existing lineage within the same host (with
-probability r) or from the population (with probability (1-r))."}
+in THE REAL McCOIL simulations
+(\doi{https://doi.org/10.1371/journal.pcbi.1005348}): "... simulated
+relatedness (r) among lineages within the same host by sampling alleles
+either from an existing lineage within the same host (with probability r)
+or from the population (with probability (1-r))."}
 
 \item{epsilon}{The probability of a single read being miscalled as the other
 allele. This error is applied in both directions.}
