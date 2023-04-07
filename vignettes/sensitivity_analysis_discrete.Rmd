@@ -86,7 +86,7 @@ toverall <- disc_sensitivity(
   coi = 1:20,
   repetitions = 100,
   plmaf = p,
-  coverage = 100,
+  coverage = 200,
   seq_error = 0,
   coi_method = c("variant", "frequency")
 )
