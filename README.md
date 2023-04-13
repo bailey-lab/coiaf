@@ -30,7 +30,7 @@ characterizing polyclonal infections.
 
 ```r
 # Install most recent released version
-devtools::install_github("bailey-lab/coiaf@v0.1.1")
+devtools::install_github("bailey-lab/coiaf@v0.1.2")
 ```
 
 </div>

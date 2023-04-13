@@ -1,3 +1,8 @@
+# coiaf 0.1.2
+
+- Set the coverage to 200 instead of 100 for figures examining the overall
+  performance in the sensitivity analysis.
+
 # coiaf 0.1.1
 
 ## New vignettes
